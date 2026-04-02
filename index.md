@@ -290,3 +290,7 @@ No. Everything happens locally between your iPhone and your SSD. The only except
 ---
 
 *Documentation last updated: April 2026*
+
+---
+
+[Privacy Policy](privacy-policy.html)
