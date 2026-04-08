@@ -79,23 +79,25 @@ Tap **Allow Full Access**. Without this permission, the app cannot read your pho
 
 ## 5. Setting Up Your SSD
 
-Before you can back anything up, you need to tell the app where to save the files — that is, which folder on your SSD to use.
+Before you can back anything up, you need to tell the app where to save the files and give your device a name.
 
-### Step 1 — Plug in your SSD
-
-Connect your SSD to your iPhone using its USB-C cable.
-
-### Step 2 — Open Settings
+### Step 1 — Name your device
 
 Tap the **Settings** tab at the bottom of the screen (the gear icon).
 
-![Settings tab — no SSD configured yet](images/settings_empty.png)
+At the top of the page you will see an **iPhone / iPad** section with a **Folder name** field. Tap it and type a name that identifies your device — for example **iPhone de Gérard** or **iPad Pro Camille**.
 
-Both destination slots show "Not configured". This is normal the first time.
+![Settings — Folder name field](images/settings_device_name.png)
+
+> **This name is used as the folder name on the SSD.** If two people back up to the same SSD, each device needs a different name so their files stay separate. The app will not start a backup until a name is set.
+
+### Step 2 — Plug in your SSD
+
+Connect your SSD to your iPhone using its USB-C cable.
 
 ### Step 3 — Choose a destination folder
 
-Tap **Choose…** next to "SSD 1 (primary)".
+Below the device name, the **SSD Destinations** section shows two slots. Tap **Choose…** next to "SSD 1 (primary)".
 
 A file browser will open. Navigate to your SSD — it will appear in the list of locations. Tap on it to select the top-level folder (or a specific folder inside it if you prefer to keep things organised).
 
@@ -121,7 +123,11 @@ At the top you will see your SSD with its name, how much space is free, and a ba
 
 ### Step 2 — Start the backup
 
-In the **Sources** section, find the **Photos Library** row. It shows your iPhone name (for example "iPhone · all photos & videos").
+In the **Sources** section, find the **Photos Library** row. It shows the device name you set in Settings (for example "iPhone de Gérard · all photos & videos").
+
+> If you see "Nom non configuré" and an orange warning (see below), go to Settings and fill in the **Folder name** field first.
+
+![Dashboard — device name not configured](images/dashboard_no_device_name.png)
 
 Tap the **Backup** button on that row.
 
@@ -276,7 +282,7 @@ Your SSD is either not plugged in, or you have not set up a destination folder y
 Those photos are stored in iCloud and are not fully downloaded on your iPhone. The app automatically downloads them before copying. This requires a Wi-Fi or cellular connection and takes extra time depending on your internet speed.
 
 **Q: Can I use the app on two different iPhones to back up to the same SSD?**  
-Yes. Each iPhone creates its own named folder on the SSD (for example `Gerard_iPhone` and `Camille_iPhone`), so the files never get mixed up.
+Yes. Each iPhone has its own **Folder name** setting (in Settings → iPhone / iPad). Give each device a different name before the first backup — for example **iPhone de Gérard** on one and **iPhone de Camille** on the other. Each device will create its own folder on the SSD and the files will never get mixed up.
 
 **Q: The progress bar says 3% and seems stuck — is it frozen?**  
 Probably not. The first few files processed during a backup of the iPhone photo library are often large video files, which take longer individually. The percentage will start moving faster once it gets to smaller files. Wait a few minutes before worrying.
@@ -289,7 +295,7 @@ No. Everything happens locally between your iPhone and your SSD. The only except
 
 ---
 
-*Documentation last updated: April 2026*
+*Documentation last updated: April 8, 2026*
 
 ---
 
