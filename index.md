@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.0 · iOS**  
+> **Version 1.1.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -125,7 +125,7 @@ At the top you will see your SSD with its name, how much space is free, and a ba
 
 In the **Sources** section, find the **Photos Library** row. It shows the device name you set in Settings (for example "iPhone de Gérard · all photos & videos").
 
-> If you see "Nom non configuré" and an orange warning (see below), go to Settings and fill in the **Folder name** field first.
+> If you see "Name not configured" and an orange warning (see below), go to Settings and fill in the **Folder name** field first.
 
 ![Dashboard — device name not configured](images/dashboard_no_device_name.png)
 
@@ -139,7 +139,7 @@ The app will start scanning your photo library and then copying files. You can w
 
 ## 7. Backing Up a Camera SD Card (Pro)
 
-This section explains how to back up a memory card from a camera such as a Blackmagic, Insta360 X5, DJI drone, GoPro, or any other camera.
+This section explains how to back up a memory card from a camera such as a Blackmagic, Insta360 X5, DJI Mini 3 Pro, DJI 360 / Action camera, GoPro, or any other camera.
 
 > **This feature requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
 
@@ -161,7 +161,7 @@ A dialog box will ask you to name this source. The folder name from the card is 
 
 Tap **Add**.
 
-The source now appears in the list. The app automatically recognises known devices: it shows a camera icon for Insta360 cards, a drone icon for DJI cards, and a memory card icon for everything else.
+The source now appears in the list. The app automatically recognises known devices: it shows a camera icon for Insta360 cards, an airplane icon for DJI Mini 3 Pro cards, a video icon for DJI 360 / Action camera cards, and a memory card icon for everything else.
 
 In the example below, two camera sources have been added alongside the iPhone library:
 
@@ -295,7 +295,7 @@ No. Everything happens locally between your iPhone and your SSD. The only except
 
 ---
 
-*Documentation last updated: April 8, 2026*
+*Documentation last updated: April 17, 2026*
 
 ---
 
