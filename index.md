@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.1.0 · iOS**  
+> **Version 1.2.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -17,8 +17,9 @@
 8. [The Backup in Progress](#8-the-backup-in-progress)
 9. [When the Backup Is Done](#9-when-the-backup-is-done)
 10. [Viewing Your Backup History](#10-viewing-your-backup-history)
-11. [Using Two SSDs — Mirror Backup (Pro)](#11-using-two-ssds--mirror-backup-pro)
-12. [Frequently Asked Questions](#12-frequently-asked-questions)
+11. [Browsing and Sharing Your Backed-Up Files](#11-browsing-and-sharing-your-backed-up-files)
+12. [Using Two SSDs — Mirror Backup (Pro)](#12-using-two-ssds--mirror-backup-pro)
+13. [Frequently Asked Questions](#13-frequently-asked-questions)
 
 ---
 
@@ -188,6 +189,7 @@ Here is what each part means:
 | Element | What it tells you |
 |---------|-------------------|
 | **Overall Progress** | The percentage of the total backup completed, and how many files done out of the total |
+| **Time remaining** | An estimate of how long is left, updated continuously as the backup runs |
 | **Current file name** | The file being processed right now |
 | **Phase label** | What the app is doing at this moment (see below) |
 
@@ -200,6 +202,8 @@ Here is what each part means:
 - **Skipped** — The file was already on the SSD from a previous backup. Nothing to do.
 
 > Do not unplug the SSD or the SD card while a backup is running.
+
+> **Tip:** If you switch to another app while the backup is running, a notification will appear as soon as it finishes — so you do not need to keep the app open on screen.
 
 ---
 
@@ -250,7 +254,52 @@ To delete all records, scroll to the bottom of the History tab and tap **Clear H
 
 ---
 
-## 11. Using Two SSDs — Mirror Backup (Pro)
+## 11. Browsing and Sharing Your Backed-Up Files
+
+The **Browse** tab *(photo stack icon, third from left in the tab bar)* lets you view everything that has been copied to your SSD, directly inside the app.
+
+> Your SSD must be plugged in to browse its contents.
+
+### Navigating your backup
+
+Tap the **Browse** tab. You will see your SSD name with the list of device folders inside it — one folder per device or camera that has been backed up.
+
+![Browse — device folder list](images/browse_device_folders.png)
+
+Tap a device folder to see the list of backup dates, sorted from newest to oldest.
+
+![Browse — date folder list](images/browse_date_folders.png)
+
+Tap a date to open the media grid for that day: a gallery of thumbnails for all the files copied on that date. Photos show a preview; videos show a thumbnail with a play icon.
+
+![Browse — media grid](images/browse_media_grid.png)
+
+Tap any thumbnail to view it full size. Videos start playing immediately.
+
+### Selecting and sharing files
+
+To send files to another app, AirDrop them, or attach them to a message:
+
+1. Tap **Select** in the top-right corner of the media grid.
+2. Tap the thumbnails you want — each one gets a blue checkmark. Unselected items appear dimmed.
+3. Tap **Share (N)** in the top-right corner.
+
+![Browse — selection mode](images/browse_selection_mode.png)
+
+The app copies the selected files to a temporary folder and opens the standard iOS share sheet. From there you can:
+
+- Send via **AirDrop** to a nearby Mac or iPhone
+- Attach to a **Messages** or **Mail** message
+- Save to the **Photos** library
+- Open in **VLC**, **LumaFusion**, **DaVinci Resolve**, or any other compatible app
+
+![Browse — share sheet](images/browse_share_sheet.png)
+
+Tap **Cancel** in the toolbar to exit selection mode without sharing.
+
+---
+
+## 12. Using Two SSDs — Mirror Backup (Pro)
 
 > **This feature requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
 
@@ -264,7 +313,7 @@ When both SSDs are plugged in, the Backup tab shows both drives with their avail
 
 ---
 
-## 12. Frequently Asked Questions
+## 13. Frequently Asked Questions
 
 **Q: Does the app delete files from my iPhone or SD card?**  
 No. PhotoVideoBackup only copies files. It never moves or deletes anything from the source.
@@ -295,7 +344,7 @@ No. Everything happens locally between your iPhone and your SSD. The only except
 
 ---
 
-*Documentation last updated: April 17, 2026*
+*Documentation last updated: April 18, 2026*
 
 ---
 
