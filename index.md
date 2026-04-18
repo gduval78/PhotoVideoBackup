@@ -41,7 +41,7 @@ Every file copied is verified with a mathematical fingerprint (SHA-256). If even
 
 ## 2. Free vs Pro
 
-PhotoVideoBackup is free to download. A one-time **Pro upgrade ($4.99 — no subscription)** unlocks two additional features:
+PhotoVideoBackup is free to download. A one-time **Pro upgrade ($1.99 — no subscription)** unlocks two additional features:
 
 | Feature | Free | Pro |
 |---------|:----:|:---:|
