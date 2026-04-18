@@ -342,6 +342,18 @@ It is a way of confirming that the copy on the SSD is a perfect, bit-for-bit mat
 **Q: Is my data sent anywhere? Does it go through the internet?**  
 No. Everything happens locally between your iPhone and your SSD. The only exception is when the app downloads a photo from iCloud to copy it — but that is your own data, from your own iCloud account, going to your own SSD. The app has no server, no account, and no cloud storage of its own.
 
+**Q: Can I use iCloud Drive as a destination instead of an SSD?**  
+Yes. When choosing a destination folder in Settings, you can navigate to iCloud Drive and select a folder there. The app will copy your files into iCloud Drive exactly as it would to a physical SSD.
+
+**Q: Is the incremental backup still reliable when the destination is iCloud Drive?**  
+Yes. The app checks whether a file is already present by reading its metadata (name and size) at the destination. iOS exposes this metadata for iCloud Drive files even when their content has been offloaded to save space, so the skip logic works correctly regardless of whether the files are locally stored or cloud-only.
+
+**Q: Can I use the app to back up an SSD to iCloud Drive?**  
+Yes. Any folder you can open with the iOS file browser can be used as a source — including a folder on an external SSD. Select the SSD folder as your source and an iCloud Drive folder as your destination, and the app will copy only the files that are not already there.
+
+**Q: What does the app offer over simply copying files manually in the Files app?**  
+When copying to iCloud Drive, the app adds: automatic incremental transfers (only new files are copied), SHA-256 integrity verification on every file, a detailed session report listing what was copied, skipped, or failed, and support for two destinations simultaneously (for example an SSD and iCloud Drive in a single pass).
+
 ---
 
 *Documentation last updated: April 18, 2026*
