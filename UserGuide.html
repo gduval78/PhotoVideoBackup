@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>UserGuide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="photovideobackup-user-guide">PhotoVideoBackup — User Guide</h1>
+<blockquote>
+<p><strong>Version 1.0 · iOS</strong><br />
+A simple, reliable way to back up your photos and videos to an external
+SSD.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-what-is-photovideobackup">What is
+PhotoVideoBackup?</a></li>
+<li><a href="#2-what-you-need">What You Need</a></li>
+<li><a href="#3-first-launch--giving-permissions">First Launch — Giving
+Permissions</a></li>
+<li><a href="#4-setting-up-your-ssd">Setting Up Your SSD</a></li>
+<li><a href="#5-backing-up-your-iphone-photos--videos">Backing Up Your
+iPhone Photos &amp; Videos</a></li>
+<li><a href="#6-backing-up-a-camera-sd-card">Backing Up a Camera SD
+Card</a></li>
+<li><a href="#7-the-backup-in-progress">The Backup in Progress</a></li>
+<li><a href="#8-when-the-backup-is-done">When the Backup Is
+Done</a></li>
+<li><a href="#9-viewing-your-backup-history">Viewing Your Backup
+History</a></li>
+<li><a href="#10-using-two-ssds-mirror-backup">Using Two SSDs (Mirror
+Backup)</a></li>
+<li><a href="#11-frequently-asked-questions">Frequently Asked
+Questions</a></li>
+</ol>
+<hr />
+<h2 id="what-is-photovideobackup">1. What is PhotoVideoBackup?</h2>
+<p>PhotoVideoBackup copies your photos and videos from your iPhone — or
+from a camera memory card — to a portable SSD (a fast external hard
+drive) plugged into your iPhone.</p>
+<p><strong>Why use it?</strong></p>
+<ul>
+<li>Your iPhone storage is getting full and you want to free up space
+safely.</li>
+<li>You just came back from a trip with an SD card full of footage and
+want to secure it immediately.</li>
+<li>You want a personal copy of your media that does not depend on
+iCloud or any online service.</li>
+<li>You shoot with a Blackmagic camera, an Insta360, a DJI drone, or any
+other camera and need to back up the card on the go.</li>
+</ul>
+<p><strong>What makes it safe?</strong><br />
+Every file copied is verified with a mathematical fingerprint (SHA-256).
+If even a single byte is wrong, the app flags it. You will never end up
+with a silent, corrupted backup.</p>
+<hr />
+<h2 id="what-you-need">2. What You Need</h2>
+<table>
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 53%" />
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An iPhone with a <strong>USB-C port</strong></td>
+<td>iPhone 15 or later</td>
+</tr>
+<tr>
+<td>A <strong>USB-C SSD</strong></td>
+<td>Any portable SSD with a USB-C cable works. Recommended: Samsung T7,
+SanDisk Extreme, WD My Passport.</td>
+</tr>
+<tr>
+<td>A <strong>USB-C cable or hub</strong></td>
+<td>The cable that came with your SSD is fine. If you also want to plug
+in an SD card reader at the same time, you need a small USB-C hub.</td>
+</tr>
+<tr>
+<td>An <strong>SD card reader</strong> <em>(optional)</em></td>
+<td>Only needed if you want to back up a camera card. Any USB-C SD card
+reader works.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Tip:</strong> Copying large amounts of video uses battery.
+Plug your iPhone in or make sure it is well charged before starting.</p>
+</blockquote>
+<hr />
+<h2 id="first-launch-giving-permissions">3. First Launch — Giving
+Permissions</h2>
+<p>The very first time you open PhotoVideoBackup, iOS will ask for
+permission to access your photo library.</p>
+<p>Tap <strong>Allow Full Access</strong>. Without this permission, the
+app cannot read your photos and videos.</p>
+<blockquote>
+<p>The app only reads your photos to copy them. It never modifies,
+deletes, or shares them.</p>
+</blockquote>
+<hr />
+<h2 id="setting-up-your-ssd">4. Setting Up Your SSD</h2>
+<p>Before you can back anything up, you need to tell the app where to
+save the files — that is, which folder on your SSD to use.</p>
+<h3 id="step-1-plug-in-your-ssd">Step 1 — Plug in your SSD</h3>
+<p>Connect your SSD to your iPhone using its USB-C cable.</p>
+<h3 id="step-2-open-settings">Step 2 — Open Settings</h3>
+<p>Tap the <strong>Settings</strong> tab at the bottom of the screen
+(the gear icon).</p>
+<p><img src="images/02_settings_empty.png" width="320" alt="Settings tab — no SSD configured yet"/></p>
+<p>Both destination slots show “Not configured”. This is normal the
+first time.</p>
+<h3 id="step-3-choose-a-destination-folder">Step 3 — Choose a
+destination folder</h3>
+<p>Tap <strong>Choose…</strong> next to “SSD 1 (primary)”.</p>
+<p>A file browser will open. Navigate to your SSD — it will appear in
+the list of locations. Tap on it to select the top-level folder (or a
+specific folder inside it if you prefer to keep things organised).</p>
+<p>Tap <strong>Open</strong> in the top-right corner.</p>
+<p>The SSD name will now appear in Settings, confirming it is
+configured. A small red trash icon appears next to it — you can tap it
+at any time to unconfigure that slot.</p>
+<p><img src="images/05_settings_configured.png" width="320" alt="Settings — SSD 1 configured"/></p>
+<blockquote>
+<p><strong>Your choice is remembered.</strong> You only need to do this
+once per SSD. The next time you plug the same SSD in, the app will
+recognise it automatically.</p>
+</blockquote>
+<hr />
+<h2 id="backing-up-your-iphone-photos-videos">5. Backing Up Your iPhone
+Photos &amp; Videos</h2>
+<h3 id="step-1-go-to-the-backup-tab">Step 1 — Go to the Backup tab</h3>
+<p>Tap the <strong>Backup</strong> tab (the house icon at the bottom
+left).</p>
+<p>At the top you will see your SSD with its name, how much space is
+free, and a bar showing how full it is. Below that is a
+<strong>Sources</strong> section.</p>
+<p><img src="images/06_dashboard_ready.png" width="320" alt="Dashboard — SSD connected, sources listed, backup complete banner"/></p>
+<h3 id="step-2-start-the-backup">Step 2 — Start the backup</h3>
+<p>In the <strong>Sources</strong> section, find the <strong>Photos
+Library</strong> row. It shows your iPhone name (for example “iPhone ·
+all photos &amp; videos”).</p>
+<p>Tap the <strong>Backup</strong> button on that row.</p>
+<p>The app will start scanning your photo library and then copying
+files. You can watch the progress on screen (see <a
+href="#7-the-backup-in-progress">Section 7</a>).</p>
+<blockquote>
+<p><strong>First backup takes longer.</strong> If you have thousands of
+photos, expect this to take several minutes or more. Subsequent backups
+are much faster — the app skips files that are already on the SSD.</p>
+</blockquote>
+<hr />
+<h2 id="backing-up-a-camera-sd-card">6. Backing Up a Camera SD Card</h2>
+<p>This section explains how to back up a memory card from a camera such
+as a Blackmagic, Insta360 X5, DJI drone, GoPro, or any other camera.</p>
+<h3 id="step-1-connect-the-sd-card">Step 1 — Connect the SD card</h3>
+<p>Plug your SD card reader into your iPhone and insert the memory
+card.</p>
+<p>If your SSD is already plugged in, you will need a small USB-C hub to
+connect both at the same time.</p>
+<h3 id="step-2-add-the-card-as-a-source">Step 2 — Add the card as a
+source</h3>
+<p>On the <strong>Backup</strong> tab, tap <strong>Add Source (SD Card,
+USB Drive…)</strong> at the bottom of the Sources section.</p>
+<p>A file browser will open. Navigate to your SD card and tap
+<strong>Open</strong>.</p>
+<h3 id="step-3-give-it-a-name">Step 3 — Give it a name</h3>
+<p>A dialog box will ask you to name this source. The folder name from
+the card is suggested, but you can type anything — for example
+<strong>Blackmagic</strong>, <strong>Insta360</strong>, or <strong>Trip
+to Japan</strong>.</p>
+<p>Tap <strong>Add</strong>.</p>
+<p>The source now appears in the list. The app automatically recognises
+known devices: it shows a camera icon for Insta360 cards, a drone icon
+for DJI cards, and a memory card icon for everything else.</p>
+<p>In the example below, two camera sources have been added alongside
+the iPhone library:</p>
+<p><img src="images/06_dashboard_ready.png" width="320" alt="Dashboard — two camera sources added (InstaX5 and Blackmagic)"/></p>
+<h3 id="step-4-start-the-backup">Step 4 — Start the backup</h3>
+<p>Tap <strong>Backup</strong> on the row for your camera source.</p>
+<h3 id="removing-a-source">Removing a source</h3>
+<p>Tap the red <strong>–</strong> button on the left of a source row to
+remove it from the list. This does not delete any files — it simply
+removes that card from the app’s list of sources.</p>
+<hr />
+<h2 id="the-backup-in-progress">7. The Backup in Progress</h2>
+<p>While the backup runs, a <strong>Backup in Progress</strong> panel
+replaces the completion banner at the bottom of the Backup tab.</p>
+<p><img src="images/12_progress_screen.png" width="320" alt="Backup in progress — 3%, exporting from Photos"/></p>
+<p>Here is what each part means:</p>
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr>
+<th>Element</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overall Progress</strong></td>
+<td>The percentage of the total backup completed, and how many files
+done out of the total</td>
+</tr>
+<tr>
+<td><strong>Current file name</strong></td>
+<td>The file being processed right now</td>
+</tr>
+<tr>
+<td><strong>Phase label</strong></td>
+<td>What the app is doing at this moment (see below)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Phases explained simply:</strong></p>
+<ul>
+<li><strong>Scanning</strong> — The app is counting your files and
+checking which ones need to be copied.</li>
+<li><strong>Exporting from Photos</strong> — The app is retrieving the
+full-quality version of a photo from the iPhone’s photo system (or
+downloading it from iCloud if needed).</li>
+<li><strong>Copying</strong> — The file is being written to the
+SSD.</li>
+<li><strong>Verifying</strong> — The app is double-checking that the
+copy on the SSD is a perfect match of the original.</li>
+<li><strong>Skipped</strong> — The file was already on the SSD from a
+previous backup. Nothing to do.</li>
+</ul>
+<blockquote>
+<p>Do not unplug the SSD or the SD card while a backup is running.</p>
+</blockquote>
+<hr />
+<h2 id="when-the-backup-is-done">8. When the Backup Is Done</h2>
+<p>When the backup finishes, a <strong>Backup Complete</strong> banner
+appears at the bottom of the Backup tab.</p>
+<p><img src="images/13_completion_banner.png" width="320" alt="Completion banner — 149 copied, 0 skipped, 0 failed, 412.2 MB in 9.7 s"/></p>
+<table>
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr>
+<th>Number</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Copied</strong></td>
+<td>Files successfully saved to the SSD for the first time</td>
+</tr>
+<tr>
+<td><strong>Skipped</strong></td>
+<td>Files that were already on the SSD — not copied again (this is
+normal and safe)</td>
+</tr>
+<tr>
+<td><strong>Failed</strong></td>
+<td>Files that could not be copied (rare — see below)</td>
+</tr>
+</tbody>
+</table>
+<p>The banner also shows the total amount of data copied and how long
+the backup took.</p>
+<p>Tap the <strong>✕</strong> button in the top-right corner of the
+banner to dismiss it.</p>
+<h3 id="what-if-some-files-failed">What if some files failed?</h3>
+<p>A small number of failures is rare but can happen if: - A file on the
+SD card is corrupted (damaged card). - The SSD ran out of space
+mid-backup. - The connection was briefly interrupted.</p>
+<p>For a detailed list of which files failed, open the
+<strong>History</strong> tab and tap on the session.</p>
+<hr />
+<h2 id="viewing-your-backup-history">9. Viewing Your Backup History</h2>
+<p>The <strong>History</strong> tab <em>(clock icon, centre of the tab
+bar)</em> keeps a record of every backup session.</p>
+<p>Each row shows the date and time of the backup, the source that was
+backed up, and a colour indicator — green for success, red if one or
+more files failed.</p>
+<p>Tap any row to open the full report for that session. The report
+lists every file: its name, size, capture date, and whether it was
+copied, skipped, or failed.</p>
+<h3 id="sharing-a-report">Sharing a report</h3>
+<p>Inside a session report, tap the <strong>Share</strong> button (the
+box-with-arrow icon) to export the report as an HTML file. You can save
+it, email it, or open it in Safari for a nicely formatted view.</p>
+<h3 id="clearing-the-history">Clearing the history</h3>
+<p>To delete all records, scroll to the bottom of the History tab and
+tap <strong>Clear History</strong>. This only deletes the records inside
+the app — it does <strong>not</strong> delete any files on your SSD.</p>
+<hr />
+<h2 id="using-two-ssds-mirror-backup">10. Using Two SSDs (Mirror
+Backup)</h2>
+<p>For extra safety, you can configure a second SSD. Every file will be
+copied to both SSDs at the same time. If one SSD ever fails, you have a
+complete copy on the other.</p>
+<p>In <strong>Settings</strong>, tap <strong>Choose…</strong> next to
+“SSD 2 (mirror)” and select a folder on your second SSD.</p>
+<p>When both SSDs are plugged in, the Backup tab shows both drives with
+their available space. The app copies to both simultaneously — the
+backup does not take twice as long.</p>
+<blockquote>
+<p>If only one SSD is plugged in when you start a backup, the app will
+still run but will mark that session as an <strong>incomplete
+mirror</strong> in the history.</p>
+</blockquote>
+<hr />
+<h2 id="frequently-asked-questions">11. Frequently Asked Questions</h2>
+<p><strong>Q: Does the app delete files from my iPhone or SD
+card?</strong><br />
+No. PhotoVideoBackup only copies files. It never moves or deletes
+anything from the source.</p>
+<p><strong>Q: Will it copy the same file twice if I run it
+again?</strong><br />
+No. The app checks whether each file is already on the SSD before
+copying. Files that are already there are skipped. Running the backup a
+second time is fast and safe.</p>
+<p><strong>Q: My SD card appears as “Documents” — is that
+normal?</strong><br />
+Yes, some cameras store footage in a generic folder. When you add the
+source, simply type a meaningful name (like “Blackmagic” or “GoPro”) in
+the naming dialog so you can recognise it easily.</p>
+<p><strong>Q: The app says “No SSD configured — go to Settings.” What do
+I do?</strong><br />
+Your SSD is either not plugged in, or you have not set up a destination
+folder yet. Plug in the SSD and follow the steps in <a
+href="#4-setting-up-your-ssd">Section 4</a>.</p>
+<p><strong>Q: Some photos take a long time and the app says “Exporting
+from Photos” — why?</strong><br />
+Those photos are stored in iCloud and are not fully downloaded on your
+iPhone. The app automatically downloads them before copying. This
+requires a Wi-Fi or cellular connection and takes extra time depending
+on your internet speed.</p>
+<p><strong>Q: Can I use the app on two different iPhones to back up to
+the same SSD?</strong><br />
+Yes. Each iPhone creates its own named folder on the SSD (for example
+<code>Gerard_iPhone</code> and <code>Camille_iPhone</code>), so the
+files never get mixed up.</p>
+<p><strong>Q: The progress bar says 3% and seems stuck — is it
+frozen?</strong><br />
+Probably not. The first few files processed during a backup of the
+iPhone photo library are often large video files, which take longer
+individually. The percentage will start moving faster once it gets to
+smaller files. Wait a few minutes before worrying.</p>
+<p><strong>Q: What does “SHA-256 verification” mean?</strong><br />
+It is a way of confirming that the copy on the SSD is a perfect,
+bit-for-bit match of the original. You do not need to understand how it
+works — if the backup completes without failed files, your backup is
+guaranteed to be identical to the source.</p>
+<p><strong>Q: Is my data sent anywhere? Does it go through the
+internet?</strong><br />
+No. Everything happens locally between your iPhone and your SSD. The
+only exception is when the app downloads a photo from iCloud to copy it
+— but that is your own data, from your own iCloud account, going to your
+own SSD. The app has no server, no account, and no cloud storage of its
+own.</p>
+<hr />
+<p><em>Documentation last updated: April 2026</em></p>
+</body>
+</html>
