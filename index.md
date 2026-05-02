@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.2.0 · iOS**  
+> **Version 1.7.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -238,7 +238,7 @@ For a detailed list of which files failed, open the **History** tab and tap on t
 
 The **History** tab *(clock icon, centre of the tab bar)* keeps a record of every backup session.
 
-Each row shows the date and time of the backup, the source that was backed up, and a colour indicator — green for success, red if one or more files failed.
+Each row shows the source that was backed up, the destination drive(s), the folder organisation mode, the number of files, and a colour indicator — green for success, orange for partial, red if one or more files failed.
 
 Tap any row to open the full report for that session. The report lists every file: its name, size, capture date, and whether it was copied, skipped, or failed.
 
