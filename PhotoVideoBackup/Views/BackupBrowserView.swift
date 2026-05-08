@@ -215,6 +215,7 @@ private struct FolderContentView: View {
 
 private struct MediaGridView: View {
     @Environment(BackupBrowserViewModel.self) private var browser
+    @Environment(StoreManager.self) private var store
     let folder: URL
     let activeLUT: ParsedLUT?
     let deviceFolder: URL
@@ -225,6 +226,7 @@ private struct MediaGridView: View {
     @State private var showShareSheet  = false
     @State private var isPreparing     = false
     @State private var playingVideoURL: URL?
+    @State private var showPaywall     = false
 
     private let columns = [GridItem(.adaptive(minimum: 110), spacing: 2)]
 
@@ -304,6 +306,9 @@ private struct MediaGridView: View {
         .sheet(isPresented: $showShareSheet, onDismiss: cleanupTempFiles) {
             ActivityShareSheet(items: shareItems)
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
         .fullScreenCover(isPresented: Binding(
             get: { playingVideoURL != nil },
             set: { if !$0 { playingVideoURL = nil } }
@@ -347,6 +352,7 @@ private struct MediaGridView: View {
     }
 
     private func startGradingSelected() {
+        guard store.isPremium else { showPaywall = true; return }
         guard let lut = activeLUT else { return }
         browser.startGrading(files: gradableSelected, lut: lut, deviceFolder: deviceFolder)
         cancelSelection()
