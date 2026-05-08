@@ -325,13 +325,25 @@ If you shoot in **LOG** (DJI D-Log M, GoPro Protune, etc.), your footage looks f
 
 #### Step 1 — Import a LUT
 
-Tap the device folder. In the **LUT Grade** section, tap **Assign LUT…**. Tap **Import LUT (.cube)…** to open the file picker and select a `.cube` file from your Files app, iCloud Drive, or any connected drive. The LUT is copied into the app's storage and is available for all future sessions.
+Tap the device folder. In the **LUT Grade** section, tap **Assign LUT…**.
+
+![Browse — Select LUT sheet](images/browse_lut_picker.png)
+
+Tap **Import LUT (.cube)…** to open the file picker and select a `.cube` file from your Files app, iCloud Drive, or any connected drive. The LUT is copied into the app's storage and is available for all future sessions.
 
 > Any standard `.cube` file exported from DaVinci Resolve, Final Cut Pro, or downloaded from your camera manufacturer works.
 
+Once a LUT is assigned, it appears in the **LUT Grade** section with a **Remove** button.
+
+![Browse — LUT assigned to device folder](images/browse_date_folders.png)
+
 #### Step 2 — Preview with LUT
 
-Once a LUT is assigned, tap any video in that folder. The video plays with the LUT applied in real time — colours are graded on the fly so you can judge the actual look of the footage.
+Tap any video in that folder. The video plays full-screen. Tap the **LUT** button at the bottom-left to toggle the LUT on or off in real time — colours are graded on the fly so you can judge the actual look of the footage.
+
+![Browse — video player, LUT off](images/browse_lut_preview_off.png)
+
+![Browse — video player, LUT on](images/browse_lut_preview_on.png)
 
 > Playback with LUT requires a brief load of the video tracks. Allow a second for the player to initialise on first open.
 
@@ -339,14 +351,17 @@ Once a LUT is assigned, tap any video in that folder. The video plays with the L
 
 > **This step requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
 
-To create permanent graded copies, select one or more videos in the grid and tap the **Grade** button in the toolbar. The app:
+To create permanent graded copies, select one or more videos in the grid and tap the **Grade** button in the toolbar. The app re-encodes each video in **H.265 (HEVC)** with the LUT baked in and saves the results in a sibling folder named **"Device (Graded)"**.
 
-- Scans all `.mp4` and `.mov` videos under the device folder recursively.
-- Skips any file that has already been graded (safe to re-run).
-- Re-encodes each video in **H.265 (HEVC)** with the LUT baked in, preserving the original folder and date structure.
-- Saves the results in a sibling folder named **"Device (Graded)"** (e.g. `DJI Neo 2 (Graded)/`).
+![Browse — grading in progress](images/browse_grading_progress.png)
 
-A progress bar shows the current file and how many remain. Tap **Cancel** to stop at any time — already-graded files are kept.
+- Already-graded files are skipped (safe to re-run).
+- The original folder and date structure is preserved inside the Graded folder.
+- Tap **Cancel** to stop at any time — already-graded files are kept.
+
+The Graded folder appears immediately in the Browse tab once grading completes.
+
+![Browse — device folders with Graded sibling](images/browse_device_folders.png)
 
 > Grading is CPU-intensive. Keep the app open and the SSD connected during the process. The phone may become warm.
 
