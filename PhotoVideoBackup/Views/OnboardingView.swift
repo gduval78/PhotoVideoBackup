@@ -41,9 +41,10 @@ struct OnboardingView: View {
 
                 // Feature bullets
                 VStack(alignment: .leading, spacing: 16) {
-                    featureRow(icon: "sdcard.fill",        color: .orange, text: "SD cards, DJI, Insta360 and more")
-                    featureRow(icon: "externaldrive.fill",  color: .mint,   text: "Direct copy to your USB-C SSD")
-                    featureRow(icon: "checkmark.circle.fill", color: .green, text: "Already-backed-up files are skipped")
+                    featureRow(icon: "sdcard.fill",           color: .orange,  text: "SD cards, DJI, Insta360, GoPro and more")
+                    featureRow(icon: "externaldrive.fill",    color: .mint,    text: "Direct copy to your USB-C SSD")
+                    featureRow(icon: "checkmark.circle.fill", color: .green,   text: "Already-backed-up files are skipped")
+                    featureRow(icon: "camera.filters",        color: .purple,  text: "Preview and grade LOG footage with a LUT")
                 }
                 .padding(.top, 32)
                 .padding(.horizontal, 36)
