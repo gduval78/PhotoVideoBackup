@@ -256,9 +256,15 @@ The **History** tab *(clock icon, centre of the tab bar)* keeps a record of ever
 
 Each row shows the source that was backed up, the destination drive(s), the folder organisation mode, the number of files, and a colour indicator — green for success, orange for partial, red if one or more files failed.
 
-Tap any row to open the full report for that session. The report lists every file: its name, size, capture date, and whether it was copied, skipped, or failed.
+![History — session list](images/history_report.png)
 
-![History — full session report](images/history_report.png)
+Tap any row to open the full report for that session. The report shows a summary with source, destination, folder structure, file counts, and SHA-256 verification status.
+
+![Report — summary with SHA-256](images/report_detail.png)
+
+Tap **Copied**, **Skipped**, or **Failed** to drill into the per-file list. Each copied file shows a SHA-256 badge confirming its integrity.
+
+![Report — copied files list](images/report_copied.png)
 
 ### Sharing a report
 
