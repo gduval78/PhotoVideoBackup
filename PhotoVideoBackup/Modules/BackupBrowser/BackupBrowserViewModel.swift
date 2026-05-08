@@ -33,6 +33,7 @@ final class BackupBrowserViewModel {
     private(set) var gradingState: GradingState?
     private(set) var gradingDeviceFolder: URL?
     private var gradingTask: Task<Void, Never>?
+    private(set) var folderListVersion: Int = 0
 
     static let imageExtensions: Set<String> = [
         "jpg", "jpeg", "heic", "png", "dng", "raw", "cr2", "cr3", "arw", "nef", "rw2", "insp"
@@ -173,6 +174,7 @@ final class BackupBrowserViewModel {
                 gradingState = GradingState(
                     completed: gradable.count, total: gradable.count, currentFile: "", isFinished: true
                 )
+                folderListVersion += 1
             }
         }
     }

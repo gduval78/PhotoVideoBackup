@@ -8,6 +8,7 @@ struct BackupBrowserView: View {
     @Environment(BackupBrowserViewModel.self) private var browser
 
     var body: some View {
+        let _ = browser.folderListVersion
         Group {
             if browser.destinations.isEmpty {
                 emptyState(
@@ -52,6 +53,7 @@ private struct DeviceFolderView: View {
     @State private var showLUTPicker = false
 
     var body: some View {
+        let _ = browser.folderListVersion
         let subfolders = browser.dateFolders(in: folder)
         let files      = browser.mediaFiles(in: folder)
         let isGrading  = browser.gradingDeviceFolder == folder
@@ -61,7 +63,9 @@ private struct DeviceFolderView: View {
                 emptyState(icon: "folder.badge.questionmark", title: "Empty folder", message: nil)
             } else {
                 List {
-                    lutSection(isGrading: isGrading)
+                    if !folder.lastPathComponent.hasSuffix(" (Graded)") {
+                        lutSection(isGrading: isGrading)
+                    }
 
                     if !subfolders.isEmpty {
                         Section {
