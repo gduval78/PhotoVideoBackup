@@ -222,6 +222,7 @@ Keep this section up to date with every release. Use it to write App Store relea
 
 | Version | Build | Date       | Type    | Description |
 |---------|-------|------------|---------|-------------|
+| 1.9.3   | 27    | 2026-05-08 | Improvement | Onboarding screen updated: added LUT Grade and GoPro mentions. |
 | 1.9.2   | 26    | 2026-05-08 | Feature | LUT video grading (H.265/HEVC export) now requires Pro. Real-time LUT preview in the video player remains free. |
 | 1.9.1   | 25    | 2026-05-08 | Bug fix | LUT Grade bug fixes: Grade button re-enables after a completed session; (Graded) sibling folder appears immediately in Browse without requiring a manual refresh; (Graded) folders no longer show the LUT Grade section. |
 | 1.9.0   | 24    | 2026-05-08 | Feature | GoPro HERO support: auto-detection via DCIM/100GOPRO pattern; scans .mp4 and .jpg; skips .lrv proxy and .thm thumbnail files. SHA-256 verification now shown in completion banner ("N verified by SHA-256"), in Report summary, and in per-file report rows. Videos in Browse tab now play full-screen in a native AVPlayerViewController overlay. LUT Grade feature in Browse tab: assign a .cube LUT per device folder, preview videos with LUT applied in real time, and grade all footage to a sibling "Device (Graded)" folder in H.265/HEVC (skips already-graded files). |
