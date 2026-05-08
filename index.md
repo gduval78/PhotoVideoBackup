@@ -72,7 +72,11 @@ To unlock Pro, tap **Upgrade to Pro** when prompted, or open the upgrade screen 
 
 ## 4. First Launch — Giving Permissions
 
-The very first time you open PhotoVideoBackup, iOS will ask for permission to access your photo library.
+When you open PhotoVideoBackup for the first time, a welcome screen gives you an overview of the app's features. Tap **Get Started** to continue.
+
+![Onboarding screen](images/onboarding.png)
+
+iOS will then ask for permission to access your photo library.
 
 Tap **Allow Full Access**. Without this permission, the app cannot read your photos and videos.
 
