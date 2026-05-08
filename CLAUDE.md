@@ -64,6 +64,7 @@ Both must be cleared in `clearBookmark`. This pattern allows destinations to rem
 - **DJI Mini 3 Pro**: DCIM folders prefixed `DJI_` → `mp4`, `jpg`, `jpeg`, `dng` + `.srt` telemetry
 - **DJI 360 / Action** (`DeviceType.dji360`): DCIM folders matching `^\d{3}` (e.g. `100DJIMED`, `100MEDIA`) → `mp4`, `mov`, `jpg`, `jpeg`, `dng`, `mp3`, `osv` + `.srt`
 - **Insta360 X5**: DCIM, `.insv` / `.insp` / `.lrv`
+- **GoPro HERO**: DCIM folders matching `100GOPRO` → `mp4`, `jpg`; skips `.lrv` (proxy) and `.thm` (thumbnail)
 - **Generic**: `mp4`, `mov`, `avi`, `jpg`, `jpeg`, `heic`, `png`, `dng`, `raw`, `cr2`, `cr3`, `arw`, `nef`, `rw2`, `insv`, `insp`, `braw`, `mp3`
 
 ## Background execution
@@ -164,11 +165,12 @@ Both `PHBackupEngine` and `FileCopyEngine` use the same pattern to avoid memory 
 - When the limit is reached, the engine sets `_wasLimited = true` and breaks. `finishSession` sets `session.status = .partial`.
 - `SessionStatus.partial` is displayed as orange in History (`exclamationmark.arrow.circlepath`), Report (header badge + warning label), DashboardView completion banner, and push notification.
 
-## BackupSession — fields added in v1.4.0 / v1.5.0
+## BackupSession — fields added across versions
 
-Two new SwiftData fields with default values (lightweight migration — no migration plan needed):
-- `sourceDisplayName: String = ""` — human-readable source name saved at backup time (e.g. device name or SD card label). Used in History/Report so the source is readable even after the source is removed.
-- `folderOrganizationRaw: String = "byDate"` — rawValue of `FolderOrganization` at backup time. Used in History/Report to display which folder structure was used.
+All fields use SwiftData default values (lightweight migration — no migration plan needed):
+- `sourceDisplayName: String = ""` *(v1.4.0)* — human-readable source name saved at backup time. Used in History/Report so the source is readable even after removal.
+- `folderOrganizationRaw: String = "byDate"` *(v1.4.0)* — rawValue of `FolderOrganization` at backup time. Used in History/Report to display which folder structure was used.
+- `destinationDisplayNames: [String] = []` *(v1.7.0)* — display names of destination drives at backup time (e.g. `["SanDisk / Backup"]`). Shown in History rows and Report summary. Old sessions fall back to path last component.
 
 ## Browse tab — BackupBrowser module
 - `BackupBrowserViewModel` (`Modules/BackupBrowser/`) manages security-scoped access to SSD destinations: call `startAccess()` on tab appear, `stopAccess()` on disappear. Thumbnails are cached in memory for the session.
@@ -189,7 +191,11 @@ Two new SwiftData fields with default values (lightweight migration — no migra
 - `LUTStore` (`Modules/LUT/LUTManager.swift`) — `@Observable @MainActor` singleton. Imports `.cube` files to `Documents/LUTs/`. Parsed via `LUTStore.parseCube(at:)` (nonisolated static, can run on any thread). Applies via `CIColorCubeWithColorSpace` filter.
 - `LUT assignments` persisted in UserDefaults `"PhotoVideoBackup.lut.assignments"` as `[String: String]` — key = device folder `lastPathComponent`, value = LUT filename.
 - `VideoGradingEngine` (`Modules/LUT/VideoGradingEngine.swift`) — `final class` (was actor, changed to class since `run`/`grade` are stateless). Grades `.mp4` and `.mov` files only. Creates `AVMutableVideoComposition` + `AVAssetExportSession` (HEVC preset). Output goes to `DeviceFolder (Graded)/` mirroring the original path. Already-graded files are skipped.
+- **Grading requires Pro** (`StoreManager.shared.isPremium`). Free users tapping Grade see the paywall sheet. Real-time LUT preview in `VideoFullScreenView` is free.
 - Grading state is exposed on `BackupBrowserViewModel` as `gradingState: GradingState?` and `gradingDeviceFolder: URL?` — `DeviceFolderView` checks `gradingDeviceFolder == folder` to show progress for the right folder only.
+- Grade button is disabled while `gradingState?.isFinished == false` (active grading only — re-enables after completion).
+- `folderListVersion: Int` on `BackupBrowserViewModel` increments when grading completes, causing `BackupBrowserView` and `DeviceFolderView` to re-enumerate the filesystem so the new `(Graded)` sibling folder appears immediately without manual refresh.
+- Folders whose `lastPathComponent.hasSuffix(" (Graded)")` do not show the LUT Grade section in `DeviceFolderView`.
 - `activeLUT: ParsedLUT?` is passed down from `DeviceFolderView` → `FolderContentView` → `MediaGridView` → `VideoFullScreenView` as a normal parameter (prop drilling). This is intentional: avoids coupling navigation state to the ViewModel.
 - LUT parsing is done in `Task { await Task.detached { LUTStore.parseCube(at:) }.value }` to keep heavy work off the main thread while safely updating `@State` on the main actor.
 
