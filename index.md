@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.7.0 · iOS**  
+> **Version 1.9.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -162,7 +162,17 @@ A dialog box will ask you to name this source. The folder name from the card is 
 
 Tap **Add**.
 
-The source now appears in the list. The app automatically recognises known devices: it shows a camera icon for Insta360 cards, an airplane icon for DJI Mini 3 Pro cards, a video icon for DJI 360 / Action camera cards, and a memory card icon for everything else.
+The source now appears in the list. The app automatically recognises known devices:
+
+| Icon | Device |
+|------|--------|
+| Airplane | DJI Mini 3 Pro |
+| Video badge | DJI 360 / Action (Neo 2, etc.) |
+| Camera aperture | Insta360 X5 |
+| Camera (red) | GoPro HERO series |
+| SD card | Everything else |
+
+GoPro cards are scanned for `.mp4` and `.jpg` files; low-resolution proxy files (`.lrv`) and thumbnail files (`.thm`) are automatically skipped.
 
 In the example below, two camera sources have been added alongside the iPhone library:
 
@@ -266,7 +276,7 @@ Tap the **Browse** tab. You will see your SSD name with the list of device folde
 
 ![Browse — device folder list](images/browse_device_folders.png)
 
-Tap a device folder to see the list of backup dates, sorted from newest to oldest.
+Tap a device folder to open it. At the top you will see a **LUT Grade** section (see below). Below that, the backup dates are listed from newest to oldest.
 
 ![Browse — date folder list](images/browse_date_folders.png)
 
@@ -274,7 +284,7 @@ Tap a date to open the media grid for that day: a gallery of thumbnails for all 
 
 ![Browse — media grid](images/browse_media_grid.png)
 
-Tap any thumbnail to view it full size. Videos start playing immediately.
+Tap a photo to view it full size. Tap a video to play it in full-screen with transport controls.
 
 ### Selecting and sharing files
 
@@ -296,6 +306,37 @@ The app copies the selected files to a temporary folder and opens the standard i
 ![Browse — share sheet](images/browse_share_sheet.png)
 
 Tap **Cancel** in the toolbar to exit selection mode without sharing.
+
+### LUT Grade — apply a look to LOG footage
+
+If you shoot in **LOG** (DJI D-Log M, GoPro Protune, etc.), your footage looks flat and grey until a LUT (Look Up Table) is applied. The Browse tab lets you assign a LUT to any device folder and preview or permanently grade your footage without leaving the app.
+
+#### Step 1 — Import a LUT
+
+Tap the device folder. In the **LUT Grade** section, tap **Assign LUT…**. Tap **Import LUT (.cube)…** to open the file picker and select a `.cube` file from your Files app, iCloud Drive, or any connected drive. The LUT is copied into the app's storage and is available for all future sessions.
+
+> Any standard `.cube` file exported from DaVinci Resolve, Final Cut Pro, or downloaded from your camera manufacturer works.
+
+#### Step 2 — Preview with LUT
+
+Once a LUT is assigned, tap any video in that folder. The video plays with the LUT applied in real time — colours are graded on the fly so you can judge the actual look of the footage.
+
+> Playback with LUT requires a brief load of the video tracks. Allow a second for the player to initialise on first open.
+
+#### Step 3 — Grade and save
+
+To create permanent graded copies, tap **Grade to "Device (Graded)"** in the LUT Grade section. The app:
+
+- Scans all `.mp4` and `.mov` videos under the device folder recursively.
+- Skips any file that has already been graded (safe to re-run).
+- Re-encodes each video in **H.265 (HEVC)** with the LUT baked in, preserving the original folder and date structure.
+- Saves the results in a sibling folder named **"Device (Graded)"** (e.g. `DJI Neo 2 (Graded)/`).
+
+A progress bar shows the current file and how many remain. Tap **Cancel** to stop at any time — already-graded files are kept.
+
+> Grading is CPU-intensive. Keep the app open and the SSD connected during the process. The phone may become warm.
+
+To remove a LUT assignment, tap **Remove** next to the LUT name. This only removes the assignment — it does not delete the LUT file or the already-graded videos.
 
 ---
 
