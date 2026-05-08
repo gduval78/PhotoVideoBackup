@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.9.0 · iOS**  
+> **Version 1.9.2 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -46,7 +46,9 @@ PhotoVideoBackup is free to download. A one-time **Pro upgrade ($1.99 — no sub
 | Feature | Free | Pro |
 |---------|:----:|:---:|
 | Back up your iPhone photo library to an SSD | ✓ | ✓ |
+| Browse and preview backed-up media (with real-time LUT preview) | ✓ | ✓ |
 | Add external sources (SD cards, Blackmagic, Insta360, DJI…) | — | ✓ |
+| Grade LOG footage to H.265/HEVC with a LUT baked in | — | ✓ |
 | Mirror backup to a second SSD simultaneously | — | ✓ |
 
 ![Upgrade to Pro screen](images/upgrade_to_pro.png)
@@ -323,9 +325,11 @@ Once a LUT is assigned, tap any video in that folder. The video plays with the L
 
 > Playback with LUT requires a brief load of the video tracks. Allow a second for the player to initialise on first open.
 
-#### Step 3 — Grade and save
+#### Step 3 — Grade and save *(Pro)*
 
-To create permanent graded copies, tap **Grade to "Device (Graded)"** in the LUT Grade section. The app:
+> **This step requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
+
+To create permanent graded copies, select one or more videos in the grid and tap the **Grade** button in the toolbar. The app:
 
 - Scans all `.mp4` and `.mov` videos under the device folder recursively.
 - Skips any file that has already been graded (safe to re-run).
