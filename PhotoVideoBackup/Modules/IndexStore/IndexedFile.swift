@@ -25,6 +25,7 @@ final class IndexedFile {
     var copyStatusRaw: String
     var verificationPassed: Bool?
     var destinationPaths: [String]
+    var errorNote: String? = nil
 
     var copyStatus: CopyStatus {
         get { CopyStatus(rawValue: copyStatusRaw) ?? .pending }
@@ -42,7 +43,8 @@ final class IndexedFile {
         sha256: String = "",
         copyStatus: CopyStatus = .pending,
         verificationPassed: Bool? = nil,
-        destinationPaths: [String] = []
+        destinationPaths: [String] = [],
+        errorNote: String? = nil
     ) {
         self.id = id
         self.session = session
@@ -55,5 +57,6 @@ final class IndexedFile {
         self.copyStatusRaw = copyStatus.rawValue
         self.verificationPassed = verificationPassed
         self.destinationPaths = destinationPaths
+        self.errorNote = errorNote
     }
 }

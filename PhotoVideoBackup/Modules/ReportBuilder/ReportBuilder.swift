@@ -32,10 +32,11 @@ actor ReportBuilder {
     // MARK: - Assembly
 
     private func buildReport(for session: BackupSession) async throws -> SessionReport {
-        let files   = session.files
-        let copied  = files.filter { $0.copyStatus == .copied }
-        let skipped = files.filter { $0.copyStatus == .skipped }
-        let failed  = files.filter { $0.copyStatus == .failed }
+        let files    = session.files
+        let copied   = files.filter { $0.copyStatus == .copied }
+        let skipped  = files.filter { $0.copyStatus == .skipped }
+        let failed   = files.filter { $0.copyStatus == .failed }
+        let verified = copied.filter { $0.verificationPassed == true }
         let totalBytes = copied.reduce(Int64(0)) { $0 + $1.fileSize }
         let duration   = (session.completedAt ?? Date()).timeIntervalSince(session.startedAt)
 
@@ -47,6 +48,7 @@ actor ReportBuilder {
                 copiedCount: copied.count,
                 skippedCount: skipped.count,
                 failedCount: failed.count,
+                verifiedCount: verified.count,
                 totalBytesCopied: totalBytes,
                 durationSeconds: duration,
                 incompleteMirror: session.incompleteMirror
@@ -55,6 +57,7 @@ actor ReportBuilder {
                 SessionReport.ReportEntry(
                     fileName: $0.fileName, sourcePath: $0.sourcePath,
                     destinationPaths: $0.destinationPaths, sha256: $0.sha256,
+                    verificationPassed: $0.verificationPassed == true,
                     fileSizeBytes: $0.fileSize, captureDate: $0.captureDate,
                     sourceDevice: $0.sourceDevice
                 )
@@ -141,6 +144,7 @@ actor ReportBuilder {
           <tr><th>Copied</th><td class="ok">\(s.copiedCount)</td></tr>
           <tr><th>Skipped (already present)</th><td class="skip">\(s.skippedCount)</td></tr>
           <tr><th>Failed</th><td class="fail">\(s.failedCount)</td></tr>
+          <tr><th>SHA-256 verified</th><td class="ok">\(s.verifiedCount == s.copiedCount ? "✓ All \(s.verifiedCount)" : "\(s.verifiedCount) / \(s.copiedCount)")</td></tr>
           <tr><th>Total data copied</th><td>\(byteStr(s.totalBytesCopied))</td></tr>
           <tr><th>Duration</th><td>\(String(format: "%.1f s", s.durationSeconds))</td></tr>
           <tr><th>Incomplete mirror</th><td>\(s.incompleteMirror ? "⚠️ Yes" : "No")</td></tr>
@@ -149,12 +153,13 @@ actor ReportBuilder {
 
         if !report.copiedFiles.isEmpty {
             html += "<h2>Copied (\(report.copiedFiles.count))</h2>"
-            html += "<table><tr><th>File</th><th>Size</th><th>Date</th><th>SHA-256</th></tr>"
+            html += "<table><tr><th>File</th><th>Size</th><th>Date</th><th>SHA-256</th><th>✓</th></tr>"
             let df = DateFormatter(); df.dateStyle = .short; df.timeStyle = .none
             for f in report.copiedFiles {
-                let date = f.captureDate.map { df.string(from: $0) } ?? "—"
+                let date  = f.captureDate.map { df.string(from: $0) } ?? "—"
+                let check = f.verificationPassed ? "<span class='ok'>✓</span>" : "<span class='fail'>✗</span>"
                 html += row([f.fileName, byteStr(f.fileSizeBytes), date,
-                             "<span class='mono'>\(f.sha256.prefix(16))…</span>"])
+                             "<span class='mono'>\(f.sha256.prefix(16))…</span>", check])
             }
             html += "</table>"
         }

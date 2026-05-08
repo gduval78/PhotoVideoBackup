@@ -14,6 +14,7 @@ struct SessionReport: Codable {
         let copiedCount: Int
         let skippedCount: Int
         let failedCount: Int
+        let verifiedCount: Int
         let totalBytesCopied: Int64
         let durationSeconds: Double
         let incompleteMirror: Bool
@@ -24,6 +25,7 @@ struct SessionReport: Codable {
         let sourcePath: String
         let destinationPaths: [String]
         let sha256: String
+        let verificationPassed: Bool
         let fileSizeBytes: Int64
         let captureDate: Date?
         let sourceDevice: String

@@ -18,9 +18,14 @@ final class DashboardViewModel {
     var backupError: String?
     private(set) var completionBanner: CompletionBanner?
     private(set) var estimatedSecondsRemaining: Double?
+    private(set) var shouldRequestReview: Bool = false
 
     /// Persisted list of user-selected external sources (SD cards, USB drives).
     private(set) var externalSources: [ExternalSource] = []
+
+    var hasConnectedDestination: Bool {
+        destinationStatuses.contains { $0.isConnected }
+    }
 
     struct CompletionBanner: Sendable {
         let status: SessionStatus
@@ -30,9 +35,11 @@ final class DashboardViewModel {
         let totalBytesCopied: Int64
         let durationSeconds: Double
         let sourceName: String
+        let verifiedCount: Int
     }
 
     func dismissCompletionBanner() { completionBanner = nil }
+    func clearReviewRequest()      { shouldRequestReview = false }
 
     // MARK: Private
 
@@ -88,15 +95,36 @@ final class DashboardViewModel {
     private func sendCompletionNotification(_ banner: CompletionBanner) {
         let content = UNMutableNotificationContent()
         content.sound = .default
-        if banner.failedCount > 0 {
+        switch banner.status {
+        case .failed:
+            content.title = "Backup Failed"
+            content.body  = "No files were copied — open the Report for details · \(banner.sourceName)"
+        case .partial:
+            content.title = "Partial Backup"
+            content.body  = "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)"
+        case .completed where banner.failedCount > 0:
             content.title = "Backup finished with errors"
             content.body  = "\(banner.copiedCount) copied · \(banner.failedCount) failed — \(banner.sourceName)"
-        } else {
+        default:
             content.title = "Backup Complete"
             content.body  = "\(banner.copiedCount) copied · \(banner.skippedCount) skipped — \(banner.sourceName)"
         }
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
+    }
+
+    // MARK: - Review request
+
+    private func considerRequestingReview(copiedCount: Int) {
+        guard copiedCount >= 10 else { return }
+        let ud = UserDefaults.standard
+        let count = ud.integer(forKey: "review.successfulBackupCount") + 1
+        ud.set(count, forKey: "review.successfulBackupCount")
+        let lastDate = ud.object(forKey: "review.lastReviewRequestDate") as? Date ?? .distantPast
+        let daysSinceLast = Date().timeIntervalSince(lastDate) / 86_400
+        guard (count == 3 || count % 15 == 0) && daysSinceLast >= 60 else { return }
+        ud.set(Date(), forKey: "review.lastReviewRequestDate")
+        shouldRequestReview = true
     }
 
     // MARK: - Lifecycle
@@ -105,13 +133,18 @@ final class DashboardViewModel {
         refreshDestinationStatuses()
         refreshSessions()
         loadPersistedSources()
+        // Retry offline sources after a short delay so iOS has time to finish mounting the volume.
+        Task {
+            try? await Task.sleep(nanoseconds: 800_000_000)
+            retryOfflineSources()
+        }
     }
 
     // MARK: - Destinations
 
     func refreshDestinationStatuses() {
         let dm = DestinationManager.shared
-        destinationStatuses = (0...1).compactMap { index in
+        destinationStatuses = (0...2).compactMap { index in
             let key = dm.key(for: index)
             guard dm.isConfigured(forKey: key) else { return nil }
             let folderPath   = dm.folderName(forKey: key)
@@ -124,6 +157,7 @@ final class DashboardViewModel {
             }
             return destinationStatus(for: url, folderPath: folderPath, savedName: savedName)
         }
+        retryOfflineSources()
     }
 
     private func destinationStatus(for url: URL, folderPath: String, savedName: String) -> DestinationStatus {
@@ -165,35 +199,41 @@ final class DashboardViewModel {
         static func deviceType(id: String)  -> String { "PhotoVideoBackup.source.\(id).deviceType" }
     }
 
-    func addExternalSource(url: URL, customName: String? = nil) {
+    /// bookmarkData must be created in the UIDocumentPicker callback while security scope is still active.
+    func addExternalSource(url: URL, bookmarkData: Data, customName: String? = nil) {
         _ = url.startAccessingSecurityScopedResource()
         let source = ExternalSource(rootURL: url, customName: customName)
         guard !externalSources.contains(where: { $0.rootURL == source.rootURL }) else { return }
+        externalSources.removeAll { !$0.isAvailable && $0.displayName == source.displayName }
         externalSources.append(source)
-        persistSource(source)
+        let k  = source.id.uuidString
+        let ud = UserDefaults.standard
+        ud.set(bookmarkData,              forKey: SourcePersistenceKeys.bookmark(id: k))
+        ud.set(source.displayName,        forKey: SourcePersistenceKeys.displayName(id: k))
+        ud.set(source.deviceType.rawValue, forKey: SourcePersistenceKeys.deviceType(id: k))
+        var list = ud.stringArray(forKey: SourcePersistenceKeys.list) ?? []
+        if !list.contains(k) { list.append(k); ud.set(list, forKey: SourcePersistenceKeys.list) }
+    }
+
+    /// Re-authorizes an offline source after the SD card has been ejected and reinserted.
+    func reconnectSource(id: UUID, url: URL, bookmarkData: Data) {
+        guard let index = externalSources.firstIndex(where: { $0.id == id }) else { return }
+        _ = url.startAccessingSecurityScopedResource()
+        let old = externalSources[index]
+        externalSources[index] = ExternalSource(id: old.id, rootURL: url,
+                                                savedDisplayName: old.displayName,
+                                                savedDeviceType: old.deviceType)
+        let k  = id.uuidString
+        let ud = UserDefaults.standard
+        ud.set(bookmarkData, forKey: SourcePersistenceKeys.bookmark(id: k))
     }
 
     func removeExternalSource(id: UUID) {
         if let source = externalSources.first(where: { $0.id == id }) {
-            source.rootURL.stopAccessingSecurityScopedResource()
+            source.rootURL?.stopAccessingSecurityScopedResource()
         }
         externalSources.removeAll { $0.id == id }
         unpersistSource(id: id)
-    }
-
-    private func persistSource(_ source: ExternalSource) {
-        guard let data = try? source.rootURL.bookmarkData(
-            options: .minimalBookmark,
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil
-        ) else { return }
-        let k  = source.id.uuidString
-        let ud = UserDefaults.standard
-        ud.set(data, forKey: SourcePersistenceKeys.bookmark(id: k))
-        ud.set(source.displayName, forKey: SourcePersistenceKeys.displayName(id: k))
-        ud.set(source.deviceType.rawValue, forKey: SourcePersistenceKeys.deviceType(id: k))
-        var list = ud.stringArray(forKey: SourcePersistenceKeys.list) ?? []
-        if !list.contains(k) { list.append(k); ud.set(list, forKey: SourcePersistenceKeys.list) }
     }
 
     private func unpersistSource(id: UUID) {
@@ -207,6 +247,32 @@ final class DashboardViewModel {
         ud.set(list, forKey: SourcePersistenceKeys.list)
     }
 
+    /// Re-tries bookmark resolution for sources that failed to load (e.g. iOS hadn't finished
+    /// mounting the volume yet, or the card was reinserted). Called automatically on refresh
+    /// and on app foreground transitions. Falls through silently if the bookmark is genuinely
+    /// invalidated — the "Reconnect" button handles that case.
+    func retryOfflineSources() {
+        let ud = UserDefaults.standard
+        for (index, source) in externalSources.enumerated() where !source.isAvailable {
+            let idStr = source.id.uuidString
+            guard let bookmarkData = ud.data(forKey: SourcePersistenceKeys.bookmark(id: idStr)) else { continue }
+            var isStale = false
+            guard let url = try? URL(
+                resolvingBookmarkData: bookmarkData,
+                options: [],
+                relativeTo: nil,
+                bookmarkDataIsStale: &isStale
+            ) else { continue }
+            if isStale, let fresh = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) {
+                ud.set(fresh, forKey: SourcePersistenceKeys.bookmark(id: idStr))
+            }
+            _ = url.startAccessingSecurityScopedResource()
+            externalSources[index] = ExternalSource(id: source.id, rootURL: url,
+                                                    savedDisplayName: source.displayName,
+                                                    savedDeviceType: source.deviceType)
+        }
+    }
+
     func loadPersistedSources() {
         let ud = UserDefaults.standard
         guard let list = ud.stringArray(forKey: SourcePersistenceKeys.list) else { return }
@@ -215,19 +281,24 @@ final class DashboardViewModel {
                   let id = UUID(uuidString: idStr) else { continue }
             guard !externalSources.contains(where: { $0.id == id }) else { continue }
             var isStale = false
-            guard let url = try? URL(
+            let url = try? URL(
                 resolvingBookmarkData: bookmarkData,
                 options: [],
                 relativeTo: nil,
                 bookmarkDataIsStale: &isStale
-            ) else { continue }
-            if isStale, let fresh = try? url.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil) {
-                ud.set(fresh, forKey: SourcePersistenceKeys.bookmark(id: idStr))
+            )
+            if let url {
+                if isStale, let fresh = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) {
+                    ud.set(fresh, forKey: SourcePersistenceKeys.bookmark(id: idStr))
+                }
+                _ = url.startAccessingSecurityScopedResource()
             }
-            _ = url.startAccessingSecurityScopedResource()
-            let name       = ud.string(forKey: SourcePersistenceKeys.displayName(id: idStr)) ?? url.lastPathComponent
+            let name       = ud.string(forKey: SourcePersistenceKeys.displayName(id: idStr))
+                          ?? url?.lastPathComponent
+                          ?? idStr
             let rawType    = ud.string(forKey: SourcePersistenceKeys.deviceType(id: idStr)) ?? ""
             let deviceType = DeviceType(rawValue: rawType) ?? .generic
+            // Always append — offline sources (url == nil) show as "Not connected" in the UI.
             externalSources.append(ExternalSource(id: id, rootURL: url, savedDisplayName: name, savedDeviceType: deviceType))
         }
     }
@@ -300,28 +371,39 @@ final class DashboardViewModel {
         let session = BackupSession(
             sources: ["photos-library://local"],
             destinations: accessed.map(\.path),
-            incompleteMirror: accessed.count < 2
+            incompleteMirror: accessed.count < 2,
+            sourceDisplayName: rawName,
+            folderOrganizationRaw: FolderOrganization.current.rawValue,
+            destinationDisplayNames: accessed.map { DestinationManager.shared.destinationLabel(for: $0) }
         )
         try? IndexStore.shared.insert(session)
 
+        let fileLimit = Self.resolvedFileLimit()
         let stream = await libraryEngine.run(
             items: items,
             destinations: accessed,
             session: session,
-            deviceName: deviceName
+            deviceName: deviceName,
+            fileLimit: fileLimit
         )
         for await progress in stream {
             currentProgress = progress
             updateSpeedEstimate(progress)
         }
 
-        finishSession(session, sourceName: deviceName)
+        let result = await libraryEngine.engineResult
+        finishSession(session, sourceName: deviceName, result: result)
     }
 
     // MARK: - Start Backup: External Source (SD card, USB drive…)
 
     func startBackup(from source: ExternalSource) async {
         guard !isRunning else { return }
+
+        guard let sourceURL = source.rootURL else {
+            backupError = "\"\(source.displayName)\" is not connected. Reconnect the SD card and try again."
+            return
+        }
 
         // Enforce premium gate at runtime: external sources require Pro
         guard StoreManager.shared.isPremium else {
@@ -350,7 +432,7 @@ final class DashboardViewModel {
         let scanner = MediaScanner()
         let files: [MediaFile]
         do {
-            files = try await scanner.scan(root: source.rootURL, deviceType: source.deviceType)
+            files = try await scanner.scan(root: sourceURL, deviceType: source.deviceType)
         } catch {
             backupError = error.localizedDescription
             isRunning   = false
@@ -370,48 +452,64 @@ final class DashboardViewModel {
             .joined(separator: "_")
 
         let session = BackupSession(
-            sources: [source.rootURL.path],
+            sources: [sourceURL.path],
             destinations: accessed.map(\.path),
-            incompleteMirror: accessed.count < 2
+            incompleteMirror: accessed.count < 2,
+            sourceDisplayName: source.displayName,
+            folderOrganizationRaw: FolderOrganization.current.rawValue,
+            destinationDisplayNames: accessed.map { DestinationManager.shared.destinationLabel(for: $0) }
         )
         try? IndexStore.shared.insert(session)
 
+        let fileLimit = Self.resolvedFileLimit()
         let stream = await fileEngine.run(
             files: files,
             sourceDevice: deviceFolder,
             destinations: accessed,
-            session: session
+            session: session,
+            fileLimit: fileLimit
         )
         for await progress in stream {
             currentProgress = progress
             updateSpeedEstimate(progress)
         }
 
-        finishSession(session, sourceName: source.displayName)
+        let result = await fileEngine.engineResult
+        finishSession(session, sourceName: source.displayName, result: result)
     }
 
     // MARK: - Shared finish logic
 
-    private func finishSession(_ session: BackupSession, sourceName: String) {
-        let status: SessionStatus = session.files.contains { $0.copyStatus == .failed }
-            ? .completed   // partial failures are still "completed" with failed entries
-            : .completed
+    private static func resolvedFileLimit() -> Int? {
+        let raw = UserDefaults.standard.integer(forKey: "backupFileLimit")
+        return raw > 0 ? raw : nil
+    }
 
-        try? IndexStore.shared.complete(session, status: status)
+    private func finishSession(_ session: BackupSession, sourceName: String, result: EngineResult) {
+        let sessionStatus: SessionStatus
+        if result.wasLimited {
+            sessionStatus = .partial
+        } else if result.copiedCount == 0 && result.failedCount > 0 {
+            sessionStatus = .failed
+        } else {
+            sessionStatus = .completed
+        }
+
+        try? IndexStore.shared.complete(session, status: sessionStatus)
         Task { try? await ReportBuilder.shared.generate(for: session) }
 
         lastCompletedSession = session
         completedSessionID   = session.id
 
-        let files = session.files
         completionBanner = CompletionBanner(
-            status: status,
-            copiedCount:  files.filter { $0.copyStatus == .copied  }.count,
-            skippedCount: files.filter { $0.copyStatus == .skipped }.count,
-            failedCount:  files.filter { $0.copyStatus == .failed  }.count,
-            totalBytesCopied: files.filter { $0.copyStatus == .copied }.reduce(0) { $0 + $1.fileSize },
+            status: sessionStatus,
+            copiedCount:  result.copiedCount,
+            skippedCount: result.skippedCount,
+            failedCount:  result.failedCount,
+            totalBytesCopied: result.totalBytesCopied,
             durationSeconds: (session.completedAt ?? Date()).timeIntervalSince(session.startedAt),
-            sourceName: sourceName
+            sourceName: sourceName,
+            verifiedCount: result.verifiedCount
         )
 
         isRunning       = false
@@ -419,6 +517,7 @@ final class DashboardViewModel {
         resetSpeedTracking()
         endBackgroundExecution()
         if let banner = completionBanner { sendCompletionNotification(banner) }
+        if sessionStatus == .completed { considerRequestingReview(copiedCount: result.copiedCount) }
         refreshSessions()
         refreshDestinationStatuses()
     }

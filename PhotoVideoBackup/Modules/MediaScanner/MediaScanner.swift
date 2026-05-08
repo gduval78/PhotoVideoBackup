@@ -1,11 +1,21 @@
 import Foundation
 import ImageIO
+import AVFoundation
 
 // MARK: - MediaScanner
 
 /// Recursively scans a source folder and returns a sorted [MediaFile].
 /// Supports Insta360 X5, DJI Mini 3 Pro, and generic devices.
 actor MediaScanner {
+
+    // MARK: - Custom extensions (user-defined, stored in UserDefaults)
+
+    static func customExtensions() -> Set<String> {
+        let raw = UserDefaults.standard.string(forKey: "customExtensions") ?? ""
+        return Set(raw.split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
+            .filter { !$0.isEmpty })
+    }
 
     // MARK: - Public API
 
@@ -16,6 +26,7 @@ actor MediaScanner {
         case .insta360X5:  files = try await scanInsta360(root: root)
         case .djiMini3Pro: files = try await scanDJI(root: root)
         case .dji360:      files = try await scanDJI360(root: root)
+        case .gopro:       files = try await scanGoPro(root: root)
         case .generic:     files = try await scanGeneric(root: root)
         }
         print("[MediaScanner] found \(files.count) file(s)")
@@ -74,6 +85,7 @@ actor MediaScanner {
         let dcim = root.appendingPathComponent("DCIM")
         let fm   = FileManager.default
         var result: [MediaFile] = []
+        let customExts = Self.customExtensions()
 
         guard let djiDirs = try? fm.contentsOfDirectory(
             at: dcim,
@@ -105,6 +117,10 @@ actor MediaScanner {
                     result.append(mf)
                 }
             }
+
+            for url in files where customExts.contains(url.pathExtension.lowercased()) {
+                if let mf = try? mediaFile(at: url, device: .djiMini3Pro) { result.append(mf) }
+            }
         }
         return result
     }
@@ -115,6 +131,7 @@ actor MediaScanner {
         let dcim = root.appendingPathComponent("DCIM")
         let fm   = FileManager.default
         var result: [MediaFile] = []
+        let customExts = Self.customExtensions()
 
         guard let dirs = try? fm.contentsOfDirectory(
             at: dcim,
@@ -150,6 +167,49 @@ actor MediaScanner {
                     result.append(mf)
                 }
             }
+
+            for url in files where customExts.contains(url.pathExtension.lowercased()) {
+                if let mf = try? mediaFile(at: url, device: .dji360) { result.append(mf) }
+            }
+        }
+        return result
+    }
+
+    // MARK: - GoPro (HERO / MAX)
+
+    private func scanGoPro(root: URL) async throws -> [MediaFile] {
+        let dcim = root.appendingPathComponent("DCIM")
+        let fm   = FileManager.default
+        var result: [MediaFile] = []
+        let customExts = Self.customExtensions()
+
+        guard let dirs = try? fm.contentsOfDirectory(
+            at: dcim,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return [] }
+
+        // Matches 100GOPRO, 101GH010, 100GX010, 100GOPR, etc.
+        let dirPattern = #"^\d{3}(GOPRO|GH\d{3}|GX\d{3}|GOPR)"#
+        // .lrv = low-res proxy, .thm = thumbnail — skip both
+        let mediaExts  = Set(["mp4", "jpg", "360"])
+
+        for dir in dirs {
+            guard dir.lastPathComponent.range(of: dirPattern, options: .regularExpression) != nil,
+                  (try? dir.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+            else { continue }
+
+            guard let files = try? fm.contentsOfDirectory(
+                at: dir,
+                includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey],
+                options: [.skipsHiddenFiles]
+            ) else { continue }
+
+            for url in files {
+                let ext = url.pathExtension.lowercased()
+                guard mediaExts.contains(ext) || customExts.contains(ext) else { continue }
+                if let mf = try? mediaFile(at: url, device: .gopro) { result.append(mf) }
+            }
         }
         return result
     }
@@ -160,7 +220,7 @@ actor MediaScanner {
         let fm   = FileManager.default
         let exts = Set(["mp4", "mov", "avi", "jpg", "jpeg", "heic", "png",
                         "dng", "raw", "cr2", "cr3", "arw", "nef", "rw2",
-                        "insv", "insp", "braw", "mp3"])
+                        "insv", "insp", "braw", "mp3"]).union(Self.customExtensions())
         var result: [MediaFile] = []
 
         guard let enumerator = fm.enumerator(
@@ -191,11 +251,39 @@ actor MediaScanner {
             path: url,
             size: size,
             modificationDate: mdate,
-            captureDate: exifCaptureDate(at: url),
+            captureDate: exifCaptureDate(at: url) ?? videoCreationDate(at: url),
             deviceType: device,
             companionLRV: lrv,
             companionSRT: srt
         )
+    }
+
+    // MARK: - Video creation date (AVFoundation — reads container metadata, survives file copies)
+
+    private static let videoExtensions: Set<String> = ["mp4", "mov", "avi", "m4v", "insv", "braw"]
+
+    private func videoCreationDate(at url: URL) -> Date? {
+        guard Self.videoExtensions.contains(url.pathExtension.lowercased()) else { return nil }
+        let asset = AVURLAsset(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey: false])
+        let items = AVMetadataItem.metadataItems(
+            from: asset.commonMetadata,
+            withKey: AVMetadataKey.commonKeyCreationDate,
+            keySpace: .common
+        )
+        guard let item = items.first else { return nil }
+        if let date = item.dateValue { return date }
+        if let str = item.stringValue {
+            let iso = ISO8601DateFormatter()
+            iso.formatOptions = [.withInternetDateTime]
+            if let d = iso.date(from: str) { return d }
+            iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let d = iso.date(from: str) { return d }
+            let fmt = DateFormatter()
+            fmt.locale = Locale(identifier: "en_US_POSIX")
+            fmt.dateFormat = "yyyy:MM:dd HH:mm:ss"
+            return fmt.date(from: str)
+        }
+        return nil
     }
 
     // MARK: - EXIF date (ImageIO — available on iOS)

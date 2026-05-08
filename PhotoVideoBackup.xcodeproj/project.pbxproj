@@ -38,6 +38,25 @@
 		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
 		AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890ABCDEF123456 /* BackupBrowserView.swift */; };
 		CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */; };
+		FF00AB0000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00AB0000000000000000002 /* OnboardingView.swift */; };
+		F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AB02 /* FolderOrganization.swift */; };
+		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
+		F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AD02 /* LUTManager.swift */; };
+		F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */; };
+		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
+		CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100100 /* ScenarioTestCase.swift */; };
+		CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100200 /* SimulatedSDCard.swift */; };
+		CC0000000000000000200300 /* SimulatedSSD.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100300 /* SimulatedSSD.swift */; };
+		CC0000000000000000200400 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100400 /* TestFile.swift */; };
+		CC0000000000000000200500 /* BackupResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100500 /* BackupResult.swift */; };
+		CC0000000000000000200600 /* ScenarioAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100600 /* ScenarioAssertion.swift */; };
+		CC0000000000000000200700 /* TestSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100700 /* TestSetting.swift */; };
+		CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100800 /* BackupFromSDCardTests.swift */; };
+		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
+		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
+		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
+		CC0000000000000000201100 /* DualDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100C00 /* DualDestinationTests.swift */; };
+		CC0000000000000000201200 /* DeduplicationEdgeCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100D00 /* DeduplicationEdgeCaseTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +95,26 @@
 		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
 		BB1234567890ABCDEF123456 /* BackupBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBrowserView.swift; sourceTree = "<group>"; };
 		DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBrowserViewModel.swift; sourceTree = "<group>"; };
+		FF00AB0000000000000000002 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AB02 /* FolderOrganization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganization.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AC02 /* MacOpenPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenPanel.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AD02 /* LUTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTManager.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGradingEngine.swift; sourceTree = "<group>"; };
+		CC000000000000000000BA00 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		CC0000000000000000002A00 /* PhotoVideoBackupTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoVideoBackupTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC0000000000000000100100 /* ScenarioTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioTestCase.swift; sourceTree = "<group>"; };
+		CC0000000000000000100200 /* SimulatedSDCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSDCard.swift; sourceTree = "<group>"; };
+		CC0000000000000000100300 /* SimulatedSSD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSSD.swift; sourceTree = "<group>"; };
+		CC0000000000000000100400 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
+		CC0000000000000000100500 /* BackupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupResult.swift; sourceTree = "<group>"; };
+		CC0000000000000000100600 /* ScenarioAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioAssertion.swift; sourceTree = "<group>"; };
+		CC0000000000000000100700 /* TestSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSetting.swift; sourceTree = "<group>"; };
+		CC0000000000000000100800 /* BackupFromSDCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFromSDCardTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100900 /* FolderOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganizationTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100A00 /* DeviceScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceScannerTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100C00 /* DualDestinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualDestinationTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100D00 /* DeduplicationEdgeCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeduplicationEdgeCaseTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +128,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC0000000000000000004A00 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC0000000000000000200900 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+		CC000000000000000000EA00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D602ECB4FBB02071217A61C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 12ACECB55D6E49DD7E9526CD;
+			remoteInfo = PhotoVideoBackup;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXGroup section */
 		1559D51E24E849BBD6C6209D /* PHLibrary */ = {
@@ -106,6 +163,7 @@
 			children = (
 				8CD4E6E32F80EAD2007552D8 /* Products.storekit */,
 				4BD93D99F07E4754136C4E98 /* PhotoVideoBackup */,
+				CC0000000000000000008A00 /* PhotoVideoBackupTests */,
 				A3A506C12643FC5BE1E3858D /* Frameworks */,
 				9D5A674606C0BD67A818AF2C /* Products */,
 			);
@@ -207,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				0AF044A988E2FF055550C23B /* PhotoVideoBackup.app */,
+				CC0000000000000000002A00 /* PhotoVideoBackupTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -217,8 +276,45 @@
 				B1D30F00359EE37B58E57C27 /* CryptoKit.framework */,
 				4CF4CAA38A06646BBF90C37A /* Photos.framework */,
 				E9215FB209D26406533B2118 /* StoreKit.framework */,
+				CC000000000000000000BA00 /* XCTest.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CC0000000000000000008A00 /* PhotoVideoBackupTests */ = {
+			isa = PBXGroup;
+			children = (
+				CC0000000000000000009A00 /* Support */,
+				CC000000000000000000AA00 /* ScenarioTests */,
+			);
+			path = PhotoVideoBackupTests;
+			sourceTree = "<group>";
+		};
+		CC0000000000000000009A00 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				CC0000000000000000100100 /* ScenarioTestCase.swift */,
+				CC0000000000000000100200 /* SimulatedSDCard.swift */,
+				CC0000000000000000100300 /* SimulatedSSD.swift */,
+				CC0000000000000000100400 /* TestFile.swift */,
+				CC0000000000000000100500 /* BackupResult.swift */,
+				CC0000000000000000100600 /* ScenarioAssertion.swift */,
+				CC0000000000000000100700 /* TestSetting.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		CC000000000000000000AA00 /* ScenarioTests */ = {
+			isa = PBXGroup;
+			children = (
+				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
+				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
+				CC0000000000000000100A00 /* DeviceScannerTests.swift */,
+				CC0000000000000000100B00 /* CustomExtensionTests.swift */,
+				CC0000000000000000100C00 /* DualDestinationTests.swift */,
+				CC0000000000000000100D00 /* DeduplicationEdgeCaseTests.swift */,
+			);
+			path = ScenarioTests;
 			sourceTree = "<group>";
 		};
 		B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */ = {
@@ -236,6 +332,7 @@
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
 				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
+				FF00AB0000000000000000002 /* OnboardingView.swift */,
 				0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */,
 				99679842AE35CEA05BD43B37 /* ReportView.swift */,
 				E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */,
@@ -252,10 +349,22 @@
 			path = BackupBrowser;
 			sourceTree = "<group>";
 		};
+		F001ABCDE00000000001AF00 /* LUT */ = {
+			isa = PBXGroup;
+			children = (
+				F001ABCDE00000000001AD02 /* LUTManager.swift */,
+				F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */,
+			);
+			path = LUT;
+			sourceTree = "<group>";
+		};
 		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
+				F001ABCDE00000000001AF00 /* LUT */,
+				F001ABCDE00000000001AB02 /* FolderOrganization.swift */,
+				F001ABCDE00000000001AC02 /* MacOpenPanel.swift */,
 				3A73343377F29F8319E4B7C7 /* CopyEngine */,
 				4C28EE4CDD2AD319531DA322 /* Dashboard */,
 				916C5EB7E9AE7D3A910C89FA /* DestinationManager */,
@@ -291,7 +400,34 @@
 			productReference = 0AF044A988E2FF055550C23B /* PhotoVideoBackup.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CC0000000000000000001A00 /* PhotoVideoBackupTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC0000000000000000005A00 /* Build configuration list for PBXNativeTarget "PhotoVideoBackupTests" */;
+			buildPhases = (
+				CC0000000000000000003A00 /* Sources */,
+				CC0000000000000000004A00 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CC000000000000000000DA00 /* PBXTargetDependency */,
+			);
+			name = PhotoVideoBackupTests;
+			packageProductDependencies = (
+			);
+			productName = PhotoVideoBackupTests;
+			productReference = CC0000000000000000002A00 /* PhotoVideoBackupTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXTargetDependency section */
+		CC000000000000000000DA00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 12ACECB55D6E49DD7E9526CD /* PhotoVideoBackup */;
+			targetProxy = CC000000000000000000EA00 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		8D602ECB4FBB02071217A61C /* Project object */ = {
@@ -315,6 +451,7 @@
 			projectRoot = "";
 			targets = (
 				12ACECB55D6E49DD7E9526CD /* PhotoVideoBackup */,
+				CC0000000000000000001A00 /* PhotoVideoBackupTests */,
 			);
 		};
 /* End PBXProject section */
@@ -348,6 +485,7 @@
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
 				8A91ED4CC7469FB65F4CFAEE /* HistoryView.swift in Sources */,
 				80595690DA37BA49EC92E6DC /* IndexStore.swift in Sources */,
+				FF00AB0000000000000000001 /* OnboardingView.swift in Sources */,
 				A5013993786BEC8C95AFB18E /* IndexedFile.swift in Sources */,
 				5AC44FF7997D5C6D29290F18 /* MediaFile.swift in Sources */,
 				BF636E66A99EBF18A5A53C6F /* MediaScanner.swift in Sources */,
@@ -362,10 +500,37 @@
 				ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */,
 				0C38A6313682FBEE115C0C9C /* SettingsView.swift in Sources */,
 				FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */,
+				F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */,
+				F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */,
+				F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */,
+				F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTestSourcesBuildPhase section */
+		CC0000000000000000003A00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */,
+				CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */,
+				CC0000000000000000200300 /* SimulatedSSD.swift in Sources */,
+				CC0000000000000000200400 /* TestFile.swift in Sources */,
+				CC0000000000000000200500 /* BackupResult.swift in Sources */,
+				CC0000000000000000200600 /* ScenarioAssertion.swift in Sources */,
+				CC0000000000000000200700 /* TestSetting.swift in Sources */,
+				CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */,
+				CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */,
+				CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */,
+				CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */,
+				CC0000000000000000201100 /* DualDestinationTests.swift in Sources */,
+				CC0000000000000000201200 /* DeduplicationEdgeCaseTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXTestSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		7A93151FCDC74FC3DD522412 /* Debug */ = {
@@ -435,9 +600,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -445,7 +611,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -457,9 +623,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -467,7 +634,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -531,6 +698,45 @@
 			};
 			name = Release;
 		};
+		CC0000000000000000006A00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T7V27KW532;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
+			};
+			name = Debug;
+		};
+		CC0000000000000000007A00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T7V27KW532;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -548,6 +754,15 @@
 			buildConfigurations = (
 				7A93151FCDC74FC3DD522412 /* Debug */,
 				DA272794F6A8C97A2AEB9DB5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CC0000000000000000005A00 /* Build configuration list for PBXNativeTarget "PhotoVideoBackupTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC0000000000000000006A00 /* Debug */,
+				CC0000000000000000007A00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

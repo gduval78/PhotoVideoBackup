@@ -6,6 +6,7 @@ enum DeviceType: String, Sendable, Codable, CaseIterable {
     case insta360X5       = "Insta360_X5"
     case djiMini3Pro      = "DJI_Mini3"
     case dji360           = "DJI_360"
+    case gopro            = "GoPro"
     case generic          = "Generic"
 }
 

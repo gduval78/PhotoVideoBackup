@@ -20,6 +20,20 @@
                ReferencedContainer = "container:PhotoVideoBackup.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CC0000000000000000001A00"
+               BuildableName = "PhotoVideoBackupTests.xctest"
+               BlueprintName = "PhotoVideoBackupTests"
+               ReferencedContainer = "container:PhotoVideoBackup.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -37,6 +51,16 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CC0000000000000000001A00"
+               BuildableName = "PhotoVideoBackupTests.xctest"
+               BlueprintName = "PhotoVideoBackupTests"
+               ReferencedContainer = "container:PhotoVideoBackup.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

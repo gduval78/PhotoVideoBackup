@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(DashboardViewModel.self) private var viewModel
+    @Environment(BackupBrowserViewModel.self) private var browser
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
 
     var body: some View {
         TabView {
@@ -22,6 +24,8 @@ struct ContentView: View {
             NavigationStack {
                 BackupBrowserView()
             }
+            .onAppear  { browser.startAccess() }
+            .onDisappear { browser.stopAccess() }
             .tabItem {
                 Label("Browse", systemImage: "photo.stack.fill")
             }
@@ -34,5 +38,11 @@ struct ContentView: View {
             }
         }
         .onAppear { viewModel.onAppear() }
+        .fullScreenCover(isPresented: Binding(
+            get: { !hasSeenOnboarding },
+            set: { _ in }
+        )) {
+            OnboardingView()
+        }
     }
 }

@@ -1,5 +1,16 @@
 import Foundation
 
+// MARK: - EngineResult
+
+struct EngineResult: Sendable {
+    let copiedCount: Int
+    let skippedCount: Int
+    let failedCount: Int
+    let totalBytesCopied: Int64
+    let wasLimited: Bool
+    let verifiedCount: Int
+}
+
 // MARK: - CopyPhase
 
 enum CopyPhase: Sendable, Equatable {

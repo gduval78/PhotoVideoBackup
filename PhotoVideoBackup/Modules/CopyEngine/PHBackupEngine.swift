@@ -26,8 +26,10 @@ enum ExportError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .assetNotFound(let id):  return "Asset not found: \(id)"
-        case .noResourceFound(let n): return "No exportable resource for: \(n)"
+        case .assetNotFound:
+            return "Photo could not be loaded — it may have been deleted or is restricted."
+        case .noResourceFound(let n):
+            return "No exportable file found for \"\(n)\" — it may be a cloud-only or shared asset."
         }
     }
 }
@@ -39,6 +41,22 @@ enum ExportError: LocalizedError {
 actor PHBackupEngine {
 
     static let chunkSize: Int = 4 * 1024 * 1024  // 4 MB
+    private static let batchFlushInterval = 500
+
+    // MARK: - Engine result (read after stream completes)
+
+    private var _copiedCount = 0
+    private var _skippedCount = 0
+    private var _failedCount = 0
+    private var _totalBytesCopied: Int64 = 0
+    private var _wasLimited = false
+    private var _verifiedCount = 0
+
+    var engineResult: EngineResult {
+        EngineResult(copiedCount: _copiedCount, skippedCount: _skippedCount,
+                     failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
+                     wasLimited: _wasLimited, verifiedCount: _verifiedCount)
+    }
 
     // MARK: - Public API
 
@@ -46,7 +64,8 @@ actor PHBackupEngine {
         items: [PHMediaItem],
         destinations: [URL],
         session: BackupSession,
-        deviceName: String
+        deviceName: String,
+        fileLimit: Int? = nil
     ) -> AsyncStream<CopyProgress> {
 
         guard !destinations.isEmpty else {
@@ -58,9 +77,20 @@ actor PHBackupEngine {
 
         return AsyncStream { continuation in
             Task {
+                // Reset counters for this run
+                _copiedCount = 0; _skippedCount = 0; _failedCount = 0
+                _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
+
                 var overallDone: Int64 = 0
+                var toCopyCount = 0
 
                 for (index, item) in items.enumerated() {
+                    // Periodic batch flush to reduce memory pressure
+                    if index > 0 && index % Self.batchFlushInterval == 0 {
+                        await MainActor.run { IndexStore.shared.save() }
+                        try? await Task.sleep(nanoseconds: 10_000_000)
+                    }
+
                     let allDestURLs = destinations.map {
                         Self.destinationURL(root: $0, item: item, deviceName: deviceName)
                     }
@@ -94,6 +124,13 @@ actor PHBackupEngine {
                         ))
                         continue
                     }
+
+                    // Enforce file limit on files that actually need copying
+                    if let limit = fileLimit, toCopyCount >= limit {
+                        _wasLimited = true
+                        break
+                    }
+                    toCopyCount += 1
 
                     // ── Export PHAsset → temp file ──────────────────────────
                     continuation.yield(CopyProgress(
@@ -186,6 +223,8 @@ actor PHBackupEngine {
                     let newGoodPaths = verifyResults.compactMap { $0.passed ? $0.url.path : nil }
                     let allGoodPaths = alreadyPresentURLs.map(\.path) + newGoodPaths
 
+                    if allOK { _verifiedCount += 1 }
+
                     await record(
                         item: item, actualSize: actualSize, session: session,
                         deviceName: deviceName,
@@ -217,13 +256,12 @@ actor PHBackupEngine {
     // MARK: - Destination URL
 
     private static func destinationURL(root: URL, item: PHMediaItem, deviceName: String) -> URL {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy-MM-dd"
-        let dateDir = fmt.string(from: item.creationDate ?? item.modificationDate)
-        return root
-            .appendingPathComponent(deviceName, isDirectory: true)
-            .appendingPathComponent(dateDir, isDirectory: true)
-            .appendingPathComponent(item.fileName)
+        FolderOrganization.current.destinationURL(
+            root: root,
+            deviceName: deviceName,
+            date: item.creationDate ?? item.modificationDate,
+            fileName: item.fileName
+        )
     }
 
     // MARK: - PHAsset Export
@@ -387,6 +425,12 @@ actor PHBackupEngine {
         note: String?
     ) async {
         if let note { print("[PHBackupEngine] \(item.fileName): \(note)") }
+        switch status {
+        case .copied:  _copiedCount += 1; _totalBytesCopied += actualSize
+        case .skipped: _skippedCount += 1
+        case .failed:  _failedCount += 1
+        case .pending: break
+        }
         await MainActor.run {
             let indexed = IndexedFile(
                 session: session,
@@ -398,10 +442,10 @@ actor PHBackupEngine {
                 sha256: sha256,
                 copyStatus: status,
                 verificationPassed: verified,
-                destinationPaths: destPaths
+                destinationPaths: destPaths,
+                errorNote: note
             )
             IndexStore.shared.context.insert(indexed)
-            session.files.append(indexed)
         }
     }
 }

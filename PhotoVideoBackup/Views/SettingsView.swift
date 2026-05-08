@@ -1,35 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - FolderPickerView
-
-struct FolderPickerView: UIViewControllerRepresentable {
-    let initialDirectory: URL?
-    let onPick: (URL) -> Void
-
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.folder])
-        picker.allowsMultipleSelection = false
-        picker.directoryURL = initialDirectory
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator { Coordinator(onPick: onPick) }
-
-    final class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let onPick: (URL) -> Void
-        init(onPick: @escaping (URL) -> Void) { self.onPick = onPick }
-
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            guard let url = urls.first else { return }
-            onPick(url)
-        }
-    }
-}
-
 // MARK: - SettingsView
 
 struct SettingsView: View {
@@ -37,11 +8,17 @@ struct SettingsView: View {
     @Environment(StoreManager.self)       private var store
     @State private var ssd1Name:   String = ""
     @State private var ssd2Name:   String = ""
+    @State private var ssd3Name:   String = ""
     @State private var ssd1Folder: String = ""
     @State private var ssd2Folder: String = ""
-    @State private var showPickerForIndex: Int? = nil
+    @State private var ssd3Folder: String = ""
+    @State private var showPicker: Bool = false
+    @State private var pickerIndex: Int = 0
     @State private var showPaywall: Bool = false
     @AppStorage("deviceName") private var deviceName: String = ""
+    @AppStorage("folderOrganization") private var folderOrganizationRaw: String = FolderOrganization.byDate.rawValue
+    @AppStorage("backupFileLimit") private var backupFileLimit: Int = 0
+    @AppStorage("customExtensions") private var customExtensionsRaw: String = ""
 
     var body: some View {
         List {
@@ -55,65 +32,119 @@ struct SettingsView: View {
                 }
             }
 
-            Section("SSD Destinations") {
+            Section("Backup") {
+                Picker("Folder structure", selection: $folderOrganizationRaw) {
+                    ForEach(FolderOrganization.allCases, id: \.rawValue) { mode in
+                        Text(mode.displayName).tag(mode.rawValue)
+                    }
+                }
+                HStack {
+                    Text("Max files per session")
+                    Spacer()
+                    TextField("Unlimited", value: $backupFileLimit, format: .number)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 100)
+                }
+                NavigationLink {
+                    CustomExtensionsView()
+                } label: {
+                    HStack {
+                        Text("Additional file types")
+                        Spacer()
+                        Text(customExtensionsLabel)
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                }
+            }
+
+            Section("Destinations") {
                 destinationRow(index: 0, name: $ssd1Name, folder: $ssd1Folder, label: "SSD 1 (primary)")
                 ssd2Row
+                ssd3Row
             }
 
             Section {
-                Text("Connect your USB-C SSD, then tap Choose… to select the destination folder. You can create a new folder directly in the Files picker before selecting it. Access is preserved across launches via secure bookmarks.")
+                Text("Connect your USB-C SSD or SD card, then tap Choose… to select the destination folder. You can create a new folder directly in the Files picker before selecting it. Access is preserved across launches via secure bookmarks.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section("About") {
+                HStack {
+                    Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                        .foregroundStyle(.blue)
+                        .font(.title2)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("PhotoVideoBackup")
+                            .font(.headline)
+                        Text("Version \(appVersion) (\(buildNumber))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 4)
             }
         }
         .navigationTitle("Settings")
         .onAppear { loadNames() }
-        .sheet(item: $showPickerForIndex) { index in
+        .fileImporter(
+            isPresented: $showPicker,
+            allowedContentTypes: [.folder],
+            allowsMultipleSelection: false
+        ) { result in
+            guard case .success(let urls) = result, let url = urls.first else { return }
             let dm = DestinationManager.shared
-            let initialDir = dm.resolveBookmark(forKey: dm.key(for: index))
-                               .map { $0.deletingLastPathComponent() }
-            FolderPickerView(initialDirectory: initialDir) { url in
-                showPickerForIndex = nil
-                dm.saveBookmark(url: url, forKey: dm.key(for: index))
-                loadNames()
-                viewModel.refreshDestinationStatuses()
-            }
-            .ignoresSafeArea()
+            dm.saveBookmark(url: url, forKey: dm.key(for: pickerIndex))
+            loadNames()
+            viewModel.refreshDestinationStatuses()
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
     }
 
-    // MARK: - SSD 2 row (Pro only)
+    // MARK: - SSD 2 / SD Card rows (Pro only)
 
     @ViewBuilder
     private var ssd2Row: some View {
         if store.isPremium {
             destinationRow(index: 1, name: $ssd2Name, folder: $ssd2Folder, label: "SSD 2 (mirror)")
         } else {
-            HStack {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("SSD 2 (mirror)").font(.subheadline)
-                        Text("Pro feature").font(.caption).foregroundStyle(.secondary)
-                    }
-                } icon: {
-                    Image(systemName: "externaldrive.fill")
-                }
+            proLockedRow(label: "SSD 2 (mirror)")
+        }
+    }
 
-                Spacer()
+    @ViewBuilder
+    private var ssd3Row: some View {
+        if store.isPremium {
+            destinationRow(index: 2, name: $ssd3Name, folder: $ssd3Folder, label: "SD Card (transit)")
+        } else {
+            proLockedRow(label: "SD Card (transit)")
+        }
+    }
 
-                Button("Unlock") {
-                    showPaywall = true
+    @ViewBuilder
+    private func proLockedRow(label: String) -> some View {
+        HStack {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label).font(.subheadline)
+                    Text("Pro feature").font(.caption).foregroundStyle(.secondary)
                 }
+            } icon: {
+                Image(systemName: "externaldrive.fill")
+            }
+            Spacer()
+            Button("Unlock") { showPaywall = true }
                 .font(.callout)
                 .foregroundStyle(Color.accentColor)
-
-                Image(systemName: "lock.fill")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-            }
+            Image(systemName: "lock.fill")
+                .foregroundStyle(.secondary)
+                .font(.caption)
         }
     }
 
@@ -147,7 +178,16 @@ struct SettingsView: View {
             Spacer()
 
             Button("Choose…") {
-                showPickerForIndex = index
+                if ProcessInfo.processInfo.isiOSAppOnMac {
+                    guard let url = MacOpenPanel.pickFolder() else { return }
+                    let dm = DestinationManager.shared
+                    dm.saveBookmark(url: url, forKey: dm.key(for: index))
+                    loadNames()
+                    viewModel.refreshDestinationStatuses()
+                } else {
+                    pickerIndex = index
+                    showPicker = true
+                }
             }
             .font(.callout)
 
@@ -164,16 +204,86 @@ struct SettingsView: View {
         }
     }
 
+    private var customExtensionsLabel: String {
+        let exts = customExtensionsRaw
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        return exts.isEmpty ? "None" : exts.map { ".\($0)" }.joined(separator: ", ")
+    }
+
+    private var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+    }
+    private var buildNumber: String {
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
+    }
+
     private func loadNames() {
         let dm = DestinationManager.shared
         ssd1Name   = dm.displayName(forKey: dm.key(for: 0))
         ssd2Name   = dm.displayName(forKey: dm.key(for: 1))
+        ssd3Name   = dm.displayName(forKey: dm.key(for: 2))
         ssd1Folder = dm.folderName(forKey: dm.key(for: 0))
         ssd2Folder = dm.folderName(forKey: dm.key(for: 1))
+        ssd3Folder = dm.folderName(forKey: dm.key(for: 2))
     }
 }
 
-// Make Int? conform to Identifiable for .sheet(item:)
-extension Int: @retroactive Identifiable {
-    public var id: Int { self }
+// MARK: - CustomExtensionsView
+
+struct CustomExtensionsView: View {
+    @AppStorage("customExtensions") private var raw: String = ""
+    @State private var newExt: String = ""
+
+    private var extensions: [String] {
+        raw.split(separator: ",")
+           .map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
+           .filter { !$0.isEmpty }
+    }
+
+    var body: some View {
+        List {
+            Section {
+                HStack {
+                    TextField("e.g. srt, gpx, csv", text: $newExt)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                    Button("Add") { addExtension() }
+                        .disabled(newExt.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            } header: {
+                Text("Add extension")
+            } footer: {
+                Text("Files with these extensions will be included in every backup, for all device types. Enter without the dot.")
+            }
+
+            if !extensions.isEmpty {
+                Section("Active") {
+                    ForEach(extensions, id: \.self) { ext in
+                        Label(".\(ext)", systemImage: "doc.badge.plus")
+                            .font(.system(.body, design: .monospaced))
+                    }
+                    .onDelete { indices in
+                        var updated = extensions
+                        updated.remove(atOffsets: indices)
+                        raw = updated.joined(separator: ",")
+                    }
+                }
+            }
+        }
+        .navigationTitle("Additional File Types")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func addExtension() {
+        let ext = newExt
+            .trimmingCharacters(in: .whitespaces)
+            .lowercased()
+            .trimmingCharacters(in: CharacterSet(charactersIn: "."))
+        guard !ext.isEmpty, !extensions.contains(ext) else { return }
+        raw = (extensions + [ext]).joined(separator: ",")
+        newExt = ""
+    }
 }
+

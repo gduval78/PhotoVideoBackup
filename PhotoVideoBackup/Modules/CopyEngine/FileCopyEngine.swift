@@ -10,6 +10,22 @@ import CryptoKit
 actor FileCopyEngine {
 
     static let chunkSize: Int = 4 * 1024 * 1024  // 4 MB
+    private static let batchFlushInterval = 500
+
+    // MARK: - Engine result (read after stream completes)
+
+    private var _copiedCount = 0
+    private var _skippedCount = 0
+    private var _failedCount = 0
+    private var _totalBytesCopied: Int64 = 0
+    private var _wasLimited = false
+    private var _verifiedCount = 0
+
+    var engineResult: EngineResult {
+        EngineResult(copiedCount: _copiedCount, skippedCount: _skippedCount,
+                     failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
+                     wasLimited: _wasLimited, verifiedCount: _verifiedCount)
+    }
 
     // MARK: - Public API
 
@@ -17,7 +33,8 @@ actor FileCopyEngine {
         files: [MediaFile],
         sourceDevice: String,
         destinations: [URL],
-        session: BackupSession
+        session: BackupSession,
+        fileLimit: Int? = nil
     ) -> AsyncStream<CopyProgress> {
 
         guard !destinations.isEmpty else {
@@ -28,9 +45,20 @@ actor FileCopyEngine {
 
         return AsyncStream { continuation in
             Task {
+                // Reset counters for this run
+                _copiedCount = 0; _skippedCount = 0; _failedCount = 0
+                _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
+
                 var overallDone: Int64 = 0
+                var toCopyCount = 0
 
                 for (index, file) in files.enumerated() {
+                    // Periodic batch flush to reduce memory pressure
+                    if index > 0 && index % Self.batchFlushInterval == 0 {
+                        await MainActor.run { IndexStore.shared.save() }
+                        try? await Task.sleep(nanoseconds: 10_000_000)
+                    }
+
                     let fileName    = file.path.lastPathComponent
                     let allDestURLs = destinations.map {
                         Self.destinationURL(ssdRoot: $0, device: sourceDevice, file: file)
@@ -62,6 +90,13 @@ actor FileCopyEngine {
                         ))
                         continue
                     }
+
+                    // Enforce file limit on files that actually need copying
+                    if let limit = fileLimit, toCopyCount >= limit {
+                        _wasLimited = true
+                        break
+                    }
+                    toCopyCount += 1
 
                     // ── Announce copy start ──────────────────────────────────
                     continuation.yield(CopyProgress(
@@ -125,6 +160,8 @@ actor FileCopyEngine {
                     let newGoodPaths = verifyResults.compactMap { $0.passed ? $0.url.path : nil }
                     let allGoodPaths = alreadyPresentURLs.map(\.path) + newGoodPaths
 
+                    if allOK { _verifiedCount += 1 }
+
                     await record(
                         file: file, device: sourceDevice, session: session,
                         sha256: copyResult.sourceSHA256,
@@ -155,13 +192,12 @@ actor FileCopyEngine {
     // MARK: - Destination URL
 
     static func destinationURL(ssdRoot: URL, device: String, file: MediaFile) -> URL {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy-MM-dd"
-        let dateDir = fmt.string(from: file.captureDate ?? file.modificationDate)
-        return ssdRoot
-            .appendingPathComponent(device, isDirectory: true)
-            .appendingPathComponent(dateDir, isDirectory: true)
-            .appendingPathComponent(file.path.lastPathComponent)
+        FolderOrganization.current.destinationURL(
+            root: ssdRoot,
+            deviceName: device,
+            date: file.captureDate ?? file.modificationDate,
+            fileName: file.path.lastPathComponent
+        )
     }
 
     // MARK: - Stream Copy
@@ -218,6 +254,15 @@ actor FileCopyEngine {
 
         try? srcHandle.close()
         for h in dstHandles { try? h.close() }
+
+        // Propagate source modification date so relay copies (e.g. Neo 2 → SD → SSD)
+        // produce the same date-based folder path as a direct backup.
+        if let srcMdate = (try? FileManager.default.attributesOfItem(atPath: source.path))?[.modificationDate] as? Date {
+            for dest in destinations {
+                try? FileManager.default.setAttributes([.modificationDate: srcMdate], ofItemAtPath: dest.path)
+            }
+        }
+
         let sha256 = hasher.finalize().map { String(format: "%02x", $0) }.joined()
         return StreamResult(sourceSHA256: sha256, totalBytes: totalRead)
     }
@@ -269,6 +314,12 @@ actor FileCopyEngine {
         note: String?
     ) async {
         if let note { print("[FileCopyEngine] \(file.path.lastPathComponent): \(note)") }
+        switch status {
+        case .copied:  _copiedCount += 1; _totalBytesCopied += file.size
+        case .skipped: _skippedCount += 1
+        case .failed:  _failedCount += 1
+        case .pending: break
+        }
         await MainActor.run {
             let indexed = IndexedFile(
                 session: session,
@@ -280,10 +331,10 @@ actor FileCopyEngine {
                 sha256: sha256,
                 copyStatus: status,
                 verificationPassed: verified,
-                destinationPaths: destPaths
+                destinationPaths: destPaths,
+                errorNote: note
             )
             IndexStore.shared.context.insert(indexed)
-            session.files.append(indexed)
         }
     }
 }

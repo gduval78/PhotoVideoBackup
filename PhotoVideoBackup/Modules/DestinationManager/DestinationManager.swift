@@ -37,23 +37,27 @@ final class DestinationManager {
     private enum Keys {
         static let ssd1 = "PhotoVideoBackup.bookmark.ssd1"
         static let ssd2 = "PhotoVideoBackup.bookmark.ssd2"
+        static let ssd3 = "PhotoVideoBackup.bookmark.ssd3"
     }
 
     // MARK: - Resolve
 
     func resolvedDestinations() -> [URL] {
-        [Keys.ssd1, Keys.ssd2].compactMap { resolveBookmark(forKey: $0) }
+        [Keys.ssd1, Keys.ssd2, Keys.ssd3].compactMap { resolveBookmark(forKey: $0) }
     }
 
     func resolveBookmark(forKey key: String) -> URL? {
         guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
         var isStale = false
-        guard let url = try? URL(
-            resolvingBookmarkData: data,
-            options: [],
-            relativeTo: nil,
-            bookmarkDataIsStale: &isStale
-        ) else { return nil }
+        // On Mac "Designed for iPad", withSecurityScope (raw 1024) is required to get a
+        // URL that startAccessingSecurityScopedResource() will actually unlock.
+        // Fall back to [] if the bookmark was created without security-scope data.
+        let macOptions = URL.BookmarkResolutionOptions(rawValue: 1024)
+        let url = ProcessInfo.processInfo.isiOSAppOnMac
+            ? (try? URL(resolvingBookmarkData: data, options: macOptions,   relativeTo: nil, bookmarkDataIsStale: &isStale))
+           ?? (try? URL(resolvingBookmarkData: data, options: [],            relativeTo: nil, bookmarkDataIsStale: &isStale))
+            :  try? URL(resolvingBookmarkData: data, options: [],            relativeTo: nil, bookmarkDataIsStale: &isStale)
+        guard let url else { return nil }
         if isStale { saveBookmark(url: url, forKey: key) }
         return url
     }
@@ -63,11 +67,12 @@ final class DestinationManager {
     func saveBookmark(url: URL, forKey key: String) {
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
-        guard let data = try? url.bookmarkData(
-            options: .minimalBookmark,
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil
-        ) else { return }
+        // On Mac, withSecurityScope (raw 2048) embeds the sandbox extension so the bookmark
+        // can be resolved with security scope on the next launch or in the Browse tab.
+        let creationOptions: URL.BookmarkCreationOptions = ProcessInfo.processInfo.isiOSAppOnMac
+            ? URL.BookmarkCreationOptions(rawValue: 2048)
+            : []
+        guard let data = try? url.bookmarkData(options: creationOptions, includingResourceValuesForKeys: nil, relativeTo: nil) else { return }
         UserDefaults.standard.set(data, forKey: key)
         UserDefaults.standard.set(relativeFolderPath(url: url), forKey: key + ".folderPath")
         let volName = (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName
@@ -115,6 +120,16 @@ final class DestinationManager {
         UserDefaults.standard.string(forKey: key + ".folderPath") ?? ""
     }
 
+    /// Human-readable label for a destination URL: "VolumeName / FolderName" (or just folder name).
+    func destinationLabel(for url: URL) -> String {
+        let folder = url.lastPathComponent
+        let volName = (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName
+        if let v = volName, v != folder {
+            return "\(v) / \(folder)"
+        }
+        return folder
+    }
+
     /// True if a bookmark has been saved for this key (regardless of whether the disk is connected).
     func isConfigured(forKey key: String) -> Bool {
         UserDefaults.standard.data(forKey: key) != nil
@@ -129,6 +144,10 @@ final class DestinationManager {
     }
 
     func key(for index: Int) -> String {
-        index == 0 ? Keys.ssd1 : Keys.ssd2
+        switch index {
+        case 0:  return Keys.ssd1
+        case 1:  return Keys.ssd2
+        default: return Keys.ssd3
+        }
     }
 }

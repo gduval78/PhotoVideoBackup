@@ -1,13 +1,18 @@
 import SwiftUI
 import UIKit
+import StoreKit
+import UniformTypeIdentifiers
 
 struct DashboardView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(StoreManager.self)       private var store
-    @State private var showSourcePicker = false
-    @State private var showPaywall      = false
-    @State private var pendingSourceURL: URL?
-    @State private var pendingSourceName: String = ""
+    @Environment(\.requestReview)         private var requestReview
+    @State private var showSourcePicker      = false
+    @State private var showPaywall           = false
+    @State private var pendingSourceURL:     URL?
+    @State private var pendingSourceData:    Data?
+    @State private var pendingSourceName:    String = ""
+    @State private var reconnectingSourceID: UUID?
     @AppStorage("deviceName") private var deviceName: String = ""
 
     var body: some View {
@@ -37,39 +42,61 @@ struct DashboardView: View {
                 .disabled(viewModel.isRunning)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            viewModel.refreshDestinationStatuses()
+        }
+        .onChange(of: viewModel.shouldRequestReview) { _, requested in
+            guard requested else { return }
+            requestReview()
+            viewModel.clearReviewRequest()
+        }
         .alert("Backup Error", isPresented: .constant(viewModel.backupError != nil)) {
             Button("OK") { viewModel.backupError = nil }
         } message: {
             Text(viewModel.backupError ?? "")
         }
-        .sheet(isPresented: $showSourcePicker) {
-            FolderPickerView(initialDirectory: nil) { url in
-                showSourcePicker = false
-                pendingSourceURL = url
+        .fileImporter(
+            isPresented: $showSourcePicker,
+            allowedContentTypes: [.folder],
+            allowsMultipleSelection: false
+        ) { result in
+            guard case .success(let urls) = result, let url = urls.first else { return }
+            // Create bookmark immediately while the security scope is still active.
+            _ = url.startAccessingSecurityScopedResource()
+            let bookmark = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+            url.stopAccessingSecurityScopedResource()
+            if let reconnectID = reconnectingSourceID, let bm = bookmark {
+                viewModel.reconnectSource(id: reconnectID, url: url, bookmarkData: bm)
+                reconnectingSourceID = nil
+            } else {
+                pendingSourceURL  = url
+                pendingSourceData = bookmark
                 pendingSourceName = url.lastPathComponent
             }
-            .ignoresSafeArea()
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
         .alert("Name this source", isPresented: Binding(
-            get: { pendingSourceURL != nil },
-            set: { if !$0 { pendingSourceURL = nil; pendingSourceName = "" } }
+            get: { pendingSourceData != nil },
+            set: { if !$0 { pendingSourceURL = nil; pendingSourceData = nil; pendingSourceName = "" } }
         )) {
             TextField("e.g. Blackmagic, GoPro…", text: $pendingSourceName)
             Button("Add") {
-                if let url = pendingSourceURL {
+                if let url = pendingSourceURL, let bookmark = pendingSourceData {
                     viewModel.addExternalSource(
                         url: url,
+                        bookmarkData: bookmark,
                         customName: pendingSourceName.trimmingCharacters(in: .whitespaces)
                     )
                 }
                 pendingSourceURL  = nil
+                pendingSourceData = nil
                 pendingSourceName = ""
             }
             Button("Cancel", role: .cancel) {
                 pendingSourceURL  = nil
+                pendingSourceData = nil
                 pendingSourceName = ""
             }
         } message: {
@@ -80,9 +107,9 @@ struct DashboardView: View {
     // MARK: - Destinations
 
     private var destinationsSection: some View {
-        Section("SSD Destinations") {
+        Section("Destinations") {
             if viewModel.destinationStatuses.isEmpty {
-                Label("No SSD configured — go to Settings.",
+                Label("No destination configured — go to Settings.",
                       systemImage: "externaldrive.badge.exclamationmark")
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
@@ -112,7 +139,7 @@ struct DashboardView: View {
                 name: "Photos Library",
                 subtitle: deviceName.isEmpty ? "Name not configured" : "\(deviceName) · all photos & videos",
                 isRunning: viewModel.isRunning,
-                destinationsEmpty: viewModel.destinationStatuses.isEmpty
+                destinationsEmpty: !viewModel.hasConnectedDestination
             ) {
                 Task { await viewModel.startBackup() }
             }
@@ -121,11 +148,24 @@ struct DashboardView: View {
             ForEach(viewModel.externalSources) { source in
                 SourceRow(
                     icon: iconName(for: source.deviceType),
-                    iconColor: iconColor(for: source.deviceType),
+                    iconColor: source.isAvailable ? iconColor(for: source.deviceType) : .secondary,
                     name: source.displayName,
-                    subtitle: source.deviceType.rawValue,
+                    subtitle: source.isAvailable ? source.deviceType.rawValue : "Not connected",
                     isRunning: viewModel.isRunning,
-                    destinationsEmpty: viewModel.destinationStatuses.isEmpty,
+                    destinationsEmpty: !viewModel.hasConnectedDestination || !source.isAvailable,
+                    onReconnect: source.isAvailable ? nil : {
+                        if ProcessInfo.processInfo.isiOSAppOnMac {
+                            guard let url = MacOpenPanel.pickFolder() else { return }
+                            _ = url.startAccessingSecurityScopedResource()
+                            let bm = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+                            url.stopAccessingSecurityScopedResource()
+                            guard let bm else { return }
+                            viewModel.reconnectSource(id: source.id, url: url, bookmarkData: bm)
+                        } else {
+                            reconnectingSourceID = source.id
+                            showSourcePicker = true
+                        }
+                    },
                     onRemove: { viewModel.removeExternalSource(id: source.id) }
                 ) {
                     Task { await viewModel.startBackup(from: source) }
@@ -135,7 +175,17 @@ struct DashboardView: View {
             // Add Source button — Pro only
             Button {
                 if store.isPremium {
-                    showSourcePicker = true
+                    if ProcessInfo.processInfo.isiOSAppOnMac {
+                        guard let url = MacOpenPanel.pickFolder() else { return }
+                        _ = url.startAccessingSecurityScopedResource()
+                        let bm = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+                        url.stopAccessingSecurityScopedResource()
+                        pendingSourceURL  = url
+                        pendingSourceData = bm
+                        pendingSourceName = url.lastPathComponent
+                    } else {
+                        showSourcePicker = true
+                    }
                 } else {
                     showPaywall = true
                 }
@@ -169,6 +219,9 @@ struct DashboardView: View {
                     case .completed:
                         Label("Backup Complete", systemImage: "checkmark.circle.fill")
                             .font(.headline).foregroundStyle(.green)
+                    case .partial:
+                        Label("Partial Backup", systemImage: "exclamationmark.arrow.circlepath")
+                            .font(.headline).foregroundStyle(.orange)
                     case .failed:
                         Label("Backup Failed", systemImage: "xmark.circle.fill")
                             .font(.headline).foregroundStyle(.red)
@@ -199,6 +252,12 @@ struct DashboardView: View {
                 }
                 .font(.subheadline)
 
+                if banner.verifiedCount > 0 {
+                    Label("\(banner.verifiedCount) verified by SHA-256", systemImage: "checkmark.shield.fill")
+                        .font(.caption)
+                        .foregroundStyle(.teal)
+                }
+
                 Text(ByteCountFormatter.string(fromByteCount: banner.totalBytesCopied, countStyle: .file)
                      + " — " + String(format: "%.1f s", banner.durationSeconds))
                     .font(.caption).foregroundStyle(.secondary)
@@ -218,6 +277,7 @@ struct DashboardView: View {
         case .insta360X5:  return "camera.aperture"
         case .djiMini3Pro: return "airplane"
         case .dji360:      return "video.badge.waveform"
+        case .gopro:       return "camera.fill"
         case .generic:     return "sdcard"
         }
     }
@@ -227,6 +287,7 @@ struct DashboardView: View {
         case .insta360X5:  return .purple
         case .djiMini3Pro: return .blue
         case .dji360:      return .teal
+        case .gopro:       return .red
         case .generic:     return .orange
         }
     }
@@ -279,6 +340,7 @@ private struct SourceRow: View {
     let subtitle: String
     let isRunning: Bool
     let destinationsEmpty: Bool
+    var onReconnect: (() -> Void)? = nil
     var onRemove: (() -> Void)? = nil
     let onBackup: () -> Void
 
@@ -303,10 +365,17 @@ private struct SourceRow: View {
                 .disabled(isRunning)
             }
 
-            Button("Backup") { onBackup() }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .disabled(isRunning || destinationsEmpty)
+            if let onReconnect {
+                Button("Reconnect") { onReconnect() }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .disabled(isRunning)
+            } else {
+                Button("Backup") { onBackup() }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .disabled(isRunning || destinationsEmpty)
+            }
         }
         .padding(.vertical, 2)
     }

@@ -6,6 +6,7 @@ import SwiftData
 enum SessionStatus: String, Codable, CaseIterable, Sendable {
     case running
     case completed
+    case partial
     case failed
 }
 
@@ -20,6 +21,9 @@ final class BackupSession {
     var destinations: [String]
     var statusRaw: String
     var incompleteMirror: Bool
+    var sourceDisplayName: String = ""
+    var folderOrganizationRaw: String = "byDate"
+    var destinationDisplayNames: [String] = []
 
     @Relationship(deleteRule: .cascade, inverse: \IndexedFile.session)
     var files: [IndexedFile] = []
@@ -35,7 +39,10 @@ final class BackupSession {
         sources: [String],
         destinations: [String],
         status: SessionStatus = .running,
-        incompleteMirror: Bool = false
+        incompleteMirror: Bool = false,
+        sourceDisplayName: String = "",
+        folderOrganizationRaw: String = "byDate",
+        destinationDisplayNames: [String] = []
     ) {
         self.id = id
         self.startedAt = startedAt
@@ -43,5 +50,8 @@ final class BackupSession {
         self.destinations = destinations
         self.statusRaw = status.rawValue
         self.incompleteMirror = incompleteMirror
+        self.sourceDisplayName = sourceDisplayName
+        self.folderOrganizationRaw = folderOrganizationRaw
+        self.destinationDisplayNames = destinationDisplayNames
     }
 }

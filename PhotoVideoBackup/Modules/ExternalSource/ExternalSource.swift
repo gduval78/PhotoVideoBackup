@@ -7,9 +7,12 @@ import Foundation
 struct ExternalSource: Identifiable, Sendable {
     let id: UUID
     /// Security-scoped URL obtained from UIDocumentPickerViewController.
-    let rootURL: URL
+    /// nil when the source bookmark could not be resolved (card disconnected).
+    let rootURL: URL?
     let displayName: String
     let deviceType: DeviceType
+
+    var isAvailable: Bool { rootURL != nil }
 
     init(id: UUID = UUID(), rootURL: URL, customName: String? = nil) {
         self.id          = id
@@ -20,7 +23,8 @@ struct ExternalSource: Identifiable, Sendable {
     }
 
     /// Restore from persisted bookmark data (skips detection, uses saved values).
-    init(id: UUID, rootURL: URL, savedDisplayName: String, savedDeviceType: DeviceType) {
+    /// rootURL is nil when the bookmark could not be resolved (source offline).
+    init(id: UUID, rootURL: URL?, savedDisplayName: String, savedDeviceType: DeviceType) {
         self.id          = id
         self.rootURL     = rootURL
         self.displayName = savedDisplayName
@@ -29,7 +33,7 @@ struct ExternalSource: Identifiable, Sendable {
 
     // MARK: - Device fingerprinting
 
-    /// Inspects DCIM structure and folder/file extensions to identify the device type.
+    /// Inspects DCIM structure only — name heuristics excluded to avoid misclassifying backup folders (e.g. "DJI_Neo2") as live devices.
     static func detect(root: URL, name: String) -> DeviceType {
         let fm   = FileManager.default
         let dcim = root.appendingPathComponent("DCIM")
@@ -38,7 +42,7 @@ struct ExternalSource: Identifiable, Sendable {
             let result = fingerprintDCIM(dcim: dcim, fm: fm)
             if result != .generic { return result }
         }
-        return fingerprintByName(name)
+        return .generic
     }
 
     private static func fingerprintDCIM(dcim: URL, fm: FileManager) -> DeviceType {
@@ -61,6 +65,13 @@ struct ExternalSource: Identifiable, Sendable {
         }
         if hasDJI360Folder { return .dji360 }
 
+        let goProPattern = #"^\d{3}(GOPRO|GH\d{3}|GX\d{3}|GOPR)"#
+        let hasGoProFolder = contents.contains {
+            (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true &&
+            $0.lastPathComponent.range(of: goProPattern, options: .regularExpression) != nil
+        }
+        if hasGoProFolder { return .gopro }
+
         if let enumerator = fm.enumerator(at: dcim, includingPropertiesForKeys: nil) {
             for case let url as URL in enumerator {
                 let ext = url.pathExtension.lowercased()
@@ -70,11 +81,4 @@ struct ExternalSource: Identifiable, Sendable {
         return .generic
     }
 
-    private static func fingerprintByName(_ name: String) -> DeviceType {
-        let lower = name.lowercased()
-        if lower.contains("insta360") { return .insta360X5 }
-        if lower.contains("dji") && lower.contains("360") { return .dji360 }
-        if lower.contains("dji")      { return .djiMini3Pro }
-        return .generic
-    }
 }

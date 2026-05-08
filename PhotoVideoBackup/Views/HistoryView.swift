@@ -52,15 +52,47 @@ private struct SessionRow: View {
     var body: some View {
         HStack(spacing: 12) {
             statusIcon
-            VStack(alignment: .leading, spacing: 2) {
-                Text(session.startedAt.formatted(date: .abbreviated, time: .shortened))
-                    .font(.headline)
-                Text("\(session.files.count) files")
+            VStack(alignment: .leading, spacing: 3) {
+                HStack {
+                    Text(sourceName)
+                        .font(.headline)
+                        .lineLimit(1)
+                    Spacer()
+                    Text(session.startedAt.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Text("\(folderOrgName) · \(session.files.count) files")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                if !destinationText.isEmpty {
+                    Label(destinationText, systemImage: "externaldrive.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
         }
         .padding(.vertical, 2)
+    }
+
+    private var sourceName: String {
+        if !session.sourceDisplayName.isEmpty { return session.sourceDisplayName }
+        guard let first = session.sources.first else { return "—" }
+        return first == "photos-library://local" ? "Photos Library" : URL(fileURLWithPath: first).lastPathComponent
+    }
+
+    private var folderOrgName: String {
+        FolderOrganization(rawValue: session.folderOrganizationRaw)?.displayName ?? "By Date"
+    }
+
+    private var destinationText: String {
+        if !session.destinationDisplayNames.isEmpty {
+            return session.destinationDisplayNames.joined(separator: ", ")
+        }
+        return session.destinations
+            .map { URL(fileURLWithPath: $0).lastPathComponent }
+            .joined(separator: ", ")
     }
 
     @ViewBuilder
@@ -70,6 +102,8 @@ private struct SessionRow: View {
             Image(systemName: "arrow.triangle.2.circlepath").foregroundStyle(.blue)
         case .completed:
             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+        case .partial:
+            Image(systemName: "exclamationmark.arrow.circlepath").foregroundStyle(.orange)
         case .failed:
             Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
         }
