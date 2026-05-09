@@ -279,7 +279,13 @@ Inside a session report, scroll down to find the **Delete Source Files…** butt
 - The session contains successfully copied files, and
 - The original source is currently connected (SD card plugged in) or available (Photos Library).
 
+![Report — Delete Source Files button](images/report_delete_button.png)
+
 Tapping the button shows a confirmation screen that tells you exactly how many files will be deleted and from which source. A four-digit code is displayed on screen — you must type that code to confirm. This prevents accidental deletion.
+
+![Delete confirmation — code not yet entered](images/report_delete_code.png)
+
+![Delete confirmation — code entered, ready to confirm](images/report_delete_confirm.png)
 
 > **Note:** For Photos Library sources, iOS will show an additional system confirmation dialog before deleting.
 >
