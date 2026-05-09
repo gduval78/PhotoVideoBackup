@@ -43,6 +43,8 @@
 		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
 		F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AD02 /* LUTManager.swift */; };
 		F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */; };
+		F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B002 /* SourceDeletionManager.swift */; };
+		F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */; };
 		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
 		CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100100 /* ScenarioTestCase.swift */; };
 		CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100200 /* SimulatedSDCard.swift */; };
@@ -100,6 +102,8 @@
 		F001ABCDE00000000001AC02 /* MacOpenPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenPanel.swift; sourceTree = "<group>"; };
 		F001ABCDE00000000001AD02 /* LUTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTManager.swift; sourceTree = "<group>"; };
 		F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGradingEngine.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001B002 /* SourceDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDeletionManager.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteConfirmationSheet.swift; sourceTree = "<group>"; };
 		CC000000000000000000BA00 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		CC0000000000000000002A00 /* PhotoVideoBackupTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoVideoBackupTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC0000000000000000100100 /* ScenarioTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioTestCase.swift; sourceTree = "<group>"; };
@@ -330,6 +334,7 @@
 			isa = PBXGroup;
 			children = (
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
+				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
 				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
 				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
 				FF00AB0000000000000000002 /* OnboardingView.swift */,
@@ -358,11 +363,20 @@
 			path = LUT;
 			sourceTree = "<group>";
 		};
+		F001ABCDE00000000001B000 /* SourceDeletion */ = {
+			isa = PBXGroup;
+			children = (
+				F001ABCDE00000000001B002 /* SourceDeletionManager.swift */,
+			);
+			path = SourceDeletion;
+			sourceTree = "<group>";
+		};
 		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
 				F001ABCDE00000000001AF00 /* LUT */,
+				F001ABCDE00000000001B000 /* SourceDeletion */,
 				F001ABCDE00000000001AB02 /* FolderOrganization.swift */,
 				F001ABCDE00000000001AC02 /* MacOpenPanel.swift */,
 				3A73343377F29F8319E4B7C7 /* CopyEngine */,
@@ -504,6 +518,8 @@
 				F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */,
 				F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */,
 				F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */,
+				F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */,
+				F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -603,7 +619,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -611,7 +627,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.3;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -626,7 +642,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 27;
+				CURRENT_PROJECT_VERSION = 28;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -634,7 +650,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.9.3;
+				MARKETING_VERSION = 1.10.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;

@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.9.0 · iOS**  
+> **Version 1.10.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -257,6 +257,10 @@ Tap any row to open the full report for that session. The report lists every fil
 ### Sharing a report
 
 Inside a session report, tap the **Share** button (the box-with-arrow icon) to export the report as an HTML file. You can save it, email it, or open it in Safari for a nicely formatted view.
+
+### Deleting source files after backup
+
+Inside a session report, scroll down to find the **Delete Source Files…** button (only visible when the source is connected and files were copied). A four-digit code is shown on screen — type it to confirm. This prevents accidental deletion. The backup on your SSD is not affected.
 
 ### Clearing the history
 

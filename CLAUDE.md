@@ -222,6 +222,7 @@ Keep this section up to date with every release. Use it to write App Store relea
 
 | Version | Build | Date       | Type    | Description |
 |---------|-------|------------|---------|-------------|
+| 1.10.0  | 28    | 2026-05-09 | Feature | Delete source files from a completed backup session: "Delete Source Files…" button in the Report view (visible when source is connected); protected by a random 4-digit confirmation code. Works for Photos Library and external sources (SD card / USB). |
 | 1.9.3   | 27    | 2026-05-08 | Improvement | Onboarding screen updated: added LUT Grade and GoPro mentions. |
 | 1.9.2   | 26    | 2026-05-08 | Feature | LUT video grading (H.265/HEVC export) now requires Pro. Real-time LUT preview in the video player remains free. |
 | 1.9.1   | 25    | 2026-05-08 | Bug fix | LUT Grade bug fixes: Grade button re-enables after a completed session; (Graded) sibling folder appears immediately in Browse without requiring a manual refresh; (Graded) folders no longer show the LUT Grade section. |
