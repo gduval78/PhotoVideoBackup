@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.9.2 · iOS**  
+> **Version 1.10.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -269,6 +269,21 @@ Tap **Copied**, **Skipped**, or **Failed** to drill into the per-file list. Each
 ### Sharing a report
 
 Inside a session report, tap the **Share** button (the box-with-arrow icon) to export the report as an HTML file. You can save it, email it, or open it in Safari for a nicely formatted view.
+
+### Deleting source files after backup
+
+Once your backup is complete, the app can delete the original files from the source — freeing up space on your SD card or in your Photos Library.
+
+Inside a session report, scroll down to find the **Delete Source Files…** button. This button only appears when:
+
+- The session contains successfully copied files, and
+- The original source is currently connected (SD card plugged in) or available (Photos Library).
+
+Tapping the button shows a confirmation screen that tells you exactly how many files will be deleted and from which source. A four-digit code is displayed on screen — you must type that code to confirm. This prevents accidental deletion.
+
+> **Note:** For Photos Library sources, iOS will show an additional system confirmation dialog before deleting.
+>
+> **This action is permanent.** Your backup on the SSD is not affected — only the original source files are removed.
 
 ### Clearing the history
 
