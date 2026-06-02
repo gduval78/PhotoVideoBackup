@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.10.0 · iOS**  
+> **Version 2.0.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -51,7 +51,7 @@ PhotoVideoBackup is free to download. A one-time **Pro upgrade ($1.99 — no sub
 | Grade LOG footage to H.265/HEVC with a LUT baked in | — | ✓ |
 | Mirror backup to a second SSD simultaneously | — | ✓ |
 
-![Upgrade to Pro screen](images/upgrade_to_pro.png)
+![Upgrade to Pro screen](images/paywall.png)
 
 To unlock Pro, tap **Upgrade to Pro** when prompted, or open the upgrade screen from the Settings tab. It is a single payment — you own it forever.
 
@@ -74,7 +74,13 @@ To unlock Pro, tap **Upgrade to Pro** when prompted, or open the upgrade screen 
 
 When you open PhotoVideoBackup for the first time, a welcome screen gives you an overview of the app's features. Tap **Get Started** to continue.
 
-![Onboarding screen](images/onboarding.png)
+![Onboarding — Simple setup: iPhone → SSD](images/onboarding_simple.png)
+
+![Onboarding — Hub setup: iPhone → Hub → SD Card + SSD](images/onboarding_hub.png)
+
+![Onboarding — iCloud + SSD: iPhone → iCloud Drive + SSD](images/onboarding_icloud_ssd.png)
+
+![Onboarding — Advanced setup: iPhone → Hub → Battery + SD Card + two SSDs](images/onboarding_advanced.png)
 
 iOS will then ask for permission to access your photo library.
 
@@ -94,7 +100,7 @@ Tap the **Settings** tab at the bottom of the screen (the gear icon).
 
 At the top of the page you will see an **iPhone / iPad** section with a **Folder name** field. Tap it and type a name that identifies your device — for example **iPhone de Gérard** or **iPad Pro Camille**.
 
-![Settings — Folder name field](images/settings_device_name.png)
+![Settings — Folder name set to "Gérard"](images/settings_name_set.png)
 
 > **This name is used as the folder name on the SSD.** If two people back up to the same SSD, each device needs a different name so their files stay separate. The app will not start a backup until a name is set.
 
@@ -126,7 +132,7 @@ Tap the **Backup** tab (the house icon at the bottom left).
 
 At the top you will see your SSD with its name, how much space is free, and a bar showing how full it is. Below that is a **Sources** section.
 
-![Dashboard — SSD connected, iPhone source ready](images/dashboard_iphone_ready.png)
+![Dashboard — SSD connected, Photos Library source ready](images/dashboard_ready.png)
 
 ### Step 2 — Start the backup
 
@@ -134,7 +140,7 @@ In the **Sources** section, find the **Photos Library** row. It shows the device
 
 > If you see "Name not configured" and an orange warning (see below), go to Settings and fill in the **Folder name** field first.
 
-![Dashboard — device name not configured](images/dashboard_no_device_name.png)
+![Dashboard — device name not configured, no destination set](images/dashboard_empty.png)
 
 Tap the **Backup** button on that row.
 
@@ -180,10 +186,6 @@ The source now appears in the list. The app automatically recognises known devic
 
 GoPro cards are scanned for `.mp4` and `.jpg` files; low-resolution proxy files (`.lrv`) and thumbnail files (`.thm`) are automatically skipped.
 
-In the example below, two camera sources have been added alongside the iPhone library:
-
-![Dashboard — two camera sources added (Blackmagic and Insta360 X5)](images/dashboard_two_sources.png)
-
 ### Step 4 — Start the backup
 
 Tap **Backup** on the row for your camera source.
@@ -198,7 +200,7 @@ Tap the red **–** button on the left of a source row to remove it from the lis
 
 While the backup runs, a **Backup in Progress** panel replaces the completion banner at the bottom of the Backup tab.
 
-![Backup in progress — 3%, exporting from Photos](images/12_progress_screen.png)
+![Backup in progress — 13%, exporting from Photos](images/progress_backup.png)
 
 Here is what each part means:
 
@@ -227,7 +229,7 @@ Here is what each part means:
 
 When the backup finishes, a **Backup Complete** banner appears at the bottom of the Backup tab.
 
-![Completion banner — 149 copied, 0 skipped, 0 failed, 412.2 MB in 9.7 s](images/13_completion_banner.png)
+![Completion banner — 176 copied, 0 skipped, 0 failed, 185.8 MB in 26.6 s](images/completion_banner.png)
 
 | Number | What it means |
 |--------|---------------|
@@ -256,15 +258,17 @@ The **History** tab *(clock icon, centre of the tab bar)* keeps a record of ever
 
 Each row shows the source that was backed up, the destination drive(s), the folder organisation mode, the number of files, and a colour indicator — green for success, orange for partial, red if one or more files failed.
 
-![History — session list](images/history_report.png)
+![History — one completed session listed](images/history_list.png)
 
 Tap any row to open the full report for that session. The report shows a summary with source, destination, folder structure, file counts, and SHA-256 verification status.
 
-![Report — summary with SHA-256](images/report_detail.png)
+![Report — summary with source, folder, data size and SHA-256](images/report_summary.png)
+
+![Report — SSD stats, copied file count, Delete Source Files button](images/report_detail.png)
 
 Tap **Copied**, **Skipped**, or **Failed** to drill into the per-file list. Each copied file shows a SHA-256 badge confirming its integrity.
 
-![Report — copied files list](images/report_copied.png)
+![Report — copied files list (176 files)](images/report_copied.png)
 
 ### Sharing a report
 
@@ -279,13 +283,9 @@ Inside a session report, scroll down to find the **Delete Source Files…** butt
 - The session contains successfully copied files, and
 - The original source is currently connected (SD card plugged in) or available (Photos Library).
 
-![Report — Delete Source Files button](images/report_delete_button.png)
-
 Tapping the button shows a confirmation screen that tells you exactly how many files will be deleted and from which source. A four-digit code is displayed on screen — you must type that code to confirm. This prevents accidental deletion.
 
-![Delete confirmation — code not yet entered](images/report_delete_code.png)
-
-![Delete confirmation — code entered, ready to confirm](images/report_delete_confirm.png)
+![Delete confirmation — enter the code to confirm deletion](images/report_delete_confirm.png)
 
 > **Note:** For Photos Library sources, iOS will show an additional system confirmation dialog before deleting.
 >
@@ -348,23 +348,21 @@ If you shoot in **LOG** (DJI D-Log M, GoPro Protune, etc.), your footage looks f
 
 Tap the device folder. In the **LUT Grade** section, tap **Assign LUT…**.
 
-![Browse — Select LUT sheet](images/browse_lut_picker.png)
+![Browse — Select LUT sheet, empty (no LUT imported yet)](images/browse_lut_picker_empty.png)
 
 Tap **Import LUT (.cube)…** to open the file picker and select a `.cube` file from your Files app, iCloud Drive, or any connected drive. The LUT is copied into the app's storage and is available for all future sessions.
+
+![Browse — file picker showing .cube LUT files](images/browse_lut_import.png)
 
 > Any standard `.cube` file exported from DaVinci Resolve, Final Cut Pro, or downloaded from your camera manufacturer works.
 
 Once a LUT is assigned, it appears in the **LUT Grade** section with a **Remove** button.
 
-![Browse — LUT assigned to device folder](images/browse_date_folders.png)
+![Browse — Select LUT sheet with one LUT imported](images/browse_lut_picker.png)
 
 #### Step 2 — Preview with LUT
 
-Tap any video in that folder. The video plays full-screen. Tap the **LUT** button at the bottom-left to toggle the LUT on or off in real time — colours are graded on the fly so you can judge the actual look of the footage.
-
-![Browse — video player, LUT off](images/browse_lut_preview_off.png)
-
-![Browse — video player, LUT on](images/browse_lut_preview_on.png)
+Tap any video in that folder. The video plays full-screen with the LUT applied in real time — colours are graded on the fly so you can judge the actual look of the footage.
 
 > Playback with LUT requires a brief load of the video tracks. Allow a second for the player to initialise on first open.
 
@@ -374,7 +372,7 @@ Tap any video in that folder. The video plays full-screen. Tap the **LUT** butto
 
 To create permanent graded copies, select one or more videos in the grid and tap the **Grade** button in the toolbar. The app re-encodes each video in **H.265 (HEVC)** with the LUT baked in and saves the results in a sibling folder named **"Device (Graded)"**.
 
-![Browse — grading in progress](images/browse_grading_progress.png)
+![Browse — grading in progress (Grading 0/1)](images/browse_grading_progress.png)
 
 - Already-graded files are skipped (safe to re-run).
 - The original folder and date structure is preserved inside the Graded folder.
@@ -382,7 +380,7 @@ To create permanent graded copies, select one or more videos in the grid and tap
 
 The Graded folder appears immediately in the Browse tab once grading completes.
 
-![Browse — device folders with Graded sibling](images/browse_device_folders.png)
+![Browse — device folder after grading complete, LUT assigned and "Grading complete" confirmation](images/browse_grading_complete.png)
 
 > Grading is CPU-intensive. Keep the app open and the SSD connected during the process. The phone may become warm.
 
@@ -445,9 +443,12 @@ Yes. Any folder you can open with the iOS file browser can be used as a source �
 **Q: What does the app offer over simply copying files manually in the Files app?**  
 When copying to iCloud Drive, the app adds: automatic incremental transfers (only new files are copied), SHA-256 integrity verification on every file, a detailed session report listing what was copied, skipped, or failed, and support for two destinations simultaneously (for example an SSD and iCloud Drive in a single pass).
 
+**Q: Is the app available in my language?**  
+Yes. The app supports English, French (Français), German (Deutsch), and Spanish (Español). By default it follows your iPhone's system language. You can also override it manually: open the **Settings** tab, scroll to the **Language** section, and pick the language you want. The change takes effect immediately — no restart needed.
+
 ---
 
-*Documentation last updated: April 18, 2026*
+*Documentation last updated: May 29, 2026*
 
 ---
 
