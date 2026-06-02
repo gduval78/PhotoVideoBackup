@@ -340,6 +340,44 @@ The app copies the selected files to a temporary folder and opens the standard i
 
 Tap **Cancel** in the toolbar to exit selection mode without sharing.
 
+### Batch rename files
+
+You can rename a group of files at once using a pattern with date tokens, an index counter, and the original filename.
+
+1. Tap **Select** in the top-right corner of the media grid.
+2. Tap individual files, or tap **Select All** to select everything in the folder.
+
+![Browse — all files selected, Select All / Deselect All toolbar, Rename and Share buttons](images/browse_selection_all.png)
+
+3. Tap **Rename (N)** in the toolbar.
+
+The rename sheet opens with a pattern editor.
+
+![Browse — rename sheet with pattern tokens, index width picker, and live preview](images/browse_rename_sheet.png)
+
+**Available tokens:**
+
+| Token | Replaced by |
+|-------|-------------|
+| `{YYYY}` | Capture year — e.g. `2026` |
+| `{MM}` | Capture month — e.g. `06` |
+| `{DD}` | Capture day — e.g. `02` |
+| `{hh}` | Capture hour — e.g. `10` |
+| `{mm}` | Capture minute — e.g. `34` |
+| `{ss}` | Capture second — e.g. `28` |
+| `{index}` | Sequential number (width selectable: 2, 3, or 4 digits) |
+| `{original}` | Original filename without extension |
+
+Anything typed between tokens is treated as literal text. Tap a token chip to insert it at the cursor.
+
+The **Index width** picker controls zero-padding: `2` → `01`, `3` → `001`, `4` → `0001`.
+
+The **Preview** section shows how the first three filenames will look before you confirm. Tap **Rename** to apply.
+
+> Dates are taken from the file's capture date (EXIF for photos, video container metadata for videos) — not the filesystem date.
+
+> If a target filename already exists, the app appends `_2`, `_3`… automatically to avoid conflicts.
+
 ### LUT Grade — apply a look to LOG footage
 
 If you shoot in **LOG** (DJI D-Log M, GoPro Protune, etc.), your footage looks flat and grey until a LUT (Look Up Table) is applied. The Browse tab lets you assign a LUT to any device folder and preview or permanently grade your footage without leaving the app.
