@@ -210,7 +210,7 @@ All fields use SwiftData default values (lightweight migration — no migration 
    - Settings screen: any time a new setting is added or a section changes
    - Dashboard/History/Report: any time a new status, badge, or row format changes
    - Browse tab: any time navigation depth or grid layout changes
-5. **Commit `docs-publish/` separately** with `cd docs-publish && git add -A && git commit -m "..." && git push origin main`.
+5. **Commit AND publish `docs-publish/` yourself** — Claude is authorized to push directly: `cd docs-publish && git add -A && git commit -m "..." && git push origin main`. Do not just flag this to the user; perform the push when documentation changes are ready (e.g. version bumps, support email changes). The repo is `git@github.com:gduval78/PhotoVideoBackup.git`, branch `main`, published via GitHub Pages.
 
 **What you cannot do alone (flag to the user):**
 - Take screenshots on a real device or simulator
