@@ -1,7 +1,7 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.1.6 · iOS**  
-> A simple, reliable way to back up your photos and videos to an external SSD.
+> **Version 2.2.0 · iOS**  
+> A simple, reliable way to back up your photos and videos to an external SSD — or to a NAS over Wi-Fi.
 
 ---
 
@@ -19,7 +19,8 @@
 10. [Viewing Your Backup History](#10-viewing-your-backup-history)
 11. [Browsing and Sharing Your Backed-Up Files](#11-browsing-and-sharing-your-backed-up-files)
 12. [Using Two SSDs — Mirror Backup (Pro)](#12-using-two-ssds--mirror-backup-pro)
-13. [Frequently Asked Questions](#13-frequently-asked-questions)
+13. [Backing Up to a NAS over Wi-Fi (Pro)](#13-backing-up-to-a-nas-over-wi-fi-pro)
+14. [Frequently Asked Questions](#14-frequently-asked-questions)
 
 ---
 
@@ -440,10 +441,52 @@ When both SSDs are plugged in, the Backup tab shows both drives with their avail
 
 ---
 
-## 13. Frequently Asked Questions
+## 13. Backing Up to a NAS over Wi-Fi (Pro)
+
+> **This feature requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
+
+Instead of (or in addition to) a USB-C SSD, you can back up **directly to a NAS** (Synology, QNAP, TrueNAS, or any device that speaks SMB) over Wi-Fi. Files are written straight to the NAS — no cable, no intermediate app, no cloud — and each file is verified by SHA-256.
+
+### Set up the NAS
+
+1. Make sure your NAS has **SMB file sharing** enabled, with a user account that has **read/write** access to a shared folder.
+2. In the app: **Settings → Destinations → NAS (SMB)**.
+3. Fill in:
+   - **Host / IP** — your NAS address, e.g. `192.168.1.20`
+   - **Share** — the shared folder name, e.g. `photo`
+   - **Folder** — an optional subfolder for your backups, e.g. `Backups`
+   - **Username** and **Password** — your NAS account (the password is stored securely in the iOS Keychain)
+4. Tap **Test connection**. You should see *"Connected — N item(s) found."*
+5. Tap **Save**.
+
+The NAS now appears as a destination on the **Backup** tab, with its free space. You can use it on its own, or **together with an SSD** — the app writes to all connected destinations at once.
+
+### Backing up remotely (away from home)
+
+Because the NAS backup runs over the network, you can even back up **from anywhere** — for example over your mobile connection — if your NAS is reachable remotely. The simplest, secure way is a mesh VPN such as **Tailscale**:
+
+- Install Tailscale on both the **NAS** and the **iPhone**, signed into the same account.
+- Keep the **Tailscale VPN active** on the iPhone.
+- In the app, use the NAS's **Tailscale address** (its `100.x.x.x` IP) as the **Host**. This works both at home and away.
+
+> **Heads-up on mobile data:** when a NAS backup runs over cellular, the app shows an orange **"You appear to be on mobile data"** banner. Large videos can use a lot of data — tap **Stop backup** at any time to halt it (the session is then marked *Partial*).
+
+### Browsing the NAS
+
+Open the **Browse** tab and tap the **NAS** section. You can navigate the folders on your NAS; tapping a photo or video downloads it on demand and shows a preview.
+
+---
+
+## 14. Frequently Asked Questions
 
 **Q: Does the app delete files from my iPhone or SD card?**  
 No. PhotoVideoBackup only copies files. It never moves or deletes anything from the source.
+
+**Q: My NAS connection times out — what's wrong?**  
+A timeout almost always means the NAS isn't reachable on the network, not an app problem. Check that you're on the same Wi-Fi as the NAS (or that your VPN is active), that SMB file sharing is enabled on the NAS, and that any NAS firewall allows the connection. If you use Tailscale, make sure the VPN is switched on in the iPhone and that your iPhone is allowed to reach the NAS in your Tailscale access settings.
+
+**Q: Can I back up to the NAS and an SSD at the same time?**  
+Yes. Every connected destination — SSD 1, SSD 2, and the NAS — receives the backup simultaneously.
 
 **Q: Will it copy the same file twice if I run it again?**  
 No. The app checks whether each file is already on the SSD before copying. Files that are already there are skipped. Running the backup a second time is fast and safe.
