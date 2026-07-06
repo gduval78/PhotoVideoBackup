@@ -425,6 +425,14 @@ The Graded folder appears immediately in the Browse tab once grading completes.
 
 To remove a LUT assignment, tap **Remove** next to the LUT name. This only removes the assignment — it does not delete the LUT file or the already-graded videos.
 
+#### LUT Grade on a NAS
+
+LUT Grade works the same way when your backups are on a **NAS** (see [Section 13](#13-backing-up-to-a-nas-over-wi-fi-pro)). Open a device folder in the NAS section of the Browse tab and you'll find the same **LUT Grade** section: assign a LUT, and tap any video to preview it with the LUT applied in real time. To create graded copies, tap **Select**, choose the videos you want to grade, then tap **Grade**.
+
+> **Grade only your LOG clips.** A camera folder often mixes LOG and non-LOG footage. Selecting videos individually (rather than "grade everything") lets you grade only the flat LOG clips — applying a LOG LUT to already-normal footage would ruin it. This is exactly how grading works on a local SSD too.
+
+The one difference is *where* the work happens: each selected video is downloaded from the NAS, graded on the phone, then uploaded back to a **"Device (Graded)"** folder on the NAS. Because everything travels over the network, grading on a NAS is slower than on a local SSD and uses more data — keep this in mind over a mobile/VPN connection. Already-graded files on the NAS are skipped, so it is safe to re-run.
+
 ---
 
 ## 12. Using Two SSDs — Mirror Backup (Pro)
@@ -473,7 +481,9 @@ Because the NAS backup runs over the network, you can even back up **from anywhe
 
 ### Browsing the NAS
 
-Open the **Browse** tab and tap the **NAS** section. You can navigate the folders on your NAS; tapping a photo or video downloads it on demand and shows a preview.
+Open the **Browse** tab and tap the **NAS** section. You can navigate the folders on your NAS; tapping a photo or video downloads it on demand and shows a preview (videos play full-screen, with a live **LUT** toggle when a LUT is assigned to the folder).
+
+Device folders on the NAS also offer the full **LUT Grade** feature — assign a LUT and grade every video to a "Device (Graded)" folder on the NAS. See [LUT Grade on a NAS](#lut-grade-on-a-nas) in Section 11.
 
 ---
 
@@ -529,7 +539,7 @@ Yes. The app supports English, French (Français), German (Deutsch), Spanish (Es
 
 ---
 
-*Documentation last updated: May 29, 2026*
+*Documentation last updated: July 6, 2026*
 
 ---
 
