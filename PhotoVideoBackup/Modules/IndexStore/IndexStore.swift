@@ -22,6 +22,7 @@ final class IndexStore {
         // First attempt — normal path.
         if let c = try? ModelContainer(for: schema, configurations: [config]) {
             container = c
+            DiagnosticLog.write("[STORE_OK] SwiftData store opened (persistent)")
             return
         }
 
@@ -32,6 +33,7 @@ final class IndexStore {
         if let c = try? ModelContainer(for: schema, configurations: [config]) {
             container = c
             didResetHistory = true
+            DiagnosticLog.write("[STORE_OK] SwiftData store reopened after reset (history cleared)")
             return
         }
 
@@ -41,6 +43,7 @@ final class IndexStore {
         container = (try? ModelContainer(for: schema, configurations: [memConfig]))
             ?? { fatalError("IndexStore: cannot create even an in-memory container") }()
         didResetHistory = true
+        DiagnosticLog.write("[STORE_OK] SwiftData store opened (in-memory — history not persisted)")
     }
 
     private static func deleteStoreFiles() {

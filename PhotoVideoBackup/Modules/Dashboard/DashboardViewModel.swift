@@ -196,6 +196,9 @@ final class DashboardViewModel {
         refreshDestinationStatuses()
         refreshSessions()
         loadPersistedSources()
+        // Cold-start completed cleanly and the UI is interactive. The presence of this line
+        // (after [LAUNCH] → [STORE_OK] → [UI_READY]) is the positive proof the app started fine.
+        DiagnosticLog.write("[STARTUP_OK] store=\(IndexStore.shared.didResetHistory ? "reset" : "ok") destinations=\(destinationStatuses.count) sources=\(externalSources.count) premium=\(StoreManager.shared.isPremium)")
         // Two-pass retry: iOS (especially via a powered USB hub with USB-A ports) may not have
         // fully mounted all external volumes by the time onAppear fires.
         // 800 ms covers most USB-C direct connections; 3 s covers slower USB-A enumeration.
