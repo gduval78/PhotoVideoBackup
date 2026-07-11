@@ -3,11 +3,18 @@ import SwiftUI
 struct ReportView: View {
     let session: BackupSession
 
+    @Environment(DashboardViewModel.self) private var viewModel
+    @Environment(LanguageManager.self)    private var languageManager
+    @State private var showDeleteSheet = false
+    @State private var deletionResult: DeletionResult? = nil
+    @State private var showDeletionAlert = false
+
     var body: some View {
         List {
             headerSection
             summarySection
             filesSection
+            deleteSection
         }
         .navigationTitle("Report")
         .navigationBarTitleDisplayMode(.inline)
@@ -16,6 +23,36 @@ struct ReportView: View {
                 if let url = reportHTMLURL {
                     ShareLink(item: url, preview: SharePreview("Backup Report"))
                 }
+            }
+        }
+        .sheet(isPresented: $showDeleteSheet) {
+            DeleteConfirmationSheet(
+                fileCount: copiedFiles.count,
+                sourceName: sourceName
+            ) {
+                let result = await SourceDeletionManager.deleteFiles(
+                    copiedFiles,
+                    externalSources: viewModel.externalSources
+                )
+                await MainActor.run {
+                    deletionResult = result
+                    showDeletionAlert = true
+                }
+            }
+        }
+        .alert("Deletion Complete", isPresented: $showDeletionAlert, presenting: deletionResult) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { result in
+            if result.nothingToDelete {
+                Text("These files have already been deleted.")
+            } else if result.failed == 0 {
+                if result.deleted == 1 {
+                    Text("\(result.deleted) file deleted successfully.")
+                } else {
+                    Text("\(result.deleted) files deleted successfully.")
+                }
+            } else {
+                Text("\(result.deleted) deleted, \(result.failed) failed.")
             }
         }
     }
@@ -27,7 +64,7 @@ struct ReportView: View {
             HStack {
                 statusBadge
                 Spacer()
-                Text(session.startedAt.formatted(date: .abbreviated, time: .shortened))
+                Text(session.startedAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(languageManager.currentLocale)))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -49,24 +86,16 @@ struct ReportView: View {
         }
     }
 
-    // MARK: - Summary (compact)
+    // MARK: - Summary
 
     private var summarySection: some View {
         Section("Summary") {
             LabeledContent("Source", value: sourceName)
-            LabeledContent("Destination", value: destinationNames)
             LabeledContent("Folder", value: folderOrgName)
-            HStack(spacing: 0) {
-                statCell(value: session.files.count, label: "Scanned", color: .primary)
-                Divider()
-                statCell(value: copiedFiles.count,  label: "Copied",  color: .green)
-                Divider()
-                statCell(value: skippedFiles.count, label: "Skipped", color: .orange)
-                Divider()
-                statCell(value: failedFiles.count,  label: "Failed",
-                         color: failedFiles.isEmpty ? .secondary : .red)
+            LabeledContent("Data / Duration") {
+                Text("\(totalBytesCopied.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))) · \(durationString)")
+                    .foregroundStyle(.secondary)
             }
-            .frame(height: 52)
             if !copiedFiles.isEmpty {
                 LabeledContent("SHA-256") {
                     let verified = verifiedCount
@@ -79,14 +108,28 @@ struct ReportView: View {
                     .font(.subheadline)
                 }
             }
-            LabeledContent("Data / Duration") {
-                Text("\(ByteCountFormatter.string(fromByteCount: totalBytesCopied, countStyle: .file)) · \(durationString)")
-                    .foregroundStyle(.secondary)
+            // Per-target breakdown — one row per destination SSD.
+            ForEach(Array(targetSummaries().enumerated()), id: \.offset) { _, target in
+                VStack(alignment: .leading, spacing: 4) {
+                    Label(target.displayName, systemImage: "externaldrive.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                    HStack(spacing: 0) {
+                        statCell(value: target.copied,  label: "Copied",  color: .green)
+                        Divider()
+                        statCell(value: target.skipped, label: "Skipped", color: .orange)
+                        Divider()
+                        statCell(value: target.failed,  label: "Failed",
+                                 color: target.failed == 0 ? .secondary : .red)
+                    }
+                    .frame(height: 44)
+                }
+                .padding(.vertical, 4)
             }
         }
     }
 
-    private func statCell(value: Int, label: String, color: Color) -> some View {
+    private func statCell(value: Int, label: LocalizedStringKey, color: Color) -> some View {
         VStack(spacing: 2) {
             Text("\(value)")
                 .font(.title3.bold())
@@ -98,38 +141,101 @@ struct ReportView: View {
         .frame(maxWidth: .infinity)
     }
 
+    // MARK: - Per-target summary computation
+
+    struct TargetSummary {
+        let displayName: String
+        var copied  = 0
+        var skipped = 0
+        var failed  = 0
+    }
+
+    private func targetSummaries() -> [TargetSummary] {
+        session.destinations.enumerated().map { idx, root in
+            let name = idx < session.destinationDisplayNames.count
+                ? session.destinationDisplayNames[idx]
+                : URL(fileURLWithPath: root).lastPathComponent
+            var t = TargetSummary(displayName: name)
+            for file in session.files {
+                let present = file.destinationPaths.contains { $0.hasPrefix(root) }
+                if present {
+                    if file.copyStatus == .skipped { t.skipped += 1 } else { t.copied += 1 }
+                } else if file.copyStatus != .pending {
+                    t.failed += 1
+                }
+            }
+            return t
+        }
+    }
+
+    // MARK: - Delete section
+
+    @ViewBuilder
+    private var deleteSection: some View {
+        if canDelete {
+            Section {
+                Button(role: .destructive) {
+                    showDeleteSheet = true
+                } label: {
+                    Label("Delete Source Files…", systemImage: "trash")
+                }
+            } footer: {
+                Text("Permanently deletes the \(copiedFiles.count) files that were copied during this session from the original source. Your backup is not affected.")
+            }
+        }
+    }
+
+    private var canDelete: Bool {
+        SourceDeletionManager.canDelete(
+            session: session,
+            copiedFiles: copiedFiles,
+            externalSources: viewModel.externalSources
+        )
+    }
+
     // MARK: - Files (navigation links)
 
     @ViewBuilder
     private var filesSection: some View {
-        if !copiedFiles.isEmpty || !skippedFiles.isEmpty || !failedFiles.isEmpty {
+        let allFiles = session.files.filter { $0.copyStatus != .pending }
+        if !allFiles.isEmpty {
             Section("Files") {
-                if !copiedFiles.isEmpty {
+                if session.destinations.count > 1 {
+                    // Multi-destination: single unified list with per-target status.
                     NavigationLink {
-                        ReportFilesListView(title: "Copied", files: copiedFiles, color: .green)
+                        ReportMultiTargetFilesView(files: allFiles, session: session)
                     } label: {
-                        fileNavRow("Copied", count: copiedFiles.count, color: .green)
+                        fileNavRow("All files", count: allFiles.count, color: .primary)
                     }
-                }
-                if !skippedFiles.isEmpty {
-                    NavigationLink {
-                        ReportSkippedListView(files: skippedFiles)
-                    } label: {
-                        fileNavRow("Skipped", count: skippedFiles.count, color: .orange)
+                } else {
+                    // Single destination: keep the classic split by status.
+                    if !copiedFiles.isEmpty {
+                        NavigationLink {
+                            ReportFilesListView(title: String(localized: "Copied", locale: languageManager.currentLocale), files: copiedFiles, color: .green)
+                        } label: {
+                            fileNavRow("Copied", count: copiedFiles.count, color: .green)
+                        }
                     }
-                }
-                if !failedFiles.isEmpty {
-                    NavigationLink {
-                        ReportFailedListView(files: failedFiles, commonError: commonErrorNote)
-                    } label: {
-                        fileNavRow("Failed", count: failedFiles.count, color: .red)
+                    if !skippedFiles.isEmpty {
+                        NavigationLink {
+                            ReportSkippedListView(files: skippedFiles, session: session)
+                        } label: {
+                            fileNavRow("Skipped", count: skippedFiles.count, color: .orange)
+                        }
+                    }
+                    if !failedFiles.isEmpty {
+                        NavigationLink {
+                            ReportFailedListView(files: failedFiles, commonError: commonErrorNote)
+                        } label: {
+                            fileNavRow("Failed", count: failedFiles.count, color: .red)
+                        }
                     }
                 }
             }
         }
     }
 
-    private func fileNavRow(_ label: String, count: Int, color: Color) -> some View {
+    private func fileNavRow(_ label: LocalizedStringKey, count: Int, color: Color) -> some View {
         HStack {
             Text(label)
             Spacer()
@@ -144,7 +250,9 @@ struct ReportView: View {
     private var sourceName: String {
         if !session.sourceDisplayName.isEmpty { return session.sourceDisplayName }
         guard let first = session.sources.first else { return "—" }
-        return first == "photos-library://local" ? "Photos Library" : URL(fileURLWithPath: first).lastPathComponent
+        return first == "photos-library://local"
+            ? String(localized: "Photos Library", locale: languageManager.currentLocale)
+            : URL(fileURLWithPath: first).lastPathComponent
     }
 
     private var destinationNames: String {
@@ -157,7 +265,8 @@ struct ReportView: View {
     }
 
     private var folderOrgName: String {
-        FolderOrganization(rawValue: session.folderOrganizationRaw)?.displayName ?? "By Date"
+        (FolderOrganization(rawValue: session.folderOrganizationRaw) ?? .byDate)
+            .localizedDisplayName(locale: languageManager.currentLocale)
     }
 
     private var copiedFiles:  [IndexedFile] { session.files.filter { $0.copyStatus == .copied  } }
@@ -214,6 +323,7 @@ private struct ReportFilesListView: View {
     let title: String
     let files: [IndexedFile]
     let color: Color
+    @Environment(LanguageManager.self) private var languageManager
 
     var body: some View {
         List(files) { file in
@@ -221,10 +331,10 @@ private struct ReportFilesListView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(file.fileName).font(.subheadline)
                     if let date = file.captureDate {
-                        Text(date.formatted(date: .abbreviated, time: .omitted))
+                        Text(date.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(languageManager.currentLocale)))
                             .font(.caption).foregroundStyle(.secondary)
                     }
-                    Text(ByteCountFormatter.string(fromByteCount: file.fileSize, countStyle: .file))
+                    Text(file.fileSize.formatted(.byteCount(style: .file).locale(languageManager.currentLocale)))
                         .font(.caption2).foregroundStyle(.tertiary)
                 }
                 Spacer()
@@ -246,33 +356,149 @@ private struct ReportFilesListView: View {
 
 private struct ReportSkippedListView: View {
     let files: [IndexedFile]
+    let session: BackupSession
+    @Environment(LanguageManager.self) private var languageManager
 
     var body: some View {
         List {
             Section {
-                Label("Already at destination — same filename and size. No copy needed.",
+                Label("Files already present on every destination — no copy needed.",
                       systemImage: "checkmark.circle")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Section {
                 ForEach(files) { file in
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(file.fileName)
                             .font(.subheadline)
-                            .foregroundStyle(.orange)
-                        Text(URL(fileURLWithPath: file.sourcePath).deletingLastPathComponent().lastPathComponent)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(ByteCountFormatter.string(fromByteCount: file.fileSize, countStyle: .file))
-                            .font(.caption2).foregroundStyle(.tertiary)
+                        ForEach(Array(destRows(for: file).enumerated()), id: \.offset) { _, row in
+                            HStack(spacing: 6) {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(row.color)
+                                Image(systemName: "externaldrive.fill")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Text(row.name)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Text(file.fileSize.formatted(.byteCount(style: .file).locale(languageManager.currentLocale)))
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
                     }
-                    .padding(.vertical, 2)
+                    .padding(.vertical, 3)
                 }
             }
         }
         .navigationTitle("Skipped (\(files.count))")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private struct DestRow {
+        let name: String
+        let color: Color
+    }
+
+    private func destRows(for file: IndexedFile) -> [DestRow] {
+        session.destinations.enumerated().map { idx, root in
+            let displayName = idx < session.destinationDisplayNames.count
+                ? session.destinationDisplayNames[idx]
+                : URL(fileURLWithPath: root).lastPathComponent
+
+            // Check if any stored destination path belongs to this root.
+            let matchingPath = file.destinationPaths.first { $0.hasPrefix(root) }
+            guard let path = matchingPath else {
+                return DestRow(name: displayName, color: .red)
+            }
+            // Green = exact physical match (sha256 empty = physical skip).
+            // Orange = found by SHA-256 (possibly renamed at destination).
+            let byHash = !file.sha256.isEmpty
+            _ = path  // path confirmed to exist at record time
+            return DestRow(name: displayName, color: byHash ? .orange : .green)
+        }
+    }
+}
+
+// MARK: - ReportMultiTargetFilesView
+
+private struct ReportMultiTargetFilesView: View {
+    let files: [IndexedFile]
+    let session: BackupSession
+    @Environment(LanguageManager.self) private var languageManager
+
+    private struct DestInfo { let root: String; let name: String }
+
+    private var destinations: [DestInfo] {
+        session.destinations.enumerated().map { idx, root in
+            let name = idx < session.destinationDisplayNames.count
+                ? session.destinationDisplayNames[idx]
+                : URL(fileURLWithPath: root).lastPathComponent
+            return DestInfo(root: root, name: name)
+        }
+    }
+
+    var body: some View {
+        List(files) { file in
+            VStack(alignment: .leading, spacing: 4) {
+                // Filename
+                Text(file.fileName)
+                    .font(.subheadline)
+                // Per-target status row
+                ForEach(destinations, id: \.root) { dest in
+                    let status = perTargetStatus(file: file, root: dest.root)
+                    HStack(spacing: 6) {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 8))
+                            .foregroundStyle(status.color)
+                        Image(systemName: "externaldrive.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        Text(dest.name)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(status.label)
+                            .font(.caption2)
+                            .foregroundStyle(status.color)
+                    }
+                }
+                // File size + date
+                HStack {
+                    Text(file.fileSize.formatted(.byteCount(style: .file).locale(languageManager.currentLocale)))
+                        .font(.caption2).foregroundStyle(.tertiary)
+                    if let date = file.captureDate {
+                        Text("·").font(.caption2).foregroundStyle(.tertiary)
+                        Text(date.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted)
+                            .locale(languageManager.currentLocale)))
+                            .font(.caption2).foregroundStyle(.tertiary)
+                    }
+                }
+            }
+            .padding(.vertical, 3)
+        }
+        .navigationTitle("Files (\(files.count))")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private struct PerTargetStatus {
+        let color: Color
+        let label: LocalizedStringKey
+    }
+
+    private func perTargetStatus(file: IndexedFile, root: String) -> PerTargetStatus {
+        let present = file.destinationPaths.contains { $0.hasPrefix(root) }
+        if present {
+            switch file.copyStatus {
+            case .copied:  return PerTargetStatus(color: .green,    label: "Copied")
+            case .skipped: return PerTargetStatus(color: .orange,   label: "Skipped")
+            default:       return PerTargetStatus(color: .green,    label: "Copied")
+            }
+        } else {
+            return PerTargetStatus(color: .red, label: "Failed")
+        }
     }
 }
 

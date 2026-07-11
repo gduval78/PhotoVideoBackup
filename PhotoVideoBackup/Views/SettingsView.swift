@@ -6,12 +6,12 @@ import UniformTypeIdentifiers
 struct SettingsView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(StoreManager.self)       private var store
+    @Environment(LanguageManager.self)    private var languageManager
     @State private var ssd1Name:   String = ""
     @State private var ssd2Name:   String = ""
-    @State private var ssd3Name:   String = ""
     @State private var ssd1Folder: String = ""
     @State private var ssd2Folder: String = ""
-    @State private var ssd3Folder: String = ""
+    @State private var nasLabel:   String = ""   // empty = NAS not configured
     @State private var showPicker: Bool = false
     @State private var pickerIndex: Int = 0
     @State private var showPaywall: Bool = false
@@ -35,7 +35,7 @@ struct SettingsView: View {
             Section("Backup") {
                 Picker("Folder structure", selection: $folderOrganizationRaw) {
                     ForEach(FolderOrganization.allCases, id: \.rawValue) { mode in
-                        Text(mode.displayName).tag(mode.rawValue)
+                        Text(mode.labelKey).tag(mode.rawValue)
                     }
                 }
                 HStack {
@@ -53,18 +53,39 @@ struct SettingsView: View {
                     HStack {
                         Text("Additional file types")
                         Spacer()
-                        Text(customExtensionsLabel)
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                            .lineLimit(1)
+                        if customExtensionsRaw.trimmingCharacters(in: .whitespaces).isEmpty {
+                            Text("None")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        } else {
+                            Text(customExtensionsLabel)
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                                .lineLimit(1)
+                        }
                     }
+                }
+            }
+
+            Section("Language") {
+                @Bindable var lm = languageManager
+                Picker("Language", selection: $lm.selectedCode) {
+                    Text("System Default").tag("")
+                    Text("English").tag("en")
+                    Text("Français").tag("fr")
+                    Text("Deutsch").tag("de")
+                    Text("Español").tag("es")
+                    Text("Italiano").tag("it")
+                    Text("Português").tag("pt")
+                    Text("中文").tag("zh-Hans")
+                    Text("Русский").tag("ru")
                 }
             }
 
             Section("Destinations") {
                 destinationRow(index: 0, name: $ssd1Name, folder: $ssd1Folder, label: "SSD 1 (primary)")
                 ssd2Row
-                ssd3Row
+                nasRow
             }
 
             Section {
@@ -88,6 +109,29 @@ struct SettingsView: View {
                 }
                 .padding(.vertical, 4)
             }
+
+            Section("Support") {
+                Link(destination: URL(string: AppConstants.documentationURL)!) {
+                    Label("Documentation", systemImage: "book")
+                }
+                HStack {
+                    Image(systemName: "envelope")
+                        .foregroundStyle(.secondary)
+                    Text(verbatim: AppConstants.supportEmail)
+                        .foregroundStyle(.secondary)
+                        .font(.callout)
+                }
+                Button {
+                    let subject = "PhotoVideoBackup Support"
+                    let urlString = "mailto:\(AppConstants.supportEmail)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+                    if let url = URL(string: urlString) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Label("Contact Support", systemImage: "envelope.badge")
+                }
+            }
+
         }
         .navigationTitle("Settings")
         .onAppear { loadNames() }
@@ -107,7 +151,7 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - SSD 2 / SD Card rows (Pro only)
+    // MARK: - SSD 2 / NAS rows (Pro only)
 
     @ViewBuilder
     private var ssd2Row: some View {
@@ -119,16 +163,33 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private var ssd3Row: some View {
+    private var nasRow: some View {
         if store.isPremium {
-            destinationRow(index: 2, name: $ssd3Name, folder: $ssd3Folder, label: "SD Card (transit)")
+            NavigationLink {
+                NASSettingsView()
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("NAS (SMB)").font(.subheadline)
+                        if nasLabel.isEmpty {
+                            Text("Not configured").font(.caption).foregroundStyle(.secondary)
+                        } else {
+                            Text(verbatim: nasLabel)
+                                .font(.caption).foregroundStyle(.secondary)
+                                .lineLimit(1).truncationMode(.middle)
+                        }
+                    }
+                } icon: {
+                    Image(systemName: "externaldrive.connected.to.line.below")
+                }
+            }
         } else {
-            proLockedRow(label: "SD Card (transit)")
+            proLockedRow(label: "NAS (SMB)")
         }
     }
 
     @ViewBuilder
-    private func proLockedRow(label: String) -> some View {
+    private func proLockedRow(label: LocalizedStringKey) -> some View {
         HStack {
             Label {
                 VStack(alignment: .leading, spacing: 2) {
@@ -149,7 +210,7 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private func destinationRow(index: Int, name: Binding<String>, folder: Binding<String>, label: String) -> some View {
+    private func destinationRow(index: Int, name: Binding<String>, folder: Binding<String>, label: LocalizedStringKey) -> some View {
         HStack {
             Label {
                 VStack(alignment: .leading, spacing: 2) {
@@ -205,11 +266,12 @@ struct SettingsView: View {
     }
 
     private var customExtensionsLabel: String {
-        let exts = customExtensionsRaw
+        customExtensionsRaw
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        return exts.isEmpty ? "None" : exts.map { ".\($0)" }.joined(separator: ", ")
+            .map { ".\($0)" }
+            .joined(separator: ", ")
     }
 
     private var appVersion: String {
@@ -223,10 +285,13 @@ struct SettingsView: View {
         let dm = DestinationManager.shared
         ssd1Name   = dm.displayName(forKey: dm.key(for: 0))
         ssd2Name   = dm.displayName(forKey: dm.key(for: 1))
-        ssd3Name   = dm.displayName(forKey: dm.key(for: 2))
         ssd1Folder = dm.folderName(forKey: dm.key(for: 0))
         ssd2Folder = dm.folderName(forKey: dm.key(for: 1))
-        ssd3Folder = dm.folderName(forKey: dm.key(for: 2))
+        if let cfg = dm.loadNASConfig(), cfg.isComplete {
+            nasLabel = cfg.label
+        } else {
+            nasLabel = ""
+        }
     }
 }
 
@@ -274,6 +339,7 @@ struct CustomExtensionsView: View {
         }
         .navigationTitle("Additional File Types")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { EditButton() }
     }
 
     private func addExtension() {

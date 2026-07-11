@@ -1,0 +1,136 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "PhotoVideoBackup"
+          }
+        }
+      }
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "PhotoVideoBackup"
+          }
+        }
+      }
+    },
+    "NSLocalNetworkUsageDescription" : {
+      "comment" : "Privacy - Local Network Usage Description",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup verbindet sich mit Ihrem NAS im lokalen Netzwerk, um Fotos und Videos zu sichern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup connects to your NAS on the local network to back up photos and videos."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup se conecta a tu NAS en la red local para hacer copias de tus fotos y vídeos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup se connecte à votre NAS sur le réseau local pour sauvegarder vos photos et vidéos."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup si connette al tuo NAS sulla rete locale per eseguire il backup di foto e video."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O PhotoVideoBackup liga-se ao seu NAS na rede local para fazer cópia das suas fotos e vídeos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup подключается к вашему NAS в локальной сети для резервного копирования фото и видео."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup 通过本地网络连接到您的 NAS，以备份照片和视频。"
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryUsageDescription" : {
+      "comment" : "System permission dialog for Photos access",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup liest Ihre Fotomediathek, um Fotos und Videos auf einer USB-C SSD zu sichern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup reads your photo library to back up photos and videos to a USB-C connected SSD."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup lee su fototeca para hacer una copia de seguridad de fotos y videos en un SSD conectado por USB-C."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup lit la photothèque pour sauvegarder photos et vidéos sur le SSD connecté en USB-C."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup legge la libreria foto per eseguire il backup di foto e video su un SSD collegato via USB-C."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O PhotoVideoBackup lê sua fototeca para fazer backup de fotos e vídeos em um SSD conectado por USB-C."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup читает вашу медиатеку для резервного копирования фото и видео на SSD, подключённый через USB-C."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup 读取您的照片图库，将照片和视频备份到通过 USB-C 连接的 SSD。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

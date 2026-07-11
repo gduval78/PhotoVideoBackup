@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF8DE591BF6877017B539C /* ContentView.swift */; };
+		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
+		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
+		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
+		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
+		5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AF01 /* NASSettingsView.swift */; };
+		5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B001 /* NASBrowserView.swift */; };
 		0C38A6313682FBEE115C0C9C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E239A5D423378D22B03B1D6 /* SettingsView.swift */; };
 		1B005CEE7160380ED87FFC67 /* PHLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FE5C101F7EC2D8FC7E5945 /* PHLibraryScanner.swift */; };
 		1D2EE64A187CC6C46927F49E /* ReportBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE4F1F23E464C829762900 /* ReportBuilder.swift */; };
@@ -24,28 +30,17 @@
 		80595690DA37BA49EC92E6DC /* IndexStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B3129B8F58C22E80BB8708 /* IndexStore.swift */; };
 		8358C1FA5B9D4520C51E582B /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1D30F00359EE37B58E57C27 /* CryptoKit.framework */; };
 		8A91ED4CC7469FB65F4CFAEE /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B8A76F77BEF69B08979FD8 /* HistoryView.swift */; };
+		8CE8043C2FF5357D00B18026 /* AMSMB2 in Frameworks */ = {isa = PBXBuildFile; productRef = 8CE8043B2FF5357D00B18026 /* AMSMB2 */; };
+		8CE8043D2FF5357D00B18026 /* AMSMB2 in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 8CE8043B2FF5357D00B18026 /* AMSMB2 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		9A798FBD8A7E18812E2BB6F4 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */; };
 		9B476845CDE06A5B1E07BE8F /* SessionProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */; };
 		A5013993786BEC8C95AFB18E /* IndexedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA3A7448DD3B9F06373BB4D /* IndexedFile.swift */; };
+		AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890ABCDEF123456 /* BackupBrowserView.swift */; };
+		B4D100000000000002000000 /* DiagnosticLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D100000000000001000000 /* DiagnosticLog.swift */; };
+		B4D200000000000002000000 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D200000000000001000000 /* AppConstants.swift */; };
 		BF636E66A99EBF18A5A53C6F /* MediaScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D7F4527848742EC8C4471F /* MediaScanner.swift */; };
 		BFFF864679964C7331AC6CFB /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AB2853380E67D3AF8405DF0 /* DashboardViewModel.swift */; };
 		C2EF663B6A0ADBD82C146DC2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9215FB209D26406533B2118 /* StoreKit.framework */; };
-		DAEBD40C15F10838833D31FB /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99679842AE35CEA05BD43B37 /* ReportView.swift */; };
-		DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6127433D81E6C7548DB93070 /* FileCopyEngine.swift */; };
-		EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */; };
-		ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */; };
-		F1BD6D0CD5E22517EEFB9342 /* PHMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4918B830276FA0B8442E881 /* PHMediaItem.swift */; };
-		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
-		AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1234567890ABCDEF123456 /* BackupBrowserView.swift */; };
-		CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */; };
-		FF00AB0000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00AB0000000000000000002 /* OnboardingView.swift */; };
-		F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AB02 /* FolderOrganization.swift */; };
-		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
-		F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AD02 /* LUTManager.swift */; };
-		F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */; };
-		F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B002 /* SourceDeletionManager.swift */; };
-		F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */; };
-		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
 		CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100100 /* ScenarioTestCase.swift */; };
 		CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100200 /* SimulatedSDCard.swift */; };
 		CC0000000000000000200300 /* SimulatedSSD.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100300 /* SimulatedSSD.swift */; };
@@ -54,12 +49,56 @@
 		CC0000000000000000200600 /* ScenarioAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100600 /* ScenarioAssertion.swift */; };
 		CC0000000000000000200700 /* TestSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100700 /* TestSetting.swift */; };
 		CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100800 /* BackupFromSDCardTests.swift */; };
+		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
 		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
 		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
 		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
 		CC0000000000000000201100 /* DualDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100C00 /* DualDestinationTests.swift */; };
 		CC0000000000000000201200 /* DeduplicationEdgeCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100D00 /* DeduplicationEdgeCaseTests.swift */; };
+		CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */; };
+		DAEBD40C15F10838833D31FB /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99679842AE35CEA05BD43B37 /* ReportView.swift */; };
+		DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6127433D81E6C7548DB93070 /* FileCopyEngine.swift */; };
+		EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */; };
+		ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */; };
+		F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AB02 /* FolderOrganization.swift */; };
+		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
+		F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AD02 /* LUTManager.swift */; };
+		F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */; };
+		F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B002 /* SourceDeletionManager.swift */; };
+		F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */; };
+		F001INF000000000000000001 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F001INF000000000000000002 /* InfoPlist.xcstrings */; };
+		F001LNG000000000000000001 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001LNG000000000000000002 /* LanguageManager.swift */; };
+		F001LOC000000000000000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F001LOC000000000000000002 /* Localizable.xcstrings */; };
+		F001REN000000000000000101 /* RenameSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001REN000000000000000102 /* RenameSheet.swift */; };
+		F001REN000000000000000201 /* RenamePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001REN000000000000000202 /* RenamePattern.swift */; };
+		F1BD6D0CD5E22517EEFB9342 /* PHMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4918B830276FA0B8442E881 /* PHMediaItem.swift */; };
+		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
+		FF00AB0000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00AB0000000000000000002 /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CC000000000000000000EA00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D602ECB4FBB02071217A61C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 12ACECB55D6E49DD7E9526CD;
+			remoteInfo = PhotoVideoBackup;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8CE8043E2FF5357D00B18026 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8CE8043D2FF5357D00B18026 /* AMSMB2 in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		06B3129B8F58C22E80BB8708 /* IndexStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexStore.swift; sourceTree = "<group>"; };
@@ -68,6 +107,12 @@
 		4CE68AD0A9F3689817E70653 /* PhotoVideoBackup.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PhotoVideoBackup.entitlements; sourceTree = "<group>"; };
 		4CF4CAA38A06646BBF90C37A /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4E239A5D423378D22B03B1D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000AB01 /* BackupTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTarget.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000AF01 /* NASSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASSettingsView.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000B001 /* NASBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASBrowserView.swift; sourceTree = "<group>"; };
 		5AFF8DE591BF6877017B539C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6127433D81E6C7548DB93070 /* FileCopyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCopyEngine.swift; sourceTree = "<group>"; };
 		66D758241D912B2FD844B1D8 /* MediaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFile.swift; sourceTree = "<group>"; };
@@ -87,25 +132,12 @@
 		AFA3A7448DD3B9F06373BB4D /* IndexedFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexedFile.swift; sourceTree = "<group>"; };
 		B1930E7751AC7ED3CD211F05 /* DestinationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationManager.swift; sourceTree = "<group>"; };
 		B1D30F00359EE37B58E57C27 /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
-		C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionReport.swift; sourceTree = "<group>"; };
-		D4FE5C101F7EC2D8FC7E5945 /* PHLibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHLibraryScanner.swift; sourceTree = "<group>"; };
-		DA3F661B5D1B2FD36D346436 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionProgressView.swift; sourceTree = "<group>"; };
-		E9215FB209D26406533B2118 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		ED904FDA1CE1597B9EE497C3 /* CopyProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyProgress.swift; sourceTree = "<group>"; };
-		F132AD972A4ABA4B9CA93519 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
-		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
+		B4D100000000000001000000 /* DiagnosticLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticLog.swift; sourceTree = "<group>"; };
+		B4D200000000000001000000 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		BB1234567890ABCDEF123456 /* BackupBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBrowserView.swift; sourceTree = "<group>"; };
-		DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBrowserViewModel.swift; sourceTree = "<group>"; };
-		FF00AB0000000000000000002 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001AB02 /* FolderOrganization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganization.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001AC02 /* MacOpenPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenPanel.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001AD02 /* LUTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTManager.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGradingEngine.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001B002 /* SourceDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDeletionManager.swift; sourceTree = "<group>"; };
-		F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteConfirmationSheet.swift; sourceTree = "<group>"; };
-		CC000000000000000000BA00 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionReport.swift; sourceTree = "<group>"; };
 		CC0000000000000000002A00 /* PhotoVideoBackupTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoVideoBackupTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC000000000000000000BA00 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		CC0000000000000000100100 /* ScenarioTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioTestCase.swift; sourceTree = "<group>"; };
 		CC0000000000000000100200 /* SimulatedSDCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSDCard.swift; sourceTree = "<group>"; };
 		CC0000000000000000100300 /* SimulatedSSD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSSD.swift; sourceTree = "<group>"; };
@@ -119,6 +151,26 @@
 		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100C00 /* DualDestinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualDestinationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100D00 /* DeduplicationEdgeCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeduplicationEdgeCaseTests.swift; sourceTree = "<group>"; };
+		D4FE5C101F7EC2D8FC7E5945 /* PHLibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHLibraryScanner.swift; sourceTree = "<group>"; };
+		DA3F661B5D1B2FD36D346436 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupBrowserViewModel.swift; sourceTree = "<group>"; };
+		E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionProgressView.swift; sourceTree = "<group>"; };
+		E9215FB209D26406533B2118 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		ED904FDA1CE1597B9EE497C3 /* CopyProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyProgress.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AB02 /* FolderOrganization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganization.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AC02 /* MacOpenPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenPanel.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AD02 /* LUTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTManager.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001AE02 /* VideoGradingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoGradingEngine.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001B002 /* SourceDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDeletionManager.swift; sourceTree = "<group>"; };
+		F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteConfirmationSheet.swift; sourceTree = "<group>"; };
+		F001INF000000000000000002 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		F001LNG000000000000000002 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
+		F001LOC000000000000000002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F001REN000000000000000102 /* RenameSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameSheet.swift; sourceTree = "<group>"; };
+		F001REN000000000000000202 /* RenamePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenamePattern.swift; sourceTree = "<group>"; };
+		F132AD972A4ABA4B9CA93519 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
+		FF00AB0000000000000000002 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CE8043C2FF5357D00B18026 /* AMSMB2 in Frameworks */,
 				2B242A1DC7D2741F60F4D53C /* Photos.framework in Frameworks */,
 				8358C1FA5B9D4520C51E582B /* CryptoKit.framework in Frameworks */,
 				C2EF663B6A0ADBD82C146DC2 /* StoreKit.framework in Frameworks */,
@@ -141,16 +194,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXContainerItemProxy section */
-		CC000000000000000000EA00 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8D602ECB4FBB02071217A61C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 12ACECB55D6E49DD7E9526CD;
-			remoteInfo = PhotoVideoBackup;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXGroup section */
 		1559D51E24E849BBD6C6209D /* PHLibrary */ = {
@@ -179,6 +222,7 @@
 				A76334462978268F2D6CB047 /* BackupSession.swift */,
 				AFA3A7448DD3B9F06373BB4D /* IndexedFile.swift */,
 				06B3129B8F58C22E80BB8708 /* IndexStore.swift */,
+				B4D100000000000001000000 /* DiagnosticLog.swift */,
 			);
 			path = IndexStore;
 			sourceTree = "<group>";
@@ -189,6 +233,8 @@
 				ED904FDA1CE1597B9EE497C3 /* CopyProgress.swift */,
 				6127433D81E6C7548DB93070 /* FileCopyEngine.swift */,
 				A1592A497AAB2FDBD5216223 /* PHBackupEngine.swift */,
+				5B0BF11E000000000000AB01 /* BackupTarget.swift */,
+				5B0BF11E000000000000AC01 /* SMBTarget.swift */,
 			);
 			path = CopyEngine;
 			sourceTree = "<group>";
@@ -198,6 +244,7 @@
 			children = (
 				5AFF8DE591BF6877017B539C /* ContentView.swift */,
 				7FE2BA8190EE47B03F609954 /* PhotoVideoBackupApp.swift */,
+				B4D200000000000001000000 /* AppConstants.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -245,6 +292,8 @@
 				DA3F661B5D1B2FD36D346436 /* Assets.xcassets */,
 				6F06456A9F582C56C57FE1DC /* Info.plist */,
 				4CE68AD0A9F3689817E70653 /* PhotoVideoBackup.entitlements */,
+				F001LOC000000000000000002 /* Localizable.xcstrings */,
+				F001INF000000000000000002 /* InfoPlist.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -253,6 +302,8 @@
 			isa = PBXGroup;
 			children = (
 				B1930E7751AC7ED3CD211F05 /* DestinationManager.swift */,
+				5B0BF11E000000000000AD01 /* NASConfig.swift */,
+				5B0BF11E000000000000AE01 /* KeychainStore.swift */,
 			);
 			path = DestinationManager;
 			sourceTree = "<group>";
@@ -283,6 +334,34 @@
 				CC000000000000000000BA00 /* XCTest.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE4F1F23E464C829762900 /* ReportBuilder.swift */,
+				C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */,
+			);
+			path = ReportBuilder;
+			sourceTree = "<group>";
+		};
+		C5E8BC5D6D0EDF80B30E1830 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
+				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
+				F001REN000000000000000102 /* RenameSheet.swift */,
+				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
+				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
+				FF00AB0000000000000000002 /* OnboardingView.swift */,
+				0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */,
+				99679842AE35CEA05BD43B37 /* ReportView.swift */,
+				E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */,
+				4E239A5D423378D22B03B1D6 /* SettingsView.swift */,
+				5B0BF11E000000000000AF01 /* NASSettingsView.swift */,
+				5B0BF11E000000000000B001 /* NASBrowserView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		CC0000000000000000008A00 /* PhotoVideoBackupTests */ = {
@@ -321,29 +400,27 @@
 			path = ScenarioTests;
 			sourceTree = "<group>";
 		};
-		B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */ = {
+		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				6DDE4F1F23E464C829762900 /* ReportBuilder.swift */,
-				C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */,
+				EE1234567890ABCDEF123456 /* BackupBrowser */,
+				F001ABCDE00000000001AF00 /* LUT */,
+				F001ABCDE00000000001B000 /* SourceDeletion */,
+				F001REN000000000000000300 /* RenameEngine */,
+				F001LNG000000000000000002 /* LanguageManager.swift */,
+				F001ABCDE00000000001AB02 /* FolderOrganization.swift */,
+				F001ABCDE00000000001AC02 /* MacOpenPanel.swift */,
+				3A73343377F29F8319E4B7C7 /* CopyEngine */,
+				4C28EE4CDD2AD319531DA322 /* Dashboard */,
+				916C5EB7E9AE7D3A910C89FA /* DestinationManager */,
+				4D6A8EC6C35A775400572B75 /* ExternalSource */,
+				21FB24A50DFFB8E89DFBB968 /* IndexStore */,
+				5FF89B8D20F3A41D1CC1DA61 /* MediaScanner */,
+				1559D51E24E849BBD6C6209D /* PHLibrary */,
+				B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */,
+				9B967D80E38A533D05B4D63A /* Store */,
 			);
-			path = ReportBuilder;
-			sourceTree = "<group>";
-		};
-		C5E8BC5D6D0EDF80B30E1830 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
-				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
-				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
-				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
-				FF00AB0000000000000000002 /* OnboardingView.swift */,
-				0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */,
-				99679842AE35CEA05BD43B37 /* ReportView.swift */,
-				E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */,
-				4E239A5D423378D22B03B1D6 /* SettingsView.swift */,
-			);
-			path = Views;
+			path = Modules;
 			sourceTree = "<group>";
 		};
 		EE1234567890ABCDEF123456 /* BackupBrowser */ = {
@@ -371,25 +448,12 @@
 			path = SourceDeletion;
 			sourceTree = "<group>";
 		};
-		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
+		F001REN000000000000000300 /* RenameEngine */ = {
 			isa = PBXGroup;
 			children = (
-				EE1234567890ABCDEF123456 /* BackupBrowser */,
-				F001ABCDE00000000001AF00 /* LUT */,
-				F001ABCDE00000000001B000 /* SourceDeletion */,
-				F001ABCDE00000000001AB02 /* FolderOrganization.swift */,
-				F001ABCDE00000000001AC02 /* MacOpenPanel.swift */,
-				3A73343377F29F8319E4B7C7 /* CopyEngine */,
-				4C28EE4CDD2AD319531DA322 /* Dashboard */,
-				916C5EB7E9AE7D3A910C89FA /* DestinationManager */,
-				4D6A8EC6C35A775400572B75 /* ExternalSource */,
-				21FB24A50DFFB8E89DFBB968 /* IndexStore */,
-				5FF89B8D20F3A41D1CC1DA61 /* MediaScanner */,
-				1559D51E24E849BBD6C6209D /* PHLibrary */,
-				B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */,
-				9B967D80E38A533D05B4D63A /* Store */,
+				F001REN000000000000000202 /* RenamePattern.swift */,
 			);
-			path = Modules;
+			path = RenameEngine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -402,6 +466,7 @@
 				292507EEBB3D913C28830059 /* Sources */,
 				E0FE59A35E5F3B2B27561AA1 /* Resources */,
 				09F372C26A2CD2AD37BB2F36 /* Frameworks */,
+				8CE8043E2FF5357D00B18026 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -409,6 +474,7 @@
 			);
 			name = PhotoVideoBackup;
 			packageProductDependencies = (
+				8CE8043B2FF5357D00B18026 /* AMSMB2 */,
 			);
 			productName = PhotoVideoBackup;
 			productReference = 0AF044A988E2FF055550C23B /* PhotoVideoBackup.app */;
@@ -435,14 +501,6 @@
 		};
 /* End PBXNativeTarget section */
 
-/* Begin PBXTargetDependency section */
-		CC000000000000000000DA00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 12ACECB55D6E49DD7E9526CD /* PhotoVideoBackup */;
-			targetProxy = CC000000000000000000EA00 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXProject section */
 		8D602ECB4FBB02071217A61C /* Project object */ = {
 			isa = PBXProject;
@@ -456,9 +514,19 @@
 			knownRegions = (
 				Base,
 				en,
+				fr,
+				de,
+				es,
+				it,
+				pt,
+				"zh-Hans",
+				ru,
 			);
 			mainGroup = 1941F9D38658786F0142987B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8CE804382FF5324A00B18026 /* XCRemoteSwiftPackageReference "AMSMB2" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9D5A674606C0BD67A818AF2C /* Products */;
 			projectDirPath = "";
@@ -477,6 +545,8 @@
 			files = (
 				6F2EACE8E1329B99BE7B8815 /* Assets.xcassets in Resources */,
 				60C70900AACF4F8FB18BD38F /* Configuration.storekit in Resources */,
+				F001LOC000000000000000001 /* Localizable.xcstrings in Resources */,
+				F001INF000000000000000001 /* InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,8 +567,16 @@
 				564A2559BFE5AFEF028876EC /* DestinationManager.swift in Sources */,
 				60E221556845F8210B84DF0C /* ExternalSource.swift in Sources */,
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
+				5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */,
+				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
+				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
+				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
+				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
+				5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */,
 				8A91ED4CC7469FB65F4CFAEE /* HistoryView.swift in Sources */,
 				80595690DA37BA49EC92E6DC /* IndexStore.swift in Sources */,
+				B4D100000000000002000000 /* DiagnosticLog.swift in Sources */,
+				B4D200000000000002000000 /* AppConstants.swift in Sources */,
 				FF00AB0000000000000000001 /* OnboardingView.swift in Sources */,
 				A5013993786BEC8C95AFB18E /* IndexedFile.swift in Sources */,
 				5AC44FF7997D5C6D29290F18 /* MediaFile.swift in Sources */,
@@ -514,18 +592,18 @@
 				ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */,
 				0C38A6313682FBEE115C0C9C /* SettingsView.swift in Sources */,
 				FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */,
+				F001LNG000000000000000001 /* LanguageManager.swift in Sources */,
 				F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */,
 				F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */,
 				F001ABCDE00000000001AD01 /* LUTManager.swift in Sources */,
 				F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */,
 				F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */,
 				F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */,
+				F001REN000000000000000101 /* RenameSheet.swift in Sources */,
+				F001REN000000000000000201 /* RenamePattern.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTestSourcesBuildPhase section */
 		CC0000000000000000003A00 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -546,7 +624,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXTestSourcesBuildPhase section */
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CC000000000000000000DA00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 12ACECB55D6E49DD7E9526CD /* PhotoVideoBackup */;
+			targetProxy = CC000000000000000000EA00 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7A93151FCDC74FC3DD522412 /* Debug */ = {
@@ -619,7 +705,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 41;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -627,11 +713,50 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.10.0;
+				MARKETING_VERSION = 2.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		CC0000000000000000006A00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T7V27KW532;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
+			};
+			name = Debug;
+		};
+		CC0000000000000000007A00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T7V27KW532;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
 			};
 			name = Release;
 		};
@@ -642,7 +767,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 41;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -650,7 +775,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.10.0;
+				MARKETING_VERSION = 2.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -714,45 +839,6 @@
 			};
 			name = Release;
 		};
-		CC0000000000000000006A00 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = T7V27KW532;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
-			};
-			name = Debug;
-		};
-		CC0000000000000000007A00 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = T7V27KW532;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoVideoBackup.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoVideoBackup";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -784,6 +870,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8CE804382FF5324A00B18026 /* XCRemoteSwiftPackageReference "AMSMB2" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/amosavian/AMSMB2";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8CE8043B2FF5357D00B18026 /* AMSMB2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8CE804382FF5324A00B18026 /* XCRemoteSwiftPackageReference "AMSMB2" */;
+			productName = AMSMB2;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D602ECB4FBB02071217A61C /* Project object */;
 }

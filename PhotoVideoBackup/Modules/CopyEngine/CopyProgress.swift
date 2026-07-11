@@ -9,6 +9,8 @@ struct EngineResult: Sendable {
     let totalBytesCopied: Int64
     let wasLimited: Bool
     let verifiedCount: Int
+    let disconnectedCount: Int
+    var wasCancelled: Bool = false
 }
 
 // MARK: - CopyPhase

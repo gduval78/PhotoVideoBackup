@@ -35,6 +35,11 @@ final class BackupBrowserViewModel {
     private var gradingTask: Task<Void, Never>?
     private(set) var folderListVersion: Int = 0
 
+    // NAS grading — mirrors the local grading state but keyed by the SMB relative sub-path.
+    private(set) var nasGradingState: GradingState?
+    private(set) var nasGradingSubPath: String?
+    private var nasGradingTask: Task<Void, Never>?
+
     static let imageExtensions: Set<String> = [
         "jpg", "jpeg", "heic", "png", "dng", "raw", "cr2", "cr3", "arw", "nef", "rw2", "insp"
     ]
@@ -63,6 +68,7 @@ final class BackupBrowserViewModel {
 
     func stopAccess() {
         cancelGrading()
+        cancelNASGrading()
         accessedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
         accessedURLs = []
         thumbnailCache = [:]
@@ -76,6 +82,10 @@ final class BackupBrowserViewModel {
 
     func dateFolders(in deviceFolder: URL) -> [URL] {
         subdirectories(in: deviceFolder).sorted { $0.lastPathComponent > $1.lastPathComponent }
+    }
+
+    func refreshFolder(_ folder: URL) {
+        folderListVersion += 1
     }
 
     func mediaFiles(in folder: URL) -> [URL] {
@@ -114,18 +124,36 @@ final class BackupBrowserViewModel {
 
     // MARK: - LUT assignments
 
+    /// LUT assignment keyed by an arbitrary string. Local device folders use their
+    /// `lastPathComponent`; NAS folders use `"nas:" + relativeSubPath` (see `nasLUTKey`).
+    func assignedLUTName(forKey key: String) -> String? {
+        lutAssignments[key]
+    }
+
+    func assignLUT(named lutFileName: String, forKey key: String) {
+        lutAssignments[key] = lutFileName
+        saveLUTAssignments()
+    }
+
+    func removeLUT(forKey key: String) {
+        lutAssignments.removeValue(forKey: key)
+        saveLUTAssignments()
+    }
+
+    /// Namespaced key for a NAS folder so it never collides with a local device-folder name.
+    static func nasLUTKey(subPath: String) -> String { "nas:" + subPath }
+
+    // URL-based wrappers (local disk destinations) — key is the folder's last path component.
     func assignedLUTName(for deviceFolder: URL) -> String? {
-        lutAssignments[deviceFolder.lastPathComponent]
+        assignedLUTName(forKey: deviceFolder.lastPathComponent)
     }
 
     func assignLUT(named lutFileName: String, to deviceFolder: URL) {
-        lutAssignments[deviceFolder.lastPathComponent] = lutFileName
-        saveLUTAssignments()
+        assignLUT(named: lutFileName, forKey: deviceFolder.lastPathComponent)
     }
 
     func removeLUT(from deviceFolder: URL) {
-        lutAssignments.removeValue(forKey: deviceFolder.lastPathComponent)
-        saveLUTAssignments()
+        removeLUT(forKey: deviceFolder.lastPathComponent)
     }
 
     func gradedFolder(for deviceFolder: URL) -> URL {
@@ -184,6 +212,78 @@ final class BackupBrowserViewModel {
         gradingTask = nil
         gradingState = nil
         gradingDeviceFolder = nil
+    }
+
+    // MARK: - NAS Grading (download → grade → upload)
+
+    /// Relative "(Graded)" sibling of a NAS folder, e.g. `photos/DJI` → `photos/DJI (Graded)`.
+    static func nasGradedBase(forSubPath subPath: String) -> String {
+        let comps = subPath.split(separator: "/").map(String.init)
+        guard let last = comps.last else { return "(Graded)" }
+        let gradedName = last + " (Graded)"
+        let parent = comps.dropLast().joined(separator: "/")
+        return parent.isEmpty ? gradedName : "\(parent)/\(gradedName)"
+    }
+
+    /// Grades an explicit list of videos (`relFiles`, paths relative to `subPath`) chosen by the
+    /// user, and uploads each result to the mirrored `(Graded)` sibling on the NAS. The user picks
+    /// which clips to grade because a camera folder often mixes LOG and non-LOG footage — grading
+    /// non-LOG footage with a LOG LUT would ruin it. Already-graded files on the NAS are skipped.
+    func startNASGrading(target: SMBTarget, subPath: String, relFiles: [String], lut: ParsedLUT) {
+        cancelNASGrading()
+        let videos = relFiles
+            .filter { Self.gradableExtensions.contains(($0 as NSString).pathExtension.lowercased()) }
+            .sorted()
+        guard !videos.isEmpty else { return }
+        nasGradingSubPath = subPath
+        nasGradingState = GradingState(completed: 0, total: videos.count, currentFile: "", isFinished: false)
+        let gradedBase = Self.nasGradedBase(forSubPath: subPath)
+
+        nasGradingTask = Task {
+            let engine = VideoGradingEngine()
+
+            for (index, rel) in videos.enumerated() {
+                if Task.isCancelled { break }
+                let name = (rel as NSString).lastPathComponent
+                nasGradingState = GradingState(
+                    completed: index, total: videos.count, currentFile: name, isFinished: false)
+
+                let sourceRel = [subPath, rel].filter { !$0.isEmpty }.joined(separator: "/")
+                let destRel = "\(gradedBase)/\((rel as NSString).deletingPathExtension).mp4"
+
+                // Skip if the graded file already exists on the NAS.
+                if await target.existingSize(forRelative: destRel) != nil { continue }
+
+                let tmpDir = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("pvb_nasgrade_\(UUID().uuidString)", isDirectory: true)
+                let tmpIn  = tmpDir.appendingPathComponent(name)
+                let tmpOut = tmpDir.appendingPathComponent("graded_\((name as NSString).deletingPathExtension).mp4")
+                defer { try? FileManager.default.removeItem(at: tmpDir) }
+
+                do {
+                    try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+                    try await target.download(relativeSubPath: sourceRel, to: tmpIn)
+                    try await engine.grade(source: tmpIn, destination: tmpOut, lut: lut)
+                    try await target.upload(localFile: tmpOut, toRelative: destRel, onProgress: { _ in })
+                } catch {
+                    // Skip this file on any error (unreachable NAS, unsupported codec…) and continue.
+                    continue
+                }
+            }
+
+            if !Task.isCancelled {
+                nasGradingState = GradingState(
+                    completed: videos.count, total: videos.count, currentFile: "", isFinished: true)
+                folderListVersion += 1
+            }
+        }
+    }
+
+    func cancelNASGrading() {
+        nasGradingTask?.cancel()
+        nasGradingTask = nil
+        nasGradingState = nil
+        nasGradingSubPath = nil
     }
 
     // MARK: - Thumbnails

@@ -1,7 +1,37 @@
 # PhotoVideoBackup — Project Rules for Claude
 
 ## Language
-**All app UI strings must be in English.** This includes error messages, labels, subtitles, placeholders, alerts, and button titles. The user communicates in French but the app itself is entirely in English.
+**Write all UI string literals in English** — this is the source language and the xcstrings key. Translations for French (`fr`), German (`de`), Spanish (`es`), Italian (`it`), Portuguese (`pt`), Chinese Simplified (`zh-Hans`), and Russian (`ru`) live in `PhotoVideoBackup/Resources/Localizable.xcstrings`. The user communicates in French, but English is always the code-level string.
+
+When adding a new user-facing string:
+1. Write the English literal directly in the Swift code (SwiftUI `Text`, `Label`, `Button`, etc. auto-localize string literals).
+2. For `String`-returning contexts (computed properties, ViewModels), use `String(localized: "…")`.
+3. Add FR / DE / ES / IT / PT / ZH-HANS / RU translations to `Localizable.xcstrings`.
+4. Also add translations to `InfoPlist.xcstrings` for any plist-level strings (`NSPhotoLibraryUsageDescription`, etc.).
+
+**Every feature extension must include full localization.** Never ship a new view or string without its 7 translations. This applies to every new `Text(…)`, `Label(…)`, `Button(…)`, `.navigationTitle(…)`, section header/footer, picker label, alert message, and error string — without exception.
+
+### LanguageManager — critical localization rules
+
+The app uses a custom `LanguageManager` that swizzles `Bundle.main` with `LanguageBundle` to intercept `localizedString(forKey:value:table:)`. This works for most cases but has **known limitations**:
+
+**`String(localized: key, locale: someLocale)` does NOT reliably bypass `LanguageBundle`** — the `locale:` parameter is often ignored; the result depends on `LanguageManager.selectedCode`, not the locale passed. Do not rely on `locale:` to force a specific language in `String(localized:)`.
+
+**The only reliable way to respect the selected language in a View** is `Text(LocalizedStringKey)` — SwiftUI's `Text` uses `.environment(\.locale, languageManager.currentLocale)` (set at the root in `PhotoVideoBackupApp`) and bypasses the `LanguageBundle` issue entirely.
+
+**Rules for localized strings in Views:**
+- Prefer `Text("key")` (LocalizedStringKey literal) over `String(localized: "key")` wherever possible.
+- When a view component takes a `String` parameter (e.g. a custom struct with `name: String`), change the parameter to `LocalizedStringKey` or use a `@ViewBuilder` content closure so the `Text` stays as `LocalizedStringKey`.
+- For verbatim (user-provided) strings, use `Text(verbatim: value)` to prevent SwiftUI from treating them as localization keys.
+- `String(localized:)` without `locale:` is fine in ViewModels and non-View contexts where `LanguageBundle` intercepts correctly.
+
+**Date formatting:** `Date.formatted()` uses `Locale.current` (device language), not the app language. Always pass `.locale(languageManager.currentLocale)` explicitly: `date.formatted(Date.FormatStyle(...).locale(languageManager.currentLocale))`.
+
+**Byte count formatting:** `ByteCountFormatter.string(fromByteCount:countStyle:)` uses `Locale.current`. Use `Int64.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))` instead.
+
+**`FolderOrganization.labelKey`** returns a `LocalizedStringKey` for use in SwiftUI `Text`. Use this in Pickers and views instead of `displayName` (which uses `String(localized:)`).
+
+The app language follows the iPhone system language by default. Users can override it in Settings → Language (in-app picker powered by `LanguageManager`).
 
 ## Documentation
 - User-facing documentation is in `docs-publish/` — this is a separate git repository published on GitHub Pages
@@ -149,13 +179,50 @@ For step 2 to deduplicate correctly against files already on the SSD (e.g. from 
 
 The date fixes above (container date + modification date preservation) ensure that `SSD/DJI Neo 2/2024-01-14/file.mp4` from a direct Mac backup and from the two-step relay produce the **same path**, so deduplication via physical file existence check works correctly.
 
+## Deduplication — cascade logic (v2.1.0+)
+
+Both engines apply a 3-level cascade per file to decide whether to copy:
+
+1. **Physical existence check** — all destination URLs checked for size match. If all present → skip immediately (no file read, no IndexStore query).
+2. **SHA-256 content check** — source SHA-256 computed, then `IndexStore.knownDestinationPaths(forSHA256:)` returns stored destination paths. At least one must still exist on disk (`FileManager.fileExists`) before skipping — this ensures deleted files are re-copied even if their hash is in the IndexStore.
+3. **Copy** — `streamCopy` writes to missing destinations using the precomputed SHA-256 (no double-read of source). SHA-256 is persisted in `IndexedFile` for future dedup.
+
+**Critical invariant**: The SHA-256 skip is only valid when EVERY destination root has at least one known path for that hash still present on disk. Checking "any known path on any disk" is wrong when using 2 SSDs — if SSD2's folder is deleted, SSD1 still has the file, so the hash is "known" but SSD2 would never receive it. Both engines use `destinations.allSatisfy { destRoot in knownPaths.contains { $0.hasPrefix(destRoot.path) && fileExists($0) } }`.
+
+`IndexStore` methods for deduplication:
+- `knownDestinationPaths(forSHA256:) -> [String]` — returns stored paths; caller checks `FileManager.fileExists`.
+- `captureDate(forDestinationPath:) -> Date?` — lookup by filename for use in `RenameSheet` preview.
+- `updateDestinationPath(from:to:)` — called after rename to keep `destinationPaths` and `fileName` in sync.
+
 ## Backup engine architecture — memory & batching
 
 Both `PHBackupEngine` and `FileCopyEngine` use the same pattern to avoid memory pressure on large libraries:
 
 - **No `session.files.append`** — IndexedFile objects are inserted directly into the SwiftData context (`IndexStore.shared.context.insert(indexed)`). SwiftData manages the relationship via its inverse; never fault in the full `session.files` collection during a backup run.
 - **Batch save every 500 files**: `if index > 0 && index % Self.batchFlushInterval == 0 { await MainActor.run { IndexStore.shared.save() }; try? await Task.sleep(nanoseconds: 10_000_000) }` — the 10ms sleep gives iOS room to reclaim memory between batches.
-- **Stats via actor-isolated counters**: `_copiedCount`, `_skippedCount`, `_failedCount`, `_totalBytesCopied`, `_wasLimited` are actor-isolated vars on the engine. They are read after the stream completes via `engineResult: EngineResult`. `finishSession` uses these counters directly — it never scans `session.files`.
+- **Stats via actor-isolated counters**: `_copiedCount`, `_skippedCount`, `_failedCount`, `_totalBytesCopied`, `_wasLimited`, `_disconnectedCount` are actor-isolated vars on the engine. They are read after the stream completes via `engineResult: EngineResult`. `finishSession` uses these counters directly — it never scans `session.files`.
+
+## Mid-backup disconnection detection (v2.1.4+)
+
+`streamCopy` in both engines handles per-destination disconnection:
+
+- Destinations are tracked as `(handle: FileHandle, dest: URL)` pairs.
+- On `handle.write()` failure: `isVolumeReachable(dest)` checks `volumeTotalCapacityKey` on the destination folder. If 0 or throws → volume gone → drop this destination, continue with others.
+- If all destinations disconnect → throw `CopyError.allDestinationsDisconnected` → main loop catches it, breaks, marks session `.partial` or `.failed`.
+- `StreamResult` carries `disconnected: [URL]` and `written: [URL]` — verify and modificationDate propagation only apply to `written` destinations.
+- `_disconnectedCount` accumulates across files; `finishSession` sets `.partial` if `disconnectedCount > 0`.
+- `[DISC_ERROR]` tag written to DiagnosticLog on every disconnection event.
+
+**Security scope for multiple SSDs**: `startAccessingSecurityScopedResource()` can return `false` on iOS for a valid external volume (sandbox extension already embedded in the bookmark). **Never filter destinations on this return value** — call it on all destinations for side effects, keep all in `accessed`. Actual inaccessibility is caught by the copy engine at write time.
+
+## Report — multi-destination display (v2.1.4+)
+
+When `session.destinations.count > 1`, `ReportView` switches to a multi-target layout:
+
+- **Summary**: one `TargetSummary` block per SSD showing Copied / Skipped / Failed counts for that SSD specifically. Computed by `targetSummaries()` — iterates `session.files`, checks `file.destinationPaths.contains { $0.hasPrefix(root) }` per destination root.
+- **Files detail**: single `ReportMultiTargetFilesView` (replaces 3 separate Copied/Skipped/Failed lists). Each file row shows filename + per-SSD status indicator (● green = copied, ● orange = skipped, ● red = failed/disconnected) + size + date.
+- Per-target status derived from `file.destinationPaths` vs `session.destinations` — no new SwiftData fields needed.
+- Single-destination sessions keep the existing Copied / Skipped / Failed split navigation.
 
 ## Backup session — file limit and partial status
 
@@ -181,11 +248,21 @@ All fields use SwiftData default values (lightweight migration — no migration 
 - Thumbnail generation: ImageIO (`CGImageSourceCreateThumbnailAtIndex`) for images, `AVAssetImageGenerator` for videos.
 - Full-size image in `MediaDetailView` is loaded via ImageIO capped at 2048 px to avoid memory pressure on large RAW files.
 
-## Browse tab — multi-select and share
+## Browse tab — multi-select, share and rename
 - Selection mode is local state in `MediaGridView` (`@State selectionMode`, `selectedURLs: Set<URL>`).
+- Toolbar in selection mode: **Cancel**, **Select All / Deselect All**, **Rename (N)**, **Share (N)**.
 - On share: selected files are copied to a unique temp directory (`FileManager.default.temporaryDirectory/pvb_share_{UUID}/`) in a detached task, then presented via `UIActivityViewController` (`ActivityShareSheet`).
 - Temp directory is deleted in the `onDismiss` handler of the sheet (via `cleanupTempFiles()`).
 - Security-scoped access opened in `BackupBrowserView.onAppear` remains valid throughout the entire navigation stack — no need to re-open per operation.
+- `BackupBrowserViewModel.refreshFolder(_:)` increments `folderListVersion` to force re-enumeration after rename.
+
+## Browse tab — batch rename (v2.1.0)
+- `RenameSheet` (`Views/RenameSheet.swift`) — sheet with pattern editor, token chips, index width picker (2/3/4 digits), live preview of first 3 filenames, progress counter.
+- `RenamePattern` (`Modules/RenameEngine/RenamePattern.swift`) — pattern engine. Tokens: `{YYYY}` `{MM}` `{DD}` `{hh}` `{mm}` `{ss}` `{index}` `{original}`. Anything else is literal text. Date is **capture date** (EXIF `DateTimeOriginal` or video container `creationDate`), not modification date.
+- Rename uses `FileManager.moveItem` — file content unchanged, SHA-256 invariant.
+- After rename: `IndexStore.updateDestinationPath(from:to:)` is called per file to keep `destinationPaths` and `fileName` in sync for future deduplication.
+- Conflict resolution: if target name already exists, `_2`, `_3`… suffix is appended automatically.
+- Files sorted alphabetically before applying `{index}` so numbering is deterministic.
 
 ## Browse tab — LUT Grade feature
 - `LUTStore` (`Modules/LUT/LUTManager.swift`) — `@Observable @MainActor` singleton. Imports `.cube` files to `Documents/LUTs/`. Parsed via `LUTStore.parseCube(at:)` (nonisolated static, can run on any thread). Applies via `CIColorCubeWithColorSpace` filter.
@@ -198,6 +275,108 @@ All fields use SwiftData default values (lightweight migration — no migration 
 - Folders whose `lastPathComponent.hasSuffix(" (Graded)")` do not show the LUT Grade section in `DeviceFolderView`.
 - `activeLUT: ParsedLUT?` is passed down from `DeviceFolderView` → `FolderContentView` → `MediaGridView` → `VideoFullScreenView` as a normal parameter (prop drilling). This is intentional: avoids coupling navigation state to the ViewModel.
 - LUT parsing is done in `Task { await Task.detached { LUTStore.parseCube(at:) }.value }` to keep heavy work off the main thread while safely updating `@State` on the main actor.
+
+### LUT Grade on NAS destinations (v2.2.0)
+
+The NAS Browse path (`NASBrowserView`) has full LUT Grade parity with the local `DeviceFolderView`. Key facts:
+
+- **Two separate Browse paths.** Local SSD folders route through `DeviceFolderView`; NAS folders route through `NASBrowserRootView` → `NASBrowserView` (a generic SMB file lister). The LUT Grade section had to be added to `NASBrowserView` explicitly — it is not shared code. Anything added to the local LUT flow must be mirrored there.
+- **LUT assignment is keyed by a plain `String`, not a `URL`.** `BackupBrowserViewModel` exposes key-based `assignedLUTName(forKey:)` / `assignLUT(named:forKey:)` / `removeLUT(forKey:)`; the old URL-based methods are thin wrappers using `deviceFolder.lastPathComponent`. NAS folders use `BackupBrowserViewModel.nasLUTKey(subPath:)` = `"nas:" + subPath` so a NAS folder never collides with a local device-folder name in the shared `lutAssignments` UserDefaults dict.
+- **`LUTPickerSheet` and `VideoFullScreenView` are now `internal` (not `private`)** and reused by `NASBrowserView`. `LUTPickerSheet` takes a `folderKey: String` (not a `URL`).
+- **NAS LUT Grade section shows only when `!subPath.isEmpty` and the folder name doesn't end in `" (Graded)"`** — i.e. at device-folder level, matching local. Not at the NAS root.
+- **Grading is per-video, never "grade all".** A camera folder mixes LOG and non-LOG footage; grading non-LOG with a LOG LUT ruins it. `NASBrowserView` has a multi-select mode (Select / Select All / Grade), mirroring `MediaGridView`. `startNASGrading(target:subPath:relFiles:lut:)` takes the explicit list of chosen files.
+- **Download → grade → upload.** `VideoGradingEngine.grade(source:destination:lut:)` is now `internal` and reused: each NAS clip is downloaded (`SMBTarget.download`) to a temp file, graded locally, then uploaded (`SMBTarget.upload`) to the `(Graded)` sibling (`nasGradedBase(forSubPath:)`). Skip check uses `SMBTarget.existingSize(forRelative:)`. NAS grading state is separate: `nasGradingState` / `nasGradingSubPath`; cancelled in `stopAccess()`.
+- **Bandwidth caveat:** unlike local grading (direct filesystem), NAS grading transfers each clip twice over the network (down + up). Slow for 4K, heavy on cellular. Not yet gated behind a mobile-data warning.
+- **Fix (both paths):** `VideoGradingEngine.run`'s catch now deletes a failed export's partial file, so it isn't later mistaken for "already graded" via `fileExists`.
+
+## File reading — InputStream, not FileHandle.readData
+
+**Never use `FileHandle.readData(ofLength:)` for reading source or destination files.** This old ObjC API raises an `NSException` (not a Swift `Error`) on I/O errors — exceptions are uncatchable in Swift and crash the app silently.
+
+**Always use `InputStream`:**
+
+```swift
+guard let stream = InputStream(url: url) else { throw ... }
+stream.open()
+defer { stream.close() }
+var buffer = [UInt8](repeating: 0, count: chunkSize)
+while stream.hasBytesAvailable {
+    let n = stream.read(&buffer, maxLength: chunkSize)
+    if n < 0 { throw stream.streamError ?? ... }
+    guard n > 0 else { break }
+    // use Data(buffer[0..<n])
+}
+```
+
+`stream.read(_:maxLength:)` returns `Int`: `-1` = error (check `stream.streamError`), `0` = EOF, `>0` = bytes read. Always catchable, no ObjC exceptions.
+
+`FileHandle` is still used for **writing** (`handle.write(contentsOf:)` throws Swift errors correctly).
+
+## IndexStore — SwiftData corruption recovery
+
+`IndexStore.init()` no longer calls `fatalError`. Recovery sequence:
+1. Normal `ModelContainer` init → success → proceed.
+2. Failure → delete `.store`, `.store-shm`, `.store-wal` from Application Support → retry → `didResetHistory = true`.
+3. Still failing → in-memory container → app works, history not persisted → `didResetHistory = true`.
+
+`DashboardViewModel.onAppear()` checks `IndexStore.shared.didResetHistory` and surfaces a user-visible message. **Never add `fatalError` back** — a corrupted database should not prevent the app from launching.
+
+## DiagnosticLog — crash tracing
+
+`Modules/IndexStore/DiagnosticLog.swift` — append-only log, serialized on a background queue, safe to call from any thread or actor.
+
+**File location:** `Documents/pvb_diagnostic.log` — survives app updates, visible in Files app, max 1000 lines (pruned at launch).
+
+**API:**
+```swift
+DiagnosticLog.write("[TAG] message")                         // any context
+DiagnosticLog.pruneAndMarkLaunch(appVersion: "2.0.1")       // call once in App.init()
+DiagnosticLog.installObservers()                            // call once in App.init() — lifecycle/memory/thermal breadcrumbs
+DiagnosticLog.markUIReady()                                 // call in ContentView.onAppear (logs once)
+```
+
+**System-metric helpers (cheap, side-effect-free, safe from any context):**
+- `DiagnosticLog.envSnapshot()` → `"mem=95/3072MB disk=4200MB thermal=nominal lowpower=off lang=fr-FR applang=auto"` — used/total RAM (`phys_footprint`, what iOS jetsam watches), free disk, thermal state, low-power mode, **phone language** (`lang=`) and **in-app language override** (`applang=`, `auto` = follows system). Use these to reply to a user in their language.
+- `DiagnosticLog.memoryTag` → compact `"mem=95/3072MB"` for high-frequency lines.
+- `memoryFootprintMB()` (via `task_vm_info` / `phys_footprint`), `freeDiskMB()`, both return `-1` on failure.
+
+**Tags in use:**
+| Tag | Where written |
+|---|---|
+| `[LAUNCH]` | App.init — device model (e.g. `iPhone16,2`), iOS version, **+ `envSnapshot()`** (RAM/disk/thermal/lowpower/lang) |
+| `[UI_READY]` | ContentView.onAppear (once) — proves the UI rendered; its **absence** after `[LAUNCH]` = early crash before first frame |
+| `[LIFECYCLE]` | installObservers — `background` / `foreground` (+ memoryTag) / `terminate` |
+| `[THERMAL]` | installObservers — thermal state changed (+ envSnapshot) |
+| `[POWER]` | installObservers — low-power mode toggled |
+| `[DATA_PROTECTION]` | installObservers — device locked/unlocked (protected data un/available) |
+| `[STORE_RESET]` | IndexStore when SwiftData container is recreated |
+| `[SCAN_START]` | DashboardViewModel before PHLibraryScanner / MediaScanner |
+| `[SCAN_ERROR]` | DashboardViewModel if scan throws |
+| `[BACKUP_START]` | DashboardViewModel — source, file count, destination count, **+ memoryTag** |
+| `[PROGRESS]` | Both engines every 50 files — index, totals, **memoryTag**, current filename |
+| `[BACKUP_END]` | DashboardViewModel — copied/skipped/failed/limited, **+ memoryTag** |
+| `[COPY_ERROR]` | Both engines on per-file export or write failure |
+| `[MEMORY_WARNING]` | installObservers on `UIApplication.didReceiveMemoryWarningNotification` (+ envSnapshot) |
+| `[BACKGROUND_EXPIRED]` | DashboardViewModel background task expiry handler |
+| `[NAS]` / `[NAS_ERROR]` | NAS config save / SMB connect / test-connection failures |
+
+**UI:** History tab → "Diagnostic" section → tap row to view → envelope button sends via `mailto:` with log content in body to `photovideobackup@icloud.com`. Swipe left on the row to delete.
+
+**Reading a crash report:**
+- Log ends at `[LAUNCH]` with **no `[UI_READY]`** → crash before the first frame (framework load, SwiftData init, or App.init).
+- Log ends on `[BACKUP_START]` or `[PROGRESS]` without a following `[BACKUP_END]` → crash during the copy; the last `[PROGRESS]` line narrows it to a 50-file window and names the file.
+- **Memory-kill (jetsam) signature:** rising `mem=` on `[PROGRESS]` lines, often a `[MEMORY_WARNING]` just before the cut, and no crash log — the higher `mem=` approaches total RAM (tight on 3 GB devices like the iPhone XR / `iPhone11,8`), the more likely iOS terminated the app.
+
+## AppConstants
+
+`App/AppConstants.swift` centralises app-wide constants:
+```swift
+enum AppConstants {
+    static let supportEmail = "photovideobackup@icloud.com"
+}
+```
+
+Use `AppConstants.supportEmail` everywhere an email address is needed (Settings Support section, DiagnosticLogView). Never hardcode the address inline.
 
 ## Documentation maintenance — checklist for every feature session
 
@@ -222,6 +401,17 @@ Keep this section up to date with every release. Use it to write App Store relea
 
 | Version | Build | Date       | Type    | Description |
 |---------|-------|------------|---------|-------------|
+| 2.2.1   | 41    | 2026-07-11 | Improvement | **Richer diagnostic logging (crash/jetsam tracing).** `DiagnosticLog` now records device environment on every key event to make one-shot crash reports self-sufficient. `[LAUNCH]` and `[MEMORY_WARNING]`/`[THERMAL]` carry an `envSnapshot()`: used/total RAM (`phys_footprint` — what iOS jetsam watches), free disk, thermal state, low-power mode, **phone language** (`lang=`) and **in-app language override** (`applang=`, `auto` = follows system) so support can reply in the user's language. New `[UI_READY]` breadcrumb (written once from `ContentView.onAppear`) distinguishes a clean launch from an early crash before the first frame. New lifecycle breadcrumbs via `DiagnosticLog.installObservers()`: `[LIFECYCLE]` (background/foreground/terminate), `[THERMAL]`, `[POWER]` (low-power toggled), `[DATA_PROTECTION]` (device locked/unlocked). `[PROGRESS]`, `[BACKUP_START]` and `[BACKUP_END]` now include a compact `mem=used/total` tag, so a rising memory footprint approaching total RAM on constrained devices (e.g. iPhone XR / `iPhone11,8`, 3 GB) reveals a jetsam memory-kill. Logging only — no behavioural change. |
+| 2.2.0   | 40    | 2026-07-06 | Feature | **NAS (SMB) backup destination.** Back up directly to a NAS over Wi-Fi via a native SMB2/3 client (AMSMB2/libsmb2) — on the LAN or **remotely** (e.g. via Tailscale/VPN, incl. cellular). Configure host/share/folder/credentials in Settings → Destinations → **NAS (SMB)** (Pro; password in Keychain) with a **Test connection** button; the NAS appears as a destination in the Dashboard with live capacity. Works alongside or instead of local SSDs (**NAS-only** supported). Files are uploaded **directly** (no local staging) and verified by full **SHA-256 re-download**. **Browse** tab: navigate the NAS folder-by-folder with on-demand download + QuickLook preview. **Mobile-data awareness**: a warning banner appears when backing up to the NAS over cellular, plus a **Stop** button to cancel any running backup (session marked Partial). Onboarding gains a NAS network diagram + feature bullet. Architecture: engines refactored onto a `BackupTarget` abstraction (`LocalFileTarget` / `SMBTarget`). Removed the DEBUG SMB Probe and the 3rd "SD Card (transit)" destination slot. Also fixed a dedup edge case — a corrupted/wrong-size file at a known path is now re-copied (coverage check verifies size, not just existence). **LUT Grade on NAS destinations (parity with local SSD):** the NAS Browse view now offers the full LUT Grade feature — assign a `.cube` LUT per NAS device folder, preview videos with the LUT applied in real time (full-screen player instead of QuickLook), and **multi-select** which videos to grade (a folder often mixes LOG and non-LOG footage, so grading is per-video, never "grade all"). Grading downloads each selected clip from the NAS → grades locally → uploads the HEVC result to a `Device (Graded)` folder on the NAS; already-graded files are skipped. Also fixed a LUT bug affecting both local and NAS: a failed export no longer leaves a partial file that was wrongly treated as "already graded". |
+| 2.1.6   | 38    | 2026-06-23 | Improvement | Support email address changed to `photovideobackup@icloud.com` (was `supportphotovideobackup@gmail.com`); updated in app (Settings/Diagnostic mailto) and documentation. |
+| 2.1.5   | 37    | 2026-06-02 | Improvement | Onboarding redesigned: setup diagram replaced by a swipeable carousel of 4 scenarios (Simple, Hub, iCloud + SSD, Advanced multi-SSD); new feature bullets for batch rename and iCloud Drive destination. |
+| 2.1.4   | 36    | 2026-06-02 | Bug fix | Multi-SSD fixes: (1) copy was going to only one SSD even with both connected — `startAccessingSecurityScopedResource()` returning false on iOS for the second SSD was silently filtering it out; now all resolved destinations are kept regardless of return value, actual write errors are caught by the engine. (2) SHA-256 deduplication was skipping files on SSD2 when they existed on SSD1 — dedup now requires every destination root to have the file. (3) Mid-backup disconnection detection: `streamCopy` now handles per-destination write failures — on disconnection the destination is dropped and copying continues on remaining SSDs; if all SSDs disconnect the backup stops cleanly with `[DISC_ERROR]` in the diagnostic log. (4) Report redesigned for multi-destination sessions: summary shows Copied/Skipped/Failed per SSD; file detail is a single unified list with a coloured per-SSD status indicator (green = copied, orange = skipped, red = failed/disconnected). |
+| 2.1.3   | 35    | 2026-06-02 | Bug fix | Fixed: second SSD connected via powered USB hub could appear as "Not connected" even when physically plugged in. Two root causes fixed: (1) destinations are now re-checked 800 ms after launch, matching the existing retry logic for external sources — handles the case where iOS hasn't fully mounted both volumes yet; (2) eliminated double bookmark resolution in `refreshDestinationStatuses()` (was resolving each bookmark twice in quick succession, which could cause the second volume to be missed). |
+| 2.1.2   | 34    | 2026-06-02 | Improvement | Documentation link added in Settings → Support: opens the GitHub Pages documentation site in Safari. URL centralised in `AppConstants.documentationURL`. |
+| 2.1.1   | 33    | 2026-06-02 | Bug fix | Localization fix: "Pattern" and "Tap a token to insert it. Anything else is literal text." in the batch rename sheet were missing translations — added FR, DE, ES, IT, PT, ZH-Hans, RU. |
+| 2.1.0   | 32    | 2026-05-31 | Feature | SHA-256 content-based deduplication: files already backed up are detected by hash even if renamed at destination (cascade: hash check → physical check → copy). Batch rename in Browse tab: select files (with Select All / Deselect All), tap Rename, compose a pattern with date tokens ({YYYY}, {MM}, {DD}, {hh}, {mm}, {ss}), index ({index}), or original name ({original}); live preview of first 3 filenames; conflict auto-resolution; IndexStore updated after rename so deduplication remains accurate. |
+| 2.0.1   | 31    | 2026-05-30 | Bug fix | Localization fixes: 718 missing translations added (FR/DE/ES/IT/PT/ZH/RU); byte-count units now follow app language; dates in History/Report now follow app language; folder structure names and Photos Library source name correctly localized; "Additional file types" delete gesture via Edit button; destination labels localized. Silent crash fix: `FileHandle.readData(ofLength:)` replaced by `InputStream` in both copy engines — I/O errors (SSD disconnected mid-backup) now surface as proper error messages. SwiftData corruption recovery: `IndexStore` no longer crashes at launch — deletes the corrupted store and restarts fresh, notifying the user. Diagnostic log (`pvb_diagnostic.log` in Documents/): records launch, device model, iOS version, scan start, backup progress every 50 files, errors, memory warnings, background task expiry — viewable and shareable from History tab. Support section in Settings with `photovideobackup@icloud.com`. |
+| 2.0.0   | 30    | 2026-05-29 | Feature | Multi-language support (French, German, Spanish, Italian, Portuguese, Chinese Simplified, Russian) with in-app language picker in Settings → Language. Strings auto-follow iPhone language by default; users can force any supported language. Instant switch — no restart required. |
 | 1.10.0  | 28    | 2026-05-09 | Feature | Delete source files from a completed backup session: "Delete Source Files…" button in the Report view (visible when source is connected); protected by a random 4-digit confirmation code. Works for Photos Library and external sources (SD card / USB). |
 | 1.9.3   | 27    | 2026-05-08 | Improvement | Onboarding screen updated: added LUT Grade and GoPro mentions. |
 | 1.9.2   | 26    | 2026-05-08 | Feature | LUT video grading (H.265/HEVC export) now requires Pro. Real-time LUT preview in the video player remains free. |

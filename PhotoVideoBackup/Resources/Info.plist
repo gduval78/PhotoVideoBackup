@@ -19,7 +19,9 @@
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>PhotoVideoBackup lit la photothèque pour sauvegarder photos et vidéos sur le SSD connecté en USB-C.</string>
+    <string>PhotoVideoBackup reads your photo library to back up photos and videos to a USB-C connected SSD.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>PhotoVideoBackup connects to your NAS on the local network to back up photos and videos.</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UIApplicationSceneManifest</key>

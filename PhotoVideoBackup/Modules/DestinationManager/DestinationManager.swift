@@ -1,4 +1,5 @@
 import Foundation
+import AMSMB2
 
 // MARK: - DestinationStatus
 
@@ -10,17 +11,22 @@ struct DestinationStatus: Identifiable, Sendable {
     let totalCapacity: Int64
     let availableCapacity: Int64
     let isConnected: Bool
+    /// True for a network (SMB/NAS) destination; false for a local volume.
+    var isRemote: Bool = false
 
     var usedCapacity: Int64 { totalCapacity - availableCapacity }
     var usedFraction: Double {
         guard totalCapacity > 0 else { return 0 }
         return Double(usedCapacity) / Double(totalCapacity)
     }
-    var formattedAvailable: String {
-        ByteCountFormatter.string(fromByteCount: availableCapacity, countStyle: .file)
-    }
-    var formattedTotal: String {
-        ByteCountFormatter.string(fromByteCount: totalCapacity, countStyle: .file)
+    var formattedAvailable: String { formatted(availableCapacity, locale: .current) }
+    var formattedTotal: String { formatted(totalCapacity, locale: .current) }
+
+    func formattedAvailable(locale: Locale) -> String { formatted(availableCapacity, locale: locale) }
+    func formattedTotal(locale: Locale) -> String { formatted(totalCapacity, locale: locale) }
+
+    private func formatted(_ bytes: Int64, locale: Locale) -> String {
+        bytes.formatted(.byteCount(style: .file).locale(locale))
     }
 }
 
@@ -37,13 +43,12 @@ final class DestinationManager {
     private enum Keys {
         static let ssd1 = "PhotoVideoBackup.bookmark.ssd1"
         static let ssd2 = "PhotoVideoBackup.bookmark.ssd2"
-        static let ssd3 = "PhotoVideoBackup.bookmark.ssd3"
     }
 
     // MARK: - Resolve
 
     func resolvedDestinations() -> [URL] {
-        [Keys.ssd1, Keys.ssd2, Keys.ssd3].compactMap { resolveBookmark(forKey: $0) }
+        [Keys.ssd1, Keys.ssd2].compactMap { resolveBookmark(forKey: $0) }
     }
 
     func resolveBookmark(forKey key: String) -> URL? {
@@ -144,10 +149,98 @@ final class DestinationManager {
     }
 
     func key(for index: Int) -> String {
-        switch index {
-        case 0:  return Keys.ssd1
-        case 1:  return Keys.ssd2
-        default: return Keys.ssd3
+        index == 0 ? Keys.ssd1 : Keys.ssd2
+    }
+
+    // MARK: - NAS (SMB)
+
+    private enum NASKeys {
+        static let config          = "PhotoVideoBackup.nas.config"
+        static let passwordAccount = "nas.primary"
+    }
+
+    func loadNASConfig() -> NASConfig? {
+        guard let data = UserDefaults.standard.data(forKey: NASKeys.config),
+              let cfg  = try? JSONDecoder().decode(NASConfig.self, from: data) else { return nil }
+        return cfg
+    }
+
+    /// Persist the config in UserDefaults and, when provided, the password in the Keychain.
+    /// Pass `password: nil` to leave the stored password untouched.
+    func saveNASConfig(_ config: NASConfig, password: String?) {
+        if let data = try? JSONEncoder().encode(config) {
+            UserDefaults.standard.set(data, forKey: NASKeys.config)
         }
+        if let password { KeychainStore.set(password, account: NASKeys.passwordAccount) }
+    }
+
+    func nasPassword() -> String? { KeychainStore.get(account: NASKeys.passwordAccount) }
+
+    func isNASConfigured() -> Bool { loadNASConfig()?.isComplete ?? false }
+
+    func clearNAS() {
+        UserDefaults.standard.removeObject(forKey: NASKeys.config)
+        KeychainStore.delete(account: NASKeys.passwordAccount)
+    }
+
+    /// Connects to the configured NAS and returns a ready `SMBTarget`, or nil if it is not
+    /// configured, disabled, or currently unreachable. Connection is established once here and
+    /// reused for the whole backup session.
+    func makeSMBTarget() async -> SMBTarget? {
+        guard let cfg = loadNASConfig(), cfg.enabled, cfg.isComplete,
+              let url = URL(string: "smb://\(cfg.host):\(cfg.port)"),
+              let client = SMB2Manager(url: url,
+                                       credential: URLCredential(user: cfg.username,
+                                                                 password: nasPassword() ?? "",
+                                                                 persistence: .forSession))
+        else { return nil }
+        client.timeout = 30   // allow slower VPN (Tailscale) handshakes
+        do {
+            try await client.connectShare(name: cfg.share)
+        } catch {
+            DiagnosticLog.write("[NAS_ERROR] connect failed: \(error.localizedDescription)")
+            return nil
+        }
+        return SMBTarget(client: client, host: cfg.host, share: cfg.share,
+                         basePath: cfg.basePath, displayName: cfg.label)
+    }
+
+    /// Tries to connect to a NAS config and list its target folder — used by the Settings
+    /// "Test connection" button. Returns a success flag and a user-facing message.
+    func testNASConnection(_ config: NASConfig, password: String) async -> (success: Bool, message: String) {
+        guard config.isComplete else {
+            return (false, String(localized: "Please fill in host, share and username."))
+        }
+        guard let url = URL(string: "smb://\(config.host):\(config.port)"),
+              let client = SMB2Manager(url: url,
+                                       credential: URLCredential(user: config.username,
+                                                                 password: password,
+                                                                 persistence: .forSession))
+        else { return (false, String(localized: "Invalid host or port.")) }
+        client.timeout = 30   // allow slower VPN (Tailscale) handshakes
+        do {
+            try await client.connectShare(name: config.share)
+            let base = config.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            let count = ((try? await client.contentsOfDirectory(atPath: base)) ?? []).count
+            return (true, String(localized: "Connected — \(count) item(s) found."))
+        } catch {
+            let ns = error as NSError
+            DiagnosticLog.write("[NAS_ERROR] test \(config.host):\(config.port) — \(ns.domain) code=\(ns.code): \(ns.localizedDescription)")
+            return (false, "\(ns.localizedDescription) [\(ns.domain) \(ns.code)]")
+        }
+    }
+
+    /// Live status of the configured NAS (connected + free/total capacity), or nil if not configured.
+    func nasStatus() async -> DestinationStatus? {
+        guard let cfg = loadNASConfig() else { return nil }
+        guard let target = await makeSMBTarget() else {
+            return DestinationStatus(id: UUID(), displayName: cfg.label, folderPath: "",
+                                     rootURL: nil, totalCapacity: 0, availableCapacity: 0,
+                                     isConnected: false, isRemote: true)
+        }
+        let (total, available) = await target.capacity()
+        return DestinationStatus(id: UUID(), displayName: cfg.label, folderPath: "",
+                                 rootURL: nil, totalCapacity: total, availableCapacity: available,
+                                 isConnected: true, isRemote: true)
     }
 }

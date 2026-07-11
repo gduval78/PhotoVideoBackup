@@ -6,6 +6,7 @@ import UniformTypeIdentifiers
 struct DashboardView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(StoreManager.self)       private var store
+    @Environment(LanguageManager.self)    private var languageManager
     @Environment(\.requestReview)         private var requestReview
     @State private var showSourcePicker      = false
     @State private var showPaywall           = false
@@ -136,8 +137,14 @@ struct DashboardView: View {
             SourceRow(
                 icon: "photo.on.rectangle.angled",
                 iconColor: .blue,
-                name: "Photos Library",
-                subtitle: deviceName.isEmpty ? "Name not configured" : "\(deviceName) · all photos & videos",
+                nameContent: { Text("Photos Library") },
+                subtitleContent: {
+                    if deviceName.isEmpty {
+                        Text("Name not configured")
+                    } else {
+                        Text(verbatim: deviceName) + Text(verbatim: " · ") + Text("all photos & videos")
+                    }
+                },
                 isRunning: viewModel.isRunning,
                 destinationsEmpty: !viewModel.hasConnectedDestination
             ) {
@@ -149,8 +156,14 @@ struct DashboardView: View {
                 SourceRow(
                     icon: iconName(for: source.deviceType),
                     iconColor: source.isAvailable ? iconColor(for: source.deviceType) : .secondary,
-                    name: source.displayName,
-                    subtitle: source.isAvailable ? source.deviceType.rawValue : "Not connected",
+                    nameContent: { Text(verbatim: source.displayName) },
+                    subtitleContent: {
+                        if source.isAvailable {
+                            Text(verbatim: source.deviceType.rawValue)
+                        } else {
+                            Text("Not connected")
+                        }
+                    },
                     isRunning: viewModel.isRunning,
                     destinationsEmpty: !viewModel.hasConnectedDestination || !source.isAvailable,
                     onReconnect: source.isAvailable ? nil : {
@@ -258,7 +271,7 @@ struct DashboardView: View {
                         .foregroundStyle(.teal)
                 }
 
-                Text(ByteCountFormatter.string(fromByteCount: banner.totalBytesCopied, countStyle: .file)
+                Text(banner.totalBytesCopied.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))
                      + " — " + String(format: "%.1f s", banner.durationSeconds))
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -268,7 +281,7 @@ struct DashboardView: View {
 
     // MARK: - Helpers
 
-    private func statLabel(_ text: String, icon: String, color: Color) -> some View {
+    private func statLabel(_ text: LocalizedStringKey, icon: String, color: Color) -> some View {
         Label(text, systemImage: icon).foregroundStyle(color)
     }
 
@@ -297,6 +310,7 @@ struct DashboardView: View {
 
 private struct DestinationRow: View {
     let status: DestinationStatus
+    @Environment(LanguageManager.self) private var languageManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -306,7 +320,7 @@ private struct DestinationRow: View {
                     .foregroundStyle(status.isConnected ? .primary : .secondary)
                 Spacer()
                 if status.isConnected {
-                    Text(status.formattedAvailable + " free")
+                    Text("\(status.formattedAvailable(locale: languageManager.currentLocale)) free")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
                     Text("Disconnected")
@@ -323,7 +337,7 @@ private struct DestinationRow: View {
             if status.isConnected {
                 ProgressView(value: status.usedFraction)
                     .tint(status.usedFraction > 0.9 ? .red : .accentColor)
-                Text(status.formattedTotal + " total")
+                Text("\(status.formattedTotal(locale: languageManager.currentLocale)) total")
                     .font(.caption2).foregroundStyle(.tertiary)
             }
         }
@@ -333,11 +347,11 @@ private struct DestinationRow: View {
 
 // MARK: - SourceRow
 
-private struct SourceRow: View {
+private struct SourceRow<Name: View, Subtitle: View>: View {
     let icon: String
     let iconColor: Color
-    let name: String
-    let subtitle: String
+    @ViewBuilder let nameContent: () -> Name
+    @ViewBuilder let subtitleContent: () -> Subtitle
     let isRunning: Bool
     let destinationsEmpty: Bool
     var onReconnect: (() -> Void)? = nil
@@ -351,8 +365,8 @@ private struct SourceRow: View {
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(name).font(.subheadline.weight(.medium))
-                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+                nameContent().font(.subheadline.weight(.medium))
+                subtitleContent().font(.caption).foregroundStyle(.secondary)
             }
 
             Spacer()

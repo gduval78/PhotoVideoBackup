@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Xcode — user-specific state (never shared)
+*.xcuserstate
+xcuserdata/
+
+# Xcode build output
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM

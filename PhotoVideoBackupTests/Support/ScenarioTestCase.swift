@@ -104,7 +104,7 @@ class ScenarioTestCase: XCTestCase {
         let stream = await engine.run(
             files:        files,
             sourceDevice: sd.displayName,
-            destinations: destinations.map(\.rootURL),
+            destinations: destinations.map { LocalFileTarget(root: $0.rootURL, displayName: $0.rootURL.lastPathComponent) },
             session:      session,
             fileLimit:    limit > 0 ? limit : nil
         )

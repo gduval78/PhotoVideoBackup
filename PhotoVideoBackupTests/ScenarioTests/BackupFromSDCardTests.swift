@@ -50,10 +50,13 @@ final class BackupFromSDCardTests: ScenarioTestCase {
     // With maxFiles=2, only 2 of 3 available files must be copied.
     // The engine must signal wasLimited=true so the caller can set .partial status.
     func test_fileLimit_producesPartialBackup() async throws {
+        // Distinct sizes → distinct SHA-256, so the content-dedup treats them as 3 separate
+        // files (TestFile fills uniform 0xAB bytes, so equal-size files would hash identically
+        // and be skipped as content duplicates).
         let sd = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
             TestFile(name: "DJI_0001.MP4", sizeInBytes: 1024, date: .scenarioDefault),
-            TestFile(name: "DJI_0002.MP4", sizeInBytes: 1024, date: .scenarioDefault),
-            TestFile(name: "DJI_0003.MP4", sizeInBytes: 1024, date: .scenarioDefault),
+            TestFile(name: "DJI_0002.MP4", sizeInBytes: 2048, date: .scenarioDefault),
+            TestFile(name: "DJI_0003.MP4", sizeInBytes: 4096, date: .scenarioDefault),
         ])
         let ssd = ssd(named: "TravelSSD")
         use(.maxFiles(2))

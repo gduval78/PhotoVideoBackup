@@ -1,8 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct HistoryView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @State private var showClearConfirmation = false
+    @State private var logFileSize: Int64? = nil   // nil = file absent
 
     var body: some View {
         List {
@@ -16,6 +18,29 @@ struct HistoryView: View {
                 ForEach(viewModel.sessions) { session in
                     NavigationLink(value: session) {
                         SessionRow(session: session)
+                    }
+                }
+            }
+
+            if let size = logFileSize {
+                Section("Diagnostic") {
+                    NavigationLink {
+                        DiagnosticLogView()
+                    } label: {
+                        HStack {
+                            Label("pvb_diagnostic.log", systemImage: "doc.text")
+                            Spacer()
+                            Text(size.formatted(.byteCount(style: .file)))
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteLog()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
             }
@@ -41,6 +66,63 @@ struct HistoryView: View {
         } message: {
             Text("Session records are removed. Files on your SSD are not affected.")
         }
+        .onAppear { refreshLogInfo() }
+    }
+
+    private func refreshLogInfo() {
+        let url = DiagnosticLog.logURL
+        guard let vals = try? url.resourceValues(forKeys: [.fileSizeKey]),
+              let size = vals.fileSize else { logFileSize = nil; return }
+        logFileSize = Int64(size)
+    }
+
+    private func deleteLog() {
+        try? FileManager.default.removeItem(at: DiagnosticLog.logURL)
+        logFileSize = nil
+    }
+}
+
+// MARK: - DiagnosticLogView
+
+private struct DiagnosticLogView: View {
+    @State private var content: String = ""
+
+    var body: some View {
+        ScrollView {
+            Text(verbatim: content)
+                .font(.system(size: 11, design: .monospaced))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+        }
+        .navigationTitle("Diagnostic Log")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    sendByMail()
+                } label: {
+                    Image(systemName: "envelope")
+                }
+                .disabled(content.isEmpty)
+            }
+        }
+        .onAppear {
+            content = (try? String(contentsOf: DiagnosticLog.logURL, encoding: .utf8)) ?? ""
+        }
+    }
+
+    private func sendByMail() {
+        let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "?"
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path   = AppConstants.supportEmail
+        components.queryItems = [
+            URLQueryItem(name: "subject", value: "PhotoVideoBackup \(version) – Diagnostic Log"),
+            URLQueryItem(name: "body",    value: content)
+        ]
+        if let url = components.url {
+            UIApplication.shared.open(url)
+        }
     }
 }
 
@@ -48,6 +130,7 @@ struct HistoryView: View {
 
 private struct SessionRow: View {
     let session: BackupSession
+    @Environment(LanguageManager.self) private var languageManager
 
     var body: some View {
         HStack(spacing: 12) {
@@ -58,13 +141,15 @@ private struct SessionRow: View {
                         .font(.headline)
                         .lineLimit(1)
                     Spacer()
-                    Text(session.startedAt.formatted(date: .abbreviated, time: .shortened))
+                    Text(session.startedAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(languageManager.currentLocale)))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                Text("\(folderOrgName) · \(session.files.count) files")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                (Text(FolderOrganization(rawValue: session.folderOrganizationRaw)?.labelKey ?? "By Date")
+                 + Text(verbatim: " · \(session.files.count) ")
+                 + Text(session.files.count == 1 ? "file" : "files"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
                 if !destinationText.isEmpty {
                     Label(destinationText, systemImage: "externaldrive.fill")
                         .font(.caption)
@@ -79,11 +164,9 @@ private struct SessionRow: View {
     private var sourceName: String {
         if !session.sourceDisplayName.isEmpty { return session.sourceDisplayName }
         guard let first = session.sources.first else { return "—" }
-        return first == "photos-library://local" ? "Photos Library" : URL(fileURLWithPath: first).lastPathComponent
-    }
-
-    private var folderOrgName: String {
-        FolderOrganization(rawValue: session.folderOrganizationRaw)?.displayName ?? "By Date"
+        return first == "photos-library://local"
+            ? String(localized: "Photos Library", locale: languageManager.currentLocale)
+            : URL(fileURLWithPath: first).lastPathComponent
     }
 
     private var destinationText: String {

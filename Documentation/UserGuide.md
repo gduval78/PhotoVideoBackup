@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 1.10.0 · iOS**  
+> **Version 2.2.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -19,7 +19,8 @@
 10. [Viewing Your Backup History](#10-viewing-your-backup-history)
 11. [Browsing and Sharing Your Backed-Up Files](#11-browsing-and-sharing-your-backed-up-files)
 12. [Using Two SSDs — Mirror Backup (Pro)](#12-using-two-ssds--mirror-backup-pro)
-13. [Frequently Asked Questions](#13-frequently-asked-questions)
+13. [Backing Up to a NAS over Wi-Fi (Pro)](#13-backing-up-to-a-nas-over-wi-fi-pro)
+14. [Frequently Asked Questions](#14-frequently-asked-questions)
 
 ---
 
@@ -49,7 +50,7 @@ PhotoVideoBackup is free to download. A one-time **Pro upgrade ($1.99 — no sub
 | Add external sources (SD cards, Blackmagic, Insta360, DJI…) | — | ✓ |
 | Mirror backup to a second SSD simultaneously | — | ✓ |
 
-![Upgrade to Pro screen](images/upgrade_to_pro.png)
+![Upgrade to Pro screen](images/paywall.png)
 
 To unlock Pro, tap **Upgrade to Pro** when prompted, or open the upgrade screen from the Settings tab. It is a single payment — you own it forever.
 
@@ -88,7 +89,7 @@ Tap the **Settings** tab at the bottom of the screen (the gear icon).
 
 At the top of the page you will see an **iPhone / iPad** section with a **Folder name** field. Tap it and type a name that identifies your device — for example **iPhone de Gérard** or **iPad Pro Camille**.
 
-![Settings — Folder name field](images/settings_device_name.png)
+![Settings — Folder name set to "Gérard"](images/settings_name_set.png)
 
 > **This name is used as the folder name on the SSD.** If two people back up to the same SSD, each device needs a different name so their files stay separate. The app will not start a backup until a name is set.
 
@@ -120,7 +121,7 @@ Tap the **Backup** tab (the house icon at the bottom left).
 
 At the top you will see your SSD with its name, how much space is free, and a bar showing how full it is. Below that is a **Sources** section.
 
-![Dashboard — SSD connected, iPhone source ready](images/dashboard_iphone_ready.png)
+![Dashboard — SSD connected, Photos Library source ready](images/dashboard_ready.png)
 
 ### Step 2 — Start the backup
 
@@ -128,7 +129,7 @@ In the **Sources** section, find the **Photos Library** row. It shows the device
 
 > If you see "Name not configured" and an orange warning (see below), go to Settings and fill in the **Folder name** field first.
 
-![Dashboard — device name not configured](images/dashboard_no_device_name.png)
+![Dashboard — device name not configured, no destination set](images/dashboard_empty.png)
 
 Tap the **Backup** button on that row.
 
@@ -174,10 +175,6 @@ The source now appears in the list. The app automatically recognises known devic
 
 GoPro cards are scanned for `.mp4` and `.jpg` files; low-resolution proxy files (`.lrv`) and thumbnail files (`.thm`) are automatically skipped.
 
-In the example below, two camera sources have been added alongside the iPhone library:
-
-![Dashboard — two camera sources added (Blackmagic and Insta360 X5)](images/dashboard_two_sources.png)
-
 ### Step 4 — Start the backup
 
 Tap **Backup** on the row for your camera source.
@@ -192,7 +189,7 @@ Tap the red **–** button on the left of a source row to remove it from the lis
 
 While the backup runs, a **Backup in Progress** panel replaces the completion banner at the bottom of the Backup tab.
 
-![Backup in progress — 3%, exporting from Photos](images/12_progress_screen.png)
+![Backup in progress — 13%, exporting from Photos](images/progress_backup.png)
 
 Here is what each part means:
 
@@ -221,7 +218,7 @@ Here is what each part means:
 
 When the backup finishes, a **Backup Complete** banner appears at the bottom of the Backup tab.
 
-![Completion banner — 149 copied, 0 skipped, 0 failed, 412.2 MB in 9.7 s](images/13_completion_banner.png)
+![Completion banner — 176 copied, 0 skipped, 0 failed, 185.8 MB in 26.6 s](images/completion_banner.png)
 
 | Number | What it means |
 |--------|---------------|
@@ -252,7 +249,7 @@ Each row shows the source that was backed up, the destination drive(s), the fold
 
 Tap any row to open the full report for that session. The report lists every file: its name, size, capture date, and whether it was copied, skipped, or failed.
 
-![History — full session report](images/history_report.png)
+![History — one completed session listed](images/history_list.png)
 
 ### Sharing a report
 
@@ -311,6 +308,38 @@ The app copies the selected files to a temporary folder and opens the standard i
 
 Tap **Cancel** in the toolbar to exit selection mode without sharing.
 
+### Batch rename files
+
+You can rename a group of files at once using a pattern with date tokens, an index counter, and the original filename.
+
+1. Tap **Select** in the top-right corner of the media grid.
+2. Tap individual files, or tap **Select All** to select everything in the folder.
+
+![Browse — all files selected, Select All / Deselect All toolbar, Rename and Share buttons](images/browse_selection_all.png)
+
+3. Tap **Rename (N)** in the toolbar.
+
+The rename sheet opens with a pattern editor.
+
+![Browse — rename sheet with pattern tokens, index width picker, and live preview](images/browse_rename_sheet.png)
+
+**Available tokens:**
+
+| Token | Replaced by |
+|-------|-------------|
+| `{YYYY}` | Capture year — e.g. `2026` |
+| `{MM}` | Capture month — e.g. `06` |
+| `{DD}` | Capture day — e.g. `02` |
+| `{hh}` | Capture hour — e.g. `10` |
+| `{mm}` | Capture minute — e.g. `34` |
+| `{ss}` | Capture second — e.g. `28` |
+| `{index}` | Sequential number (width selectable: 2, 3, or 4 digits) |
+| `{original}` | Original filename without extension |
+
+Anything typed between tokens is treated as literal text. Tap a token chip to insert it at the cursor. The **Index width** picker controls zero-padding. The **Preview** section shows how the first three filenames will look before you confirm.
+
+> If a target filename already exists, the app appends `_2`, `_3`… automatically.
+
 ### LUT Grade — apply a look to LOG footage
 
 If you shoot in **LOG** (DJI D-Log M, GoPro Protune, etc.), your footage looks flat and grey until a LUT (Look Up Table) is applied. The Browse tab lets you assign a LUT to any device folder and preview or permanently grade your footage without leaving the app.
@@ -329,6 +358,10 @@ Tap **Grade to "Device (Graded)"**. The app re-encodes all `.mp4` and `.mov` fil
 
 To remove a LUT assignment, tap **Remove** next to the LUT name.
 
+#### LUT Grade on a NAS
+
+LUT Grade works the same way when backups are on a **NAS**: open a device folder in the NAS section of the Browse tab, assign a LUT, and preview videos with the LUT in real time. To create graded copies, tap **Select**, choose the videos you want to grade, then tap **Grade** — select only your LOG clips (a folder often mixes LOG and non-LOG footage, and a LOG LUT would ruin non-LOG clips; the local SSD flow works identically). Each selected video is downloaded from the NAS, graded on the phone, then uploaded back to a "Device (Graded)" folder on the NAS. This is slower and uses more data than grading a local SSD; already-graded files on the NAS are skipped.
+
 ---
 
 ## 12. Using Two SSDs — Mirror Backup (Pro)
@@ -345,10 +378,29 @@ When both SSDs are plugged in, the Backup tab shows both drives with their avail
 
 ---
 
-## 13. Frequently Asked Questions
+## 13. Backing Up to a NAS over Wi-Fi (Pro)
+
+> **This feature requires the Pro upgrade.** See [Section 2](#2-free-vs-pro).
+
+Instead of (or in addition to) a USB-C SSD, you can back up **directly to a NAS** (Synology, QNAP, TrueNAS, or any SMB device) over Wi-Fi. Files are written straight to the NAS — no cable, no intermediate app, no cloud — and each file is verified by SHA-256.
+
+**Set up:** enable SMB sharing on the NAS with a read/write user, then in **Settings → Destinations → NAS (SMB)** fill in Host/IP, Share, optional Folder, Username and Password (stored in the iOS Keychain), tap **Test connection**, then **Save**. The NAS then appears as a destination on the Backup tab and can be used on its own or together with an SSD (all connected destinations receive the backup at once).
+
+**Remote backup:** because it runs over the network, you can back up from anywhere your NAS is reachable — e.g. via a mesh VPN such as **Tailscale** (install it on the NAS and iPhone, keep the VPN active, and use the NAS's Tailscale `100.x.x.x` address as the Host).
+
+> **Mobile data:** when a NAS backup runs over cellular, the app shows a **"You appear to be on mobile data"** banner. Tap **Stop backup** to halt it at any time (the session is marked *Partial*).
+
+**Browse:** the **Browse** tab has a **NAS** section to navigate its folders; tapping a photo/video downloads it on demand for a preview (videos play full-screen with a live LUT toggle). Device folders on the NAS also offer the full **LUT Grade** feature (see Section 11 → *LUT Grade on a NAS*).
+
+---
+
+## 14. Frequently Asked Questions
 
 **Q: Does the app delete files from my iPhone or SD card?**  
 No. PhotoVideoBackup only copies files. It never moves or deletes anything from the source.
+
+**Q: My NAS connection times out — what's wrong?**  
+A timeout almost always means the NAS isn't reachable on the network, not an app problem. Check the same Wi-Fi (or an active VPN), that SMB sharing is on, and any NAS firewall. With Tailscale, make sure the VPN is on and the iPhone is allowed to reach the NAS.
 
 **Q: Will it copy the same file twice if I run it again?**  
 No. The app checks whether each file is already on the SSD before copying. Files that are already there are skipped. Running the backup a second time is fast and safe.
@@ -386,9 +438,12 @@ Yes. Any folder you can open with the iOS file browser can be used as a source �
 **Q: What does the app offer over simply copying files manually in the Files app?**  
 When copying to iCloud Drive, the app adds: automatic incremental transfers (only new files are copied), SHA-256 integrity verification on every file, a detailed session report listing what was copied, skipped, or failed, and support for two destinations simultaneously (for example an SSD and iCloud Drive in a single pass).
 
+**Q: Is the app available in my language?**  
+Yes. The app supports English, French (Français), German (Deutsch), Spanish (Español), Italian (Italiano), Portuguese (Português), Chinese Simplified (中文), and Russian (Русский). By default it follows your iPhone's system language. You can also override it manually: open the **Settings** tab, scroll to the **Language** section, and pick the language you want. The change takes effect immediately — no restart needed.
+
 ---
 
-*Documentation last updated: April 18, 2026*
+*Documentation last updated: May 29, 2026*
 
 ---
 

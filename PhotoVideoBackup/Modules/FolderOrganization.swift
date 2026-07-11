@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum FolderOrganization: String, CaseIterable {
     case flat
@@ -6,7 +7,7 @@ enum FolderOrganization: String, CaseIterable {
     case byDate
     case byYearMonth
 
-    var displayName: String {
+    var labelKey: LocalizedStringKey {
         switch self {
         case .flat:        return "Flat (no subfolders)"
         case .byMonth:     return "By Month"
@@ -15,13 +16,26 @@ enum FolderOrganization: String, CaseIterable {
         }
     }
 
+    var displayName: String { localizedDisplayName(locale: .current) }
+
+    func localizedDisplayName(locale: Locale) -> String {
+        switch self {
+        case .flat:        return String(localized: "Flat (no subfolders)", locale: locale)
+        case .byMonth:     return String(localized: "By Month", locale: locale)
+        case .byDate:      return String(localized: "By Date", locale: locale)
+        case .byYearMonth: return String(localized: "By Year / Month", locale: locale)
+        }
+    }
+
     static var current: FolderOrganization {
         let raw = UserDefaults.standard.string(forKey: "folderOrganization") ?? ""
         return FolderOrganization(rawValue: raw) ?? .byDate
     }
 
-    func destinationURL(root: URL, deviceName: String, date: Date?, fileName: String) -> URL {
-        var base = root.appendingPathComponent(deviceName, isDirectory: true)
+    /// Folder components (excluding the file name) for a file, e.g. ["DJI Neo 2", "2024-01-14"].
+    /// Single source of truth shared by local URL construction and remote (SMB) path construction.
+    func relativeFolderComponents(deviceName: String, date: Date?) -> [String] {
+        var comps = [deviceName]
         let d = date ?? Date()
         let fmt = DateFormatter()
         switch self {
@@ -29,18 +43,29 @@ enum FolderOrganization: String, CaseIterable {
             break
         case .byMonth:
             fmt.dateFormat = "yyyy-MM"
-            base = base.appendingPathComponent(fmt.string(from: d), isDirectory: true)
+            comps.append(fmt.string(from: d))
         case .byDate:
             fmt.dateFormat = "yyyy-MM-dd"
-            base = base.appendingPathComponent(fmt.string(from: d), isDirectory: true)
+            comps.append(fmt.string(from: d))
         case .byYearMonth:
             fmt.dateFormat = "yyyy"
-            let year = fmt.string(from: d)
+            comps.append(fmt.string(from: d))
             fmt.dateFormat = "MM"
-            let month = fmt.string(from: d)
-            base = base
-                .appendingPathComponent(year, isDirectory: true)
-                .appendingPathComponent(month, isDirectory: true)
+            comps.append(fmt.string(from: d))
+        }
+        return comps
+    }
+
+    /// Relative path (folders + file name) joined with "/", e.g. "DJI Neo 2/2024-01-14/file.MP4".
+    /// Used for remote (SMB) destinations and as the IndexStore-relative key.
+    func relativePath(deviceName: String, date: Date?, fileName: String) -> String {
+        (relativeFolderComponents(deviceName: deviceName, date: date) + [fileName]).joined(separator: "/")
+    }
+
+    func destinationURL(root: URL, deviceName: String, date: Date?, fileName: String) -> URL {
+        var base = root
+        for comp in relativeFolderComponents(deviceName: deviceName, date: date) {
+            base = base.appendingPathComponent(comp, isDirectory: true)
         }
         return base.appendingPathComponent(fileName)
     }

@@ -2,11 +2,25 @@ import SwiftUI
 
 struct SessionProgressView: View {
     @Environment(DashboardViewModel.self) private var viewModel
+    @Environment(LanguageManager.self)   private var languageManager
 
     var body: some View {
         GroupBox("Backup in Progress") {
             if let progress = viewModel.currentProgress {
                 VStack(alignment: .leading, spacing: 12) {
+                    // Mobile-data warning for NAS backups
+                    if viewModel.currentBackupUsesNAS && viewModel.isLikelyCellular {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "antenna.radiowaves.left.and.right")
+                            Text("You appear to be on mobile data. Backing up to the NAS may use your data plan — tap Stop to halt it.")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(.orange)
+                        .padding(8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+                    }
+
                     // Overall
                     VStack(alignment: .leading, spacing: 4) {
                         HStack {
@@ -50,6 +64,18 @@ struct SessionProgressView: View {
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                     }
+
+                    Divider()
+
+                    Button(role: .destructive) {
+                        viewModel.requestCancel()
+                    } label: {
+                        Label(viewModel.isCancelling ? "Stopping…" : "Stop backup",
+                              systemImage: "stop.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isCancelling)
                 }
                 .padding(.vertical, 6)
             } else {
@@ -64,20 +90,22 @@ struct SessionProgressView: View {
     private func fileIndex(_ p: CopyProgress) -> Int { p.fileIndex + 1 }
 
     private func etaLabel(_ seconds: Double) -> String {
-        if seconds < 60 { return "< 1 min remaining" }
+        let locale = languageManager.currentLocale
+        if seconds < 60 { return String(localized: "< 1 min remaining", locale: locale) }
         let minutes = Int((seconds / 60).rounded())
-        return "~\(minutes) min remaining"
+        return String(localized: "~\(minutes) min remaining", locale: locale)
     }
 
     private func phaseLabel(_ phase: CopyPhase) -> String {
+        let locale = languageManager.currentLocale
         switch phase {
-        case .scanning:   return "Scanning library…"
-        case .exporting:  return "Exporting from Photos…"
-        case .copying:    return "Copying to SSD…"
-        case .verifying:  return "Verifying…"
-        case .done:       return "Done"
-        case .skipped:    return "Already present"
-        case .failed(let msg): return "Failed: \(msg)"
+        case .scanning:   return String(localized: "Scanning library…", locale: locale)
+        case .exporting:  return String(localized: "Exporting from Photos…", locale: locale)
+        case .copying:    return String(localized: "Copying to SSD…", locale: locale)
+        case .verifying:  return String(localized: "Verifying…", locale: locale)
+        case .done:       return String(localized: "Done", locale: locale)
+        case .skipped:    return String(localized: "Already present", locale: locale)
+        case .failed(let msg): return String(localized: "Failed: \(msg)", locale: locale)
         }
     }
 

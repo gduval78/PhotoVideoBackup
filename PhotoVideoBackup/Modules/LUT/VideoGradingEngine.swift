@@ -60,6 +60,9 @@ final class VideoGradingEngine {
                         continuation.yield(GradingProgress(
                             completed: index + 1, total: total, currentFile: name, event: .graded))
                     } catch {
+                        // A failed export can leave a partial/zero-byte file at `dest` — remove it,
+                        // otherwise the next run sees it via fileExists and wrongly marks it "skipped".
+                        try? FileManager.default.removeItem(at: dest)
                         continuation.yield(GradingProgress(
                             completed: index + 1, total: total, currentFile: name,
                             event: .failed(error.localizedDescription)))
@@ -72,7 +75,9 @@ final class VideoGradingEngine {
 
     // MARK: - Private
 
-    private func grade(source: URL, destination: URL, lut: ParsedLUT) async throws {
+    /// Grades a single local file (source → destination). Reused by the NAS grading path,
+    /// which downloads the NAS video to a temp file, grades it here, then uploads the result.
+    func grade(source: URL, destination: URL, lut: ParsedLUT) async throws {
         let asset = AVURLAsset(url: source)
         try? await asset.load(.tracks)
 

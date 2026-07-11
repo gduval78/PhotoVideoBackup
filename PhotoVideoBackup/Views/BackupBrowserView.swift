@@ -7,10 +7,16 @@ import UniformTypeIdentifiers
 struct BackupBrowserView: View {
     @Environment(BackupBrowserViewModel.self) private var browser
 
+    private var nasBrowseTitle: String {
+        let name = DestinationManager.shared.loadNASConfig()?.displayName ?? ""
+        return name.isEmpty ? "NAS" : name
+    }
+
     var body: some View {
         let _ = browser.folderListVersion
+        let nasConfigured = DestinationManager.shared.isNASConfigured()
         Group {
-            if browser.destinations.isEmpty {
+            if browser.destinations.isEmpty && !nasConfigured {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
                     title: "No SSD Connected",
@@ -33,6 +39,16 @@ struct BackupBrowserView: View {
                                         Label(folder.lastPathComponent, systemImage: "folder.fill")
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    if nasConfigured {
+                        Section("NAS") {
+                            NavigationLink {
+                                NASBrowserRootView(title: nasBrowseTitle)
+                            } label: {
+                                Label(nasBrowseTitle, systemImage: "externaldrive.connected.to.line.below")
                             }
                         }
                     }
@@ -84,10 +100,11 @@ private struct DeviceFolderView: View {
                             NavigationLink {
                                 MediaGridView(folder: folder, activeLUT: activeLUT, deviceFolder: folder)
                             } label: {
-                                Label(
-                                    "\(files.count) \(files.count == 1 ? "file" : "files") in this folder",
-                                    systemImage: "photo.stack"
-                                )
+                                if files.count == 1 {
+                                    Label("1 file in this folder", systemImage: "photo.stack")
+                                } else {
+                                    Label("\(files.count) files in this folder", systemImage: "photo.stack")
+                                }
                             }
                         }
                     }
@@ -96,7 +113,7 @@ private struct DeviceFolderView: View {
         }
         .navigationTitle(folder.lastPathComponent)
         .sheet(isPresented: $showLUTPicker, onDismiss: loadAssignedLUT) {
-            LUTPickerSheet(deviceFolder: folder)
+            LUTPickerSheet(folderKey: folder.lastPathComponent)
                 .environment(browser)
         }
         .onAppear { loadAssignedLUT() }
@@ -197,10 +214,11 @@ private struct FolderContentView: View {
                             NavigationLink {
                                 MediaGridView(folder: folder, activeLUT: activeLUT, deviceFolder: deviceFolder)
                             } label: {
-                                Label(
-                                    "\(files.count) \(files.count == 1 ? "file" : "files") in this folder",
-                                    systemImage: "photo.stack"
-                                )
+                                if files.count == 1 {
+                                    Label("1 file in this folder", systemImage: "photo.stack")
+                                } else {
+                                    Label("\(files.count) files in this folder", systemImage: "photo.stack")
+                                }
                             }
                         }
                     }
@@ -224,6 +242,7 @@ private struct MediaGridView: View {
     @State private var selectedURLs: Set<URL> = []
     @State private var shareItems: [URL] = []
     @State private var showShareSheet  = false
+    @State private var showRenameSheet = false
     @State private var isPreparing     = false
     @State private var playingVideoURL: URL?
     @State private var showPaywall     = false
@@ -306,6 +325,12 @@ private struct MediaGridView: View {
         .sheet(isPresented: $showShareSheet, onDismiss: cleanupTempFiles) {
             ActivityShareSheet(items: shareItems)
         }
+        .sheet(isPresented: $showRenameSheet) {
+            RenameSheet(files: Array(selectedURLs), folder: folder) {
+                cancelSelection()
+                browser.refreshFolder(folder)
+            }
+        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
@@ -325,6 +350,17 @@ private struct MediaGridView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("Cancel") { cancelSelection() }
             }
+            ToolbarItem(placement: .navigationBarLeading) {
+                let allFiles = browser.mediaFiles(in: folder)
+                Button(selectedURLs.count == allFiles.count ? "Deselect All" : "Select All") {
+                    let allFiles = browser.mediaFiles(in: folder)
+                    if selectedURLs.count == allFiles.count {
+                        selectedURLs = []
+                    } else {
+                        selectedURLs = Set(allFiles)
+                    }
+                }
+            }
             if activeLUT != nil {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { startGradingSelected() } label: {
@@ -335,12 +371,25 @@ private struct MediaGridView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    showRenameSheet = true
+                } label: {
+                    if selectedURLs.isEmpty {
+                        Label("Rename", systemImage: "pencil")
+                    } else {
+                        Label("Rename (\(selectedURLs.count))", systemImage: "pencil")
+                    }
+                }
+                .disabled(selectedURLs.isEmpty)
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
                     Task { await prepareAndShare() }
                 } label: {
-                    Label(
-                        selectedURLs.isEmpty ? "Share" : "Share (\(selectedURLs.count))",
-                        systemImage: "square.and.arrow.up"
-                    )
+                    if selectedURLs.isEmpty {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    } else {
+                        Label("Share (\(selectedURLs.count))", systemImage: "square.and.arrow.up")
+                    }
                 }
                 .disabled(selectedURLs.isEmpty || isPreparing)
             }
@@ -451,10 +500,12 @@ private struct ThumbnailCell: View {
 
 // MARK: - LUTPickerSheet
 
-private struct LUTPickerSheet: View {
+struct LUTPickerSheet: View {
     @Environment(BackupBrowserViewModel.self) private var browser
     @Environment(\.dismiss) private var dismiss
-    let deviceFolder: URL
+    /// Assignment key — local device folders pass their `lastPathComponent`,
+    /// NAS folders pass `BackupBrowserViewModel.nasLUTKey(subPath:)`.
+    let folderKey: String
 
     @State private var lutStore        = LUTStore.shared
     @State private var showFileImporter = false
@@ -512,7 +563,7 @@ private struct LUTPickerSheet: View {
 
     @ViewBuilder
     private func lutRow(_ lut: LUTFile) -> some View {
-        let isSelected = browser.assignedLUTName(for: deviceFolder) == lut.url.lastPathComponent
+        let isSelected = browser.assignedLUTName(forKey: folderKey) == lut.url.lastPathComponent
         HStack {
             Label(lut.name, systemImage: "camera.filters")
                 .foregroundStyle(.primary)
@@ -523,12 +574,12 @@ private struct LUTPickerSheet: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            browser.assignLUT(named: lut.url.lastPathComponent, to: deviceFolder)
+            browser.assignLUT(named: lut.url.lastPathComponent, forKey: folderKey)
             dismiss()
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                if isSelected { browser.removeLUT(from: deviceFolder) }
+                if isSelected { browser.removeLUT(forKey: folderKey) }
                 lutStore.delete(lut)
             } label: {
                 Label("Delete", systemImage: "trash")
@@ -545,7 +596,7 @@ private struct LUTPickerSheet: View {
             if let imported = lutStore.files.first(where: {
                 $0.url.lastPathComponent == url.lastPathComponent
             }) {
-                browser.assignLUT(named: imported.url.lastPathComponent, to: deviceFolder)
+                browser.assignLUT(named: imported.url.lastPathComponent, forKey: folderKey)
                 dismiss()
             }
         } catch {
@@ -569,7 +620,7 @@ private struct ActivityShareSheet: UIViewControllerRepresentable {
 
 // MARK: - VideoFullScreenView
 
-private struct VideoFullScreenView: View {
+struct VideoFullScreenView: View {
     let url: URL
     let activeLUT: ParsedLUT?
 

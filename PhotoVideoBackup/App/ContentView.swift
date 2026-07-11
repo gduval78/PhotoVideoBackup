@@ -37,7 +37,10 @@ struct ContentView: View {
                 Label("Settings", systemImage: "gear")
             }
         }
-        .onAppear { viewModel.onAppear() }
+        .onAppear {
+            DiagnosticLog.markUIReady()
+            viewModel.onAppear()
+        }
         .fullScreenCover(isPresented: Binding(
             get: { !hasSeenOnboarding },
             set: { _ in }

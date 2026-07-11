@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import UIKit
 import UserNotifications
+import Network
 
 @Observable
 @MainActor
@@ -12,6 +13,12 @@ final class DashboardViewModel {
     private(set) var destinationStatuses: [DestinationStatus] = []
     private(set) var currentProgress: CopyProgress?
     private(set) var isRunning: Bool = false
+    /// True while a backup is running that includes a NAS (remote) destination.
+    private(set) var currentBackupUsesNAS: Bool = false
+    /// True after the user tapped Stop, until the run halts at the next file boundary.
+    private(set) var isCancelling: Bool = false
+    /// Best-effort: true when the underlying transport is likely mobile data (see NWPathMonitor + VPN heuristic).
+    private(set) var isLikelyCellular: Bool = false
     private(set) var sessions: [BackupSession] = []
     private(set) var lastCompletedSession: BackupSession?
     private(set) var completedSessionID: UUID?
@@ -47,6 +54,56 @@ final class DashboardViewModel {
     private let fileEngine    = FileCopyEngine()
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
+    private let pathMonitor = NWPathMonitor()
+    private var pathMonitorStarted = false
+
+    /// Starts network-type monitoring. When a VPN (Tailscale) is active the primary interface is
+    /// `.other`, so we fall back to inspecting the available physical interfaces (Wi-Fi absent +
+    /// cellular present ⇒ likely on mobile data).
+    private func startNetworkMonitoring() {
+        guard !pathMonitorStarted else { return }
+        pathMonitorStarted = true
+        pathMonitor.pathUpdateHandler = { [weak self] path in
+            let cellular: Bool
+            if path.usesInterfaceType(.wifi) || path.usesInterfaceType(.wiredEthernet) {
+                cellular = false
+            } else if path.usesInterfaceType(.cellular) {
+                cellular = true
+            } else {
+                let hasWifi     = path.availableInterfaces.contains { $0.type == .wifi }
+                let hasCellular = path.availableInterfaces.contains { $0.type == .cellular }
+                cellular = !hasWifi && hasCellular
+            }
+            Task { @MainActor [weak self] in self?.isLikelyCellular = cellular }
+        }
+        pathMonitor.start(queue: DispatchQueue(label: "PhotoVideoBackup.network", qos: .utility))
+    }
+
+    /// Requests cancellation of the running backup — it halts at the next file boundary and the
+    /// session is marked partial.
+    func requestCancel() {
+        guard isRunning else { return }
+        isCancelling = true
+        DiagnosticLog.write("[BACKUP_CANCEL] user requested stop")
+        Task { await libraryEngine.requestCancel() }
+        Task { await fileEngine.requestCancel() }
+    }
+
+    /// Wraps resolved local destination URLs as `BackupTarget`s for the copy engines.
+    private func localTargets(_ urls: [URL]) -> [BackupTarget] {
+        urls.map { LocalFileTarget(root: $0, displayName: DestinationManager.shared.destinationLabel(for: $0)) }
+    }
+
+    /// Full backup target set: local volumes plus the NAS (SMB) when configured, enabled,
+    /// reachable, and the user is Pro. Connecting to the NAS happens here, once per backup.
+    private func resolvedTargets(localURLs: [URL]) async -> [BackupTarget] {
+        var targets = localTargets(localURLs)
+        if StoreManager.shared.isPremium, let nas = await DestinationManager.shared.makeSMBTarget() {
+            targets.append(nas)
+        }
+        return targets
+    }
+
     private var backupStartDate: Date?
 
     // MARK: - Background execution
@@ -54,6 +111,7 @@ final class DashboardViewModel {
     private func beginBackgroundExecution() {
         UIApplication.shared.isIdleTimerDisabled = true
         backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "PhotoVideoBackup.copy") { [weak self] in
+            DiagnosticLog.write("[BACKGROUND_EXPIRED] iOS reclaimed background task — backup may have been cut short")
             self?.endBackgroundExecution()
         }
     }
@@ -97,17 +155,17 @@ final class DashboardViewModel {
         content.sound = .default
         switch banner.status {
         case .failed:
-            content.title = "Backup Failed"
-            content.body  = "No files were copied — open the Report for details · \(banner.sourceName)"
+            content.title = String(localized: "Backup Failed")
+            content.body  = String(localized: "No files were copied — open the Report for details · \(banner.sourceName)")
         case .partial:
-            content.title = "Partial Backup"
-            content.body  = "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)"
+            content.title = String(localized: "Partial Backup")
+            content.body  = String(localized: "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)")
         case .completed where banner.failedCount > 0:
-            content.title = "Backup finished with errors"
-            content.body  = "\(banner.copiedCount) copied · \(banner.failedCount) failed — \(banner.sourceName)"
+            content.title = String(localized: "Backup finished with errors")
+            content.body  = String(localized: "\(banner.copiedCount) copied · \(banner.failedCount) failed — \(banner.sourceName)")
         default:
-            content.title = "Backup Complete"
-            content.body  = "\(banner.copiedCount) copied · \(banner.skippedCount) skipped — \(banner.sourceName)"
+            content.title = String(localized: "Backup Complete")
+            content.body  = String(localized: "\(banner.copiedCount) copied · \(banner.skippedCount) skipped — \(banner.sourceName)")
         }
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
@@ -130,13 +188,22 @@ final class DashboardViewModel {
     // MARK: - Lifecycle
 
     func onAppear() {
+        startNetworkMonitoring()
+        if IndexStore.shared.didResetHistory {
+            backupError = String(localized: "The backup history database was corrupted and has been reset. Your files on the SSD are untouched.")
+            DiagnosticLog.write("[STORE_RESET] user notified")
+        }
         refreshDestinationStatuses()
         refreshSessions()
         loadPersistedSources()
-        // Retry offline sources after a short delay so iOS has time to finish mounting the volume.
+        // Two-pass retry: iOS (especially via a powered USB hub with USB-A ports) may not have
+        // fully mounted all external volumes by the time onAppear fires.
+        // 800 ms covers most USB-C direct connections; 3 s covers slower USB-A enumeration.
         Task {
             try? await Task.sleep(nanoseconds: 800_000_000)
-            retryOfflineSources()
+            refreshDestinationStatuses()
+            try? await Task.sleep(nanoseconds: 2_200_000_000)
+            refreshDestinationStatuses()
         }
     }
 
@@ -144,12 +211,14 @@ final class DashboardViewModel {
 
     func refreshDestinationStatuses() {
         let dm = DestinationManager.shared
-        destinationStatuses = (0...2).compactMap { index in
-            let key = dm.key(for: index)
+        var statuses: [DestinationStatus] = (0...1).compactMap { index in
+            let key        = dm.key(for: index)
             guard dm.isConfigured(forKey: key) else { return nil }
-            let folderPath   = dm.folderName(forKey: key)
-            let savedName    = dm.displayName(forKey: key)
-            guard let url    = dm.resolveBookmark(forKey: key) else {
+            let folderPath = dm.folderName(forKey: key)
+            let savedName  = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
+            // Resolve bookmark once — avoids the double-resolution that occurred when
+            // displayName() and resolveBookmark() were called separately.
+            guard let url = dm.resolveBookmark(forKey: key) else {
                 return DestinationStatus(id: UUID(), displayName: savedName,
                                          folderPath: folderPath, rootURL: nil,
                                          totalCapacity: 0, availableCapacity: 0,
@@ -157,7 +226,25 @@ final class DashboardViewModel {
             }
             return destinationStatus(for: url, folderPath: folderPath, savedName: savedName)
         }
+        // NAS: show a config-based row immediately; connection + capacity are filled in async.
+        if let cfg = dm.loadNASConfig(), cfg.isComplete {
+            statuses.append(DestinationStatus(id: UUID(), displayName: cfg.label, folderPath: "",
+                                              rootURL: nil, totalCapacity: 0, availableCapacity: 0,
+                                              isConnected: false, isRemote: true))
+        }
+        destinationStatuses = statuses
         retryOfflineSources()
+        refreshNASStatus()
+    }
+
+    /// Connects to the NAS in the background and replaces its row with live connection + capacity.
+    private func refreshNASStatus() {
+        guard DestinationManager.shared.isNASConfigured() else { return }
+        Task {
+            guard let nas = await DestinationManager.shared.nasStatus() else { return }
+            destinationStatuses.removeAll { $0.isRemote }
+            destinationStatuses.append(nas)
+        }
     }
 
     private func destinationStatus(for url: URL, folderPath: String, savedName: String) -> DestinationStatus {
@@ -322,15 +409,33 @@ final class DashboardViewModel {
         guard !isRunning else { return }
 
         var destinations = DestinationManager.shared.resolvedDestinations()
-        guard !destinations.isEmpty else { return }
 
-        // Enforce premium gate at runtime: limit to 1 destination for free users
+        // Enforce premium gate at runtime: limit to 1 local destination for free users
         if destinations.count > 1 && !StoreManager.shared.isPremium {
             destinations = [destinations[0]]
         }
 
-        let accessed = destinations.filter { $0.startAccessingSecurityScopedResource() }
+        // Call startAccessingSecurityScopedResource() on every destination for side effects
+        // (activates the sandbox extension), but keep ALL destinations regardless of return value.
+        // On iOS, the method can return false for a valid external volume when the sandbox
+        // extension is already embedded in the bookmark — filtering on the return value would
+        // silently drop a connected SSD. Actual write failures are caught by the copy engine.
+        destinations.forEach { url in
+            let granted = url.startAccessingSecurityScopedResource()
+            if !granted {
+                DiagnosticLog.write("[SCOPE_WARN] startAccessingSecurityScopedResource returned false for \(url.lastPathComponent) — keeping destination anyway")
+            }
+        }
+        let accessed = destinations
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
+
+        // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
+        let targets = await resolvedTargets(localURLs: accessed)
+        guard !targets.isEmpty else {
+            backupError = String(localized: "No backup destination is configured or connected.")
+            return
+        }
+        currentBackupUsesNAS = targets.contains { $0.isRemote }
 
         isRunning       = true
         currentProgress = nil
@@ -339,11 +444,13 @@ final class DashboardViewModel {
         backupStartDate = Date()
         beginBackgroundExecution()
 
+        DiagnosticLog.write("[SCAN_START] source=Photos")
         let scanner = PHLibraryScanner()
         let items: [PHMediaItem]
         do {
             items = try await scanner.scan()
         } catch {
+            DiagnosticLog.write("[SCAN_ERROR] Photos: \(error.localizedDescription)")
             backupError = error.localizedDescription
             isRunning   = false
             endBackgroundExecution()
@@ -351,7 +458,7 @@ final class DashboardViewModel {
         }
 
         guard !items.isEmpty else {
-            backupError = "No files found in the photo library."
+            backupError = String(localized: "No files found in the photo library.")
             isRunning   = false
             endBackgroundExecution()
             return
@@ -359,7 +466,7 @@ final class DashboardViewModel {
 
         let rawName = UserDefaults.standard.string(forKey: "deviceName")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !rawName.isEmpty else {
-            backupError = "Please set a device name in Settings before starting a backup."
+            backupError = String(localized: "Please set a device name in Settings before starting a backup.")
             isRunning = false
             endBackgroundExecution()
             return
@@ -370,18 +477,19 @@ final class DashboardViewModel {
 
         let session = BackupSession(
             sources: ["photos-library://local"],
-            destinations: accessed.map(\.path),
-            incompleteMirror: accessed.count < 2,
+            destinations: targets.map(\.rootIdentifier),
+            incompleteMirror: targets.count < 2,
             sourceDisplayName: rawName,
             folderOrganizationRaw: FolderOrganization.current.rawValue,
-            destinationDisplayNames: accessed.map { DestinationManager.shared.destinationLabel(for: $0) }
+            destinationDisplayNames: targets.map(\.displayName)
         )
         try? IndexStore.shared.insert(session)
 
         let fileLimit = Self.resolvedFileLimit()
+        DiagnosticLog.write("[BACKUP_START] source=Photos files=\(items.count) dest=\(targets.count) device=\"\(deviceName)\" \(DiagnosticLog.memoryTag)")
         let stream = await libraryEngine.run(
             items: items,
-            destinations: accessed,
+            destinations: targets,
             session: session,
             deviceName: deviceName,
             fileLimit: fileLimit
@@ -392,6 +500,7 @@ final class DashboardViewModel {
         }
 
         let result = await libraryEngine.engineResult
+        DiagnosticLog.write("[BACKUP_END] copied=\(result.copiedCount) skipped=\(result.skippedCount) failed=\(result.failedCount) limited=\(result.wasLimited) \(DiagnosticLog.memoryTag)")
         finishSession(session, sourceName: deviceName, result: result)
     }
 
@@ -401,26 +510,44 @@ final class DashboardViewModel {
         guard !isRunning else { return }
 
         guard let sourceURL = source.rootURL else {
-            backupError = "\"\(source.displayName)\" is not connected. Reconnect the SD card and try again."
+            backupError = String(localized: "\"\(source.displayName)\" is not connected. Reconnect the SD card and try again.")
             return
         }
 
         // Enforce premium gate at runtime: external sources require Pro
         guard StoreManager.shared.isPremium else {
-            backupError = "External source backup requires the Pro upgrade."
+            backupError = String(localized: "External source backup requires the Pro upgrade.")
             return
         }
 
         var destinations = DestinationManager.shared.resolvedDestinations()
-        guard !destinations.isEmpty else { return }
 
-        // Enforce premium gate at runtime: limit to 1 destination for free users (safety net)
+        // Enforce premium gate at runtime: limit to 1 local destination for free users (safety net)
         if destinations.count > 1 && !StoreManager.shared.isPremium {
             destinations = [destinations[0]]
         }
 
-        let accessed = destinations.filter { $0.startAccessingSecurityScopedResource() }
+        // Call startAccessingSecurityScopedResource() on every destination for side effects
+        // (activates the sandbox extension), but keep ALL destinations regardless of return value.
+        // On iOS, the method can return false for a valid external volume when the sandbox
+        // extension is already embedded in the bookmark — filtering on the return value would
+        // silently drop a connected SSD. Actual write failures are caught by the copy engine.
+        destinations.forEach { url in
+            let granted = url.startAccessingSecurityScopedResource()
+            if !granted {
+                DiagnosticLog.write("[SCOPE_WARN] startAccessingSecurityScopedResource returned false for \(url.lastPathComponent) — keeping destination anyway")
+            }
+        }
+        let accessed = destinations
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
+
+        // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
+        let targets = await resolvedTargets(localURLs: accessed)
+        guard !targets.isEmpty else {
+            backupError = String(localized: "No backup destination is configured or connected.")
+            return
+        }
+        currentBackupUsesNAS = targets.contains { $0.isRemote }
 
         isRunning       = true
         currentProgress = nil
@@ -429,11 +556,13 @@ final class DashboardViewModel {
         backupStartDate = Date()
         beginBackgroundExecution()
 
+        DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)")
         let scanner = MediaScanner()
         let files: [MediaFile]
         do {
             files = try await scanner.scan(root: sourceURL, deviceType: source.deviceType)
         } catch {
+            DiagnosticLog.write("[SCAN_ERROR] \(source.displayName): \(error.localizedDescription)")
             backupError = error.localizedDescription
             isRunning   = false
             endBackgroundExecution()
@@ -441,7 +570,7 @@ final class DashboardViewModel {
         }
 
         guard !files.isEmpty else {
-            backupError = "No media files found in \(source.displayName)."
+            backupError = String(localized: "No media files found in \(source.displayName).")
             isRunning   = false
             endBackgroundExecution()
             return
@@ -453,19 +582,20 @@ final class DashboardViewModel {
 
         let session = BackupSession(
             sources: [sourceURL.path],
-            destinations: accessed.map(\.path),
-            incompleteMirror: accessed.count < 2,
+            destinations: targets.map(\.rootIdentifier),
+            incompleteMirror: targets.count < 2,
             sourceDisplayName: source.displayName,
             folderOrganizationRaw: FolderOrganization.current.rawValue,
-            destinationDisplayNames: accessed.map { DestinationManager.shared.destinationLabel(for: $0) }
+            destinationDisplayNames: targets.map(\.displayName)
         )
         try? IndexStore.shared.insert(session)
 
         let fileLimit = Self.resolvedFileLimit()
+        DiagnosticLog.write("[BACKUP_START] source=\"\(source.displayName)\" files=\(files.count) dest=\(targets.count) device=\"\(deviceFolder)\" \(DiagnosticLog.memoryTag)")
         let stream = await fileEngine.run(
             files: files,
             sourceDevice: deviceFolder,
-            destinations: accessed,
+            destinations: targets,
             session: session,
             fileLimit: fileLimit
         )
@@ -475,6 +605,7 @@ final class DashboardViewModel {
         }
 
         let result = await fileEngine.engineResult
+        DiagnosticLog.write("[BACKUP_END] copied=\(result.copiedCount) skipped=\(result.skippedCount) failed=\(result.failedCount) limited=\(result.wasLimited) \(DiagnosticLog.memoryTag)")
         finishSession(session, sourceName: source.displayName, result: result)
     }
 
@@ -486,9 +617,18 @@ final class DashboardViewModel {
     }
 
     private func finishSession(_ session: BackupSession, sourceName: String, result: EngineResult) {
+        isCancelling = false
+        currentBackupUsesNAS = false
+        if result.wasCancelled {
+            DiagnosticLog.write("[BACKUP_CANCEL] session stopped by user — copied=\(result.copiedCount)")
+        }
+        if result.disconnectedCount > 0 {
+            DiagnosticLog.write("[DISC_ERROR] session ended with \(result.disconnectedCount) disconnection(s)")
+            refreshDestinationStatuses()
+        }
         let sessionStatus: SessionStatus
-        if result.wasLimited {
-            sessionStatus = .partial
+        if result.wasLimited || result.disconnectedCount > 0 || result.wasCancelled {
+            sessionStatus = result.copiedCount == 0 && result.failedCount > 0 ? .failed : .partial
         } else if result.copiedCount == 0 && result.failedCount > 0 {
             sessionStatus = .failed
         } else {
