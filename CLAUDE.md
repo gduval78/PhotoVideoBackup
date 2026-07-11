@@ -34,11 +34,12 @@ The app uses a custom `LanguageManager` that swizzles `Bundle.main` with `Langua
 The app language follows the iPhone system language by default. Users can override it in Settings → Language (in-app picker powered by `LanguageManager`).
 
 ## Documentation
-- User-facing documentation is in `docs-publish/` — this is a separate git repository published on GitHub Pages
+- **User-facing documentation is `index.md` at the repo root** — GitHub Pages serves the site from `main` at path `/` (`https://gduval78.github.io/PhotoVideoBackup/`). Editing `index.md` on `main` and pushing publishes the site; no separate repo or submodule.
 - GitHub repo: `git@github.com:gduval78/PhotoVideoBackup.git`
-- To publish: `cd docs-publish && git add -A && git commit -m "..." && git push origin main`
-- Internal documentation (not published) is in `Documentation/UserGuide.md` — keep it in sync with `docs-publish/index.md`
-- Screenshots are in `docs-publish/images/`
+- To publish: edit `index.md` (and `images/`), commit and `git push origin main`.
+- Screenshots are in `images/` at the repo root.
+- Internal documentation (not published) is in `Documentation/UserGuide.md` — keep it in sync with `index.md`.
+- **History note:** docs used to live in a `docs-publish/` submodule pointing at this same repo. That self-referential submodule caused `main` (app) and the docs line to diverge; it was removed in 2.2.1. The pre-removal docs history is preserved on the `origin/docs-backup` branch. Do **not** re-introduce a docs submodule.
 
 ## Versioning
 - **Do NOT increment the version automatically** during a development or testing session.
@@ -382,14 +383,14 @@ Use `AppConstants.supportEmail` everywhere an email address is needed (Settings 
 
 **After any feature or UI change, always do the following before closing the session:**
 
-1. **Update `docs-publish/index.md`** — version header, affected sections (Settings, History, Browse, Completion, FAQ). The user cannot do this without reading the code; you can.
-2. **Update `Documentation/UserGuide.md`** — keep it in sync with `docs-publish/index.md`.
+1. **Update `index.md`** (repo root) — version header, affected sections (Settings, History, Browse, Completion, FAQ). The user cannot do this without reading the code; you can.
+2. **Update `Documentation/UserGuide.md`** — keep it in sync with `index.md`.
 3. **Update the Version Changelog** below (already in CLAUDE.md).
-4. **Identify screenshots that need retaking** — you cannot take device screenshots yourself. At the end of the session, list explicitly which screenshots in `docs-publish/images/` are now stale and what the new screen should show, so the user knows exactly what to capture. Common candidates:
+4. **Identify screenshots that need retaking** — you cannot take device screenshots yourself. At the end of the session, list explicitly which screenshots in `images/` (repo root) are now stale and what the new screen should show, so the user knows exactly what to capture. Common candidates:
    - Settings screen: any time a new setting is added or a section changes
    - Dashboard/History/Report: any time a new status, badge, or row format changes
    - Browse tab: any time navigation depth or grid layout changes
-5. **Commit `docs-publish/` separately** with `cd docs-publish && git add -A && git commit -m "..." && git push origin main`.
+5. **Commit the docs with the rest** — `index.md` and `images/` live on `main`; a normal `git push origin main` publishes the site (Pages builds from `main` root). No separate repo/submodule.
 
 **What you cannot do alone (flag to the user):**
 - Take screenshots on a real device or simulator
@@ -521,5 +522,5 @@ All test-related UUIDs start with `CC000000000000000000` to avoid collisions. Do
 
 ## IAP price
 - Pro upgrade price: **$1.99** (changed from $4.99).
-- Price is referenced in `Configuration.storekit`, `Products.storekit`, and `docs-publish/index.md`.
+- Price is referenced in `Configuration.storekit`, `Products.storekit`, and `index.md` (repo root).
 - The real price on the App Store is set in **App Store Connect → Pricing and Availability** — the `.storekit` files only affect the simulator and TestFlight.
