@@ -487,11 +487,12 @@ final class DashboardViewModel {
             return
         }
 
-        // PHBackupEngine stages each asset in temporaryDirectory before copying it out, so the
-        // device volume must hold the largest file even when the destination is an external SSD.
+        // PHBackupEngine only stages a copy in temporaryDirectory when an SMB target is involved —
+        // it needs a local file to upload from. A local-only session streams the asset straight to
+        // its destinations, so charging it for a staging copy would refuse backups that fit.
         if let message = diskSpaceError(largestFileBytes: items.map(\.fileSize).max() ?? 0,
                                         targets: targets,
-                                        usesStagingCopy: true) {
+                                        usesStagingCopy: targets.contains(where: \.isRemote)) {
             backupError = message
             isRunning   = false
             endBackgroundExecution()
