@@ -203,6 +203,33 @@ Both `PHBackupEngine` and `FileCopyEngine` use the same pattern to avoid memory 
 - **Batch save every 500 files**: `if index > 0 && index % Self.batchFlushInterval == 0 { await MainActor.run { IndexStore.shared.save() }; try? await Task.sleep(nanoseconds: 10_000_000) }` — the 10ms sleep gives iOS room to reclaim memory between batches.
 - **Stats via actor-isolated counters**: `_copiedCount`, `_skippedCount`, `_failedCount`, `_totalBytesCopied`, `_wasLimited`, `_disconnectedCount` are actor-isolated vars on the engine. They are read after the stream completes via `engineResult: EngineResult`. `finishSession` uses these counters directly — it never scans `session.files`.
 
+## Streamed export — backing up with little free space
+
+`PHBackupEngine` used to export every asset to `temporaryDirectory` before copying it out, so the **device volume had to hold the whole file** even when the destination was an external SSD. A 4 GB video needed 4 GB free on the iPhone.
+
+**Local-only sessions now stream.** `streamAssetToDestinations` writes chunks from `PHAssetResourceManager.requestData(for:options:dataReceivedHandler:completionHandler:)` straight to every destination `FileHandle`, folding each chunk into a running SHA-256.
+
+- **Backpressure is free.** Photos calls `dataReceivedHandler` on a serial queue; returning from the handler is what paces delivery. Writing inside the handler means nothing buffers — footprint is one chunk regardless of file size. No semaphore, no `AsyncStream`, no deadlock risk.
+- **The chunk must be copied.** The header states the buffer's lifetime is not guaranteed beyond the handler — always `Data(data)`.
+- **No cancellation on total disconnection.** When every destination dies the sink stops writing but the request runs to completion; cancelling risks never receiving the completion handler, which would hang the copy.
+- **SMB sessions keep the staging path.** `remote.upload(localFile:)` needs a local file. `canStream = remoteTargets.isEmpty && !localTargets.isEmpty`.
+- **`FileCopyEngine` never staged anything** — it reads straight from the source file. SD card / drone workflows are unaffected by all of this.
+
+**Dedup ordering inverts on the streamed path.** The hash is only known once the bytes have flowed, so the SHA-256 check the staging path runs *before* copying runs *after*: if the content already sits at every destination under a different name, the just-written files are deleted and the file is recorded as skipped. Paths written during this file are excluded from the coverage check or they would count as covering themselves. Without this, dedup of renamed files (v2.1.0) would silently regress.
+
+**Not covered by tests.** The regression suite exercises `FileCopyEngine`; `PHBackupEngine` needs `PHPhotoLibrary` and cannot be seeded in a unit test. The streamed path requires device validation.
+
+## Disk-space preflight
+
+`DiskSpacePreflight.check(largestFileBytes:destinations:usesStagingCopy:)` refuses a backup that cannot fit before it starts, rather than letting it die mid-file with a partial session.
+
+- Sized on the **largest single file**, not the total — the engines process one file at a time and release the staging copy before moving on.
+- Counted copies: the staging copy (only when a remote target is present, since that is the only case that still stages) plus any destination on the **device volume** — i.e. an iCloud Drive folder. External SSDs are a different volume; SMB targets stream from staging. Volume identity is compared via `.volumeIdentifierKey` against `temporaryDirectory`.
+- Uses `volumeAvailableCapacityForImportantUsage` (includes purgeable space iOS reclaims), not raw free bytes.
+- **Fails open.** `availableBytes` is `Int64?`; nil means the volume could not be read and the backup proceeds. Returning 0 instead would have refused *every* backup.
+- A file size of 0 (iCloud assets before download) enforces only the safety margin.
+- Refusals are logged as `[DISKSPACE] refused required=… available=… largest=… deviceCopies=…`.
+
 ## Mid-backup disconnection detection (v2.1.4+)
 
 `streamCopy` in both engines handles per-destination disconnection:
