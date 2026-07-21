@@ -20,15 +20,26 @@ enum DiskSpacePreflight {
     struct Requirement: Sendable {
         /// Peak device-volume space the backup needs at any one moment.
         let requiredBytes: Int64
-        /// Space currently available for important usage (includes purgeable space iOS will reclaim).
-        let availableBytes: Int64
+        /// Space currently available for important usage (includes purgeable space iOS will
+        /// reclaim), or nil when the volume could not be queried.
+        let availableBytes: Int64?
         /// Largest single file that drove the requirement.
         let largestFileBytes: Int64
         /// How many simultaneous copies of that file land on the device volume.
         let deviceCopies: Int
 
-        var isSatisfied: Bool { availableBytes >= requiredBytes }
-        var shortfallBytes: Int64 { max(0, requiredBytes - availableBytes) }
+        /// Fails **open**: when the volume cannot be queried we let the backup proceed rather than
+        /// blocking every backup on a reading we failed to take. The engines still surface a real
+        /// write error if space genuinely runs out.
+        var isSatisfied: Bool {
+            guard let availableBytes else { return true }
+            return availableBytes >= requiredBytes
+        }
+
+        var shortfallBytes: Int64 {
+            guard let availableBytes else { return 0 }
+            return max(0, requiredBytes - availableBytes)
+        }
     }
 
     /// - Parameters:
@@ -53,13 +64,14 @@ enum DiskSpacePreflight {
 
     // MARK: - Helpers
 
-    /// Space available on the volume the app's own storage lives on.
+    /// Space available on the volume the app's own storage lives on, or nil if it cannot be read.
     /// `volumeAvailableCapacityForImportantUsage` is the value Apple documents for this decision —
     /// it includes purgeable space iOS will reclaim on demand, unlike the raw free-byte count.
-    static func availableDeviceBytes() -> Int64 {
+    /// Returning nil rather than 0 matters: 0 would refuse every backup.
+    static func availableDeviceBytes() -> Int64? {
         (try? FileManager.default.temporaryDirectory
             .resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
-            .volumeAvailableCapacityForImportantUsage) ?? 0
+            .volumeAvailableCapacityForImportantUsage) ?? nil
     }
 
     /// True when writing to this target consumes device storage — i.e. a local target sitting on the

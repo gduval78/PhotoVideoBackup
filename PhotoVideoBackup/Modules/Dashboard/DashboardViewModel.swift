@@ -116,13 +116,15 @@ final class DashboardViewModel {
         let need = DiskSpacePreflight.check(largestFileBytes: largestFileBytes,
                                             destinations: targets,
                                             usesStagingCopy: usesStagingCopy)
-        guard !need.isSatisfied else { return nil }
+        // A nil availableBytes means the volume could not be read; isSatisfied fails open in that
+        // case, so reaching here guarantees we have a real figure to show.
+        guard !need.isSatisfied, let availableBytes = need.availableBytes else { return nil }
 
-        DiagnosticLog.write("[DISKSPACE] refused required=\(need.requiredBytes) available=\(need.availableBytes) largest=\(need.largestFileBytes) deviceCopies=\(need.deviceCopies)")
+        DiagnosticLog.write("[DISKSPACE] refused required=\(need.requiredBytes) available=\(availableBytes) largest=\(need.largestFileBytes) deviceCopies=\(need.deviceCopies)")
 
         let locale = LanguageManager.shared.currentLocale
         let required  = need.requiredBytes.formatted(.byteCount(style: .file).locale(locale))
-        let available = need.availableBytes.formatted(.byteCount(style: .file).locale(locale))
+        let available = availableBytes.formatted(.byteCount(style: .file).locale(locale))
         return String(localized: "Not enough free space on this device. This backup needs \(required) but only \(available) is available. Free up space and try again.")
     }
 

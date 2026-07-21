@@ -64,14 +64,27 @@ final class DiskSpacePreflightTests: XCTestCase {
     // SCENARIO: A file larger than the disk is refused, with the shortfall reported
     // This is the case the whole check exists for: without it the backup starts, fills the device,
     // and dies mid-file leaving a partial session behind.
-    func test_fileLargerThanDisk_isRefusedWithShortfall() {
+    func test_fileLargerThanDisk_isRefusedWithShortfall() throws {
         let absurd: Int64 = 500 * 1024 * 1024 * 1024   // 500 GB
         let need = DiskSpacePreflight.check(largestFileBytes: absurd,
                                             destinations: [target],
                                             usesStagingCopy: true)
         XCTAssertFalse(need.isSatisfied)
         XCTAssertGreaterThan(need.shortfallBytes, 0)
-        XCTAssertEqual(need.shortfallBytes, need.requiredBytes - need.availableBytes)
+        let available = try XCTUnwrap(need.availableBytes)
+        XCTAssertEqual(need.shortfallBytes, need.requiredBytes - available)
+    }
+
+    // SCENARIO: An unreadable volume lets the backup through
+    // If the capacity reading fails we must fail open. Treating an unknown as zero would make the
+    // requirement unsatisfiable and silently refuse every backup on the device.
+    func test_unknownAvailableSpace_failsOpen() {
+        let need = DiskSpacePreflight.Requirement(requiredBytes: 999_999_999_999,
+                                                  availableBytes: nil,
+                                                  largestFileBytes: 999_999_999_999,
+                                                  deviceCopies: 1)
+        XCTAssertTrue(need.isSatisfied)
+        XCTAssertEqual(need.shortfallBytes, 0)
     }
 
     // SCENARIO: A remote target costs no device space
