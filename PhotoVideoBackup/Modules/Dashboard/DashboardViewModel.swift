@@ -108,6 +108,24 @@ final class DashboardViewModel {
 
     // MARK: - Background execution
 
+    /// Message to show when the device cannot hold the transient copies this backup needs, or nil
+    /// when there is room. A refusal is always logged so it can be traced after the fact.
+    private func diskSpaceError(largestFileBytes: Int64,
+                                targets: [BackupTarget],
+                                usesStagingCopy: Bool) -> String? {
+        let need = DiskSpacePreflight.check(largestFileBytes: largestFileBytes,
+                                            destinations: targets,
+                                            usesStagingCopy: usesStagingCopy)
+        guard !need.isSatisfied else { return nil }
+
+        DiagnosticLog.write("[DISKSPACE] refused required=\(need.requiredBytes) available=\(need.availableBytes) largest=\(need.largestFileBytes) deviceCopies=\(need.deviceCopies)")
+
+        let locale = LanguageManager.shared.currentLocale
+        let required  = need.requiredBytes.formatted(.byteCount(style: .file).locale(locale))
+        let available = need.availableBytes.formatted(.byteCount(style: .file).locale(locale))
+        return String(localized: "Not enough free space on this device. This backup needs \(required) but only \(available) is available. Free up space and try again.")
+    }
+
     private func beginBackgroundExecution() {
         UIApplication.shared.isIdleTimerDisabled = true
         backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "PhotoVideoBackup.copy") { [weak self] in
@@ -467,6 +485,17 @@ final class DashboardViewModel {
             return
         }
 
+        // PHBackupEngine stages each asset in temporaryDirectory before copying it out, so the
+        // device volume must hold the largest file even when the destination is an external SSD.
+        if let message = diskSpaceError(largestFileBytes: items.map(\.fileSize).max() ?? 0,
+                                        targets: targets,
+                                        usesStagingCopy: true) {
+            backupError = message
+            isRunning   = false
+            endBackgroundExecution()
+            return
+        }
+
         let rawName = UserDefaults.standard.string(forKey: "deviceName")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !rawName.isEmpty else {
             backupError = String(localized: "Please set a device name in Settings before starting a backup.")
@@ -574,6 +603,17 @@ final class DashboardViewModel {
 
         guard !files.isEmpty else {
             backupError = String(localized: "No media files found in \(source.displayName).")
+            isRunning   = false
+            endBackgroundExecution()
+            return
+        }
+
+        // FileCopyEngine streams straight from the source file — no staging copy on the device.
+        // Device space is only at stake for a destination that lives on the device volume.
+        if let message = diskSpaceError(largestFileBytes: files.map(\.size).max() ?? 0,
+                                        targets: targets,
+                                        usesStagingCopy: false) {
+            backupError = message
             isRunning   = false
             endBackgroundExecution()
             return
