@@ -222,6 +222,20 @@ Both `PHBackupEngine` and `FileCopyEngine` use the same pattern to avoid memory 
 
 **Not covered by tests.** The regression suite exercises `FileCopyEngine`; `PHBackupEngine` needs `PHPhotoLibrary` and cannot be seeded in a unit test. The streamed path requires device validation.
 
+## iCloud eviction — freeing device space during a backup
+
+`Modules/ICloudEviction/ICloudEvictionManager.swift`. A destination in an **iCloud Drive folder** sits on the device volume, so the streamed copy stays there until iCloud uploads it. Without eviction, a backup to iCloud accumulates copies of what is already in the cloud and fills the phone.
+
+**Verified on device** (`ICloudEvictionProbe`, verdict `EVICT_OK`): `evictUbiquitousItem` works on a *user-picked* iCloud Drive folder — a security-scoped URL outside the app's own ubiquity container — with **no iCloud entitlement**. This is what makes CloudKit unnecessary for freeing space; do not revisit that.
+
+- **The upload gate is not optional.** Every eviction is gated on `isUploaded && !isUploading`. `isUploaded` alone only means "some data is present in the cloud". A file that cannot be positively confirmed is left alone — absence of evidence never authorises an eviction.
+- **A throw-free `evictUbiquitousItem` is not proof.** `evictIfUploaded` re-checks that `downloadingStatus == .notDownloaded` before counting the bytes as reclaimed.
+- **`URL` caches resource values** — every poll rebuilds the URL, or the upload appears never to finish.
+- **Eviction runs after SHA-256 verification**, never before: verifying re-reads the destination, and reading an evicted file pulls it straight back down from iCloud.
+- **Files are queued only after surviving the dedup rollback**, so a duplicate deleted post-hoc never lands on the pending list.
+- **Blocking only under pressure.** After each file a cheap non-blocking pass evicts whatever is ready. Only when free space drops below `PHBackupEngine.lowSpaceWatermark` (2 GB) does the run block on uploads. A phone with room to spare runs at full speed.
+- **One stall per run, not one per file.** If a blocking pass hits its 120 s deadline, `ReclaimResult.stalled` is set and the engine stops blocking for the rest of the session (`evictionStalled`). Uploads that are not progressing (no network, iCloud quota exhausted) would otherwise crawl the backup to 2 min/file for no gain.
+
 ## Disk-space preflight
 
 `DiskSpacePreflight.check(largestFileBytes:destinations:usesStagingCopy:)` refuses a backup that cannot fit before it starts, rather than letting it die mid-file with a partial session.

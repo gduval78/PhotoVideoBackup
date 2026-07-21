@@ -51,6 +51,11 @@ actor PHBackupEngine {
     static let chunkSize: Int = 4 * 1024 * 1024  // 4 MB
     private static let batchFlushInterval = 500
 
+    /// Below this much free space, the run stops writing new files into an iCloud Drive destination
+    /// and waits for pending uploads so it can evict what is already safely in the cloud. Above it,
+    /// eviction is opportunistic and never blocks.
+    static let lowSpaceWatermark: Int64 = 2 * 1024 * 1024 * 1024   // 2 GB
+
     // MARK: - Engine result (read after stream completes)
 
     private var _copiedCount = 0
@@ -99,6 +104,17 @@ actor PHBackupEngine {
 
                 var overallDone: Int64 = 0
                 var toCopyCount = 0
+
+                // Files written to an iCloud Drive destination still holding device storage. A
+                // destination on an external SSD never appears here — it costs the device nothing.
+                var pendingEviction: [ICloudEvictionManager.PendingFile] = []
+                var evictionStalled = false
+                let ubiquitousRoots = Set(
+                    destinations
+                        .compactMap { ($0 as? LocalFileTarget)?.root }
+                        .filter { ICloudEvictionManager.isUbiquitous($0) }
+                        .map(\.path)
+                )
 
                 for (index, item) in items.enumerated() {
                     // Cooperative cancellation (user tapped Stop) — stop at file boundary.
@@ -172,6 +188,9 @@ actor PHBackupEngine {
                     var writtenTargets: [BackupTarget] = []
                     var disconnectedThisFile = false
                     var hardCopyError: Error? = nil
+                    /// Local files this iteration wrote — the SMB upload reads from the first, and
+                    /// any that sit in iCloud Drive become eviction candidates once verified.
+                    var streamedURLs: [URL] = []
 
                     continuation.yield(CopyProgress(
                         fileIndex: index, totalFiles: items.count,
@@ -183,7 +202,6 @@ actor PHBackupEngine {
                     ))
 
                     if canStream {
-                        var streamedURLs: [URL] = []
                         do {
                             let result = try await streamAssetToDestinations(
                                 item: item,
@@ -459,6 +477,51 @@ actor PHBackupEngine {
                         overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
                         phase: allOK ? .done : .failed("SHA-256 verification failed")
                     ))
+
+                    // Queue this file's iCloud Drive copies for eviction. Added only now, once the
+                    // file has survived the dedup rollback and been verified — a file deleted as a
+                    // duplicate must never end up on this list.
+                    for url in streamedURLs where ubiquitousRoots.contains(where: { url.path.hasPrefix($0) }) {
+                        pendingEviction.append(.init(url: url, bytes: actualSize))
+                    }
+
+                    // ── Release local copies already in iCloud ───────────────
+                    // Runs *after* verification on purpose: verifying re-reads the destination to
+                    // recompute its SHA-256, and reading an evicted file would pull it straight back
+                    // down from iCloud.
+                    //
+                    // The cheap pass never waits on the network. Only when the device is genuinely
+                    // short on space do we block on uploads — that is what keeps a backup to iCloud
+                    // Drive from filling the phone with copies of what is already in the cloud,
+                    // while a phone with room to spare runs at full speed.
+                    if !pendingEviction.isEmpty {
+                        let pass = ICloudEvictionManager.evictReady(pendingEviction)
+                        pendingEviction = pass.stillPending
+                        if pass.evictedCount > 0 {
+                            DiagnosticLog.write("[ICLOUD_EVICT] released \(pass.evictedCount) file(s), \(pass.reclaimedBytes) bytes, \(pendingEviction.count) pending")
+                        }
+                        if !evictionStalled,
+                           let available = DiskSpacePreflight.availableDeviceBytes(),
+                           available < Self.lowSpaceWatermark, !pendingEviction.isEmpty {
+                            let forced = await ICloudEvictionManager.reclaim(
+                                pendingEviction, targetBytes: Self.lowSpaceWatermark - available)
+                            pendingEviction = forced.stillPending
+                            if forced.stalled {
+                                // Uploads are not progressing. Waiting again on every remaining file
+                                // would crawl the run to a halt for no gain, so from here on we only
+                                // evict opportunistically and let the disk-space check report the
+                                // real problem if we do run out.
+                                evictionStalled = true
+                                DiagnosticLog.write("[ICLOUD_EVICT] uploads stalled — no further blocking waits this run")
+                            }
+                        }
+                    }
+                }
+
+                // Final pass: anything iCloud finished uploading while the run was winding down.
+                if !pendingEviction.isEmpty {
+                    let pass = ICloudEvictionManager.evictReady(pendingEviction)
+                    DiagnosticLog.write("[ICLOUD_EVICT] final pass released \(pass.evictedCount) file(s), \(pass.stillPending.count) left materialised")
                 }
 
                 await MainActor.run { IndexStore.shared.save() }
