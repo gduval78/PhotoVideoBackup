@@ -487,12 +487,12 @@ final class DashboardViewModel {
             return
         }
 
-        // PHBackupEngine only stages a copy in temporaryDirectory when an SMB target is involved —
-        // it needs a local file to upload from. A local-only session streams the asset straight to
-        // its destinations, so charging it for a staging copy would refuse backups that fit.
+        // PHBackupEngine only stages a copy in temporaryDirectory for a NAS-*only* session: with a
+        // local destination it streams to that destination and the SMB upload reads from it. So a
+        // staging copy is charged only when every target is remote.
         if let message = diskSpaceError(largestFileBytes: items.map(\.fileSize).max() ?? 0,
                                         targets: targets,
-                                        usesStagingCopy: targets.contains(where: \.isRemote)) {
+                                        usesStagingCopy: targets.allSatisfy(\.isRemote)) {
             backupError = message
             isRunning   = false
             endBackgroundExecution()

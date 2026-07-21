@@ -41,10 +41,11 @@ enum ExportError: LocalizedError {
 
 /// Copies Photos library assets to their destinations with SHA-256 verification.
 ///
-/// Local-only sessions stream each asset from the Photos daemon straight to its destinations, so
-/// the device volume never holds a full copy and a large video no longer needs free space equal to
-/// its own size. Sessions involving an SMB target still stage the asset in a temporary file, since
-/// the upload needs a local file to read from.
+/// Any session with a local destination streams each asset from the Photos daemon straight to that
+/// destination, so the device volume never holds a full copy and a large video no longer needs free
+/// space equal to its own size. An SMB upload still needs a complete local file to read from, but it
+/// reads the copy just written to the external volume — so only a NAS-*only* session has to stage a
+/// temporary file on the device.
 actor PHBackupEngine {
 
     static let chunkSize: Int = 4 * 1024 * 1024  // 4 MB
@@ -157,13 +158,14 @@ actor PHBackupEngine {
                     toCopyCount += 1
 
                     // ── Choose the export path ──────────────────────────────
-                    // An SMB target needs a local file to upload from, so any session involving
-                    // the NAS keeps the staging copy. Local-only sessions stream the asset straight
-                    // to their destinations and never put a full copy on the device volume.
+                    // Whenever there is a local destination we stream the asset straight to it and
+                    // no full copy ever touches the device volume. An SMB upload still needs a
+                    // complete local file, but it can read the copy we just wrote to the external
+                    // volume — so only a NAS-*only* session has to stage on the device.
                     let localTargets  = missingTargets.compactMap { $0 as? LocalFileTarget }
                     let remoteTargets = missingTargets.compactMap { $0 as? RemoteBackupTarget }
                     let localURLs     = localTargets.map { $0.destinationURL(forRelative: rel) }
-                    let canStream     = remoteTargets.isEmpty && !localTargets.isEmpty
+                    let canStream     = !localTargets.isEmpty
 
                     var actualSize           = item.fileSize
                     var precomputedSHA256    = ""
@@ -251,6 +253,57 @@ actor PHBackupEngine {
                                 continue
                             }
                         }
+
+                        // ── Remote uploads, sourced from the copy we just wrote ──
+                        // Reading from the external volume means no staging copy on the device.
+                        // Running after the dedup check also means a renamed duplicate never costs
+                        // an upload — the bandwidth is saved, not just the disk space.
+                        if !remoteTargets.isEmpty {
+                            if let uploadSource = streamedURLs.first {
+                                let result = await uploadToRemotes(
+                                    remoteTargets, from: uploadSource, relativePath: rel,
+                                    fileName: item.fileName
+                                ) { bytesRead, destination in
+                                    continuation.yield(CopyProgress(
+                                        fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                        fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                        currentDestination: destination,
+                                        overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                        phase: .copying))
+                                }
+                                writtenTargets += result.written
+                                hardCopyError = hardCopyError ?? result.failure
+                                if result.disconnected > 0 { disconnectedThisFile = true }
+                            } else {
+                                // Every local destination died mid-copy, so there is nothing to
+                                // upload from. Stage a temp file rather than let a disconnected SSD
+                                // take the NAS down with it.
+                                do {
+                                    let temp = try await exportToTemp(item: item)
+                                    defer { try? FileManager.default.removeItem(at: temp) }
+                                    if precomputedSHA256.isEmpty {
+                                        precomputedSHA256 = (try? await sha256(of: temp)) ?? ""
+                                    }
+                                    let result = await uploadToRemotes(
+                                        remoteTargets, from: temp, relativePath: rel,
+                                        fileName: item.fileName
+                                    ) { bytesRead, destination in
+                                        continuation.yield(CopyProgress(
+                                            fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                            fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                            currentDestination: destination,
+                                            overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                            phase: .copying))
+                                    }
+                                    writtenTargets += result.written
+                                    hardCopyError = hardCopyError ?? result.failure
+                                    if result.disconnected > 0 { disconnectedThisFile = true }
+                                } catch {
+                                    DiagnosticLog.write("[COPY_ERROR] staging fallback for \(item.fileName): \(error.localizedDescription)")
+                                    hardCopyError = hardCopyError ?? error
+                                }
+                            }
+                        }
                     } else {
                         // ── Staging path: export to a temp file, then fan out ────
                         let tempURL: URL
@@ -310,64 +363,22 @@ actor PHBackupEngine {
                             }
                         }
 
-                        // Local fan-out.
-                        if !localTargets.isEmpty {
-                            do {
-                                let copyResult = try await streamCopy(
-                                    source: tempURL,
-                                    destinations: localURLs,
-                                    precomputedSourceSHA256: precomputedSHA256
-                                ) { bytesRead in
-                                    continuation.yield(CopyProgress(
-                                        fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                        fileBytesDone: bytesRead, fileBytesTotal: actualSize,
-                                        currentDestination: primaryDest,
-                                        overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
-                                        phase: .copying))
-                                }
-                                // streamCopy tracks disconnected (not written); a local target counts as
-                                // written when it is not in the disconnected set.
-                                let disconnectedPaths = Set(copyResult.disconnected.map(\.path))
-                                if !copyResult.disconnected.isEmpty {
-                                    _disconnectedCount += copyResult.disconnected.count
-                                    disconnectedThisFile = true
-                                    for url in copyResult.disconnected {
-                                        DiagnosticLog.write("[DISC_ERROR] partial disconnection: \(url.lastPathComponent)")
-                                    }
-                                }
-                                writtenTargets += localTargets.filter { !disconnectedPaths.contains($0.destinationURL(forRelative: rel).path) }
-                            } catch CopyError.allDestinationsDisconnected {
-                                DiagnosticLog.write("[DISC_ERROR] all local destinations disconnected during copy of \(item.fileName)")
-                                _disconnectedCount += localTargets.count
-                                disconnectedThisFile = true
-                            } catch {
-                                hardCopyError = error
-                            }
+                        // Remote uploads. This branch is NAS-only — a session with any local
+                        // destination streams instead — so there is no local fan-out to do here.
+                        let result = await uploadToRemotes(
+                            remoteTargets, from: tempURL, relativePath: rel,
+                            fileName: item.fileName
+                        ) { bytesRead, destination in
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                currentDestination: destination,
+                                overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                phase: .copying))
                         }
-
-                        // Remote (SMB) uploads.
-                        for remote in remoteTargets {
-                            do {
-                                try await remote.upload(localFile: tempURL, toRelative: rel) { bytesRead in
-                                    continuation.yield(CopyProgress(
-                                        fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                        fileBytesDone: bytesRead, fileBytesTotal: actualSize,
-                                        currentDestination: remote.absolutePath(forRelative: rel),
-                                        overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
-                                        phase: .copying))
-                                }
-                                writtenTargets.append(remote)
-                            } catch {
-                                if await remote.isReachable() {
-                                    DiagnosticLog.write("[COPY_ERROR] \(item.fileName) → \(remote.displayName): \(error.localizedDescription)")
-                                    hardCopyError = hardCopyError ?? error
-                                } else {
-                                    _disconnectedCount += 1
-                                    disconnectedThisFile = true
-                                    DiagnosticLog.write("[DISC_ERROR] NAS disconnected during upload of \(item.fileName)")
-                                }
-                            }
-                        }
+                        writtenTargets += result.written
+                        hardCopyError = hardCopyError ?? result.failure
+                        if result.disconnected > 0 { disconnectedThisFile = true }
                     }
 
                     // Nothing was written to any destination.
@@ -704,6 +715,43 @@ actor PHBackupEngine {
         return StreamResult(sourceSHA256: outcome.sha256,
                             totalBytes: outcome.bytes,
                             disconnected: outcome.disconnected)
+    }
+
+    /// Uploads one file to every remote target, reading from `localFile`.
+    ///
+    /// AMSMB2 exposes no incremental upload: `write(stream:)` drains its source into a single
+    /// in-memory buffer that is never purged, so it holds the whole file in RAM — worse than a
+    /// staging file on disk. An upload therefore needs a complete local file, and the best we can
+    /// do is choose *which* local file: a copy we already wrote to an external volume beats a
+    /// temporary copy on the device.
+    private func uploadToRemotes(
+        _ remotes: [RemoteBackupTarget],
+        from localFile: URL,
+        relativePath rel: String,
+        fileName: String,
+        onProgress: @escaping @Sendable (Int64, String) -> Void
+    ) async -> (written: [BackupTarget], failure: Error?, disconnected: Int) {
+        var written: [BackupTarget] = []
+        var failure: Error?
+        var disconnected = 0
+        for remote in remotes {
+            do {
+                try await remote.upload(localFile: localFile, toRelative: rel) { bytesRead in
+                    onProgress(bytesRead, remote.absolutePath(forRelative: rel))
+                }
+                written.append(remote)
+            } catch {
+                if await remote.isReachable() {
+                    DiagnosticLog.write("[COPY_ERROR] \(fileName) → \(remote.displayName): \(error.localizedDescription)")
+                    failure = failure ?? error
+                } else {
+                    _disconnectedCount += 1
+                    disconnected += 1
+                    DiagnosticLog.write("[DISC_ERROR] NAS disconnected during upload of \(fileName)")
+                }
+            }
+        }
+        return (written, failure, disconnected)
     }
 
     /// Resolves the best exportable resource for an item — shared by the staging and streamed paths.
