@@ -3,15 +3,16 @@ import Foundation
 /// Refuses a backup that cannot possibly fit, instead of letting it fail halfway through with a
 /// write error and a partial session.
 ///
-/// The engines need transient space on the **device volume** even when the backup targets an
-/// external SSD: `PHBackupEngine` exports each asset to `temporaryDirectory` before copying it out,
-/// and any destination that happens to live on the device volume (an iCloud Drive folder) holds a
-/// second copy until iCloud uploads and releases it. Remote targets (SMB) stream from the staging
-/// file and cost no extra device space.
+/// Two things consume device-volume space during a run: the staging copy `PHBackupEngine` makes for
+/// a NAS-only session (the only case that still stages), and any destination that happens to live on
+/// the device volume — an iCloud Drive folder — which holds a copy until iCloud uploads and releases
+/// it. An external SSD is a different volume and costs nothing.
 ///
-/// The requirement is driven by the **largest single file**, not the total: the engines process one
-/// file at a time and release the staging copy before moving on. A 60 GB library backs up fine with
-/// a few GB free — but a single 4 GB video will not.
+/// The requirement is driven by the **smallest single file**, not the total and not the largest.
+/// The engines process one file at a time and release the staging copy before moving on, so a
+/// 60 GB library backs up fine with a few GB free. And a file that does not fit fails on its own
+/// and the run continues with the rest — so one oversized video must not block the two hundred
+/// small ones behind it. This check exists only to catch the case where *nothing* can proceed.
 enum DiskSpacePreflight {
 
     /// Headroom kept free so the check passing does not leave the device with nothing to breathe on.
@@ -23,8 +24,8 @@ enum DiskSpacePreflight {
         /// Space currently available for important usage (includes purgeable space iOS will
         /// reclaim), or nil when the volume could not be queried.
         let availableBytes: Int64?
-        /// Largest single file that drove the requirement.
-        let largestFileBytes: Int64
+        /// Smallest single file that drove the requirement.
+        let smallestFileBytes: Int64
         /// How many simultaneous copies of that file land on the device volume.
         let deviceCopies: Int
 
@@ -43,22 +44,22 @@ enum DiskSpacePreflight {
     }
 
     /// - Parameters:
-    ///   - largestFileBytes: size of the biggest file in the session. Pass 0 when unknown (iCloud
+    ///   - smallestFileBytes: size of the smallest file in the session. Pass 0 when unknown (iCloud
     ///     assets report 0 before download) — the check then only enforces the safety margin rather
     ///     than blocking a backup on a number we do not have.
     ///   - destinations: the session's targets.
     ///   - usesStagingCopy: true for `PHBackupEngine` (exports to `temporaryDirectory` first).
     ///     `FileCopyEngine` reads straight from the source file and needs no staging.
-    static func check(largestFileBytes: Int64,
+    static func check(smallestFileBytes: Int64,
                       destinations: [BackupTarget],
                       usesStagingCopy: Bool) -> Requirement {
         let onDeviceDestinations = destinations.filter(isOnDeviceVolume).count
         let copies = (usesStagingCopy ? 1 : 0) + onDeviceDestinations
 
-        let required = largestFileBytes * Int64(copies) + safetyMarginBytes
+        let required = smallestFileBytes * Int64(copies) + safetyMarginBytes
         return Requirement(requiredBytes: required,
                            availableBytes: availableDeviceBytes(),
-                           largestFileBytes: largestFileBytes,
+                           smallestFileBytes: smallestFileBytes,
                            deviceCopies: copies)
     }
 

@@ -110,17 +110,17 @@ final class DashboardViewModel {
 
     /// Message to show when the device cannot hold the transient copies this backup needs, or nil
     /// when there is room. A refusal is always logged so it can be traced after the fact.
-    private func diskSpaceError(largestFileBytes: Int64,
+    private func diskSpaceError(smallestFileBytes: Int64,
                                 targets: [BackupTarget],
                                 usesStagingCopy: Bool) -> String? {
-        let need = DiskSpacePreflight.check(largestFileBytes: largestFileBytes,
+        let need = DiskSpacePreflight.check(smallestFileBytes: smallestFileBytes,
                                             destinations: targets,
                                             usesStagingCopy: usesStagingCopy)
         // A nil availableBytes means the volume could not be read; isSatisfied fails open in that
         // case, so reaching here guarantees we have a real figure to show.
         guard !need.isSatisfied, let availableBytes = need.availableBytes else { return nil }
 
-        DiagnosticLog.write("[DISKSPACE] refused required=\(need.requiredBytes) available=\(availableBytes) largest=\(need.largestFileBytes) deviceCopies=\(need.deviceCopies)")
+        DiagnosticLog.write("[DISKSPACE] refused required=\(need.requiredBytes) available=\(availableBytes) smallest=\(need.smallestFileBytes) deviceCopies=\(need.deviceCopies)")
 
         let locale = LanguageManager.shared.currentLocale
         let required  = need.requiredBytes.formatted(.byteCount(style: .file).locale(locale))
@@ -490,7 +490,7 @@ final class DashboardViewModel {
         // PHBackupEngine only stages a copy in temporaryDirectory for a NAS-*only* session: with a
         // local destination it streams to that destination and the SMB upload reads from it. So a
         // staging copy is charged only when every target is remote.
-        if let message = diskSpaceError(largestFileBytes: items.map(\.fileSize).max() ?? 0,
+        if let message = diskSpaceError(smallestFileBytes: items.map(\.fileSize).min() ?? 0,
                                         targets: targets,
                                         usesStagingCopy: targets.allSatisfy(\.isRemote)) {
             backupError = message
@@ -613,7 +613,7 @@ final class DashboardViewModel {
 
         // FileCopyEngine streams straight from the source file — no staging copy on the device.
         // Device space is only at stake for a destination that lives on the device volume.
-        if let message = diskSpaceError(largestFileBytes: files.map(\.size).max() ?? 0,
+        if let message = diskSpaceError(smallestFileBytes: files.map(\.size).min() ?? 0,
                                         targets: targets,
                                         usesStagingCopy: false) {
             backupError = message

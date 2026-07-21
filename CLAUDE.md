@@ -226,7 +226,9 @@ Both `PHBackupEngine` and `FileCopyEngine` use the same pattern to avoid memory 
 
 `DiskSpacePreflight.check(largestFileBytes:destinations:usesStagingCopy:)` refuses a backup that cannot fit before it starts, rather than letting it die mid-file with a partial session.
 
-- Sized on the **largest single file**, not the total — the engines process one file at a time and release the staging copy before moving on.
+- Sized on the **smallest single file**, not the total and **not the largest**. A file too big to fit fails on its own and the run continues with the rest, so one oversized video must not block the two hundred small ones behind it. This check catches only the case where *nothing* can proceed. Sizing it on the largest file was the original mistake.
+- The NAS-only staging branch additionally checks **per file** before `exportToTemp`, so an oversized file is reported as "Not enough free space on this device to copy this file." and skipped, rather than costing a full read and returning an opaque POSIX error.
+- `exportToTemp` deletes its partial file when the export throws. The caller's `defer` is only registered once the function has returned a URL, so without this a failed 4 GB export leaked its partial file — making a disk-full run progressively worse with every retry.
 - Counted copies: the staging copy (only when **every** target is remote — a NAS-only session, the one case that still stages) plus any destination on the **device volume** — i.e. an iCloud Drive folder. External SSDs are a different volume; SMB targets stream from staging. Volume identity is compared via `.volumeIdentifierKey` against `temporaryDirectory`.
 - Uses `volumeAvailableCapacityForImportantUsage` (includes purgeable space iOS reclaims), not raw free bytes.
 - **Fails open.** `availableBytes` is `Int64?`; nil means the volume could not be read and the backup proceeds. Returning 0 instead would have refused *every* backup.

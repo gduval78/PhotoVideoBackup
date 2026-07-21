@@ -306,6 +306,31 @@ actor PHBackupEngine {
                         }
                     } else {
                         // ── Staging path: export to a temp file, then fan out ────
+                        // This branch writes the whole file to temporaryDirectory, so check that
+                        // this particular file fits. Failing here is precise and instant; letting
+                        // writeData run out of space costs a full read and yields an opaque POSIX
+                        // error. Only this file is skipped — the run continues with the rest, so a
+                        // single oversized video does not take the small ones down with it.
+                        if let available = DiskSpacePreflight.availableDeviceBytes(),
+                           available < item.fileSize + DiskSpacePreflight.safetyMarginBytes {
+                            let note = String(localized: "Not enough free space on this device to copy this file.")
+                            DiagnosticLog.write("[DISKSPACE] skipped \(item.fileName) size=\(item.fileSize) available=\(available)")
+                            await record(item: item, actualSize: item.fileSize, session: session,
+                                         deviceName: deviceName,
+                                         sha256: "", status: .failed, verified: false,
+                                         destPaths: [], note: note)
+                            overallDone += item.fileSize
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count,
+                                fileName: item.fileName,
+                                fileBytesDone: 0, fileBytesTotal: item.fileSize,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                phase: .failed(note)
+                            ))
+                            continue
+                        }
+
                         let tempURL: URL
                         do {
                             tempURL = try await exportToTemp(item: item)
@@ -466,21 +491,29 @@ actor PHBackupEngine {
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString + "_" + resource.originalFilename)
 
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let options = PHAssetResourceRequestOptions()
-            options.isNetworkAccessAllowed = true  // allows iCloud download if needed
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                let options = PHAssetResourceRequestOptions()
+                options.isNetworkAccessAllowed = true  // allows iCloud download if needed
 
-            PHAssetResourceManager.default().writeData(
-                for: resource,
-                toFile: tempURL,
-                options: options
-            ) { error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
+                PHAssetResourceManager.default().writeData(
+                    for: resource,
+                    toFile: tempURL,
+                    options: options
+                ) { error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
                 }
             }
+        } catch {
+            // The caller's `defer` only exists once this function has returned a URL, so a failed
+            // export would otherwise leave its partial file behind — and a run out of disk space
+            // would make itself progressively worse with every retry.
+            try? FileManager.default.removeItem(at: tempURL)
+            throw error
         }
 
         return tempURL
