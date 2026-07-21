@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF8DE591BF6877017B539C /* ContentView.swift */; };
 		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
+		5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */; };
+		5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
@@ -50,6 +52,8 @@
 		CC0000000000000000200700 /* TestSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100700 /* TestSetting.swift */; };
 		CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100800 /* BackupFromSDCardTests.swift */; };
 		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
+		CC0000000000000000201300 /* DiskSpacePreflightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */; };
+		CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100F00 /* ICloudEvictionTests.swift */; };
 		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
 		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
 		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
@@ -108,6 +112,8 @@
 		4CF4CAA38A06646BBF90C37A /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4E239A5D423378D22B03B1D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AB01 /* BackupTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTarget.swift; sourceTree = "<group>"; };
+		5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflight.swift; sourceTree = "<group>"; };
+		5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionManager.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -146,6 +152,8 @@
 		CC0000000000000000100600 /* ScenarioAssertion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioAssertion.swift; sourceTree = "<group>"; };
 		CC0000000000000000100700 /* TestSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSetting.swift; sourceTree = "<group>"; };
 		CC0000000000000000100800 /* BackupFromSDCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFromSDCardTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflightTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000100F00 /* ICloudEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100900 /* FolderOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganizationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100A00 /* DeviceScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceScannerTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
@@ -392,6 +400,8 @@
 			children = (
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
+				CC0000000000000000100F00 /* ICloudEvictionTests.swift */,
+				CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */,
 				CC0000000000000000100A00 /* DeviceScannerTests.swift */,
 				CC0000000000000000100B00 /* CustomExtensionTests.swift */,
 				CC0000000000000000100C00 /* DualDestinationTests.swift */,
@@ -404,6 +414,8 @@
 			isa = PBXGroup;
 			children = (
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
+				5C1C10D0000000000000FD00 /* DiskSpace */,
+				5C1C10D0000000000000FE00 /* ICloudEviction */,
 				F001ABCDE00000000001AF00 /* LUT */,
 				F001ABCDE00000000001B000 /* SourceDeletion */,
 				F001REN000000000000000300 /* RenameEngine */,
@@ -421,6 +433,22 @@
 				9B967D80E38A533D05B4D63A /* Store */,
 			);
 			path = Modules;
+			sourceTree = "<group>";
+		};
+		5C1C10D0000000000000FE00 /* ICloudEviction */ = {
+			isa = PBXGroup;
+			children = (
+				5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */,
+			);
+			path = ICloudEviction;
+			sourceTree = "<group>";
+		};
+		5C1C10D0000000000000FD00 /* DiskSpace */ = {
+			isa = PBXGroup;
+			children = (
+				5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */,
+			);
+			path = DiskSpace;
 			sourceTree = "<group>";
 		};
 		EE1234567890ABCDEF123456 /* BackupBrowser */ = {
@@ -569,6 +597,8 @@
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
 				5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */,
 				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
+				5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */,
+				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
 				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
 				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
@@ -617,6 +647,8 @@
 				CC0000000000000000200700 /* TestSetting.swift in Sources */,
 				CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */,
 				CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */,
+				CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */,
+				CC0000000000000000201300 /* DiskSpacePreflightTests.swift in Sources */,
 				CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */,
 				CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */,
 				CC0000000000000000201100 /* DualDestinationTests.swift in Sources */,
@@ -705,7 +737,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -713,7 +745,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -767,7 +799,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -775,7 +807,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;

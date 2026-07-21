@@ -44,6 +44,7 @@ struct HistoryView: View {
                     }
                 }
             }
+
         }
         .navigationTitle("History")
         .navigationDestination(for: BackupSession.self) { session in

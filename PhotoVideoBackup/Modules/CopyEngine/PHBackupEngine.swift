@@ -39,12 +39,22 @@ enum ExportError: LocalizedError {
 
 // MARK: - PHBackupEngine
 
-/// Exports Photos library assets to a temporary location, then streams
-/// them to one or two SSD destinations with SHA-256 verification.
+/// Copies Photos library assets to their destinations with SHA-256 verification.
+///
+/// Any session with a local destination streams each asset from the Photos daemon straight to that
+/// destination, so the device volume never holds a full copy and a large video no longer needs free
+/// space equal to its own size. An SMB upload still needs a complete local file to read from, but it
+/// reads the copy just written to the external volume — so only a NAS-*only* session has to stage a
+/// temporary file on the device.
 actor PHBackupEngine {
 
     static let chunkSize: Int = 4 * 1024 * 1024  // 4 MB
     private static let batchFlushInterval = 500
+
+    /// Below this much free space, the run stops writing new files into an iCloud Drive destination
+    /// and waits for pending uploads so it can evict what is already safely in the cloud. Above it,
+    /// eviction is opportunistic and never blocks.
+    static let lowSpaceWatermark: Int64 = 2 * 1024 * 1024 * 1024   // 2 GB
 
     // MARK: - Engine result (read after stream completes)
 
@@ -94,6 +104,17 @@ actor PHBackupEngine {
 
                 var overallDone: Int64 = 0
                 var toCopyCount = 0
+
+                // Files written to an iCloud Drive destination still holding device storage. A
+                // destination on an external SSD never appears here — it costs the device nothing.
+                var pendingEviction: [ICloudEvictionManager.PendingFile] = []
+                var evictionStalled = false
+                let ubiquitousRoots = Set(
+                    destinations
+                        .compactMap { ($0 as? LocalFileTarget)?.root }
+                        .filter { ICloudEvictionManager.isUbiquitous($0) }
+                        .map(\.path)
+                )
 
                 for (index, item) in items.enumerated() {
                     // Cooperative cancellation (user tapped Stop) — stop at file boundary.
@@ -152,7 +173,25 @@ actor PHBackupEngine {
                     }
                     toCopyCount += 1
 
-                    // ── Export PHAsset → temp file ──────────────────────────
+                    // ── Choose the export path ──────────────────────────────
+                    // Whenever there is a local destination we stream the asset straight to it and
+                    // no full copy ever touches the device volume. An SMB upload still needs a
+                    // complete local file, but it can read the copy we just wrote to the external
+                    // volume — so only a NAS-*only* session has to stage on the device.
+                    let localTargets  = missingTargets.compactMap { $0 as? LocalFileTarget }
+                    let remoteTargets = missingTargets.compactMap { $0 as? RemoteBackupTarget }
+                    let localURLs     = localTargets.map { $0.destinationURL(forRelative: rel) }
+                    let canStream     = !localTargets.isEmpty
+
+                    var actualSize           = item.fileSize
+                    var precomputedSHA256    = ""
+                    var writtenTargets: [BackupTarget] = []
+                    var disconnectedThisFile = false
+                    var hardCopyError: Error? = nil
+                    /// Local files this iteration wrote — the SMB upload reads from the first, and
+                    /// any that sit in iCloud Drive become eviction candidates once verified.
+                    var streamedURLs: [URL] = []
+
                     continuation.yield(CopyProgress(
                         fileIndex: index, totalFiles: items.count,
                         fileName: item.fileName,
@@ -162,131 +201,227 @@ actor PHBackupEngine {
                         phase: .exporting
                     ))
 
-                    let tempURL: URL
-                    do {
-                        tempURL = try await exportToTemp(item: item)
-                    } catch {
-                        print("[PHBackupEngine] ❌ Export failed: \(item.fileName) — \(error)")
-                        DiagnosticLog.write("[COPY_ERROR] export \(item.fileName): \(error.localizedDescription)")
-                        await record(item: item, actualSize: 0, session: session,
-                                     deviceName: deviceName,
-                                     sha256: "", status: .failed, verified: false,
-                                     destPaths: [], note: error.localizedDescription)
-                        overallDone += item.fileSize
-                        continuation.yield(CopyProgress(
-                            fileIndex: index, totalFiles: items.count,
-                            fileName: item.fileName,
-                            fileBytesDone: 0, fileBytesTotal: item.fileSize,
-                            currentDestination: primaryDest,
-                            overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                            phase: .failed(error.localizedDescription)
-                        ))
-                        continue
-                    }
-
-                    defer { try? FileManager.default.removeItem(at: tempURL) }
-
-                    let actualSize = (try? tempURL.resourceValues(
-                        forKeys: [.fileSizeKey]
-                    ).fileSize).map(Int64.init) ?? item.fileSize
-
-                    // ── SHA-256 deduplication check ──────────────────────────
-                    // Skip only when EVERY destination root has at least one known
-                    // path for this hash that still exists on disk. A file present on
-                    // SSD1 but absent from SSD2 (e.g. its folder was deleted) must
-                    // still be copied to SSD2 — "known on any disk" is not sufficient.
-                    let precomputedSHA256 = (try? await sha256(of: tempURL)) ?? ""
-                    if !precomputedSHA256.isEmpty {
-                        let knownPaths = await MainActor.run {
-                            IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
-                        }
-                        if let knownDestPaths = await coveredDestinationPaths(targets: destinations, knownPaths: knownPaths, expectedSize: actualSize) {
-                            print("[PHBackupEngine] ✓ Known by SHA-256 on all dests — skipped: \(item.fileName)")
-                            await record(item: item, actualSize: actualSize, session: session,
-                                         deviceName: deviceName,
-                                         sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                         destPaths: knownDestPaths, note: nil)
-                            overallDone += actualSize
-                            continuation.yield(CopyProgress(
-                                fileIndex: index, totalFiles: items.count,
-                                fileName: item.fileName,
-                                fileBytesDone: actualSize, fileBytesTotal: actualSize,
-                                currentDestination: primaryDest,
-                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                                phase: .skipped
-                            ))
-                            continue
-                        }
-                    }
-
-                    // ── Copy to missing targets ─────────────────────────────
-                    // Local destinations use the single-read fan-out; remote (SMB) targets are
-                    // uploaded from the same exported temp file. Either group may be empty.
-                    let localTargets  = missingTargets.compactMap { $0 as? LocalFileTarget }
-                    let remoteTargets = missingTargets.compactMap { $0 as? RemoteBackupTarget }
-                    let localURLs     = localTargets.map { $0.destinationURL(forRelative: rel) }
-
-                    var writtenTargets: [BackupTarget] = []
-                    var disconnectedThisFile = false
-                    var hardCopyError: Error? = nil
-
-                    // Local fan-out.
-                    if !localTargets.isEmpty {
+                    if canStream {
                         do {
-                            let copyResult = try await streamCopy(
-                                source: tempURL,
-                                destinations: localURLs,
-                                precomputedSourceSHA256: precomputedSHA256
-                            ) { bytesRead in
+                            let result = try await streamAssetToDestinations(
+                                item: item,
+                                destinations: localURLs
+                            ) { bytesWritten in
                                 continuation.yield(CopyProgress(
                                     fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                    fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                    fileBytesDone: bytesWritten, fileBytesTotal: item.fileSize,
                                     currentDestination: primaryDest,
-                                    overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                    overallBytesDone: overallDone + bytesWritten, overallBytesTotal: estimatedTotal,
                                     phase: .copying))
                             }
-                            // streamCopy tracks disconnected (not written); a local target counts as
-                            // written when it is not in the disconnected set.
-                            let disconnectedPaths = Set(copyResult.disconnected.map(\.path))
-                            if !copyResult.disconnected.isEmpty {
-                                _disconnectedCount += copyResult.disconnected.count
+                            actualSize        = result.totalBytes
+                            precomputedSHA256 = result.sourceSHA256
+
+                            let disconnectedPaths = Set(result.disconnected.map(\.path))
+                            if !result.disconnected.isEmpty {
+                                _disconnectedCount += result.disconnected.count
                                 disconnectedThisFile = true
-                                for url in copyResult.disconnected {
+                                for url in result.disconnected {
                                     DiagnosticLog.write("[DISC_ERROR] partial disconnection: \(url.lastPathComponent)")
                                 }
                             }
-                            writtenTargets += localTargets.filter { !disconnectedPaths.contains($0.destinationURL(forRelative: rel).path) }
+                            let live = localTargets.filter {
+                                !disconnectedPaths.contains($0.destinationURL(forRelative: rel).path)
+                            }
+                            writtenTargets += live
+                            streamedURLs = live.map { $0.destinationURL(forRelative: rel) }
                         } catch CopyError.allDestinationsDisconnected {
                             DiagnosticLog.write("[DISC_ERROR] all local destinations disconnected during copy of \(item.fileName)")
                             _disconnectedCount += localTargets.count
                             disconnectedThisFile = true
                         } catch {
+                            DiagnosticLog.write("[COPY_ERROR] stream \(item.fileName): \(error.localizedDescription)")
                             hardCopyError = error
                         }
-                    }
 
-                    // Remote (SMB) uploads.
-                    for remote in remoteTargets {
-                        do {
-                            try await remote.upload(localFile: tempURL, toRelative: rel) { bytesRead in
-                                continuation.yield(CopyProgress(
-                                    fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                    fileBytesDone: bytesRead, fileBytesTotal: actualSize,
-                                    currentDestination: remote.absolutePath(forRelative: rel),
-                                    overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
-                                    phase: .copying))
+                        // ── SHA-256 deduplication, after the fact ───────────────
+                        // Streaming only reveals the hash once the bytes have flowed, so the check
+                        // that the staging path runs *before* copying happens here *after*. If this
+                        // content already sits at every destination under a different name, delete
+                        // what we just wrote — this is what preserves dedup of renamed files.
+                        if !precomputedSHA256.isEmpty && !writtenTargets.isEmpty {
+                            let knownPaths = await MainActor.run {
+                                IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
                             }
-                            writtenTargets.append(remote)
-                        } catch {
-                            if await remote.isReachable() {
-                                DiagnosticLog.write("[COPY_ERROR] \(item.fileName) → \(remote.displayName): \(error.localizedDescription)")
-                                hardCopyError = hardCopyError ?? error
-                            } else {
-                                _disconnectedCount += 1
-                                disconnectedThisFile = true
-                                DiagnosticLog.write("[DISC_ERROR] NAS disconnected during upload of \(item.fileName)")
+                            // Exclude the files we just created, or they would count as covering themselves.
+                            let justWritten = Set(streamedURLs.map(\.path))
+                            let priorPaths  = knownPaths.filter { !justWritten.contains($0) }
+                            if let knownDestPaths = await coveredDestinationPaths(
+                                targets: destinations, knownPaths: priorPaths, expectedSize: actualSize) {
+                                for url in streamedURLs { try? FileManager.default.removeItem(at: url) }
+                                print("[PHBackupEngine] ✓ Known by SHA-256 on all dests — skipped: \(item.fileName)")
+                                await record(item: item, actualSize: actualSize, session: session,
+                                             deviceName: deviceName,
+                                             sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                             destPaths: knownDestPaths, note: nil)
+                                overallDone += actualSize
+                                continuation.yield(CopyProgress(
+                                    fileIndex: index, totalFiles: items.count,
+                                    fileName: item.fileName,
+                                    fileBytesDone: actualSize, fileBytesTotal: actualSize,
+                                    currentDestination: primaryDest,
+                                    overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                    phase: .skipped
+                                ))
+                                continue
                             }
                         }
+
+                        // ── Remote uploads, sourced from the copy we just wrote ──
+                        // Reading from the external volume means no staging copy on the device.
+                        // Running after the dedup check also means a renamed duplicate never costs
+                        // an upload — the bandwidth is saved, not just the disk space.
+                        if !remoteTargets.isEmpty {
+                            if let uploadSource = streamedURLs.first {
+                                let result = await uploadToRemotes(
+                                    remoteTargets, from: uploadSource, relativePath: rel,
+                                    fileName: item.fileName
+                                ) { bytesRead, destination in
+                                    continuation.yield(CopyProgress(
+                                        fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                        fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                        currentDestination: destination,
+                                        overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                        phase: .copying))
+                                }
+                                writtenTargets += result.written
+                                hardCopyError = hardCopyError ?? result.failure
+                                if result.disconnected > 0 { disconnectedThisFile = true }
+                            } else {
+                                // Every local destination died mid-copy, so there is nothing to
+                                // upload from. Stage a temp file rather than let a disconnected SSD
+                                // take the NAS down with it.
+                                do {
+                                    let temp = try await exportToTemp(item: item)
+                                    defer { try? FileManager.default.removeItem(at: temp) }
+                                    if precomputedSHA256.isEmpty {
+                                        precomputedSHA256 = (try? await sha256(of: temp)) ?? ""
+                                    }
+                                    let result = await uploadToRemotes(
+                                        remoteTargets, from: temp, relativePath: rel,
+                                        fileName: item.fileName
+                                    ) { bytesRead, destination in
+                                        continuation.yield(CopyProgress(
+                                            fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                            fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                            currentDestination: destination,
+                                            overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                            phase: .copying))
+                                    }
+                                    writtenTargets += result.written
+                                    hardCopyError = hardCopyError ?? result.failure
+                                    if result.disconnected > 0 { disconnectedThisFile = true }
+                                } catch {
+                                    DiagnosticLog.write("[COPY_ERROR] staging fallback for \(item.fileName): \(error.localizedDescription)")
+                                    hardCopyError = hardCopyError ?? error
+                                }
+                            }
+                        }
+                    } else {
+                        // ── Staging path: export to a temp file, then fan out ────
+                        // This branch writes the whole file to temporaryDirectory, so check that
+                        // this particular file fits. Failing here is precise and instant; letting
+                        // writeData run out of space costs a full read and yields an opaque POSIX
+                        // error. Only this file is skipped — the run continues with the rest, so a
+                        // single oversized video does not take the small ones down with it.
+                        if let available = DiskSpacePreflight.availableDeviceBytes(),
+                           available < item.fileSize + DiskSpacePreflight.safetyMarginBytes {
+                            let note = String(localized: "Not enough free space on this device to copy this file.")
+                            DiagnosticLog.write("[DISKSPACE] skipped \(item.fileName) size=\(item.fileSize) available=\(available)")
+                            await record(item: item, actualSize: item.fileSize, session: session,
+                                         deviceName: deviceName,
+                                         sha256: "", status: .failed, verified: false,
+                                         destPaths: [], note: note)
+                            overallDone += item.fileSize
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count,
+                                fileName: item.fileName,
+                                fileBytesDone: 0, fileBytesTotal: item.fileSize,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                phase: .failed(note)
+                            ))
+                            continue
+                        }
+
+                        let tempURL: URL
+                        do {
+                            tempURL = try await exportToTemp(item: item)
+                        } catch {
+                            print("[PHBackupEngine] ❌ Export failed: \(item.fileName) — \(error)")
+                            DiagnosticLog.write("[COPY_ERROR] export \(item.fileName): \(error.localizedDescription)")
+                            await record(item: item, actualSize: 0, session: session,
+                                         deviceName: deviceName,
+                                         sha256: "", status: .failed, verified: false,
+                                         destPaths: [], note: error.localizedDescription)
+                            overallDone += item.fileSize
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count,
+                                fileName: item.fileName,
+                                fileBytesDone: 0, fileBytesTotal: item.fileSize,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                phase: .failed(error.localizedDescription)
+                            ))
+                            continue
+                        }
+
+                        defer { try? FileManager.default.removeItem(at: tempURL) }
+
+                        actualSize = (try? tempURL.resourceValues(
+                            forKeys: [.fileSizeKey]
+                        ).fileSize).map(Int64.init) ?? item.fileSize
+
+                        // ── SHA-256 deduplication check ──────────────────────────
+                        // Skip only when EVERY destination root has at least one known
+                        // path for this hash that still exists on disk. A file present on
+                        // SSD1 but absent from SSD2 (e.g. its folder was deleted) must
+                        // still be copied to SSD2 — "known on any disk" is not sufficient.
+                        precomputedSHA256 = (try? await sha256(of: tempURL)) ?? ""
+                        if !precomputedSHA256.isEmpty {
+                            let knownPaths = await MainActor.run {
+                                IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
+                            }
+                            if let knownDestPaths = await coveredDestinationPaths(targets: destinations, knownPaths: knownPaths, expectedSize: actualSize) {
+                                print("[PHBackupEngine] ✓ Known by SHA-256 on all dests — skipped: \(item.fileName)")
+                                await record(item: item, actualSize: actualSize, session: session,
+                                             deviceName: deviceName,
+                                             sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                             destPaths: knownDestPaths, note: nil)
+                                overallDone += actualSize
+                                continuation.yield(CopyProgress(
+                                    fileIndex: index, totalFiles: items.count,
+                                    fileName: item.fileName,
+                                    fileBytesDone: actualSize, fileBytesTotal: actualSize,
+                                    currentDestination: primaryDest,
+                                    overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                    phase: .skipped
+                                ))
+                                continue
+                            }
+                        }
+
+                        // Remote uploads. This branch is NAS-only — a session with any local
+                        // destination streams instead — so there is no local fan-out to do here.
+                        let result = await uploadToRemotes(
+                            remoteTargets, from: tempURL, relativePath: rel,
+                            fileName: item.fileName
+                        ) { bytesRead, destination in
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                currentDestination: destination,
+                                overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
+                                phase: .copying))
+                        }
+                        writtenTargets += result.written
+                        hardCopyError = hardCopyError ?? result.failure
+                        if result.disconnected > 0 { disconnectedThisFile = true }
                     }
 
                     // Nothing was written to any destination.
@@ -342,6 +477,51 @@ actor PHBackupEngine {
                         overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
                         phase: allOK ? .done : .failed("SHA-256 verification failed")
                     ))
+
+                    // Queue this file's iCloud Drive copies for eviction. Added only now, once the
+                    // file has survived the dedup rollback and been verified — a file deleted as a
+                    // duplicate must never end up on this list.
+                    for url in streamedURLs where ubiquitousRoots.contains(where: { url.path.hasPrefix($0) }) {
+                        pendingEviction.append(.init(url: url, bytes: actualSize))
+                    }
+
+                    // ── Release local copies already in iCloud ───────────────
+                    // Runs *after* verification on purpose: verifying re-reads the destination to
+                    // recompute its SHA-256, and reading an evicted file would pull it straight back
+                    // down from iCloud.
+                    //
+                    // The cheap pass never waits on the network. Only when the device is genuinely
+                    // short on space do we block on uploads — that is what keeps a backup to iCloud
+                    // Drive from filling the phone with copies of what is already in the cloud,
+                    // while a phone with room to spare runs at full speed.
+                    if !pendingEviction.isEmpty {
+                        let pass = ICloudEvictionManager.evictReady(pendingEviction)
+                        pendingEviction = pass.stillPending
+                        if pass.evictedCount > 0 {
+                            DiagnosticLog.write("[ICLOUD_EVICT] released \(pass.evictedCount) file(s), \(pass.reclaimedBytes) bytes, \(pendingEviction.count) pending")
+                        }
+                        if !evictionStalled,
+                           let available = DiskSpacePreflight.availableDeviceBytes(),
+                           available < Self.lowSpaceWatermark, !pendingEviction.isEmpty {
+                            let forced = await ICloudEvictionManager.reclaim(
+                                pendingEviction, targetBytes: Self.lowSpaceWatermark - available)
+                            pendingEviction = forced.stillPending
+                            if forced.stalled {
+                                // Uploads are not progressing. Waiting again on every remaining file
+                                // would crawl the run to a halt for no gain, so from here on we only
+                                // evict opportunistically and let the disk-space check report the
+                                // real problem if we do run out.
+                                evictionStalled = true
+                                DiagnosticLog.write("[ICLOUD_EVICT] uploads stalled — no further blocking waits this run")
+                            }
+                        }
+                    }
+                }
+
+                // Final pass: anything iCloud finished uploading while the run was winding down.
+                if !pendingEviction.isEmpty {
+                    let pass = ICloudEvictionManager.evictReady(pendingEviction)
+                    DiagnosticLog.write("[ICLOUD_EVICT] final pass released \(pass.evictedCount) file(s), \(pass.stillPending.count) left materialised")
                 }
 
                 await MainActor.run { IndexStore.shared.save() }
@@ -374,21 +554,29 @@ actor PHBackupEngine {
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString + "_" + resource.originalFilename)
 
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let options = PHAssetResourceRequestOptions()
-            options.isNetworkAccessAllowed = true  // allows iCloud download if needed
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                let options = PHAssetResourceRequestOptions()
+                options.isNetworkAccessAllowed = true  // allows iCloud download if needed
 
-            PHAssetResourceManager.default().writeData(
-                for: resource,
-                toFile: tempURL,
-                options: options
-            ) { error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume()
+                PHAssetResourceManager.default().writeData(
+                    for: resource,
+                    toFile: tempURL,
+                    options: options
+                ) { error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
                 }
             }
+        } catch {
+            // The caller's `defer` only exists once this function has returned a URL, so a failed
+            // export would otherwise leave its partial file behind — and a run out of disk space
+            // would make itself progressively worse with every retry.
+            try? FileManager.default.removeItem(at: tempURL)
+            throw error
         }
 
         return tempURL
@@ -455,7 +643,7 @@ actor PHBackupEngine {
                         stillActive.append(pair)
                     } catch {
                         // Distinguish a real write error from a physical disconnection.
-                        if isVolumeReachable(pair.dest) {
+                        if Self.volumeIsReachable(pair.dest) {
                             // Volume still alive — propagate as a real error.
                             srcStream.close()
                             for p in active { try? p.handle.close() }
@@ -491,8 +679,199 @@ actor PHBackupEngine {
                             disconnected: disconnected)
     }
 
-    // Returns false when the volume hosting `url` is no longer accessible.
-    private func isVolumeReachable(_ url: URL) -> Bool {
+    // MARK: - Streamed export (no staging copy)
+
+    /// Collects the chunks Photos hands us: writes each one to every live destination and folds it
+    /// into the running SHA-256. Photos calls `dataReceivedHandler` on a serial queue, so the calls
+    /// arrive in order and never overlap; the lock guards only against the completion handler
+    /// racing the last chunk.
+    private final class ChunkSink: @unchecked Sendable {
+        private let lock = NSLock()
+        private var hasher = SHA256()
+        private var active: [(handle: FileHandle, dest: URL)]
+        private var _disconnected: [URL] = []
+        private var _bytes: Int64 = 0
+        private var _failure: Error?
+
+        init(active: [(handle: FileHandle, dest: URL)]) { self.active = active }
+
+        var bytesWritten: Int64 { lock.withLock { _bytes } }
+
+        /// Writes one chunk. Returns false once every destination has gone away — the caller then
+        /// stops doing I/O, though the Photos request is deliberately allowed to run to completion
+        /// (cancelling it risks never getting the completion handler, which would hang the copy).
+        @discardableResult
+        func write(_ chunk: Data, isReachable: (URL) -> Bool) -> Bool {
+            lock.lock()
+            defer { lock.unlock() }
+            guard _failure == nil, !active.isEmpty else { return false }
+
+            hasher.update(data: chunk)
+            _bytes += Int64(chunk.count)
+
+            var stillActive: [(handle: FileHandle, dest: URL)] = []
+            for pair in active {
+                do {
+                    try pair.handle.write(contentsOf: chunk)
+                    stillActive.append(pair)
+                } catch {
+                    // Same distinction streamCopy makes: a live volume means a real write error,
+                    // a vanished one means the drive was unplugged and we carry on without it.
+                    if isReachable(pair.dest) {
+                        _failure = CopyError.writeFailed(pair.dest, underlying: error)
+                        try? pair.handle.close()
+                    } else {
+                        try? pair.handle.close()
+                        _disconnected.append(pair.dest)
+                        DiagnosticLog.write("[DISC_ERROR] destination disconnected: \(pair.dest.lastPathComponent)")
+                    }
+                }
+            }
+            active = stillActive
+            return _failure == nil && !active.isEmpty
+        }
+
+        /// Closes every handle and returns the accumulated outcome.
+        func finish() -> (sha256: String, bytes: Int64, disconnected: [URL], failure: Error?) {
+            lock.lock()
+            defer { lock.unlock() }
+            for pair in active { try? pair.handle.close() }
+            active = []
+            let digest = hasher.finalize().map { String(format: "%02x", $0) }.joined()
+            return (digest, _bytes, _disconnected, _failure)
+        }
+    }
+
+    /// Writes an asset from the Photos daemon straight to its destinations, never staging a full
+    /// copy on the device volume.
+    ///
+    /// Each chunk is written and hashed inside `dataReceivedHandler`; returning from that handler
+    /// is what paces delivery, so nothing accumulates in memory and the device footprint stays at
+    /// one chunk whatever the file size. That is the entire point of this path — a 4 GB video no
+    /// longer needs 4 GB of free space to be backed up.
+    ///
+    /// Only valid for local destinations: an SMB target needs a local file to upload from, so
+    /// sessions involving the NAS keep the staging path.
+    private func streamAssetToDestinations(
+        item: PHMediaItem,
+        destinations: [URL],
+        onProgress: @escaping @Sendable (Int64) -> Void
+    ) async throws -> StreamResult {
+
+        let resource = try assetResource(for: item)
+
+        var active: [(handle: FileHandle, dest: URL)] = []
+        for dest in destinations {
+            try FileManager.default.createDirectory(
+                at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
+            guard FileManager.default.createFile(atPath: dest.path, contents: nil) else {
+                for pair in active { try? pair.handle.close() }
+                throw CopyError.cannotCreateDestinationFile(dest)
+            }
+            do {
+                active.append((try FileHandle(forWritingTo: dest), dest))
+            } catch {
+                for pair in active { try? pair.handle.close() }
+                throw CopyError.cannotCreateDestinationFile(dest)
+            }
+        }
+
+        let sink = ChunkSink(active: active)
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = true   // allows iCloud download if needed
+
+        do {
+            try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+                PHAssetResourceManager.default().requestData(
+                    for: resource,
+                    options: options,
+                    dataReceivedHandler: { data in
+                        // The buffer is only valid for the duration of the handler — Data(data)
+                        // copies it before it goes away.
+                        sink.write(Data(data), isReachable: Self.volumeIsReachable)
+                        onProgress(sink.bytesWritten)
+                    },
+                    completionHandler: { error in
+                        if let error { cont.resume(throwing: error) } else { cont.resume() }
+                    })
+            }
+        } catch {
+            let outcome = sink.finish()
+            for dest in destinations where !outcome.disconnected.contains(dest) {
+                try? FileManager.default.removeItem(at: dest)   // no partial files left behind
+            }
+            throw error
+        }
+
+        let outcome = sink.finish()
+        if let failure = outcome.failure { throw failure }
+        if outcome.disconnected.count == destinations.count {
+            throw CopyError.allDestinationsDisconnected
+        }
+        return StreamResult(sourceSHA256: outcome.sha256,
+                            totalBytes: outcome.bytes,
+                            disconnected: outcome.disconnected)
+    }
+
+    /// Uploads one file to every remote target, reading from `localFile`.
+    ///
+    /// AMSMB2 exposes no incremental upload: `write(stream:)` drains its source into a single
+    /// in-memory buffer that is never purged, so it holds the whole file in RAM — worse than a
+    /// staging file on disk. An upload therefore needs a complete local file, and the best we can
+    /// do is choose *which* local file: a copy we already wrote to an external volume beats a
+    /// temporary copy on the device.
+    private func uploadToRemotes(
+        _ remotes: [RemoteBackupTarget],
+        from localFile: URL,
+        relativePath rel: String,
+        fileName: String,
+        onProgress: @escaping @Sendable (Int64, String) -> Void
+    ) async -> (written: [BackupTarget], failure: Error?, disconnected: Int) {
+        var written: [BackupTarget] = []
+        var failure: Error?
+        var disconnected = 0
+        for remote in remotes {
+            do {
+                try await remote.upload(localFile: localFile, toRelative: rel) { bytesRead in
+                    onProgress(bytesRead, remote.absolutePath(forRelative: rel))
+                }
+                written.append(remote)
+            } catch {
+                if await remote.isReachable() {
+                    DiagnosticLog.write("[COPY_ERROR] \(fileName) → \(remote.displayName): \(error.localizedDescription)")
+                    failure = failure ?? error
+                } else {
+                    _disconnectedCount += 1
+                    disconnected += 1
+                    DiagnosticLog.write("[DISC_ERROR] NAS disconnected during upload of \(fileName)")
+                }
+            }
+        }
+        return (written, failure, disconnected)
+    }
+
+    /// Resolves the best exportable resource for an item — shared by the staging and streamed paths.
+    private func assetResource(for item: PHMediaItem) throws -> PHAssetResource {
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: [item.localIdentifier], options: nil)
+        guard let asset = assets.firstObject else {
+            throw ExportError.assetNotFound(item.localIdentifier)
+        }
+        let resources = PHAssetResource.assetResources(for: asset)
+        let preferredTypes: [PHAssetResourceType] = asset.mediaType == .video
+            ? [.video, .fullSizeVideo, .pairedVideo]
+            : [.photo, .fullSizePhoto, .alternatePhoto]
+        guard let resource = resources.first(where: { preferredTypes.contains($0.type) })
+                           ?? resources.first
+        else {
+            throw ExportError.noResourceFound(item.fileName)
+        }
+        return resource
+    }
+
+    // Returns false when the volume hosting `url` is no longer accessible — this is what tells a
+    // write failure caused by an unplugged drive from a genuine I/O error.
+    // Static so the chunk sink can call it without hopping back onto the actor.
+    nonisolated static func volumeIsReachable(_ url: URL) -> Bool {
         let dir = url.deletingLastPathComponent()
         return (try? dir.resourceValues(forKeys: [.volumeTotalCapacityKey]))?.volumeTotalCapacity ?? 0 > 0
     }
