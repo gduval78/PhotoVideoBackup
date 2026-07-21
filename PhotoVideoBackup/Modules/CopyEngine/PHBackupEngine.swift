@@ -643,7 +643,7 @@ actor PHBackupEngine {
                         stillActive.append(pair)
                     } catch {
                         // Distinguish a real write error from a physical disconnection.
-                        if isVolumeReachable(pair.dest) {
+                        if Self.volumeIsReachable(pair.dest) {
                             // Volume still alive — propagate as a real error.
                             srcStream.close()
                             for p in active { try? p.handle.close() }
@@ -868,15 +868,10 @@ actor PHBackupEngine {
         return resource
     }
 
-    // Returns false when the volume hosting `url` is no longer accessible.
+    // Returns false when the volume hosting `url` is no longer accessible — this is what tells a
+    // write failure caused by an unplugged drive from a genuine I/O error.
     // Static so the chunk sink can call it without hopping back onto the actor.
     nonisolated static func volumeIsReachable(_ url: URL) -> Bool {
-        let dir = url.deletingLastPathComponent()
-        return (try? dir.resourceValues(forKeys: [.volumeTotalCapacityKey]))?.volumeTotalCapacity ?? 0 > 0
-    }
-
-    // Returns false when the volume hosting `url` is no longer accessible.
-    private func isVolumeReachable(_ url: URL) -> Bool {
         let dir = url.deletingLastPathComponent()
         return (try? dir.resourceValues(forKeys: [.volumeTotalCapacityKey]))?.volumeTotalCapacity ?? 0 > 0
     }

@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.2.0 · iOS**  
+> **Version 2.3.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -235,6 +235,7 @@ Tap the **✕** button in the top-right corner of the banner to dismiss it.
 A small number of failures is rare but can happen if:
 - A file on the SD card is corrupted (damaged card).
 - The SSD ran out of space mid-backup.
+- The iPhone did not have enough free space for a particularly large file — only that file is skipped, and the rest of the backup continues.
 - The connection was briefly interrupted.
 
 For a detailed list of which files failed, open the **History** tab and tap on the session.
@@ -425,6 +426,12 @@ It is a way of confirming that the copy on the SSD is a perfect, bit-for-bit mat
 
 **Q: Is my data sent anywhere? Does it go through the internet?**  
 No. Everything happens locally between your iPhone and your SSD. The only exception is when the app downloads a photo from iCloud to copy it — but that is your own data, from your own iCloud account, going to your own SSD. The app has no server, no account, and no cloud storage of its own.
+
+**Q: Can I back up when my iPhone is almost full?**  
+Yes. Each photo or video is streamed straight to the destination instead of being copied to the iPhone first, so only a few megabytes are held at a time whatever the file size. A backup to a NAS **on its own** is the exception — it still needs room for one file at a time. If a file genuinely cannot fit, only that file fails and the run continues; free up space and run again to pick it up.
+
+**Q: Does backing up to iCloud Drive free space on my iPhone?**  
+Yes, from 2.3.0. Once iCloud confirms a file is uploaded, its local copy is released and a placeholder remains — the file stays in iCloud and in the Files app, and downloads again on demand. This never happens before the upload is confirmed. It frees the space taken by the *copies*; use **Delete Source Files…** in the session report to reclaim the originals in the Photos Library.
 
 **Q: Can I use iCloud Drive as a destination instead of an SSD?**  
 Yes. When choosing a destination folder in Settings, you can navigate to iCloud Drive and select a folder there. The app will copy your files into iCloud Drive exactly as it would to a physical SSD.

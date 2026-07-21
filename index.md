@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.2.1 · iOS**  
+> **Version 2.3.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD — or to a NAS over Wi-Fi.
 
 ---
@@ -247,6 +247,7 @@ Tap the **✕** button in the top-right corner of the banner to dismiss it.
 A small number of failures is rare but can happen if:
 - A file on the SD card is corrupted (damaged card).
 - The SSD ran out of space mid-backup.
+- The iPhone did not have enough free space for a particularly large file — only that file is skipped, and the rest of the backup continues.
 - The connection was briefly interrupted.
 
 For a detailed list of which files failed, open the **History** tab and tap on the session.
@@ -521,6 +522,18 @@ It is a way of confirming that the copy on the SSD is a perfect, bit-for-bit mat
 
 **Q: Is my data sent anywhere? Does it go through the internet?**  
 No. Everything happens locally between your iPhone and your SSD. The only exception is when the app downloads a photo from iCloud to copy it — but that is your own data, from your own iCloud account, going to your own SSD. The app has no server, no account, and no cloud storage of its own.
+
+**Q: Can I back up when my iPhone is almost full?**  
+Yes. The app streams each photo or video straight to the destination instead of making a temporary copy on the iPhone first, so it only holds a few megabytes at a time no matter how large the file is. A 4 GB video can be backed up to an SSD with almost no free space on the phone. The one exception is a backup to a NAS **on its own**, with no SSD or iCloud Drive destination — that still needs room for one file at a time, because of how the network transfer works.
+
+If a particular file really cannot fit, only that file is reported as failed and the backup continues with the rest. Free up some space and run the backup again — the missing file will be picked up.
+
+**Q: Does backing up to iCloud Drive free space on my iPhone?**  
+Yes, as of version 2.3.0. Once iCloud confirms a file has been uploaded, the app releases its local copy and leaves a placeholder behind. The file stays safely in iCloud and is still visible in the Files app — tapping it downloads it again on demand, exactly like any other iCloud Drive file.
+
+This only happens after the upload is confirmed, never before, and only for files the app itself has just copied. If your iPhone has plenty of free space the backup runs at full speed and space is reclaimed as uploads complete in the background. If it is running low, the app waits for uploads so it can keep freeing space as it goes.
+
+Note that this frees the space taken by the *copies*. Your original photos are still in the Photos Library — to reclaim that space too, use **Delete Source Files…** in the session report once you are satisfied the backup is complete.
 
 **Q: Can I use iCloud Drive as a destination instead of an SSD?**  
 Yes. When choosing a destination folder in Settings, you can navigate to iCloud Drive and select a folder there. The app will copy your files into iCloud Drive exactly as it would to a physical SSD.

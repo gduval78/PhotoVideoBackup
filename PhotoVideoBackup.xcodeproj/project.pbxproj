@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF8DE591BF6877017B539C /* ContentView.swift */; };
 		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
-		5C1C10D0000000000000FE02 /* ICloudEvictionProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */; };
 		5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */; };
 		5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
@@ -113,7 +112,6 @@
 		4CF4CAA38A06646BBF90C37A /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4E239A5D423378D22B03B1D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AB01 /* BackupTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTarget.swift; sourceTree = "<group>"; };
-		5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionProbe.swift; sourceTree = "<group>"; };
 		5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflight.swift; sourceTree = "<group>"; };
 		5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionManager.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
@@ -440,7 +438,6 @@
 		5C1C10D0000000000000FE00 /* ICloudEviction */ = {
 			isa = PBXGroup;
 			children = (
-				5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */,
 				5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */,
 			);
 			path = ICloudEviction;
@@ -602,7 +599,6 @@
 				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
 				5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */,
 				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
-				5C1C10D0000000000000FE02 /* ICloudEvictionProbe.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
 				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
 				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
@@ -741,7 +737,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -749,7 +745,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -803,7 +799,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -811,7 +807,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;

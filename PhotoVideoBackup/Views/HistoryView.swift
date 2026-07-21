@@ -5,10 +5,6 @@ struct HistoryView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @State private var showClearConfirmation = false
     @State private var logFileSize: Int64? = nil   // nil = file absent
-#if DEBUG
-    @State private var probeRunning = false
-    @State private var probeVerdict: String? = nil
-#endif
 
     var body: some View {
         List {
@@ -49,28 +45,6 @@ struct HistoryView: View {
                 }
             }
 
-#if DEBUG
-            // Spike: does evicting a file we wrote into a picked iCloud Drive folder work?
-            // DEBUG-only and deliberately unlocalized — this never ships.
-            Section("iCloud Eviction Probe (DEBUG)") {
-                Button {
-                    runEvictionProbe()
-                } label: {
-                    HStack {
-                        Label("Run probe on destinations", systemImage: "icloud.and.arrow.down")
-                        Spacer()
-                        if probeRunning { ProgressView() }
-                    }
-                }
-                .disabled(probeRunning)
-
-                if let probeVerdict {
-                    Text(verbatim: probeVerdict)
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
-                }
-            }
-#endif
         }
         .navigationTitle("History")
         .navigationDestination(for: BackupSession.self) { session in
@@ -95,28 +69,6 @@ struct HistoryView: View {
         }
         .onAppear { refreshLogInfo() }
     }
-
-#if DEBUG
-    /// Runs the eviction spike against every configured destination and surfaces the verdicts.
-    /// Full detail lands in pvb_diagnostic.log under [ICLOUD_PROBE].
-    private func runEvictionProbe() {
-        probeRunning = true
-        probeVerdict = nil
-        Task {
-            let roots = DestinationManager.shared.resolvedDestinations()
-            var lines: [String] = []
-            if roots.isEmpty {
-                lines.append("No destination configured.")
-            }
-            for root in roots {
-                let result = await ICloudEvictionProbe.run(root: root)
-                lines.append("\(root.lastPathComponent): \(result.verdict)")
-            }
-            probeVerdict = lines.joined(separator: "\n\n")
-            probeRunning = false
-        }
-    }
-#endif
 
     private func refreshLogInfo() {
         let url = DiagnosticLog.logURL

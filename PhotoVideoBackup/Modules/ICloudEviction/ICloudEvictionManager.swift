@@ -3,9 +3,10 @@ import Foundation
 /// Releases the local copy of files already uploaded to iCloud, so a backup to an iCloud Drive
 /// destination does not fill the device with copies of what is already safely in the cloud.
 ///
-/// Verified on device (`ICloudEvictionProbe`, verdict `EVICT_OK`): `evictUbiquitousItem` works on a
-/// user-picked iCloud Drive folder — a security-scoped URL outside the app's own ubiquity container —
-/// with no iCloud entitlement. The file becomes a placeholder and the bytes are reclaimed.
+/// Verified on device before this was written: `evictUbiquitousItem` works on a user-picked iCloud
+/// Drive folder — a security-scoped URL outside the app's own ubiquity container — with no iCloud
+/// entitlement. The file becomes a placeholder and the bytes are reclaimed. That result is what
+/// makes CloudKit unnecessary for freeing device space; see CLAUDE.md before revisiting it.
 ///
 /// **The upload gate is not optional.** Evicting a file iCloud has not finished uploading destroys
 /// the only copy. Every eviction here is gated on `isUploaded && !isUploading`, and a file that
