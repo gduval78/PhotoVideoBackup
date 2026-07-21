@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF8DE591BF6877017B539C /* ContentView.swift */; };
 		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
+		5C1C10D0000000000000FE02 /* ICloudEvictionProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
@@ -108,6 +109,7 @@
 		4CF4CAA38A06646BBF90C37A /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		4E239A5D423378D22B03B1D6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AB01 /* BackupTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTarget.swift; sourceTree = "<group>"; };
+		5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionProbe.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -404,6 +406,7 @@
 			isa = PBXGroup;
 			children = (
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
+				5C1C10D0000000000000FE00 /* ICloudEviction */,
 				F001ABCDE00000000001AF00 /* LUT */,
 				F001ABCDE00000000001B000 /* SourceDeletion */,
 				F001REN000000000000000300 /* RenameEngine */,
@@ -421,6 +424,14 @@
 				9B967D80E38A533D05B4D63A /* Store */,
 			);
 			path = Modules;
+			sourceTree = "<group>";
+		};
+		5C1C10D0000000000000FE00 /* ICloudEviction */ = {
+			isa = PBXGroup;
+			children = (
+				5C1C10D0000000000000FE01 /* ICloudEvictionProbe.swift */,
+			);
+			path = ICloudEviction;
 			sourceTree = "<group>";
 		};
 		EE1234567890ABCDEF123456 /* BackupBrowser */ = {
@@ -569,6 +580,7 @@
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
 				5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */,
 				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
+				5C1C10D0000000000000FE02 /* ICloudEvictionProbe.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
 				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
 				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
