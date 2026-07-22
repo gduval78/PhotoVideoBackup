@@ -82,6 +82,37 @@ func coveredDestinationPaths(targets: [BackupTarget], knownPaths: [String], expe
     return result
 }
 
+// MARK: - Remote upload dedup
+
+/// Splits remote targets into those that still need `rel` uploaded and those that already hold it
+/// at `expectedSize`. Pulled out of the engine so the decision can be unit-tested without Photos or
+/// a live SMB share — it is where the "re-uploaded a file the NAS already had" bug lived.
+///
+/// The comparison uses `expectedSize`, which the caller passes **after** streaming has revealed the
+/// true byte count. That is the whole point: the engine's first existence check runs against Photos'
+/// *estimated* size, which for video/HEIC often differs from reality and wrongly marks an
+/// already-uploaded file as missing. A second look with the real size corrects it.
+///
+/// When `expectedSize <= 0` (size genuinely unknown) nothing is treated as present — an upload we
+/// cannot rule out must proceed, since skipping it could lose the file.
+func partitionRemotesByPresence(
+    _ remotes: [RemoteBackupTarget],
+    relativePath rel: String,
+    expectedSize: Int64
+) async -> (needUpload: [RemoteBackupTarget], alreadyPresentPaths: [String]) {
+    guard expectedSize > 0 else { return (remotes, []) }
+    var needUpload: [RemoteBackupTarget] = []
+    var present: [String] = []
+    for remote in remotes {
+        if await remote.existingSize(forRelative: rel) == expectedSize {
+            present.append(remote.absolutePath(forRelative: rel))
+        } else {
+            needUpload.append(remote)
+        }
+    }
+    return (needUpload, present)
+}
+
 // MARK: - LocalFileTarget
 
 /// Backup target backed by a local filesystem volume (USB-C SSD / SD card / iCloud Drive folder).

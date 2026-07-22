@@ -853,21 +853,19 @@ actor PHBackupEngine {
         onProgress: @escaping @Sendable (Int64, String) -> Void
     ) async -> (written: [BackupTarget], alreadyPresent: [String], failure: Error?, disconnected: Int) {
         var written: [BackupTarget] = []
-        var alreadyPresent: [String] = []
         var failure: Error?
         var disconnected = 0
-        for remote in remotes {
-            // The physical existence check that put this target in `missingTargets` compared the
-            // remote's size against the *estimated* Photos size, which for video/HEIC often differs
-            // from the real bytes — wrongly marking an already-uploaded file as missing. Now that
-            // streaming has given us the true size, re-check before spending bandwidth. Without this,
-            // a NAS that already holds the file is re-uploaded whenever a *local* target legitimately
-            // needs it (e.g. after the SSD was disconnected on an earlier run).
-            if expectedSize > 0, let sz = await remote.existingSize(forRelative: rel), sz == expectedSize {
-                alreadyPresent.append(remote.absolutePath(forRelative: rel))
-                DiagnosticLog.write("[DEDUP] \(fileName) already on \(remote.displayName) at correct size — not re-uploaded")
-                continue
-            }
+
+        // Re-check against the real (post-stream) size before spending bandwidth: the existence
+        // check that flagged these targets as missing used Photos' estimated size. See
+        // partitionRemotesByPresence.
+        let (needUpload, alreadyPresent) = await partitionRemotesByPresence(
+            remotes, relativePath: rel, expectedSize: expectedSize)
+        for path in alreadyPresent {
+            DiagnosticLog.write("[DEDUP] \(fileName) already present at \(path) at correct size — not re-uploaded")
+        }
+
+        for remote in needUpload {
             do {
                 try await remote.upload(localFile: localFile, toRelative: rel) { bytesRead in
                     onProgress(bytesRead, remote.absolutePath(forRelative: rel))

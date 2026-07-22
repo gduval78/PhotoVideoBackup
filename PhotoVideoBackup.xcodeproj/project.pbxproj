@@ -54,6 +54,8 @@
 		CC0000000000000000200900 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC000000000000000000BA00 /* XCTest.framework */; };
 		CC0000000000000000201300 /* DiskSpacePreflightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */; };
 		CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100F00 /* ICloudEvictionTests.swift */; };
+		CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101000 /* FakeRemoteTarget.swift */; };
+		CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101100 /* RemoteDedupTests.swift */; };
 		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
 		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
 		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
@@ -146,6 +148,7 @@
 		CC000000000000000000BA00 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		CC0000000000000000100100 /* ScenarioTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioTestCase.swift; sourceTree = "<group>"; };
 		CC0000000000000000100200 /* SimulatedSDCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSDCard.swift; sourceTree = "<group>"; };
+		CC0000000000000000101000 /* FakeRemoteTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeRemoteTarget.swift; sourceTree = "<group>"; };
 		CC0000000000000000100300 /* SimulatedSSD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatedSSD.swift; sourceTree = "<group>"; };
 		CC0000000000000000100400 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
 		CC0000000000000000100500 /* BackupResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupResult.swift; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		CC0000000000000000100800 /* BackupFromSDCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFromSDCardTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflightTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100F00 /* ICloudEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000101100 /* RemoteDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDedupTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100900 /* FolderOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganizationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100A00 /* DeviceScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceScannerTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
@@ -387,6 +391,7 @@
 				CC0000000000000000100100 /* ScenarioTestCase.swift */,
 				CC0000000000000000100200 /* SimulatedSDCard.swift */,
 				CC0000000000000000100300 /* SimulatedSSD.swift */,
+				CC0000000000000000101000 /* FakeRemoteTarget.swift */,
 				CC0000000000000000100400 /* TestFile.swift */,
 				CC0000000000000000100500 /* BackupResult.swift */,
 				CC0000000000000000100600 /* ScenarioAssertion.swift */,
@@ -400,6 +405,7 @@
 			children = (
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
+				CC0000000000000000101100 /* RemoteDedupTests.swift */,
 				CC0000000000000000100F00 /* ICloudEvictionTests.swift */,
 				CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */,
 				CC0000000000000000100A00 /* DeviceScannerTests.swift */,
@@ -647,6 +653,8 @@
 				CC0000000000000000200700 /* TestSetting.swift in Sources */,
 				CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */,
 				CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */,
+				CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */,
+				CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */,
 				CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */,
 				CC0000000000000000201300 /* DiskSpacePreflightTests.swift in Sources */,
 				CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */,

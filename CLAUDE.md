@@ -572,6 +572,16 @@ make build-test      # compile only, no execution
 
 All test-related UUIDs start with `CC000000000000000000` to avoid collisions. Do not reuse these prefixes for app-side objects. When adding new test files, use UUIDs of the form `CC00000000000000001XXX00` (fileRef) and `CC00000000000000002XXX00` (buildFile), incrementing XXX beyond `008`.
 
+### Testing NAS / remote logic without a live share
+
+The engines that touch SMB cannot run in a unit test (no live NAS, and `PHBackupEngine` also needs Photos). The strategy is to **keep the risky decisions as pure, target-agnostic functions** and test those against a fake remote:
+
+- `partitionRemotesByPresence(_:relativePath:expectedSize:)` (`BackupTarget.swift`) — the remote-upload dedup decision, extracted from `PHBackupEngine.uploadToRemotes` precisely so it is testable. This is where the "re-uploaded a file the NAS already had" bug lived; `RemoteDedupTests` locks it.
+- `coveredDestinationPaths(...)` — the SHA cascade, already pure.
+- `FakeRemoteTarget` (`Support/`) — an in-memory `RemoteBackupTarget` backed by a temp directory. `upload` copies into the tree and increments `uploadCount`; `seed(...)` places a file as if a prior run had uploaded it. A test asserts `uploadCount == 0` to prove no bandwidth was spent.
+
+**When adding remote behaviour, push the decision into a pure function and test it there** — do not try to drive the engine. A live-NAS integration smoke test (gated behind local, gitignored config) is a separate, manual artifact and must never join the hermetic `make test-all` suite.
+
 ### What the tests do NOT cover (and why)
 
 - **PHBackupEngine** — requires `PHPhotoLibrary` / `PHAsset`, which cannot be seeded in a unit test without the real Photos framework. Test this manually on device.
