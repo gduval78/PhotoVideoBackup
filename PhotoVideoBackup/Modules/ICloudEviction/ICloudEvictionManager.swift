@@ -105,15 +105,19 @@ enum ICloudEvictionManager {
     ///
     /// Bounded by `uploadTimeout` across the whole pass — a stalled upload (no network, iCloud quota
     /// exhausted) must not hang the backup indefinitely.
-    static func reclaim(_ pending: [PendingFile], targetBytes: Int64) async -> ReclaimResult {
+    /// `timeout` and `poll` default to the production constants; tests override them with tiny
+    /// values to exercise the stall path without waiting two minutes.
+    static func reclaim(_ pending: [PendingFile], targetBytes: Int64,
+                        timeout: TimeInterval = uploadTimeout,
+                        poll: UInt64 = pollInterval) async -> ReclaimResult {
         var result = ICloudEvictionManager.evictReady(pending)
         guard result.reclaimedBytes < targetBytes, !result.stillPending.isEmpty else { return result }
 
-        let deadline = Date().addingTimeInterval(uploadTimeout)
+        let deadline = Date().addingTimeInterval(timeout)
         DiagnosticLog.write("[ICLOUD_EVICT] waiting on \(result.stillPending.count) upload(s) to reclaim \(targetBytes) bytes")
 
         while result.reclaimedBytes < targetBytes && !result.stillPending.isEmpty && Date() < deadline {
-            try? await Task.sleep(nanoseconds: pollInterval)
+            try? await Task.sleep(nanoseconds: poll)
             let pass = evictReady(result.stillPending)
             result.evictedCount   += pass.evictedCount
             result.reclaimedBytes += pass.reclaimedBytes

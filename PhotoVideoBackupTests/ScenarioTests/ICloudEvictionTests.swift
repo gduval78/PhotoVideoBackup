@@ -91,4 +91,22 @@ final class ICloudEvictionTests: XCTestCase {
         XCTAssertFalse(result.stalled)
         XCTAssertLessThan(Date().timeIntervalSince(started), 1.0)
     }
+
+    // SCENARIO: Uploads that never progress report a stall, and give up bounded by the timeout
+    // The airplane-mode-on-a-full-phone case: files can never be evicted (never uploaded), so reclaim
+    // must hit its deadline, set `stalled`, and keep every file pending — this is the flag the engine
+    // reads to stop blocking for the rest of the run instead of waiting 120 s per file. Uses temp
+    // files (never ubiquitous, so never evictable) and a tiny timeout so the test itself is fast.
+    func test_reclaimWithUploadsNeverProgressing_reportsStall() async throws {
+        let files = [try makeFile("a.bin", bytes: 4096), try makeFile("b.bin", bytes: 4096)]
+        let started = Date()
+        let result = await ICloudEvictionManager.reclaim(
+            files, targetBytes: 1_000_000, timeout: 0.3, poll: 50_000_000)
+
+        XCTAssertTrue(result.stalled, "uploads that never finish must be reported as stalled")
+        XCTAssertEqual(result.evictedCount, 0)
+        XCTAssertEqual(result.stillPending, files, "nothing uploaded, so every file stays pending")
+        // Bounded: it gave up near the timeout, not after the production 120 s.
+        XCTAssertLessThan(Date().timeIntervalSince(started), 5.0)
+    }
 }
