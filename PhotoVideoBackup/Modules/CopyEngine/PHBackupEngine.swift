@@ -140,10 +140,16 @@ actor PHBackupEngine {
                     var presentPaths: [String] = []
                     var missingTargets: [BackupTarget] = []
                     for target in destinations {
-                        if let sz = await target.existingSize(forRelative: rel),
-                           item.fileSize == 0 || sz == item.fileSize {
+                        let sz = await target.existingSize(forRelative: rel)
+                        if let sz, item.fileSize == 0 || sz == item.fileSize {
                             presentPaths.append(target.absolutePath(forRelative: rel))
                         } else {
+                            // DIAGNOSTIC: a file exists at the destination but its size does not match
+                            // item.fileSize, so dedup treats it as missing and re-copies it. Log the
+                            // numbers to confirm whether streamed bytes ≠ the Photos resource size.
+                            if let sz {
+                                DiagnosticLog.write("[DEDUP_CHECK] \(item.fileName) target=\(target.displayName) stored=\(sz) expected=\(item.fileSize) rel=\(rel)")
+                            }
                             missingTargets.append(target)
                         }
                     }
@@ -216,6 +222,10 @@ actor PHBackupEngine {
                             }
                             actualSize        = result.totalBytes
                             precomputedSHA256 = result.sourceSHA256
+                            // DIAGNOSTIC: compare streamed bytes to the resource size dedup relies on.
+                            if actualSize != item.fileSize {
+                                DiagnosticLog.write("[DEDUP_CHECK] \(item.fileName) streamedBytes=\(actualSize) expected=\(item.fileSize) — MISMATCH breaks size-based dedup")
+                            }
 
                             let disconnectedPaths = Set(result.disconnected.map(\.path))
                             if !result.disconnected.isEmpty {
