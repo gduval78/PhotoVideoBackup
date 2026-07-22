@@ -80,9 +80,21 @@ final class DestinationManager {
         guard let data = try? url.bookmarkData(options: creationOptions, includingResourceValuesForKeys: nil, relativeTo: nil) else { return }
         UserDefaults.standard.set(data, forKey: key)
         UserDefaults.standard.set(relativeFolderPath(url: url), forKey: key + ".folderPath")
-        let volName = (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName
-                      ?? url.lastPathComponent
+        let volName = volumeDisplayName(for: url) ?? url.lastPathComponent
         UserDefaults.standard.set(volName, forKey: key + ".displayName")
+    }
+
+    /// Name to show for the volume a destination lives on.
+    ///
+    /// For an external SSD this is the disk's localized name. For an **iCloud Drive** folder there is
+    /// no external disk — the folder physically sits on the device's internal data volume, so
+    /// `volumeLocalizedName` returns that volume's name (e.g. "User") rather than anything the user
+    /// would recognise. Detect the ubiquitous case and label it "iCloud Drive" instead.
+    private func volumeDisplayName(for url: URL) -> String? {
+        if ICloudEvictionManager.isUbiquitous(url) {
+            return String(localized: "iCloud Drive")
+        }
+        return (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName
     }
 
     private func relativeFolderPath(url: URL) -> String {
@@ -113,7 +125,7 @@ final class DestinationManager {
         if let url = resolveBookmark(forKey: key) {
             _ = url.startAccessingSecurityScopedResource()
             defer { url.stopAccessingSecurityScopedResource() }
-            if let name = (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName {
+            if let name = volumeDisplayName(for: url) {
                 return name
             }
         }
@@ -128,8 +140,7 @@ final class DestinationManager {
     /// Human-readable label for a destination URL: "VolumeName / FolderName" (or just folder name).
     func destinationLabel(for url: URL) -> String {
         let folder = url.lastPathComponent
-        let volName = (try? url.resourceValues(forKeys: [.volumeLocalizedNameKey]))?.volumeLocalizedName
-        if let v = volName, v != folder {
+        if let v = volumeDisplayName(for: url), v != folder {
             return "\(v) / \(folder)"
         }
         return folder
