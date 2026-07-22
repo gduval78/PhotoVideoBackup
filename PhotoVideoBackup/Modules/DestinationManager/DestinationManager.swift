@@ -90,7 +90,7 @@ final class DestinationManager {
     /// no external disk — the folder physically sits on the device's internal data volume, so
     /// `volumeLocalizedName` returns that volume's name (e.g. "User") rather than anything the user
     /// would recognise. Detect the ubiquitous case and label it "iCloud Drive" instead.
-    private func volumeDisplayName(for url: URL) -> String? {
+    func volumeDisplayName(for url: URL) -> String? {
         if ICloudEvictionManager.isUbiquitous(url) {
             return String(localized: "iCloud Drive")
         }

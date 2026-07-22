@@ -292,7 +292,9 @@ final class DashboardViewModel {
         let availableImportant = vals.volumeAvailableCapacityForImportantUsage ?? 0
         let availableBasic     = Int64(vals.volumeAvailableCapacity ?? 0)
         let available          = availableImportant > 0 ? Int64(availableImportant) : availableBasic
-        let name               = vals.volumeLocalizedName ?? savedName
+        // Route through the shared helper so an iCloud Drive folder shows "iCloud Drive" rather
+        // than the internal volume name (e.g. "User"), matching the label used everywhere else.
+        let name               = DestinationManager.shared.volumeDisplayName(for: url) ?? savedName
 
         return DestinationStatus(id: UUID(), displayName: name,
                                  folderPath: folderPath, rootURL: url,
