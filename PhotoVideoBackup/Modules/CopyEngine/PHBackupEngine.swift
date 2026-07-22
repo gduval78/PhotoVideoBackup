@@ -747,9 +747,8 @@ actor PHBackupEngine {
         private let lock = NSLock()
         private var hasher = SHA256()
         private var active: [(handle: FileHandle, dest: URL)]
-        private var _disconnected: [URL] = []
+        private var _dropped: [URL] = []
         private var _bytes: Int64 = 0
-        private var _failure: Error?
 
         init(active: [(handle: FileHandle, dest: URL)]) { self.active = active }
 
@@ -758,11 +757,17 @@ actor PHBackupEngine {
         /// Writes one chunk. Returns false once every destination has gone away — the caller then
         /// stops doing I/O, though the Photos request is deliberately allowed to run to completion
         /// (cancelling it risks never getting the completion handler, which would hang the copy).
+        ///
+        /// A write failure drops **only** the offending destination and keeps writing to the rest —
+        /// destinations are independent. A vanished volume (SSD unplugged) and a real error (iCloud
+        /// Drive folder full) differ only in which log tag is written; neither aborts the others. An
+        /// earlier version set a single global failure here, so a full iCloud destination would have
+        /// taken a healthy SSD down with it.
         @discardableResult
         func write(_ chunk: Data, isReachable: (URL) -> Bool) -> Bool {
             lock.lock()
             defer { lock.unlock() }
-            guard _failure == nil, !active.isEmpty else { return false }
+            guard !active.isEmpty else { return false }
 
             hasher.update(data: chunk)
             _bytes += Int64(chunk.count)
@@ -773,30 +778,25 @@ actor PHBackupEngine {
                     try pair.handle.write(contentsOf: chunk)
                     stillActive.append(pair)
                 } catch {
-                    // Same distinction streamCopy makes: a live volume means a real write error,
-                    // a vanished one means the drive was unplugged and we carry on without it.
-                    if isReachable(pair.dest) {
-                        _failure = CopyError.writeFailed(pair.dest, underlying: error)
-                        try? pair.handle.close()
-                    } else {
-                        try? pair.handle.close()
-                        _disconnected.append(pair.dest)
-                        DiagnosticLog.write("[DISC_ERROR] destination disconnected: \(pair.dest.lastPathComponent)")
-                    }
+                    try? pair.handle.close()
+                    _dropped.append(pair.dest)
+                    let tag = isReachable(pair.dest) ? "COPY_ERROR" : "DISC_ERROR"
+                    DiagnosticLog.write("[\(tag)] destination dropped mid-write: \(pair.dest.lastPathComponent) — \(error.localizedDescription)")
                 }
             }
             active = stillActive
-            return _failure == nil && !active.isEmpty
+            return !active.isEmpty
         }
 
-        /// Closes every handle and returns the accumulated outcome.
-        func finish() -> (sha256: String, bytes: Int64, disconnected: [URL], failure: Error?) {
+        /// Closes every handle and returns the accumulated outcome. `dropped` are the destinations
+        /// that fell out mid-write (unplugged or errored); the survivors are recorded as written.
+        func finish() -> (sha256: String, bytes: Int64, dropped: [URL]) {
             lock.lock()
             defer { lock.unlock() }
             for pair in active { try? pair.handle.close() }
             active = []
             let digest = hasher.finalize().map { String(format: "%02x", $0) }.joined()
-            return (digest, _bytes, _disconnected, _failure)
+            return (digest, _bytes, _dropped)
         }
     }
 
@@ -843,16 +843,17 @@ actor PHBackupEngine {
             }
         } catch {
             let outcome = sink.finish()
-            for dest in destinations where !outcome.disconnected.contains(dest) {
+            for dest in destinations where !outcome.dropped.contains(dest) {
                 try? FileManager.default.removeItem(at: dest)   // no partial files left behind
             }
             throw error
         }
 
         let outcome = sink.finish()
-        if let failure = outcome.failure { throw failure }
-        // Destinations that never opened (setup) plus those lost mid-write.
-        let allDisconnected = setupDisconnected + outcome.disconnected
+        // Destinations that never opened (setup) plus those lost mid-write. Both are reported as
+        // "disconnected" to the engine: the file is not delivered there, the session is partial, and
+        // a re-run picks it up — the same treatment whether a volume vanished or a folder filled up.
+        let allDisconnected = setupDisconnected + outcome.dropped
         if allDisconnected.count == destinations.count {
             throw CopyError.allDestinationsDisconnected
         }
