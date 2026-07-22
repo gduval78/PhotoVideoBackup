@@ -25,6 +25,12 @@ final class IndexedFile {
     var copyStatusRaw: String
     var verificationPassed: Bool?
     var destinationPaths: [String]
+    /// Subset of `destinationPaths` actually **written during this session** (as opposed to those
+    /// that were already present and only recorded for dedup). Lets the per-destination report tell
+    /// "copied now" from "already there" — a file copied only to a reconnected SSD must not show as
+    /// copied on iCloud/NAS that already had it. Empty on old records: the report falls back to
+    /// treating a `.copied` file's whole `destinationPaths` as copied (the pre-migration behaviour).
+    var copiedPaths: [String] = []
     var errorNote: String? = nil
 
     var copyStatus: CopyStatus {
@@ -44,6 +50,7 @@ final class IndexedFile {
         copyStatus: CopyStatus = .pending,
         verificationPassed: Bool? = nil,
         destinationPaths: [String] = [],
+        copiedPaths: [String] = [],
         errorNote: String? = nil
     ) {
         self.id = id
@@ -57,6 +64,7 @@ final class IndexedFile {
         self.copyStatusRaw = copyStatus.rawValue
         self.verificationPassed = verificationPassed
         self.destinationPaths = destinationPaths
+        self.copiedPaths = copiedPaths
         self.errorNote = errorNote
     }
 }

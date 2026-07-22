@@ -490,6 +490,9 @@ actor PHBackupEngine {
                         status: allOK ? .copied : .failed,
                         verified: allOK,
                         destPaths: allGoodPaths,
+                        // Only newly-written-and-verified targets count as copied this session;
+                        // presentPaths were already there and must report as skipped per-destination.
+                        copiedPaths: newGoodPaths,
                         note: allOK ? nil : "SHA-256 mismatch"
                     )
 
@@ -993,6 +996,7 @@ actor PHBackupEngine {
         status: CopyStatus,
         verified: Bool?,
         destPaths: [String],
+        copiedPaths: [String] = [],
         note: String?
     ) async {
         if let note { print("[PHBackupEngine] \(item.fileName): \(note)") }
@@ -1014,6 +1018,7 @@ actor PHBackupEngine {
                 copyStatus: status,
                 verificationPassed: verified,
                 destinationPaths: destPaths,
+                copiedPaths: copiedPaths,
                 errorNote: note
             )
             IndexStore.shared.context.insert(indexed)

@@ -143,29 +143,12 @@ struct ReportView: View {
 
     // MARK: - Per-target summary computation
 
-    struct TargetSummary {
-        let displayName: String
-        var copied  = 0
-        var skipped = 0
-        var failed  = 0
-    }
+    typealias TargetSummary = ReportTargetSummary
 
     private func targetSummaries() -> [TargetSummary] {
-        session.destinations.enumerated().map { idx, root in
-            let name = idx < session.destinationDisplayNames.count
-                ? session.destinationDisplayNames[idx]
-                : URL(fileURLWithPath: root).lastPathComponent
-            var t = TargetSummary(displayName: name)
-            for file in session.files {
-                let present = file.destinationPaths.contains { $0.hasPrefix(root) }
-                if present {
-                    if file.copyStatus == .skipped { t.skipped += 1 } else { t.copied += 1 }
-                } else if file.copyStatus != .pending {
-                    t.failed += 1
-                }
-            }
-            return t
-        }
+        ReportTargetSummary.compute(files: session.files,
+                                    destinations: session.destinations,
+                                    displayNames: session.destinationDisplayNames)
     }
 
     // MARK: - Delete section

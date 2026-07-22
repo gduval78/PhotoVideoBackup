@@ -263,6 +263,7 @@ actor FileCopyEngine {
                         status: allOK ? .copied : .failed,
                         verified: allOK,
                         destPaths: allGoodPaths,
+                        copiedPaths: newGoodPaths,   // only targets written this session
                         note: allOK ? nil : "SHA-256 mismatch"
                     )
 
@@ -443,6 +444,7 @@ actor FileCopyEngine {
         status: CopyStatus,
         verified: Bool?,
         destPaths: [String],
+        copiedPaths: [String] = [],
         note: String?
     ) async {
         if let note { print("[FileCopyEngine] \(file.path.lastPathComponent): \(note)") }
@@ -464,6 +466,7 @@ actor FileCopyEngine {
                 copyStatus: status,
                 verificationPassed: verified,
                 destinationPaths: destPaths,
+                copiedPaths: copiedPaths,
                 errorNote: note
             )
             IndexStore.shared.context.insert(indexed)

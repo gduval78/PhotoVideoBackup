@@ -11,6 +11,7 @@
 		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
 		5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */; };
 		5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */; };
+		5C1C10D0000000000000FB02 /* ReportTargetSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
@@ -58,6 +59,7 @@
 		CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101100 /* RemoteDedupTests.swift */; };
 		CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101200 /* LiveNASIntegrationTests.swift */; };
 		CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101300 /* DestinationIndependenceTests.swift */; };
+		CC0000000000000000201900 /* ReportSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101400 /* ReportSummaryTests.swift */; };
 		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
 		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
 		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
@@ -118,6 +120,7 @@
 		5B0BF11E000000000000AB01 /* BackupTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTarget.swift; sourceTree = "<group>"; };
 		5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflight.swift; sourceTree = "<group>"; };
 		5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionManager.swift; sourceTree = "<group>"; };
+		5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportTargetSummary.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -162,6 +165,7 @@
 		CC0000000000000000101100 /* RemoteDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDedupTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101200 /* LiveNASIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveNASIntegrationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101300 /* DestinationIndependenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationIndependenceTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000101400 /* ReportSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSummaryTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100900 /* FolderOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganizationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100A00 /* DeviceScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceScannerTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
@@ -355,6 +359,7 @@
 		B2AC0F4E62F31D96D32E7BAF /* ReportBuilder */ = {
 			isa = PBXGroup;
 			children = (
+				5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */,
 				6DDE4F1F23E464C829762900 /* ReportBuilder.swift */,
 				C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */,
 			);
@@ -409,6 +414,7 @@
 			children = (
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
+				CC0000000000000000101400 /* ReportSummaryTests.swift */,
 				CC0000000000000000101300 /* DestinationIndependenceTests.swift */,
 				CC0000000000000000101200 /* LiveNASIntegrationTests.swift */,
 				CC0000000000000000101100 /* RemoteDedupTests.swift */,
@@ -609,6 +615,7 @@
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
 				5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */,
 				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
+				5C1C10D0000000000000FB02 /* ReportTargetSummary.swift in Sources */,
 				5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */,
 				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
@@ -659,6 +666,7 @@
 				CC0000000000000000200700 /* TestSetting.swift in Sources */,
 				CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */,
 				CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */,
+				CC0000000000000000201900 /* ReportSummaryTests.swift in Sources */,
 				CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */,
 				CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */,
 				CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */,
