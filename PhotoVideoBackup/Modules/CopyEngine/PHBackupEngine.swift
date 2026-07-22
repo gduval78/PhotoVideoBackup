@@ -280,7 +280,7 @@ actor PHBackupEngine {
                             if let uploadSource = streamedURLs.first {
                                 let result = await uploadToRemotes(
                                     remoteTargets, from: uploadSource, relativePath: rel,
-                                    fileName: item.fileName
+                                    fileName: item.fileName, expectedSize: actualSize
                                 ) { bytesRead, destination in
                                     continuation.yield(CopyProgress(
                                         fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -290,6 +290,7 @@ actor PHBackupEngine {
                                         phase: .copying))
                                 }
                                 writtenTargets += result.written
+                                presentPaths += result.alreadyPresent
                                 hardCopyError = hardCopyError ?? result.failure
                                 if result.disconnected > 0 { disconnectedThisFile = true }
                             } else {
@@ -302,18 +303,21 @@ actor PHBackupEngine {
                                     if precomputedSHA256.isEmpty {
                                         precomputedSHA256 = (try? await sha256(of: temp)) ?? ""
                                     }
+                                    let realSize = (try? temp.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? actualSize
+                                    actualSize = realSize
                                     let result = await uploadToRemotes(
                                         remoteTargets, from: temp, relativePath: rel,
-                                        fileName: item.fileName
+                                        fileName: item.fileName, expectedSize: realSize
                                     ) { bytesRead, destination in
                                         continuation.yield(CopyProgress(
                                             fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                            fileBytesDone: bytesRead, fileBytesTotal: actualSize,
+                                            fileBytesDone: bytesRead, fileBytesTotal: realSize,
                                             currentDestination: destination,
                                             overallBytesDone: overallDone + bytesRead, overallBytesTotal: estimatedTotal,
                                             phase: .copying))
                                     }
                                     writtenTargets += result.written
+                                    presentPaths += result.alreadyPresent
                                     hardCopyError = hardCopyError ?? result.failure
                                     if result.disconnected > 0 { disconnectedThisFile = true }
                                 } catch {
@@ -410,7 +414,7 @@ actor PHBackupEngine {
                         // destination streams instead — so there is no local fan-out to do here.
                         let result = await uploadToRemotes(
                             remoteTargets, from: tempURL, relativePath: rel,
-                            fileName: item.fileName
+                            fileName: item.fileName, expectedSize: actualSize
                         ) { bytesRead, destination in
                             continuation.yield(CopyProgress(
                                 fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -420,8 +424,28 @@ actor PHBackupEngine {
                                 phase: .copying))
                         }
                         writtenTargets += result.written
+                        presentPaths += result.alreadyPresent
                         hardCopyError = hardCopyError ?? result.failure
                         if result.disconnected > 0 { disconnectedThisFile = true }
+                    }
+
+                    // Nothing needed writing because every target that looked missing turned out to
+                    // already hold the file once we re-checked against the real size. That is a skip,
+                    // not a failure.
+                    if writtenTargets.isEmpty && !disconnectedThisFile && hardCopyError == nil && !presentPaths.isEmpty {
+                        print("[PHBackupEngine] ✓ Already present (real-size re-check) — skipped: \(item.fileName)")
+                        await record(item: item, actualSize: actualSize, session: session,
+                                     deviceName: deviceName,
+                                     sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                     destPaths: presentPaths, note: nil)
+                        overallDone += actualSize
+                        continuation.yield(CopyProgress(
+                            fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                            fileBytesDone: actualSize, fileBytesTotal: actualSize,
+                            currentDestination: primaryDest,
+                            overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                            phase: .skipped))
+                        continue
                     }
 
                     // Nothing was written to any destination.
@@ -825,12 +849,25 @@ actor PHBackupEngine {
         from localFile: URL,
         relativePath rel: String,
         fileName: String,
+        expectedSize: Int64,
         onProgress: @escaping @Sendable (Int64, String) -> Void
-    ) async -> (written: [BackupTarget], failure: Error?, disconnected: Int) {
+    ) async -> (written: [BackupTarget], alreadyPresent: [String], failure: Error?, disconnected: Int) {
         var written: [BackupTarget] = []
+        var alreadyPresent: [String] = []
         var failure: Error?
         var disconnected = 0
         for remote in remotes {
+            // The physical existence check that put this target in `missingTargets` compared the
+            // remote's size against the *estimated* Photos size, which for video/HEIC often differs
+            // from the real bytes — wrongly marking an already-uploaded file as missing. Now that
+            // streaming has given us the true size, re-check before spending bandwidth. Without this,
+            // a NAS that already holds the file is re-uploaded whenever a *local* target legitimately
+            // needs it (e.g. after the SSD was disconnected on an earlier run).
+            if expectedSize > 0, let sz = await remote.existingSize(forRelative: rel), sz == expectedSize {
+                alreadyPresent.append(remote.absolutePath(forRelative: rel))
+                DiagnosticLog.write("[DEDUP] \(fileName) already on \(remote.displayName) at correct size — not re-uploaded")
+                continue
+            }
             do {
                 try await remote.upload(localFile: localFile, toRelative: rel) { bytesRead in
                     onProgress(bytesRead, remote.absolutePath(forRelative: rel))
@@ -847,7 +884,7 @@ actor PHBackupEngine {
                 }
             }
         }
-        return (written, failure, disconnected)
+        return (written, alreadyPresent, failure, disconnected)
     }
 
     /// Resolves the best exportable resource for an item — shared by the staging and streamed paths.
