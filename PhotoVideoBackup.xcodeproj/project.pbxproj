@@ -57,6 +57,7 @@
 		CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101000 /* FakeRemoteTarget.swift */; };
 		CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101100 /* RemoteDedupTests.swift */; };
 		CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101200 /* LiveNASIntegrationTests.swift */; };
+		CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101300 /* DestinationIndependenceTests.swift */; };
 		CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100900 /* FolderOrganizationTests.swift */; };
 		CC0000000000000000200F00 /* DeviceScannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100A00 /* DeviceScannerTests.swift */; };
 		CC0000000000000000201000 /* CustomExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100B00 /* CustomExtensionTests.swift */; };
@@ -160,6 +161,7 @@
 		CC0000000000000000100F00 /* ICloudEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101100 /* RemoteDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDedupTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101200 /* LiveNASIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveNASIntegrationTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000101300 /* DestinationIndependenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationIndependenceTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100900 /* FolderOrganizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderOrganizationTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100A00 /* DeviceScannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceScannerTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100B00 /* CustomExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomExtensionTests.swift; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 			children = (
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
+				CC0000000000000000101300 /* DestinationIndependenceTests.swift */,
 				CC0000000000000000101200 /* LiveNASIntegrationTests.swift */,
 				CC0000000000000000101100 /* RemoteDedupTests.swift */,
 				CC0000000000000000100F00 /* ICloudEvictionTests.swift */,
@@ -656,6 +659,7 @@
 				CC0000000000000000200700 /* TestSetting.swift in Sources */,
 				CC0000000000000000200800 /* BackupFromSDCardTests.swift in Sources */,
 				CC0000000000000000200E00 /* FolderOrganizationTests.swift in Sources */,
+				CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */,
 				CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */,
 				CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */,
 				CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */,

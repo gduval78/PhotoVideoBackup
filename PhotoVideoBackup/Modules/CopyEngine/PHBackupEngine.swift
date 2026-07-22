@@ -705,6 +705,40 @@ actor PHBackupEngine {
 
     // MARK: - Streamed export (no staging copy)
 
+    /// Opens a write handle for each destination, **independently**. A destination whose file cannot
+    /// be created because its volume is gone (an SSD unplugged mid-backup) is returned in
+    /// `disconnected` instead of aborting the others — losing one local destination must never stop
+    /// the rest (an SSD failing must not take an iCloud Drive destination down with it). A creation
+    /// failure on a volume that is *still present* is a genuine error and is rethrown.
+    ///
+    /// nonisolated + static so it is unit-testable and callable off the actor.
+    nonisolated static func openDestinationHandles(
+        _ destinations: [URL]
+    ) throws -> (active: [(handle: FileHandle, dest: URL)], disconnected: [URL]) {
+        var active: [(handle: FileHandle, dest: URL)] = []
+        var disconnected: [URL] = []
+        for dest in destinations {
+            do {
+                try FileManager.default.createDirectory(
+                    at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
+                guard FileManager.default.createFile(atPath: dest.path, contents: nil) else {
+                    throw CopyError.cannotCreateDestinationFile(dest)
+                }
+                active.append((try FileHandle(forWritingTo: dest), dest))
+            } catch {
+                // Volume gone → drop this destination, keep the others. Volume still present → a real
+                // error worth surfacing, so close what we opened and rethrow.
+                guard !volumeIsReachable(dest) else {
+                    for pair in active { try? pair.handle.close() }
+                    throw CopyError.cannotCreateDestinationFile(dest)
+                }
+                disconnected.append(dest)
+                DiagnosticLog.write("[DISC_ERROR] destination unavailable at setup: \(dest.lastPathComponent)")
+            }
+        }
+        return (active, disconnected)
+    }
+
     /// Collects the chunks Photos hands us: writes each one to every live destination and folds it
     /// into the running SHA-256. Photos calls `dataReceivedHandler` on a serial queue, so the calls
     /// arrive in order and never overlap; the lock guards only against the completion handler
@@ -784,21 +818,9 @@ actor PHBackupEngine {
 
         let resource = try assetResource(for: item)
 
-        var active: [(handle: FileHandle, dest: URL)] = []
-        for dest in destinations {
-            try FileManager.default.createDirectory(
-                at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
-            guard FileManager.default.createFile(atPath: dest.path, contents: nil) else {
-                for pair in active { try? pair.handle.close() }
-                throw CopyError.cannotCreateDestinationFile(dest)
-            }
-            do {
-                active.append((try FileHandle(forWritingTo: dest), dest))
-            } catch {
-                for pair in active { try? pair.handle.close() }
-                throw CopyError.cannotCreateDestinationFile(dest)
-            }
-        }
+        // Open handles independently: a dead destination (SSD unplugged) is dropped, not fatal.
+        let (active, setupDisconnected) = try Self.openDestinationHandles(destinations)
+        guard !active.isEmpty else { throw CopyError.allDestinationsDisconnected }
 
         let sink = ChunkSink(active: active)
         let options = PHAssetResourceRequestOptions()
@@ -829,12 +851,14 @@ actor PHBackupEngine {
 
         let outcome = sink.finish()
         if let failure = outcome.failure { throw failure }
-        if outcome.disconnected.count == destinations.count {
+        // Destinations that never opened (setup) plus those lost mid-write.
+        let allDisconnected = setupDisconnected + outcome.disconnected
+        if allDisconnected.count == destinations.count {
             throw CopyError.allDestinationsDisconnected
         }
         return StreamResult(sourceSHA256: outcome.sha256,
                             totalBytes: outcome.bytes,
-                            disconnected: outcome.disconnected)
+                            disconnected: allDisconnected)
     }
 
     /// Uploads one file to every remote target, reading from `localFile`.
