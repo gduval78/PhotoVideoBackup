@@ -580,7 +580,12 @@ The engines that touch SMB cannot run in a unit test (no live NAS, and `PHBackup
 - `coveredDestinationPaths(...)` — the SHA cascade, already pure.
 - `FakeRemoteTarget` (`Support/`) — an in-memory `RemoteBackupTarget` backed by a temp directory. `upload` copies into the tree and increments `uploadCount`; `seed(...)` places a file as if a prior run had uploaded it. A test asserts `uploadCount == 0` to prove no bandwidth was spent.
 
-**When adding remote behaviour, push the decision into a pure function and test it there** — do not try to drive the engine. A live-NAS integration smoke test (gated behind local, gitignored config) is a separate, manual artifact and must never join the hermetic `make test-all` suite.
+**When adding remote behaviour, push the decision into a pure function and test it there** — do not try to drive the engine.
+
+**Live NAS integration test (`make test-nas`).** `LiveNASIntegrationTests` does a real SMB round-trip (connect → upload → SHA-256 verify → dedup re-check → delete) against a NAS described by `nas-test-config.json` at the repo root. That file holds credentials, is gitignored (bare filename, so it is ignored at any path), and is read at runtime — never committed, never printed. Two constraints learned the hard way:
+- **It must run on the iOS Simulator, not "Designed for iPad".** A Mac-sandboxed Designed-for-iPad test process cannot read a file outside its container (`readable=false`), so it can never load the credentials; the simulator can. `make test-nas` pins the simulator destination.
+- **`make test-all` excludes it via `-skip-testing`** — that flag, not an env var, is the hermetic boundary (a Designed-for-iPad bundle does not inherit the shell environment, so env-var gating is unreliable). The test also self-skips when the config file is absent, so it is safe on any machine.
+- Connection reuses `DestinationManager.makeSMBTarget(from:password:)`, split out of `makeSMBTarget()` specifically so the test connects from its own credentials without touching the user's saved NAS config. Cleanup uses `SMBTarget.delete(forRelative:)`.
 
 ### What the tests do NOT cover (and why)
 

@@ -198,11 +198,18 @@ final class DestinationManager {
     /// configured, disabled, or currently unreachable. Connection is established once here and
     /// reused for the whole backup session.
     func makeSMBTarget() async -> SMBTarget? {
-        guard let cfg = loadNASConfig(), cfg.enabled, cfg.isComplete,
-              let url = URL(string: "smb://\(cfg.host):\(cfg.port)"),
+        guard let cfg = loadNASConfig(), cfg.enabled, cfg.isComplete else { return nil }
+        return await makeSMBTarget(from: cfg, password: nasPassword() ?? "")
+    }
+
+    /// Connects an explicit config without reading or writing any persisted state. Split out of
+    /// `makeSMBTarget()` so the live-NAS integration test can connect from its own credentials
+    /// without clobbering the user's saved NAS configuration.
+    func makeSMBTarget(from cfg: NASConfig, password: String) async -> SMBTarget? {
+        guard let url = URL(string: "smb://\(cfg.host):\(cfg.port)"),
               let client = SMB2Manager(url: url,
                                        credential: URLCredential(user: cfg.username,
-                                                                 password: nasPassword() ?? "",
+                                                                 password: password,
                                                                  persistence: .forSession))
         else { return nil }
         client.timeout = 30   // allow slower VPN (Tailscale) handshakes

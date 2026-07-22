@@ -83,6 +83,12 @@ final class SMBTarget: RemoteBackupTarget, @unchecked Sendable {
         })
     }
 
+    /// Removes a file at `rel` from the share. Used by the live-NAS integration test to clean up
+    /// after itself; also the natural building block for a future "delete from NAS" feature.
+    func delete(forRelative rel: String) async throws {
+        try await client.removeFile(atPath: smbPath(forRelative: rel))
+    }
+
     /// Creates every ancestor folder of `path` (libsmb2 mkdir is single-level). Errors on
     /// already-existing folders are ignored.
     private func ensureParentDirectory(ofSMBPath path: String) async throws {

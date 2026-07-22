@@ -13,3 +13,7 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# Live NAS integration test — local credentials, never committed
+nas-test-config.json
+*.nas-config.json
