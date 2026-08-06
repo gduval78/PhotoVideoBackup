@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.3.0 · iOS**  
+> **Version 2.4.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---

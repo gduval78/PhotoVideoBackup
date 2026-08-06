@@ -122,9 +122,7 @@ struct SettingsView: View {
                         .font(.callout)
                 }
                 Button {
-                    let subject = "PhotoVideoBackup Support"
-                    let urlString = "mailto:\(AppConstants.supportEmail)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-                    if let url = URL(string: urlString) {
+                    if let url = AppConstants.supportMailtoURL() {
                         UIApplication.shared.open(url)
                     }
                 } label: {
