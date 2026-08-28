@@ -14,7 +14,8 @@ actor PHLibraryScanner {
     }
 
     /// Requests photo library authorization, then enumerates all photos and videos.
-    func scan() async throws -> [PHMediaItem] {
+    /// `onProgress` receives the running asset count so the UI can show live scan feedback.
+    func scan(onProgress: (@Sendable (Int) -> Void)? = nil) async throws -> [PHMediaItem] {
         let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
         guard status == .authorized || status == .limited else {
             throw ScanError.authorizationDenied
@@ -54,6 +55,7 @@ actor PHLibraryScanner {
                 modificationDate: asset.modificationDate ?? asset.creationDate ?? Date()
             )
             items.append(item)
+            if items.count % 50 == 0 { onProgress?(items.count) }
         }
 
         print("[PHLibraryScanner] \(items.count) asset(s) found")

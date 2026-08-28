@@ -17,10 +17,26 @@ actor MediaScanner {
             .filter { !$0.isEmpty })
     }
 
+    // MARK: - Scan progress (live count reported while dates are being extracted)
+
+    /// Called with the running count of media files produced so far. Every successful file funnels
+    /// through `mediaFile(at:)`, so a single `reportScanned()` there covers every device layout.
+    /// Throttled to keep the number of main-actor hops low on large cards.
+    private var scanProgress: (@Sendable (Int) -> Void)?
+    private var scannedCount = 0
+    private func reportScanned() {
+        scannedCount += 1
+        if scannedCount % 8 == 0 { scanProgress?(scannedCount) }
+    }
+
     // MARK: - Public API
 
-    func scan(root: URL, deviceType: DeviceType) async throws -> [MediaFile] {
+    func scan(root: URL, deviceType: DeviceType,
+              onProgress: (@Sendable (Int) -> Void)? = nil) async throws -> [MediaFile] {
         print("[MediaScanner] scan root=\(root.path) deviceType=\(deviceType.rawValue)")
+        scanProgress = onProgress
+        scannedCount = 0
+        defer { scanProgress = nil }
         let files: [MediaFile]
         switch deviceType {
         case .insta360X5:  files = try await scanInsta360(root: root)
@@ -247,6 +263,7 @@ actor MediaScanner {
         let res   = try url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
         let size  = Int64(res.fileSize ?? 0)
         let mdate = res.contentModificationDate ?? Date()
+        reportScanned()
         return MediaFile(
             path: url,
             size: size,

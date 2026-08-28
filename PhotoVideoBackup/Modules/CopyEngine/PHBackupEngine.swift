@@ -250,7 +250,21 @@ actor PHBackupEngine {
                             }
                             // Exclude the files we just created, or they would count as covering themselves.
                             let justWritten = Set(streamedURLs.map(\.path))
-                            let priorPaths  = knownPaths.filter { !justWritten.contains($0) }
+                            var priorPaths  = knownPaths.filter { !justWritten.contains($0) }
+                            // Also catch a byte-identical twin already in the folder that the index
+                            // never knew (older app version, Finder copy). Size filters first; SHA-256
+                            // confirms. Excluding the just-written file keeps it from covering itself.
+                            for local in localTargets {
+                                let destURL = local.destinationURL(forRelative: rel)
+                                if let twin = existingLocalTwinPath(
+                                    inFolder: destURL.deletingLastPathComponent(),
+                                    excludingName: destURL.lastPathComponent,
+                                    size: actualSize,
+                                    sourceSHA256: precomputedSHA256
+                                ) {
+                                    priorPaths.append(twin)
+                                }
+                            }
                             if let knownDestPaths = await coveredDestinationPaths(
                                 targets: destinations, knownPaths: priorPaths, expectedSize: actualSize) {
                                 for url in streamedURLs { try? FileManager.default.removeItem(at: url) }

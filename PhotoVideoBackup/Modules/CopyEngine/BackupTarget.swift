@@ -82,6 +82,47 @@ func coveredDestinationPaths(targets: [BackupTarget], knownPaths: [String], expe
     return result
 }
 
+// MARK: - Same-folder twin detection (content dedup independent of the index)
+
+/// Finds a byte-identical file already sitting in `folder` under a name other than
+/// `excludingName`, and returns its absolute path (or nil if none).
+///
+/// This guarantees a folder never ends up with two physical copies of the same content —
+/// **regardless of how the first copy got there.** Unlike the SHA-index cascade
+/// (`coveredDestinationPaths`), which only knows files this app streamed itself, this reads
+/// the real filesystem, so it also catches a twin left by an older app version or a Finder
+/// drag — precisely the case that produced two identical `…​.mp4` / `…​-1.mp4` files in the
+/// field.
+///
+/// Size is the free discriminator — a `stat`, no bytes read — so a folder with no size
+/// collision costs only a directory listing. `hashFile` (SHA-256, full read) is computed
+/// **only** for a same-size candidate, and SHA-256 is the final judge, so no non-identical
+/// file is ever mistaken for a duplicate.
+///
+/// Local targets only: an SMB folder would have to download each candidate to hash it, so
+/// remote dedup stays on the index + `partitionRemotesByPresence` path.
+func existingLocalTwinPath(
+    inFolder folder: URL,
+    excludingName: String,
+    size: Int64,
+    sourceSHA256: String,
+    hashFile: (URL) -> String? = { try? sha256OfFile(at: $0) }
+) -> String? {
+    guard !sourceSHA256.isEmpty, size > 0 else { return nil }
+    let keys: Set<URLResourceKey> = [.fileSizeKey, .isRegularFileKey]
+    guard let entries = try? FileManager.default.contentsOfDirectory(
+        at: folder, includingPropertiesForKeys: Array(keys), options: [.skipsHiddenFiles]
+    ) else { return nil }
+    for url in entries where url.lastPathComponent != excludingName {
+        guard let vals = try? url.resourceValues(forKeys: keys),
+              vals.isRegularFile == true,
+              Int64(vals.fileSize ?? -1) == size
+        else { continue }
+        if hashFile(url) == sourceSHA256 { return url.path }
+    }
+    return nil
+}
+
 // MARK: - Remote upload dedup
 
 /// Splits remote targets into those that still need `rel` uploaded and those that already hold it

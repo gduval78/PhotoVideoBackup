@@ -13,6 +13,9 @@ final class DashboardViewModel {
     private(set) var destinationStatuses: [DestinationStatus] = []
     private(set) var currentProgress: CopyProgress?
     private(set) var isRunning: Bool = false
+    /// Coarse pre-copy phase, so the UI can acknowledge the tap instantly and show that the
+    /// source is being analyzed — before per-file `currentProgress` starts flowing. Nil when idle.
+    private(set) var backupPhase: BackupPhase?
     /// True while a backup is running that includes a NAS (remote) destination.
     private(set) var currentBackupUsesNAS: Bool = false
     /// True after the user tapped Stop, until the run halts at the next file boundary.
@@ -32,6 +35,13 @@ final class DashboardViewModel {
 
     var hasConnectedDestination: Bool {
         destinationStatuses.contains { $0.isConnected }
+    }
+
+    /// Pre-copy phases surfaced to the user before the engine yields per-file progress.
+    enum BackupPhase: Equatable {
+        case preparing              // resolving destinations / connecting to the NAS
+        case scanning(found: Int)   // enumerating the source; N media files found so far
+        case copying                // engine running — per-file detail lives in `currentProgress`
     }
 
     struct CompletionBanner: Sendable {
@@ -433,6 +443,9 @@ final class DashboardViewModel {
     func startBackup() async {
         guard !isRunning else { return }
 
+        // Acknowledge the tap immediately: the progress card appears now, before any await.
+        beginRun(phase: .preparing)
+
         var destinations = DestinationManager.shared.resolvedDestinations()
 
         // Enforce premium gate at runtime: limit to 1 local destination for free users
@@ -457,35 +470,27 @@ final class DashboardViewModel {
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
         let targets = await resolvedTargets(localURLs: accessed)
         guard !targets.isEmpty else {
-            backupError = String(localized: "No backup destination is configured or connected.")
+            abortRun(String(localized: "No backup destination is configured or connected."))
             return
         }
         currentBackupUsesNAS = targets.contains { $0.isRemote }
 
-        isRunning       = true
-        currentProgress = nil
-        backupError     = nil
-        resetSpeedTracking()
-        backupStartDate = Date()
-        beginBackgroundExecution()
-
+        backupPhase = .scanning(found: 0)
         DiagnosticLog.write("[SCAN_START] source=Photos")
         let scanner = PHLibraryScanner()
         let items: [PHMediaItem]
         do {
-            items = try await scanner.scan()
+            items = try await scanner.scan { [weak self] found in
+                Task { @MainActor in self?.applyScanCount(found) }
+            }
         } catch {
             DiagnosticLog.write("[SCAN_ERROR] Photos: \(error.localizedDescription)")
-            backupError = error.localizedDescription
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(error.localizedDescription)
             return
         }
 
         guard !items.isEmpty else {
-            backupError = String(localized: "No files found in the photo library.")
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(String(localized: "No files found in the photo library."))
             return
         }
 
@@ -495,17 +500,13 @@ final class DashboardViewModel {
         if let message = diskSpaceError(smallestFileBytes: items.map(\.fileSize).min() ?? 0,
                                         targets: targets,
                                         usesStagingCopy: targets.allSatisfy(\.isRemote)) {
-            backupError = message
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(message)
             return
         }
 
         let rawName = UserDefaults.standard.string(forKey: "deviceName")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !rawName.isEmpty else {
-            backupError = String(localized: "Please set a device name in Settings before starting a backup.")
-            isRunning = false
-            endBackgroundExecution()
+            abortRun(String(localized: "Please set a device name in Settings before starting a backup."))
             return
         }
         let deviceName = rawName
@@ -523,6 +524,7 @@ final class DashboardViewModel {
         try? IndexStore.shared.insert(session)
 
         let fileLimit = Self.resolvedFileLimit()
+        backupPhase = .copying
         DiagnosticLog.write("[BACKUP_START] source=Photos files=\(items.count) dest=\(targets.count) device=\"\(deviceName)\" \(DiagnosticLog.memoryTag)")
         let stream = await libraryEngine.run(
             items: items,
@@ -557,6 +559,9 @@ final class DashboardViewModel {
             return
         }
 
+        // Acknowledge the tap immediately: the progress card appears now, before any await.
+        beginRun(phase: .preparing)
+
         var destinations = DestinationManager.shared.resolvedDestinations()
 
         // Enforce premium gate at runtime: limit to 1 local destination for free users (safety net)
@@ -581,35 +586,27 @@ final class DashboardViewModel {
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
         let targets = await resolvedTargets(localURLs: accessed)
         guard !targets.isEmpty else {
-            backupError = String(localized: "No backup destination is configured or connected.")
+            abortRun(String(localized: "No backup destination is configured or connected."))
             return
         }
         currentBackupUsesNAS = targets.contains { $0.isRemote }
 
-        isRunning       = true
-        currentProgress = nil
-        backupError     = nil
-        resetSpeedTracking()
-        backupStartDate = Date()
-        beginBackgroundExecution()
-
+        backupPhase = .scanning(found: 0)
         DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)")
         let scanner = MediaScanner()
         let files: [MediaFile]
         do {
-            files = try await scanner.scan(root: sourceURL, deviceType: source.deviceType)
+            files = try await scanner.scan(root: sourceURL, deviceType: source.deviceType) { [weak self] found in
+                Task { @MainActor in self?.applyScanCount(found) }
+            }
         } catch {
             DiagnosticLog.write("[SCAN_ERROR] \(source.displayName): \(error.localizedDescription)")
-            backupError = error.localizedDescription
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(error.localizedDescription)
             return
         }
 
         guard !files.isEmpty else {
-            backupError = String(localized: "No media files found in \(source.displayName).")
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(String(localized: "No media files found in \(source.displayName)."))
             return
         }
 
@@ -618,9 +615,7 @@ final class DashboardViewModel {
         if let message = diskSpaceError(smallestFileBytes: files.map(\.size).min() ?? 0,
                                         targets: targets,
                                         usesStagingCopy: false) {
-            backupError = message
-            isRunning   = false
-            endBackgroundExecution()
+            abortRun(message)
             return
         }
 
@@ -639,6 +634,7 @@ final class DashboardViewModel {
         try? IndexStore.shared.insert(session)
 
         let fileLimit = Self.resolvedFileLimit()
+        backupPhase = .copying
         DiagnosticLog.write("[BACKUP_START] source=\"\(source.displayName)\" files=\(files.count) dest=\(targets.count) device=\"\(deviceFolder)\" \(DiagnosticLog.memoryTag)")
         let stream = await fileEngine.run(
             files: files,
@@ -662,6 +658,39 @@ final class DashboardViewModel {
     private static func resolvedFileLimit() -> Int? {
         let raw = UserDefaults.standard.integer(forKey: "backupFileLimit")
         return raw > 0 ? raw : nil
+    }
+
+    /// Commit to a run: flips `isRunning` and the initial phase **synchronously**, so the progress
+    /// card appears on the same main-actor tick as the button tap — before any network/scan await.
+    private func beginRun(phase: BackupPhase) {
+        isRunning       = true
+        backupPhase     = phase
+        currentProgress = nil
+        backupError     = nil
+        resetSpeedTracking()
+        backupStartDate = Date()
+        beginBackgroundExecution()
+    }
+
+    /// Applies a throttled live scan count. Ignored once the run has moved past scanning (a late
+    /// callback `Task` must never flip the header back to "Analyzing…" over `.copying` or a
+    /// finished run).
+    private func applyScanCount(_ found: Int) {
+        switch backupPhase {
+        case .preparing, .scanning: backupPhase = .scanning(found: found)
+        default: break
+        }
+    }
+
+    /// Unwind a committed run that failed before the engine started (no destination, scan error,
+    /// too little space…). Mirrors the teardown `finishSession` does on the success path.
+    private func abortRun(_ message: String?) {
+        if let message { backupError = message }
+        isRunning            = false
+        backupPhase          = nil
+        currentProgress      = nil
+        currentBackupUsesNAS = false
+        endBackgroundExecution()
     }
 
     private func finishSession(_ session: BackupSession, sourceName: String, result: EngineResult) {
@@ -701,6 +730,7 @@ final class DashboardViewModel {
         )
 
         isRunning       = false
+        backupPhase     = nil
         currentProgress = nil
         resetSpeedTracking()
         endBackgroundExecution()

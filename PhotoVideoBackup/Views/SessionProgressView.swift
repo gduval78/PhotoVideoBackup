@@ -79,12 +79,44 @@ struct SessionProgressView: View {
                 }
                 .padding(.vertical, 6)
             } else {
-                ProgressView("Initializing…")
-                    .frame(maxWidth: .infinity)
-                    .padding()
+                preparingView
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 6)
             }
         }
         .padding(.horizontal)
+    }
+
+    /// Shown before the engine yields the first per-file progress — the previously-opaque gap
+    /// (destination connect + source analysis). Gives the tap an immediate, legible acknowledgment.
+    @ViewBuilder
+    private var preparingView: some View {
+        switch viewModel.backupPhase {
+        case .scanning(let found):
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Analyzing source…")
+                        .font(.subheadline.weight(.medium))
+                }
+                if found > 0 {
+                    Text("\(found) files found")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+            }
+        case .copying:
+            HStack(spacing: 10) {
+                ProgressView()
+                Text("Starting copy…").font(.subheadline.weight(.medium))
+            }
+        case .preparing, .none:
+            HStack(spacing: 10) {
+                ProgressView()
+                Text("Preparing…").font(.subheadline.weight(.medium))
+            }
+        }
     }
 
     private func fileIndex(_ p: CopyProgress) -> Int { p.fileIndex + 1 }

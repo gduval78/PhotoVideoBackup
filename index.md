@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.4.0 · iOS**  
+> **Version 2.5.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD — or to a NAS over Wi-Fi.
 
 ---
@@ -199,11 +199,16 @@ Tap the red **–** button on the left of a source row to remove it from the lis
 
 ## 8. The Backup in Progress
 
-While the backup runs, a **Backup in Progress** panel replaces the completion banner at the bottom of the Backup tab.
+While the backup runs, a **Backup in Progress** panel appears at the bottom of the Backup tab. As of version 2.5.0 it is **pinned there and always visible** — you no longer need to scroll past your destinations and sources to see it.
+
+**The moment you tap a backup button, the panel appears immediately** so you know the request was received — even before the destinations (or the NAS) have finished connecting. While the app gets ready you will see, in order:
+
+- **Preparing…** — connecting to your destinations.
+- **Analyzing source…** — the app is going through your source and counting the media files. A **live count** ("*N files found*") climbs as it works, so on a large photo library you can see it is busy, not stuck. This step can take a little while before the first file is copied — that is normal.
 
 ![Backup in progress — 13%, exporting from Photos](images/progress_backup.png)
 
-Here is what each part means:
+Once copying starts, here is what each part means:
 
 | Element | What it tells you |
 |---------|-------------------|
@@ -500,7 +505,7 @@ A timeout almost always means the NAS isn't reachable on the network, not an app
 Yes. Every connected destination — SSD 1, SSD 2, and the NAS — receives the backup simultaneously.
 
 **Q: Will it copy the same file twice if I run it again?**  
-No. The app checks whether each file is already on the SSD before copying. Files that are already there are skipped. Running the backup a second time is fast and safe.
+No. The app checks whether each file is already on the SSD before copying. Files that are already there are skipped. Running the backup a second time is fast and safe. As of version 2.5.0, it also detects a **byte-identical file already in the destination folder under a different name** — and skips it — even if that file was put there by something other than the app (for example an earlier copy made in the Finder). So a folder never ends up with two copies of the same clip.
 
 **Q: My SD card appears as "Documents" — is that normal?**  
 Yes, some cameras store footage in a generic folder. When you add the source, simply type a meaningful name (like "Blackmagic" or "GoPro") in the naming dialog so you can recognise it easily.

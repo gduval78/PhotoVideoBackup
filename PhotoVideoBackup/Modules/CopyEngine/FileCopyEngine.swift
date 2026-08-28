@@ -135,6 +135,50 @@ actor FileCopyEngine {
                         }
                     }
 
+                    // ── Same-folder twin check (local targets) ───────────────
+                    // Catch a byte-identical file already in the destination folder under a
+                    // DIFFERENT name, however it got there — this app, an older version, or a
+                    // Finder copy — which the SHA index above cannot know about. Size is the
+                    // free filter; SHA-256 confirms only on a size match. A covered target is
+                    // dropped from the copy set and its twin recorded, which also backfills the
+                    // SHA index so the next run skips it via the cheap index path.
+                    if !precomputedSHA256.isEmpty && !missingTargets.isEmpty {
+                        var stillMissing: [BackupTarget] = []
+                        for target in missingTargets {
+                            if let local = target as? LocalFileTarget {
+                                let destURL = local.destinationURL(forRelative: rel)
+                                if let twin = existingLocalTwinPath(
+                                    inFolder: destURL.deletingLastPathComponent(),
+                                    excludingName: destURL.lastPathComponent,
+                                    size: file.size,
+                                    sourceSHA256: precomputedSHA256
+                                ) {
+                                    print("[FileCopyEngine] ✓ Twin already in folder (\((twin as NSString).lastPathComponent)) — not re-copying: \(fileName)")
+                                    presentPaths.append(twin)
+                                    continue
+                                }
+                            }
+                            stillMissing.append(target)
+                        }
+                        missingTargets = stillMissing
+
+                        if missingTargets.isEmpty {
+                            await record(file: file, device: sourceDevice, session: session,
+                                         sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                         destPaths: presentPaths, note: nil)
+                            overallDone += file.size
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: files.count,
+                                fileName: fileName,
+                                fileBytesDone: file.size, fileBytesTotal: file.size,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: overallTotal,
+                                phase: .skipped
+                            ))
+                            continue
+                        }
+                    }
+
                     // Enforce file limit on files that actually need copying
                     if let limit = fileLimit, toCopyCount >= limit {
                         _wasLimited = true
