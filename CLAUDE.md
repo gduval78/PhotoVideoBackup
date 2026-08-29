@@ -158,12 +158,20 @@ enum FolderOrganization: String, CaseIterable {
 
 ## MediaScanner — capture date priority
 
-`mediaFile(at:)` resolves the capture date with this priority:
+The capture date is resolved by `MediaScanner.resolveCaptureDate(at:)` with this priority:
 1. **EXIF `DateTimeOriginal`** via ImageIO (`exifCaptureDate`) — images only (JPG, DNG, etc.)
 2. **Video container `creationDate`** via AVFoundation (`videoCreationDate`) — MP4, MOV, AVI, M4V, INSV, BRAW. Reads `AVMetadataCommonKeyCreationDate` from `AVURLAsset.commonMetadata`. This date is embedded by the camera/drone in the QuickTime/MP4 container and **survives any file copy**, regardless of filesystem timestamps.
 3. **`contentModificationDate`** (filesystem) — fallback of last resort.
 
 The video container date (step 2) is critical for the two-step iOS relay workflow (see below): without it, `modificationDate` is used for videos, which changes at each copy and produces duplicate destination folders.
+
+### Deferred resolution (v2.5.x+)
+
+`resolveCaptureDate` is **`nonisolated static`** and its metadata reads (ImageIO / `AVURLAsset`) are the **expensive** part of a scan — per file, tens of seconds on a large set. The scan therefore **no longer computes it**: `MediaScanner.mediaFile(at:)` returns `captureDate: nil` and reads only the cheap `fileSize` / `modificationDate` (`stat`), so a scan is a fast enumeration and the **first file starts almost immediately**. `FileCopyEngine` resolves the date **once per file at the top of its copy loop** — before the destination path is built (folder-by-date needs it) and before the physical-existence check — and threads that value into `record(...)` (new `captureDate:` parameter) so the IndexedFile still stores the real capture date. Same total work as before, moved into the loop where each file already reports progress; the value is identical, so folders and dedup do not change. One visible consequence: `MediaScanner`'s end-of-scan sort now orders by `modificationDate` (via `sortDate`'s fallback, since `captureDate` is nil at scan time) instead of capture date — a cosmetic change to copy order only. Covered by `DeviceScannerTests` (the resolver's nil contract, plus every existing `…/2024-01-14/…` assertion which depends on the modification-date fallback). **`PHBackupEngine` is unchanged** — a `PHAsset`'s date is `asset.creationDate` (already cheap); the Photos scan's real cost is `PHAssetResource.assetResources(for:)` per asset, a separate deferral not yet done.
+
+## Fail-fast preconditions
+
+`DashboardViewModel.startBackup()` (Photos) validates the **device name** (a synchronous `UserDefaults` read) **before** `beginRun`/the scan, not after — a missing name now fails instantly instead of costing a full library scan first. Disk-space still runs after the scan because it needs the file sizes.
 
 ## FileCopyEngine — modification date preservation
 

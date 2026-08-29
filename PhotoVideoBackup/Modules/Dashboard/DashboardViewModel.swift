@@ -443,6 +443,14 @@ final class DashboardViewModel {
     func startBackup() async {
         guard !isRunning else { return }
 
+        // Fail-fast (D): a missing device name is a synchronous precondition — check it BEFORE
+        // committing to a run, so it never costs a full library scan to surface the error.
+        let rawName = UserDefaults.standard.string(forKey: "deviceName")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !rawName.isEmpty else {
+            backupError = String(localized: "Please set a device name in Settings before starting a backup.")
+            return
+        }
+
         // Acknowledge the tap immediately: the progress card appears now, before any await.
         beginRun(phase: .preparing)
 
@@ -504,11 +512,7 @@ final class DashboardViewModel {
             return
         }
 
-        let rawName = UserDefaults.standard.string(forKey: "deviceName")?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        guard !rawName.isEmpty else {
-            abortRun(String(localized: "Please set a device name in Settings before starting a backup."))
-            return
-        }
+        // `rawName` was validated up front (fail-fast); just derive the sanitized folder name.
         let deviceName = rawName
             .components(separatedBy: CharacterSet(charactersIn: "/:\\"))
             .joined(separator: "_")
