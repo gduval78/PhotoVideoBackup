@@ -133,7 +133,14 @@ struct SessionProgressView: View {
         switch phase {
         case .scanning:   return String(localized: "Scanning library…", locale: locale)
         case .exporting:  return String(localized: "Exporting from Photos…", locale: locale)
-        case .copying:    return String(localized: "Copying to SSD…", locale: locale)
+        case .copying:
+            // Adaptive: name the destination when there's exactly one (SSD, iCloud folder, NAS…);
+            // a generic label covers a multi-destination fan-out.
+            let names = viewModel.currentDestinationNames
+            if names.count == 1 {
+                return String(localized: "Copying to \(names[0])…", locale: locale)
+            }
+            return String(localized: "Copying…", locale: locale)
         case .verifying:  return String(localized: "Verifying…", locale: locale)
         case .done:       return String(localized: "Done", locale: locale)
         case .skipped:    return String(localized: "Already present", locale: locale)

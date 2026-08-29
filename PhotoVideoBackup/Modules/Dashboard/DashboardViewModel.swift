@@ -18,6 +18,9 @@ final class DashboardViewModel {
     private(set) var backupPhase: BackupPhase?
     /// True while a backup is running that includes a NAS (remote) destination.
     private(set) var currentBackupUsesNAS: Bool = false
+    /// Display names of the destinations the running backup writes to — used to label the
+    /// copy phase ("Copying to <name>…"). Empty when idle.
+    private(set) var currentDestinationNames: [String] = []
     /// True after the user tapped Stop, until the run halts at the next file boundary.
     private(set) var isCancelling: Bool = false
     /// Best-effort: true when the underlying transport is likely mobile data (see NWPathMonitor + VPN heuristic).
@@ -482,6 +485,7 @@ final class DashboardViewModel {
             return
         }
         currentBackupUsesNAS = targets.contains { $0.isRemote }
+        currentDestinationNames = targets.map(\.displayName)
 
         backupPhase = .scanning(found: 0)
         DiagnosticLog.write("[SCAN_START] source=Photos")
@@ -594,6 +598,7 @@ final class DashboardViewModel {
             return
         }
         currentBackupUsesNAS = targets.contains { $0.isRemote }
+        currentDestinationNames = targets.map(\.displayName)
 
         backupPhase = .scanning(found: 0)
         DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)")
@@ -694,12 +699,14 @@ final class DashboardViewModel {
         backupPhase          = nil
         currentProgress      = nil
         currentBackupUsesNAS = false
+        currentDestinationNames = []
         endBackgroundExecution()
     }
 
     private func finishSession(_ session: BackupSession, sourceName: String, result: EngineResult) {
         isCancelling = false
         currentBackupUsesNAS = false
+        currentDestinationNames = []
         if result.wasCancelled {
             DiagnosticLog.write("[BACKUP_CANCEL] session stopped by user — copied=\(result.copiedCount)")
         }
