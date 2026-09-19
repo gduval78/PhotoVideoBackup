@@ -8,6 +8,7 @@ enum ScenarioAssertion {
     case skipped(Int)                              // N files already present, not re-copied
     case failed(Int)                               // N files could not be copied
     case partial                                   // backup stopped early due to file limit
+    case completed                                 // backup ran to the end (limit NOT reached)
     case fileExists(String, on: SimulatedSSD)      // file present at relative path
     case fileAbsent(String, from: SimulatedSSD)    // file must NOT be at relative path
 
@@ -35,6 +36,12 @@ enum ScenarioAssertion {
             XCTAssertTrue(
                 result.wasLimited,
                 "Expected partial backup (file limit reached) — backup completed fully",
+                file: file, line: line
+            )
+        case .completed:
+            XCTAssertFalse(
+                result.wasLimited,
+                "Expected a full backup (file limit NOT reached) — but it was marked partial",
                 file: file, line: line
             )
         case .fileExists(let path, on: let ssd):

@@ -56,29 +56,30 @@
       }
     },
     "Copying to %@…" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copying to %@…"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copie vers %@…"
-          }
-        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kopieren nach %@…"
           }
         },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copying to %@…"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copiando a %@…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copie vers %@…"
           }
         },
         "it" : {
@@ -93,16 +94,16 @@
             "value" : "A copiar para %@…"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在复制到 %@…"
-          }
-        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Копирование в %@…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在复制到 %@…"
           }
         }
       }
@@ -1180,6 +1181,110 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已复制 %lld 个 — 已达文件上限 · %@"
+          }
+        }
+      }
+    },
+    "%lld copied — destination disconnected. Reconnect and run again · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copied — destination disconnected. Reconnect and run again · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copié(s) — destination déconnectée. Reconnectez et relancez · %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kopiert — Ziel getrennt. Erneut verbinden und starten · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — destino desconectado. Reconecte y ejecute de nuevo · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiati — destinazione disconnessa. Riconnetti ed esegui di nuovo · %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — destino desligado. Reconecte e execute novamente · %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制 %lld 个 — 目标已断开。请重新连接后再次运行 · %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld скопировано — назначение отключено. Переподключите и запустите снова · %@"
+          }
+        }
+      }
+    },
+    "%lld copied — stopped. Run again to continue · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copied — stopped. Run again to continue · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copié(s) — arrêté. Relancez pour continuer · %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kopiert — gestoppt. Erneut ausführen · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — detenido. Ejecute de nuevo para continuar · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiati — interrotto. Esegui di nuovo per continuare · %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — interrompido. Execute novamente para continuar · %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制 %lld 个 — 已停止。再次运行以继续 · %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld скопировано — остановлено. Запустите снова для продолжения · %@"
           }
         }
       }
@@ -12884,6 +12989,110 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "部分备份 — 已达文件上限。再次运行以继续。"
+          }
+        }
+      }
+    },
+    "Partial backup — destination disconnected. Reconnect and run again to continue." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial backup — destination disconnected. Reconnect and run again to continue."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde partielle — destination déconnectée. Reconnectez et relancez pour continuer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilweises Backup — Ziel getrennt. Erneut verbinden und ausführen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia parcial — destino desconectado. Reconecte y ejecute de nuevo para continuar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parziale — destinazione disconnessa. Riconnetti ed esegui di nuovo per continuare."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parcial — destino desligado. Reconecte e execute novamente para continuar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分备份 — 目标已断开。请重新连接后再次运行以继续。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частичное резервное копирование — назначение отключено. Переподключите и запустите снова."
+          }
+        }
+      }
+    },
+    "Partial backup — stopped. Run again to continue." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial backup — stopped. Run again to continue."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde partielle — arrêtée. Relancez pour continuer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilweises Backup — gestoppt. Erneut ausführen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia parcial — detenida. Ejecute de nuevo para continuar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parziale — interrotto. Esegui di nuovo per continuare."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parcial — interrompido. Execute novamente para continuar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分备份 — 已停止。再次运行以继续。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частичное резервное копирование — остановлено. Запустите снова для продолжения."
           }
         }
       }

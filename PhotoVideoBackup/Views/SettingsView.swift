@@ -15,6 +15,8 @@ struct SettingsView: View {
     @State private var showPicker: Bool = false
     @State private var pickerIndex: Int = 0
     @State private var showPaywall: Bool = false
+    @FocusState private var limitFieldFocused: Bool
+    @State private var limitText: String = ""   // editing buffer, decoupled from @AppStorage
     @AppStorage("deviceName") private var deviceName: String = ""
     @AppStorage("folderOrganization") private var folderOrganizationRaw: String = FolderOrganization.byDate.rawValue
     @AppStorage("backupFileLimit") private var backupFileLimit: Int = 0
@@ -41,11 +43,15 @@ struct SettingsView: View {
                 HStack {
                     Text("Max files per session")
                     Spacer()
-                    TextField("Unlimited", value: $backupFileLimit, format: .number)
+                    TextField("Unlimited", text: $limitText)
                         .keyboardType(.numberPad)
+                        .focused($limitFieldFocused)
                         .multilineTextAlignment(.trailing)
                         .foregroundStyle(.secondary)
                         .frame(width: 100)
+                        .onChange(of: limitFieldFocused) { _, focused in
+                            if !focused { commitLimit() }
+                        }
                 }
                 NavigationLink {
                     CustomExtensionsView()
@@ -132,7 +138,14 @@ struct SettingsView: View {
 
         }
         .navigationTitle("Settings")
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { limitFieldFocused = false }
+            }
+        }
         .onAppear { loadNames() }
+        .onDisappear { commitLimit() }
         .fileImporter(
             isPresented: $showPicker,
             allowedContentTypes: [.folder],
@@ -290,6 +303,28 @@ struct SettingsView: View {
         } else {
             nasLabel = ""
         }
+        // Mirror the stored limit into the editing buffer. 0 = unlimited → empty field so the
+        // "Unlimited" placeholder shows (a plain Int would render "0" and hide the placeholder).
+        limitText = backupFileLimit > 0 ? String(backupFileLimit) : ""
+    }
+
+    /// Parses the editing buffer and writes the stored limit. Uses a locale-independent digit
+    /// parse (never the `.number` FormatStyle, which reads the environment locale and could be
+    /// re-parsed into a spurious value when the system/app language changes). Empty, zero, or
+    /// non-numeric input all mean "unlimited" (0). Re-normalises the buffer so the field and the
+    /// stored value can never drift apart.
+    private func commitLimit() {
+        let value = Self.normalizedFileLimit(from: limitText)
+        backupFileLimit = value
+        limitText = value > 0 ? String(value) : ""
+    }
+
+    /// Pure, locale-independent normaliser for the "Max files per session" field.
+    /// Keeps only digits, so grouping separators or stray characters can never corrupt the value;
+    /// returns 0 (unlimited) for empty / zero / non-numeric input. Unit-tested by `FileLimitFieldTests`.
+    static func normalizedFileLimit(from text: String) -> Int {
+        let digits = text.filter(\.isNumber)
+        return Int(digits) ?? 0
     }
 }
 

@@ -49,6 +49,7 @@ final class DashboardViewModel {
 
     struct CompletionBanner: Sendable {
         let status: SessionStatus
+        let partialReason: PartialReason
         let copiedCount: Int
         let skippedCount: Int
         let failedCount: Int
@@ -192,7 +193,14 @@ final class DashboardViewModel {
             content.body  = String(localized: "No files were copied — open the Report for details · \(banner.sourceName)")
         case .partial:
             content.title = String(localized: "Partial Backup")
-            content.body  = String(localized: "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)")
+            switch banner.partialReason {
+            case .disconnected:
+                content.body = String(localized: "\(banner.copiedCount) copied — destination disconnected. Reconnect and run again · \(banner.sourceName)")
+            case .cancelled:
+                content.body = String(localized: "\(banner.copiedCount) copied — stopped. Run again to continue · \(banner.sourceName)")
+            case .fileLimit, .none:
+                content.body = String(localized: "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)")
+            }
         case .completed where banner.failedCount > 0:
             content.title = String(localized: "Backup finished with errors")
             content.body  = String(localized: "\(banner.copiedCount) copied · \(banner.failedCount) failed — \(banner.sourceName)")
@@ -664,6 +672,18 @@ final class DashboardViewModel {
 
     // MARK: - Shared finish logic
 
+    /// Pure classifier for why a `.partial` session ended, so user-facing text names the real cause.
+    /// Precedence: cancellation (the user asked to stop) → disconnection → file limit. This exists as
+    /// a standalone function so it can be unit-tested (`PartialReasonTests`) — the field bug it guards
+    /// was a disconnection at file 149 being reported as "file limit reached". Callers pass this only
+    /// for a `.partial` outcome; for a completed/failed run the reason is `.none`.
+    nonisolated static func partialReason(wasCancelled: Bool, disconnectedCount: Int, wasLimited: Bool) -> PartialReason {
+        if wasCancelled            { return .cancelled }
+        if disconnectedCount > 0   { return .disconnected }
+        if wasLimited              { return .fileLimit }
+        return .none
+    }
+
     private static func resolvedFileLimit() -> Int? {
         let raw = UserDefaults.standard.integer(forKey: "backupFileLimit")
         return raw > 0 ? raw : nil
@@ -723,7 +743,16 @@ final class DashboardViewModel {
             sessionStatus = .completed
         }
 
-        try? IndexStore.shared.complete(session, status: sessionStatus)
+        // Which of the three partial causes actually fired. Only meaningful for a `.partial`
+        // session; the notification and Report must say the right thing (a disconnection is not
+        // "file limit reached").
+        let partialReason = sessionStatus == .partial
+            ? Self.partialReason(wasCancelled: result.wasCancelled,
+                                 disconnectedCount: result.disconnectedCount,
+                                 wasLimited: result.wasLimited)
+            : .none
+
+        try? IndexStore.shared.complete(session, status: sessionStatus, partialReason: partialReason)
         Task { try? await ReportBuilder.shared.generate(for: session) }
 
         lastCompletedSession = session
@@ -731,6 +760,7 @@ final class DashboardViewModel {
 
         completionBanner = CompletionBanner(
             status: sessionStatus,
+            partialReason: partialReason,
             copiedCount:  result.copiedCount,
             skippedCount: result.skippedCount,
             failedCount:  result.failedCount,
