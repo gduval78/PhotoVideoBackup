@@ -17,10 +17,26 @@ actor MediaScanner {
             .filter { !$0.isEmpty })
     }
 
+    // MARK: - Scan progress (live count reported while dates are being extracted)
+
+    /// Called with the running count of media files produced so far. Every successful file funnels
+    /// through `mediaFile(at:)`, so a single `reportScanned()` there covers every device layout.
+    /// Throttled to keep the number of main-actor hops low on large cards.
+    private var scanProgress: (@Sendable (Int) -> Void)?
+    private var scannedCount = 0
+    private func reportScanned() {
+        scannedCount += 1
+        if scannedCount % 8 == 0 { scanProgress?(scannedCount) }
+    }
+
     // MARK: - Public API
 
-    func scan(root: URL, deviceType: DeviceType) async throws -> [MediaFile] {
+    func scan(root: URL, deviceType: DeviceType,
+              onProgress: (@Sendable (Int) -> Void)? = nil) async throws -> [MediaFile] {
         print("[MediaScanner] scan root=\(root.path) deviceType=\(deviceType.rawValue)")
+        scanProgress = onProgress
+        scannedCount = 0
+        defer { scanProgress = nil }
         let files: [MediaFile]
         switch deviceType {
         case .insta360X5:  files = try await scanInsta360(root: root)
@@ -247,22 +263,38 @@ actor MediaScanner {
         let res   = try url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey])
         let size  = Int64(res.fileSize ?? 0)
         let mdate = res.contentModificationDate ?? Date()
+        reportScanned()
+        // Capture date is **deferred** — it is the expensive part (ImageIO / AVAsset metadata
+        // load, per file). The engine resolves it lazily inside its copy loop via
+        // `resolveCaptureDate(at:)`, where each file already reports progress. Keeping it out of
+        // the scan turns the scan into a fast enumeration so the first file starts almost
+        // immediately. The scan sorts by `sortDate`, which now falls back to `modificationDate`.
         return MediaFile(
             path: url,
             size: size,
             modificationDate: mdate,
-            captureDate: exifCaptureDate(at: url) ?? videoCreationDate(at: url),
+            captureDate: nil,
             deviceType: device,
             companionLRV: lrv,
             companionSRT: srt
         )
     }
 
+    // MARK: - Capture date (deferred resolver, called per-file by the engine)
+
+    /// Resolves a file's capture date: EXIF `DateTimeOriginal` for images, else the video
+    /// container `creationDate`. `nonisolated static` so the copy engine can call it off the
+    /// scanner actor. Reads only metadata (never the full file). Returns nil when unavailable —
+    /// the caller falls back to the filesystem modification date.
+    nonisolated static func resolveCaptureDate(at url: URL) -> Date? {
+        exifCaptureDate(at: url) ?? videoCreationDate(at: url)
+    }
+
     // MARK: - Video creation date (AVFoundation — reads container metadata, survives file copies)
 
     private static let videoExtensions: Set<String> = ["mp4", "mov", "avi", "m4v", "insv", "braw"]
 
-    private func videoCreationDate(at url: URL) -> Date? {
+    nonisolated private static func videoCreationDate(at url: URL) -> Date? {
         guard Self.videoExtensions.contains(url.pathExtension.lowercased()) else { return nil }
         let asset = AVURLAsset(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey: false])
         let items = AVMetadataItem.metadataItems(
@@ -288,7 +320,7 @@ actor MediaScanner {
 
     // MARK: - EXIF date (ImageIO — available on iOS)
 
-    private func exifCaptureDate(at url: URL) -> Date? {
+    nonisolated private static func exifCaptureDate(at url: URL) -> Date? {
         guard let src   = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
         guard let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [String: Any] else { return nil }
 

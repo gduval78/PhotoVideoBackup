@@ -40,13 +40,31 @@ extension AppConstants {
     /// A `mailto:` URL pre-filled with a routable subject and a body carrying the
     /// META block. The user types their question above the block, then sends.
     static func supportMailtoURL() -> URL? {
+        // Blank lines leave room for the user's message above the technical block.
+        mailtoURL(subjectSuffix: nil, body: "\n\n\n" + supportMetaBlock())
+    }
+
+    /// Diagnostic-log variant of the support mail: same routable `[Support:…]` subject and the
+    /// same `SUPPORT-META` block, so the support agent triages a log send exactly like any other
+    /// request. The log is wrapped in delimiters and blank lines are left on top for an optional
+    /// note from the user.
+    static func diagnosticMailtoURL(log: String) -> URL? {
+        let body = "\n\n\n"
+            + "--- DIAGNOSTIC LOG ---\n"
+            + log
+            + "\n--- END LOG ---\n\n"
+            + supportMetaBlock()
+        return mailtoURL(subjectSuffix: "Diagnostic Log", body: body)
+    }
+
+    /// Shared `mailto:` builder: routable subject `[Support:<app>]` (optionally suffixed) + body.
+    private static func mailtoURL(subjectSuffix: String?, body: String) -> URL? {
         var components = URLComponents()
         components.scheme = "mailto"
         components.path   = supportEmail
-        // Blank lines leave room for the user's message above the technical block.
-        let body = "\n\n\n" + supportMetaBlock()
+        let subject = "[Support:\(supportAppName)] " + (subjectSuffix ?? "")
         components.queryItems = [
-            URLQueryItem(name: "subject", value: "[Support:\(supportAppName)] "),
+            URLQueryItem(name: "subject", value: subject),
             URLQueryItem(name: "body",    value: body)
         ]
         return components.url

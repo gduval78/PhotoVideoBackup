@@ -138,4 +138,25 @@ final class DeviceScannerTests: ScenarioTestCase {
         expect(.fileExists("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", on: ssd))
         expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001.SRT", from: ssd))
     }
+
+    // SCENARIO: Deferred capture-date resolution (D) — resolver contract
+    // The scan no longer reads EXIF/AV metadata; the capture date is resolved per-file by the
+    // engine via `MediaScanner.resolveCaptureDate(at:)`. For content without embedded metadata it
+    // returns nil, which is exactly what makes the engine fall back to the modification date — the
+    // behavior every "…/2024-01-14/…" assertion above already depends on. This locks the resolver's
+    // existence (nonisolated static) and its nil contract.
+    func test_resolveCaptureDate_returnsNilForFileWithoutMetadata() throws {
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("capdate_\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let noMetaVideo = dir.appendingPathComponent("clip.MP4")   // .mp4 → tries the AV path
+        let noMetaImage = dir.appendingPathComponent("frame.JPG")  // .jpg → tries the EXIF path
+        try Data(repeating: 0xAB, count: 4096).write(to: noMetaVideo)
+        try Data(repeating: 0xAB, count: 4096).write(to: noMetaImage)
+
+        XCTAssertNil(MediaScanner.resolveCaptureDate(at: noMetaVideo))
+        XCTAssertNil(MediaScanner.resolveCaptureDate(at: noMetaImage))
+    }
 }

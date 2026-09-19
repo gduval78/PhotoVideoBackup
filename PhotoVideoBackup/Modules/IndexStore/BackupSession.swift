@@ -10,6 +10,18 @@ enum SessionStatus: String, Codable, CaseIterable, Sendable {
     case failed
 }
 
+// MARK: - PartialReason
+
+// Why a session ended as `.partial`. All three map to `.partial` status, but the user-facing text
+// must say which one happened — a disconnection is NOT "file limit reached". `none` is the default
+// for completed/failed sessions and for old sessions predating this field (lightweight migration).
+enum PartialReason: String, Codable, CaseIterable, Sendable {
+    case none
+    case fileLimit
+    case disconnected
+    case cancelled
+}
+
 // MARK: - BackupSession
 
 @Model
@@ -24,6 +36,7 @@ final class BackupSession {
     var sourceDisplayName: String = ""
     var folderOrganizationRaw: String = "byDate"
     var destinationDisplayNames: [String] = []
+    var partialReasonRaw: String = PartialReason.none.rawValue
 
     @Relationship(deleteRule: .cascade, inverse: \IndexedFile.session)
     var files: [IndexedFile] = []
@@ -31,6 +44,11 @@ final class BackupSession {
     var status: SessionStatus {
         get { SessionStatus(rawValue: statusRaw) ?? .running }
         set { statusRaw = newValue.rawValue }
+    }
+
+    var partialReason: PartialReason {
+        get { PartialReason(rawValue: partialReasonRaw) ?? .none }
+        set { partialReasonRaw = newValue.rawValue }
     }
 
     init(

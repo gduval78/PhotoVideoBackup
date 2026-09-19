@@ -74,7 +74,7 @@ struct ReportView: View {
                     .font(.caption).foregroundStyle(.red)
             }
             if session.status == .partial {
-                Label("Partial backup — file limit reached. Run again to continue.",
+                Label(partialReasonMessage(session.partialReason),
                       systemImage: "exclamationmark.triangle.fill")
                     .font(.caption).foregroundStyle(.orange)
             }
@@ -139,6 +139,20 @@ struct ReportView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    // Message for a `.partial` session, matching the real cause. A disconnection or a user stop
+    // must not read as "file limit reached". `.none` (old sessions predating the stored reason)
+    // keeps the historical wording.
+    private func partialReasonMessage(_ reason: PartialReason) -> LocalizedStringKey {
+        switch reason {
+        case .disconnected:
+            return "Partial backup — destination disconnected. Reconnect and run again to continue."
+        case .cancelled:
+            return "Partial backup — stopped. Run again to continue."
+        case .fileLimit, .none:
+            return "Partial backup — file limit reached. Run again to continue."
+        }
     }
 
     // MARK: - Per-target summary computation

@@ -66,4 +66,37 @@ final class BackupFromSDCardTests: ScenarioTestCase {
         expect(.copied(2))
         expect(.partial)
     }
+
+    // SCENARIO: The file limit counts only files that actually need copying — skips are free
+    // Non-regression guard for the documented invariant: "The limit applies only to files that
+    // actually need copying (files already at the destination are skipped and do not count
+    // against the limit)." Here 2 of 4 files are already on the SSD; with maxFiles=2 the run must
+    // copy the 2 NEW files and complete normally. If a regression made skipped files consume the
+    // limit budget, the engine would break after the first 2 (skipped) files, copy 0, and wrongly
+    // mark the session .partial — which this test would catch.
+    func test_fileLimit_skippedFilesDoNotCountAgainstLimit() async throws {
+        let files = [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 1024, date: .scenarioDefault),
+            TestFile(name: "DJI_0002.MP4", sizeInBytes: 2048, date: .scenarioDefault),
+            TestFile(name: "DJI_0003.MP4", sizeInBytes: 4096, date: .scenarioDefault),
+            TestFile(name: "DJI_0004.MP4", sizeInBytes: 8192, date: .scenarioDefault),
+        ]
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files)
+        let ssd = ssd(named: "TravelSSD")
+
+        // First run, no limit: all 4 files land on the SSD.
+        await backup(from: sd, to: ssd)
+        expect(.copied(4))
+
+        // Remove 2 files from the SSD so exactly 2 of the 4 need re-copying, then cap at 2.
+        ssd.remove("DJI Mini 3 Pro/2024-01-14/DJI_0003.MP4")
+        ssd.remove("DJI Mini 3 Pro/2024-01-14/DJI_0004.MP4")
+        use(.maxFiles(2))
+
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(2))    // the 2 removed files
+        expect(.skipped(2))   // the 2 still present — must not consume the limit
+        expect(.completed)    // limit of 2 exactly met by real copies → NOT partial
+    }
 }

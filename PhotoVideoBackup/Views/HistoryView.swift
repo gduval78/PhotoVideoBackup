@@ -113,15 +113,9 @@ private struct DiagnosticLogView: View {
     }
 
     private func sendByMail() {
-        let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "?"
-        var components = URLComponents()
-        components.scheme = "mailto"
-        components.path   = AppConstants.supportEmail
-        components.queryItems = [
-            URLQueryItem(name: "subject", value: "PhotoVideoBackup \(version) – Diagnostic Log"),
-            URLQueryItem(name: "body",    value: content)
-        ]
-        if let url = components.url {
+        // Same routable subject + SUPPORT-META block as Contact Support, so a log send is
+        // triaged automatically like any other request (see AppConstants.diagnosticMailtoURL).
+        if let url = AppConstants.diagnosticMailtoURL(log: content) {
             UIApplication.shared.open(url)
         }
     }

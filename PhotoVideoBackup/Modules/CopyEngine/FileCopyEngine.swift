@@ -74,7 +74,12 @@ actor FileCopyEngine {
                     }
 
                     let fileName = file.path.lastPathComponent
-                    let fileDate = file.captureDate ?? file.modificationDate
+                    // Deferred capture-date resolution (D): the scan no longer reads EXIF/AV
+                    // metadata; it happens here, once per file, right before the destination path
+                    // is built. `fileDate` drives the folder (by-date) and the same value is stored
+                    // in the record, so nothing downstream regresses.
+                    let captureDate = file.captureDate ?? MediaScanner.resolveCaptureDate(at: file.path)
+                    let fileDate = captureDate ?? file.modificationDate
                     let rel = FolderOrganization.current.relativePath(
                         deviceName: sourceDevice, date: fileDate, fileName: fileName)
                     let primaryDest = destinations.first?.absolutePath(forRelative: rel) ?? ""
@@ -94,7 +99,7 @@ actor FileCopyEngine {
                         print("[FileCopyEngine] ✓ Already present — skipped: \(fileName)")
                         await record(file: file, device: sourceDevice, session: session,
                                      sha256: "", status: .skipped, verified: nil,
-                                     destPaths: presentPaths, note: nil)
+                                     destPaths: presentPaths, captureDate: captureDate, note: nil)
                         overallDone += file.size
                         continuation.yield(CopyProgress(
                             fileIndex: index, totalFiles: files.count,
@@ -121,7 +126,51 @@ actor FileCopyEngine {
                             print("[FileCopyEngine] ✓ Known by SHA-256 on all dests — skipped: \(fileName)")
                             await record(file: file, device: sourceDevice, session: session,
                                          sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                         destPaths: knownDestPaths, note: nil)
+                                         destPaths: knownDestPaths, captureDate: captureDate, note: nil)
+                            overallDone += file.size
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: files.count,
+                                fileName: fileName,
+                                fileBytesDone: file.size, fileBytesTotal: file.size,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: overallTotal,
+                                phase: .skipped
+                            ))
+                            continue
+                        }
+                    }
+
+                    // ── Same-folder twin check (local targets) ───────────────
+                    // Catch a byte-identical file already in the destination folder under a
+                    // DIFFERENT name, however it got there — this app, an older version, or a
+                    // Finder copy — which the SHA index above cannot know about. Size is the
+                    // free filter; SHA-256 confirms only on a size match. A covered target is
+                    // dropped from the copy set and its twin recorded, which also backfills the
+                    // SHA index so the next run skips it via the cheap index path.
+                    if !precomputedSHA256.isEmpty && !missingTargets.isEmpty {
+                        var stillMissing: [BackupTarget] = []
+                        for target in missingTargets {
+                            if let local = target as? LocalFileTarget {
+                                let destURL = local.destinationURL(forRelative: rel)
+                                if let twin = existingLocalTwinPath(
+                                    inFolder: destURL.deletingLastPathComponent(),
+                                    excludingName: destURL.lastPathComponent,
+                                    size: file.size,
+                                    sourceSHA256: precomputedSHA256
+                                ) {
+                                    print("[FileCopyEngine] ✓ Twin already in folder (\((twin as NSString).lastPathComponent)) — not re-copying: \(fileName)")
+                                    presentPaths.append(twin)
+                                    continue
+                                }
+                            }
+                            stillMissing.append(target)
+                        }
+                        missingTargets = stillMissing
+
+                        if missingTargets.isEmpty {
+                            await record(file: file, device: sourceDevice, session: session,
+                                         sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                         destPaths: presentPaths, captureDate: captureDate, note: nil)
                             overallDone += file.size
                             continuation.yield(CopyProgress(
                                 fileIndex: index, totalFiles: files.count,
@@ -228,7 +277,7 @@ actor FileCopyEngine {
                             : (hardCopyError?.localizedDescription ?? String(localized: "Copy failed."))
                         print("[FileCopyEngine] ❌ Copy failed: \(fileName) — \(note)")
                         await record(file: file, device: sourceDevice, session: session,
-                                     sha256: "", status: .failed, verified: false, destPaths: [], note: note)
+                                     sha256: "", status: .failed, verified: false, destPaths: [], captureDate: captureDate, note: note)
                         // A full disconnection stops the whole backup; a hard per-file error skips the file.
                         if disconnectedThisFile { break }
                         overallDone += file.size
@@ -264,6 +313,7 @@ actor FileCopyEngine {
                         verified: allOK,
                         destPaths: allGoodPaths,
                         copiedPaths: newGoodPaths,   // only targets written this session
+                        captureDate: captureDate,
                         note: allOK ? nil : "SHA-256 mismatch"
                     )
 
@@ -445,6 +495,7 @@ actor FileCopyEngine {
         verified: Bool?,
         destPaths: [String],
         copiedPaths: [String] = [],
+        captureDate: Date?,
         note: String?
     ) async {
         if let note { print("[FileCopyEngine] \(file.path.lastPathComponent): \(note)") }
@@ -461,7 +512,7 @@ actor FileCopyEngine {
                 sourceDevice: device,
                 fileName: file.path.lastPathComponent,
                 fileSize: file.size,
-                captureDate: file.captureDate,
+                captureDate: captureDate,
                 sha256: sha256,
                 copyStatus: status,
                 verificationPassed: verified,

@@ -21,14 +21,17 @@ struct DashboardView: View {
             destinationsSection
             sourcesSection
 
-            if viewModel.isRunning {
-                Section {
-                    SessionProgressView()
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(.init())
-                }
-            } else if let banner = viewModel.completionBanner {
+            if !viewModel.isRunning, let banner = viewModel.completionBanner {
                 completionBannerSection(banner)
+            }
+        }
+        // Pin the in-progress card to the bottom so it is always visible — no scrolling to find
+        // whether a backup started or how far it is. The list scrolls independently above it.
+        .safeAreaInset(edge: .bottom) {
+            if viewModel.isRunning {
+                SessionProgressView()
+                    .padding(.top, 8)
+                    .background(.regularMaterial)
             }
         }
         .navigationTitle("PhotoVideoBackup")

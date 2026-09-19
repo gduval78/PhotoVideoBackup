@@ -26,4 +26,12 @@ final class SimulatedSSD {
             atPath: rootURL.appendingPathComponent(relativePath).path
         )
     }
+
+    // Deletes a file at the given path relative to this SSD root, simulating a
+    // destination that has some — but not all — of the source files already.
+    func remove(_ relativePath: String) {
+        try? FileManager.default.removeItem(
+            at: rootURL.appendingPathComponent(relativePath)
+        )
+    }
 }

@@ -62,8 +62,10 @@ final class IndexStore {
         try context.save()
     }
 
-    func complete(_ session: BackupSession, status: SessionStatus) throws {
+    func complete(_ session: BackupSession, status: SessionStatus,
+                  partialReason: PartialReason = .none) throws {
         session.status = status
+        session.partialReason = partialReason
         session.completedAt = Date()
         try context.save()
     }
