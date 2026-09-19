@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.5.0 · iOS**  
+> **Version 2.5.1 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD.
 
 ---
@@ -252,6 +252,8 @@ For a detailed list of which files failed, open the **History** tab and tap on t
 The **History** tab *(clock icon, centre of the tab bar)* keeps a record of every backup session.
 
 Each row shows the source that was backed up, the destination drive(s), the folder organisation mode, the number of files, and a colour indicator — green for success, orange for partial, red if one or more files failed.
+
+> **What "Partial" means.** A session is orange/*Partial* when it stopped before finishing for one of three reasons, and — as of version 2.5.1 — the report and the completion notification tell you **which** one: you tapped **Stop**, the **file limit** you set was reached, or the **destination disconnected** mid-backup (an SSD unplugged, or a NAS that dropped off Wi-Fi). In the disconnection case just reconnect the drive and run the backup again — the files already copied are skipped, so it picks up where it left off.
 
 Tap any row to open the full report for that session. The report lists every file: its name, size, capture date, and whether it was copied, skipped, or failed.
 
