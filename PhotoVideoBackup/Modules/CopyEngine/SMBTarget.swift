@@ -62,6 +62,11 @@ final class SMBTarget: RemoteBackupTarget, @unchecked Sendable {
         return size
     }
 
+    func listFiles(inRelativeFolder folder: String) async -> [(name: String, size: Int64)]? {
+        guard let entries = try? await list(relativeSubPath: folder) else { return nil }
+        return entries.filter { !$0.isDirectory }.map { ($0.name, $0.size) }
+    }
+
     // MARK: - Verification (full re-download)
 
     func sha256(forRelative rel: String) async throws -> String {

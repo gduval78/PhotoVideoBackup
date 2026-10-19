@@ -87,41 +87,21 @@ final class IndexStore {
         try? context.save()
     }
 
-    /// Returns the captureDate stored in IndexedFile for a given destination path.
-    /// Used by RenameSheet when EXIF/container metadata is unavailable.
-    func captureDate(forDestinationPath path: String) -> Date? {
-        let fileName = (path as NSString).lastPathComponent
-        let descriptor = FetchDescriptor<IndexedFile>(
-            predicate: #Predicate { $0.fileName == fileName }
-        )
-        guard let files = try? context.fetch(descriptor) else { return nil }
-        return files.first(where: { $0.destinationPaths.contains(path) })?.captureDate
-    }
-
-    /// Updates destinationPaths and fileName in IndexedFile after a file rename.
-    func updateDestinationPath(from oldPath: String, to newPath: String) {
-        let fileName = (oldPath as NSString).lastPathComponent
-        let descriptor = FetchDescriptor<IndexedFile>(
-            predicate: #Predicate { $0.fileName == fileName }
-        )
-        guard let files = try? context.fetch(descriptor) else { return }
-        for file in files where file.destinationPaths.contains(oldPath) {
-            file.destinationPaths = file.destinationPaths.map { $0 == oldPath ? newPath : $0 }
-            file.fileName = (newPath as NSString).lastPathComponent
-        }
-        save()
-    }
-
-    /// Returns the known destination paths for a given SHA-256, or empty if unknown.
-    /// The caller must verify that at least one path still exists on disk before skipping —
-    /// this prevents re-skipping files that were deleted from the destination.
+    /// Returns every destination path ever recorded for a given SHA-256 (union across **all**
+    /// records of that content), or empty if unknown.
+    ///
+    /// These are only *candidates* — hints about where a copy may live (e.g. after a rename inside
+    /// the app, or a file moved to another folder). The caller must still verify each one by
+    /// checksum before treating it as a duplicate (`resolveCoverage`). The union matters: the same
+    /// content gets one record per session, each listing a different subset of destinations, so
+    /// reading a single arbitrary record could hide the path that actually covers a target.
     func knownDestinationPaths(forSHA256 hash: String) -> [String] {
         guard !hash.isEmpty else { return [] }
-        var descriptor = FetchDescriptor<IndexedFile>(
+        let descriptor = FetchDescriptor<IndexedFile>(
             predicate: #Predicate { $0.sha256 == hash }
         )
-        descriptor.fetchLimit = 1
-        guard let file = try? context.fetch(descriptor).first else { return [] }
-        return file.destinationPaths
+        guard let files = try? context.fetch(descriptor) else { return [] }
+        var seen = Set<String>()
+        return files.flatMap(\.destinationPaths).filter { seen.insert($0).inserted }
     }
 }

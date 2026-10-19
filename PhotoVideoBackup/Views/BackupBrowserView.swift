@@ -242,7 +242,6 @@ private struct MediaGridView: View {
     @State private var selectedURLs: Set<URL> = []
     @State private var shareItems: [URL] = []
     @State private var showShareSheet  = false
-    @State private var showRenameSheet = false
     @State private var isPreparing     = false
     @State private var playingVideoURL: URL?
     @State private var showPaywall     = false
@@ -325,12 +324,6 @@ private struct MediaGridView: View {
         .sheet(isPresented: $showShareSheet, onDismiss: cleanupTempFiles) {
             ActivityShareSheet(items: shareItems)
         }
-        .sheet(isPresented: $showRenameSheet) {
-            RenameSheet(files: Array(selectedURLs), folder: folder) {
-                cancelSelection()
-                browser.refreshFolder(folder)
-            }
-        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
@@ -368,18 +361,6 @@ private struct MediaGridView: View {
                     }
                     .disabled(gradableSelected.isEmpty || browser.gradingState?.isFinished == false)
                 }
-            }
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    showRenameSheet = true
-                } label: {
-                    if selectedURLs.isEmpty {
-                        Label("Rename", systemImage: "pencil")
-                    } else {
-                        Label("Rename (\(selectedURLs.count))", systemImage: "pencil")
-                    }
-                }
-                .disabled(selectedURLs.isEmpty)
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {

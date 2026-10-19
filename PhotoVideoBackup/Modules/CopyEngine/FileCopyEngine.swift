@@ -80,25 +80,53 @@ actor FileCopyEngine {
                     // in the record, so nothing downstream regresses.
                     let captureDate = file.captureDate ?? MediaScanner.resolveCaptureDate(at: file.path)
                     let fileDate = captureDate ?? file.modificationDate
-                    let rel = FolderOrganization.current.relativePath(
-                        deviceName: sourceDevice, date: fileDate, fileName: fileName)
-                    let primaryDest = destinations.first?.absolutePath(forRelative: rel) ?? ""
+                    // Naming profile (Settings): the file gets its final name as it is first
+                    // written, so the duplicate check below can look it up by that name.
+                    let targetName = NamingProfile.fileName(
+                        original: fileName, captureDate: fileDate, device: sourceDevice)
+                    let baseRel = FolderOrganization.current.relativePath(
+                        deviceName: sourceDevice, date: fileDate, fileName: targetName)
+                    let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
-                    // ── Physical existence check ─────────────────────────────
-                    var presentPaths: [String] = []
-                    var missingTargets: [BackupTarget] = []
-                    for target in destinations {
-                        if let sz = await target.existingSize(forRelative: rel), sz == file.size {
-                            presentPaths.append(target.absolutePath(forRelative: rel))
-                        } else {
-                            missingTargets.append(target)
-                        }
+                    // ── Content check: the SHA-256 alone decides ─────────────
+                    // The source is hashed before anything else, and a file is skipped only if a
+                    // file with the same checksum is already at EVERY destination. The name is
+                    // never evidence — files get renamed at any time — and size is only a
+                    // pre-filter inside `resolveCoverage`. Slow by design: correctness first.
+                    let precomputedSHA256: String
+                    do {
+                        precomputedSHA256 = try await sha256(of: file.path)
+                    } catch {
+                        let note = error.localizedDescription
+                        DiagnosticLog.write("[COPY_ERROR] cannot read source \(fileName): \(note)")
+                        await record(file: file, device: sourceDevice, session: session,
+                                     sha256: "", status: .failed, verified: false,
+                                     destPaths: [], captureDate: captureDate, note: note)
+                        overallDone += file.size
+                        continuation.yield(CopyProgress(
+                            fileIndex: index, totalFiles: files.count, fileName: fileName,
+                            fileBytesDone: file.size, fileBytesTotal: file.size,
+                            currentDestination: primaryDest,
+                            overallBytesDone: overallDone, overallBytesTotal: overallTotal,
+                            phase: .failed(note)))
+                        continue
                     }
 
+                    // Index paths are only hints (a file renamed in-app or moved); each is
+                    // re-verified by checksum inside resolveCoverage.
+                    let knownPaths = await MainActor.run {
+                        IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
+                    }
+                    let coverage = await resolveCoverage(
+                        targets: destinations, relativePath: baseRel,
+                        size: file.size, sha256: precomputedSHA256, knownPaths: knownPaths)
+                    let presentPaths = coverage.coveredPaths
+                    let missingTargets = coverage.missingTargets
+
                     if missingTargets.isEmpty {
-                        print("[FileCopyEngine] ✓ Already present — skipped: \(fileName)")
+                        print("[FileCopyEngine] ✓ Same checksum already at every destination — skipped: \(fileName)")
                         await record(file: file, device: sourceDevice, session: session,
-                                     sha256: "", status: .skipped, verified: nil,
+                                     sha256: precomputedSHA256, status: .skipped, verified: nil,
                                      destPaths: presentPaths, captureDate: captureDate, note: nil)
                         overallDone += file.size
                         continuation.yield(CopyProgress(
@@ -112,84 +140,17 @@ actor FileCopyEngine {
                         continue
                     }
 
-                    // ── SHA-256 deduplication check ──────────────────────────
-                    // Skip only when EVERY destination root has at least one known
-                    // path for this hash that still exists on disk. A file present on
-                    // SSD1 but absent from SSD2 (e.g. its folder was deleted) must
-                    // still be copied to SSD2 — "known on any disk" is not sufficient.
-                    let precomputedSHA256 = (try? await sha256(of: file.path)) ?? ""
-                    if !precomputedSHA256.isEmpty {
-                        let knownPaths = await MainActor.run {
-                            IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
-                        }
-                        if let knownDestPaths = await coveredDestinationPaths(targets: destinations, knownPaths: knownPaths, expectedSize: file.size) {
-                            print("[FileCopyEngine] ✓ Known by SHA-256 on all dests — skipped: \(fileName)")
-                            await record(file: file, device: sourceDevice, session: session,
-                                         sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                         destPaths: knownDestPaths, captureDate: captureDate, note: nil)
-                            overallDone += file.size
-                            continuation.yield(CopyProgress(
-                                fileIndex: index, totalFiles: files.count,
-                                fileName: fileName,
-                                fileBytesDone: file.size, fileBytesTotal: file.size,
-                                currentDestination: primaryDest,
-                                overallBytesDone: overallDone, overallBytesTotal: overallTotal,
-                                phase: .skipped
-                            ))
-                            continue
-                        }
-                    }
-
-                    // ── Same-folder twin check (local targets) ───────────────
-                    // Catch a byte-identical file already in the destination folder under a
-                    // DIFFERENT name, however it got there — this app, an older version, or a
-                    // Finder copy — which the SHA index above cannot know about. Size is the
-                    // free filter; SHA-256 confirms only on a size match. A covered target is
-                    // dropped from the copy set and its twin recorded, which also backfills the
-                    // SHA index so the next run skips it via the cheap index path.
-                    if !precomputedSHA256.isEmpty && !missingTargets.isEmpty {
-                        var stillMissing: [BackupTarget] = []
-                        for target in missingTargets {
-                            if let local = target as? LocalFileTarget {
-                                let destURL = local.destinationURL(forRelative: rel)
-                                if let twin = existingLocalTwinPath(
-                                    inFolder: destURL.deletingLastPathComponent(),
-                                    excludingName: destURL.lastPathComponent,
-                                    size: file.size,
-                                    sourceSHA256: precomputedSHA256
-                                ) {
-                                    print("[FileCopyEngine] ✓ Twin already in folder (\((twin as NSString).lastPathComponent)) — not re-copying: \(fileName)")
-                                    presentPaths.append(twin)
-                                    continue
-                                }
-                            }
-                            stillMissing.append(target)
-                        }
-                        missingTargets = stillMissing
-
-                        if missingTargets.isEmpty {
-                            await record(file: file, device: sourceDevice, session: session,
-                                         sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                         destPaths: presentPaths, captureDate: captureDate, note: nil)
-                            overallDone += file.size
-                            continuation.yield(CopyProgress(
-                                fileIndex: index, totalFiles: files.count,
-                                fileName: fileName,
-                                fileBytesDone: file.size, fileBytesTotal: file.size,
-                                currentDestination: primaryDest,
-                                overallBytesDone: overallDone, overallBytesTotal: overallTotal,
-                                phase: .skipped
-                            ))
-                            continue
-                        }
-                    }
-
                     // Enforce file limit on files that actually need copying
                     if let limit = fileLimit, toCopyCount >= limit {
                         _wasLimited = true
                         break
                     }
                     toCopyCount += 1
+
+                    // The content is genuinely new here. If a file with the expected name already
+                    // exists it is a DIFFERENT file (a same-content one was caught above), so pick
+                    // a free name rather than overwrite it.
+                    let rel = await uniqueRelativePath(baseRel, targets: missingTargets)
 
                     // ── Announce copy start ──────────────────────────────────
                     continuation.yield(CopyProgress(
@@ -510,7 +471,10 @@ actor FileCopyEngine {
                 session: session,
                 sourcePath: file.path.path,
                 sourceDevice: device,
-                fileName: file.path.lastPathComponent,
+                // The destination's own file name (differs from the source name when a naming
+                // profile is on) — `updateDestinationPath` / `captureDate(forDestinationPath:)`
+                // look records up by it.
+                fileName: destPaths.first.map { ($0 as NSString).lastPathComponent } ?? file.path.lastPathComponent,
                 fileSize: file.size,
                 captureDate: captureDate,
                 sha256: sha256,

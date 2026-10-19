@@ -1,20 +1,27 @@
 import XCTest
 @testable import PhotoVideoBackup
 
-// Locks the fix for the reported regression: after an SSD was disconnected mid-backup and
-// reconnected on a later run, files already uploaded to a NAS were re-uploaded. The cause was in the
-// remote-upload dedup decision — the existence check compared the NAS copy against Photos' estimated
-// size, not the real one. That decision now lives in `partitionRemotesByPresence`, tested here
-// against a fake NAS with no Photos and no live SMB share.
+// Locks the content-based remote dedup decision. History: after an SSD was disconnected mid-backup
+// and reconnected, files already on the NAS were re-uploaded because presence was judged by name and
+// (estimated) size. Presence is now judged by checksum — `resolveCoverage` re-downloads and hashes a
+// size-matching candidate — so a file is skipped only when the NAS really holds identical bytes,
+// under whatever name. Tested against a fake NAS: no Photos, no live SMB share.
 @MainActor
 final class RemoteDedupTests: XCTestCase {
 
     private var nas: FakeRemoteTarget!
     private let rel = "DJI Neo 2/2024-01-14/clip.mp4"
+    private let size = 5_000
+    private var sha: String!
 
     override func setUp() async throws {
         try await super.setUp()
         nas = FakeRemoteTarget(name: "TestNAS")
+        // Content of a file filled with 0xCD, the fake NAS's default seed.
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("pvb_ref_\(UUID().uuidString)")
+        try Data(repeating: 0xCD, count: size).write(to: tmp)
+        sha = try sha256OfFile(at: tmp)
+        try? FileManager.default.removeItem(at: tmp)
     }
 
     override func tearDown() async throws {
@@ -23,78 +30,137 @@ final class RemoteDedupTests: XCTestCase {
         try await super.tearDown()
     }
 
-    // SCENARIO: A file already on the NAS at the right size is not re-uploaded
-    // The exact regression: the NAS holds the file (from a prior run); the real size is known after
-    // streaming. partition must classify it as present, leaving nothing to upload.
-    func test_fileAlreadyPresentAtRealSize_isNotReUploaded() async throws {
-        try nas.seed(relativePath: rel, bytes: 5_000_000)
+    // SCENARIO: Identical content at the expected path is covered
+    func test_identicalContent_isCovered() async throws {
+        try nas.seed(relativePath: rel, bytes: size)
 
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [nas], relativePath: rel, expectedSize: 5_000_000)
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
 
-        XCTAssertTrue(needUpload.isEmpty, "a file already on the NAS must not be queued for upload")
-        XCTAssertEqual(present, [nas.absolutePath(forRelative: rel)])
+        XCTAssertTrue(cov.missingTargets.isEmpty)
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: rel)])
     }
 
-    // SCENARIO: A file whose size differs from what the NAS holds is uploaded
-    // If the bytes on the NAS do not match the real size (partial/corrupt/older), the file must be
-    // re-sent — presence is not assumed on filename alone.
-    func test_fileWithDifferentSize_isUploaded() async throws {
-        try nas.seed(relativePath: rel, bytes: 4_000_000)   // stale, wrong size
+    // SCENARIO: Same name and same size but different bytes is NOT covered
+    // The core of the rule: name + size agreeing proves nothing.
+    func test_sameNameSameSizeDifferentContent_isNotCovered() async throws {
+        try nas.seed(relativePath: rel, bytes: size, fill: 0x01)
 
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [nas], relativePath: rel, expectedSize: 5_000_000)
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
 
-        XCTAssertEqual(needUpload.count, 1)
-        XCTAssertTrue(present.isEmpty)
+        XCTAssertEqual(cov.missingTargets.count, 1)
+        XCTAssertTrue(cov.coveredPaths.isEmpty)
     }
 
-    // SCENARIO: A file absent from the NAS is uploaded
-    func test_fileAbsent_isUploaded() async {
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [nas], relativePath: rel, expectedSize: 5_000_000)
+    // SCENARIO: A different size is never covered
+    func test_differentSize_isNotCovered() async throws {
+        try nas.seed(relativePath: rel, bytes: size - 1)
 
-        XCTAssertEqual(needUpload.count, 1)
-        XCTAssertTrue(present.isEmpty)
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
+
+        XCTAssertEqual(cov.missingTargets.count, 1)
     }
 
-    // SCENARIO: An unknown size (0) never suppresses an upload
-    // iCloud assets report size 0 before download. A presence shortcut there could skip a file that
-    // is not actually on the NAS, losing it — so size 0 must always fall through to upload.
-    func test_unknownSize_alwaysUploads() async throws {
-        try nas.seed(relativePath: rel, bytes: 5_000_000)   // even though it is present
-
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [nas], relativePath: rel, expectedSize: 0)
-
-        XCTAssertEqual(needUpload.count, 1, "size 0 means 'unconfirmed' — must not be treated as present")
-        XCTAssertTrue(present.isEmpty)
+    // SCENARIO: A file absent from the NAS is missing
+    func test_fileAbsent_isMissing() async {
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
+        XCTAssertEqual(cov.missingTargets.count, 1)
     }
 
-    // SCENARIO: End-to-end through uploadToRemotes — a present file costs no transfer
-    // Beyond the pure decision: drive the fake NAS through an actual upload attempt and assert the
-    // transfer counter stays at zero, proving no bandwidth was spent.
-    func test_uploadToRemotes_skipsTransferWhenPresent() async throws {
-        try nas.seed(relativePath: rel, bytes: 5_000_000)
-        let (needUpload, _) = await partitionRemotesByPresence(
-            [nas], relativePath: rel, expectedSize: 5_000_000)
+    // SCENARIO: A ledger hit covers a retouched file on the NAS without re-reading it
+    // The index records that this exact path was written for this source content. The file has since
+    // been edited (other size, other bytes) — it is still "already there".
+    func test_ledgerHit_coversEditedFile() async throws {
+        try nas.seed(relativePath: rel, bytes: size + 2812, fill: 0x09)   // edited after the backup
 
-        XCTAssertEqual(nas.uploadCount, 0)
-        XCTAssertTrue(needUpload.isEmpty)
+        let cov = await resolveCoverage(
+            targets: [nas], relativePath: rel, size: Int64(size), sha256: sha,
+            knownPaths: [nas.absolutePath(forRelative: rel)])
+
+        XCTAssertTrue(cov.missingTargets.isEmpty)
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: rel)])
     }
 
-    // SCENARIO: Mixed targets — one present, one missing
-    // With two NAS targets where only one already holds the file, exactly the missing one is queued.
-    func test_mixedTargets_onlyMissingOneUploads() async throws {
+    // SCENARIO: The name chain finds a `-1` twin by checksum when the index knows nothing
+    // An older version left `clip-1.mp4` next to a different `clip.mp4`; same content as the source.
+    func test_nameChain_findsSuffixedTwinByChecksum() async throws {
+        try nas.seed(relativePath: rel, bytes: size, fill: 0x01)                              // different file
+        try nas.seed(relativePath: "DJI Neo 2/2024-01-14/clip-1.mp4", bytes: size)            // same content
+
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
+
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: "DJI Neo 2/2024-01-14/clip-1.mp4")])
+    }
+
+    // SCENARIO: A file renamed on the NAS OUTSIDE the app is found by listing the folder
+    // The field bug: a clip renamed in Finder/exiftool is unknown to the index, so it was uploaded
+    // again next to its renamed twin. The destination folder is listed and every same-size file is
+    // hashed — no index hint needed.
+    func test_renamedOutsideTheApp_isFoundByFolderListing() async throws {
+        try nas.seed(relativePath: "DJI Neo 2/2024-01-14/2024-01-14 12H01M32 renamed.mp4", bytes: size)
+        try nas.seed(relativePath: "DJI Neo 2/2024-01-14/unrelated.mp4", bytes: size, fill: 0x05)   // same size, other content
+
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
+
+        XCTAssertTrue(cov.missingTargets.isEmpty)
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: "DJI Neo 2/2024-01-14/2024-01-14 12H01M32 renamed.mp4")])
+    }
+
+    // SCENARIO: A file renamed on the NAS is found through the index hint, then verified by checksum
+    func test_renamedOnNAS_isFoundViaIndexHint() async throws {
+        let renamed = "DJI Neo 2/2024-01-14/holiday.mp4"
+        try nas.seed(relativePath: renamed, bytes: size)
+
+        let cov = await resolveCoverage(
+            targets: [nas], relativePath: rel, size: Int64(size), sha256: sha,
+            knownPaths: [nas.absolutePath(forRelative: renamed)])
+
+        XCTAssertTrue(cov.missingTargets.isEmpty)
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: renamed)])
+    }
+
+    // SCENARIO: An index hint pointing at different bytes is rejected
+    // The index is never trusted on its own: a known path whose content changed does not cover.
+    func test_staleIndexHint_isRejected() async throws {
+        let moved = "DJI Neo 2/2024-01-14/other.mp4"
+        try nas.seed(relativePath: moved, bytes: size, fill: 0x07)
+
+        let cov = await resolveCoverage(
+            targets: [nas], relativePath: rel, size: Int64(size), sha256: sha,
+            knownPaths: [nas.absolutePath(forRelative: moved)])
+
+        XCTAssertEqual(cov.missingTargets.count, 1)
+    }
+
+    // SCENARIO: An empty checksum never covers anything
+    // A file we could not hash must never be skipped.
+    func test_emptyChecksum_coversNothing() async throws {
+        try nas.seed(relativePath: rel, bytes: size)
+
+        let cov = await resolveCoverage(targets: [nas], relativePath: rel, size: Int64(size), sha256: "", knownPaths: [])
+
+        XCTAssertEqual(cov.missingTargets.count, 1)
+    }
+
+    // SCENARIO: Mixed targets — one holds the content, one does not
+    func test_mixedTargets_onlyMissingOneIsReported() async throws {
         let nas2 = FakeRemoteTarget(name: "TestNAS2")
         defer { nas2.cleanup() }
-        try nas.seed(relativePath: rel, bytes: 5_000_000)   // present on nas, absent on nas2
+        try nas.seed(relativePath: rel, bytes: size)   // present on nas, absent on nas2
 
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [nas, nas2], relativePath: rel, expectedSize: 5_000_000)
+        let cov = await resolveCoverage(targets: [nas, nas2], relativePath: rel, size: Int64(size), sha256: sha, knownPaths: [])
 
-        XCTAssertEqual(needUpload.count, 1)
-        XCTAssertEqual(needUpload.first?.displayName, "TestNAS2")
-        XCTAssertEqual(present, [nas.absolutePath(forRelative: rel)])
+        XCTAssertEqual(cov.missingTargets.count, 1)
+        XCTAssertEqual(cov.missingTargets.first?.displayName, "TestNAS2")
+        XCTAssertEqual(cov.coveredPaths, [nas.absolutePath(forRelative: rel)])
+    }
+
+    // SCENARIO: A taken name yields a free one, so a different file is never overwritten
+    func test_uniqueRelativePath_avoidsTakenNames() async throws {
+        try nas.seed(relativePath: rel, bytes: size, fill: 0x01)
+        try nas.seed(relativePath: "DJI Neo 2/2024-01-14/clip-1.mp4", bytes: 10)
+
+        let free = await uniqueRelativePath(rel, targets: [nas])
+
+        XCTAssertEqual(free, "DJI Neo 2/2024-01-14/clip-2.mp4")
     }
 }

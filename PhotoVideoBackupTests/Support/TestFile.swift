@@ -6,10 +6,13 @@ struct TestFile {
     let name:        String
     let sizeInBytes: Int
     let date:        Date
+    /// Byte every position is filled with. Two files of the same size but different `fill` are
+    /// distinct content — what a checksum-based dedup test needs.
+    var fill:        UInt8 = 0xAB
 
     func write(to folder: URL) throws {
         let url  = folder.appendingPathComponent(name)
-        let data = Data(repeating: 0xAB, count: sizeInBytes)
+        let data = Data(repeating: fill, count: sizeInBytes)
         try data.write(to: url)
         try FileManager.default.setAttributes(
             [.modificationDate: date],

@@ -31,7 +31,8 @@ class ScenarioTestCase: XCTestCase {
         // Start each scenario with a clean IndexStore.
         try? IndexStore.shared.clearHistory()
         // Reset backup-relevant UserDefaults keys so settings don't bleed between scenarios.
-        for key in ["folderOrganization", "backupFileLimit", "customExtensions"] {
+        for key in ["folderOrganization", "backupFileLimit", "customExtensions",
+                    NamingProfile.enabledKey, NamingProfile.patternKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
     }

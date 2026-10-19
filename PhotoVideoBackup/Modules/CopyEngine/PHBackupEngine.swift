@@ -129,36 +129,74 @@ actor PHBackupEngine {
                         DiagnosticLog.write("[PROGRESS] \(index)/\(items.count) copied=\(_copiedCount) skipped=\(_skippedCount) failed=\(_failedCount) \(DiagnosticLog.memoryTag) current=\"\(item.fileName)\"")
                     }
 
-                    let rel = FolderOrganization.current.relativePath(
-                        deviceName: deviceName,
-                        date: item.creationDate ?? item.modificationDate,
-                        fileName: item.fileName)
-                    let primaryDest = destinations.first?.absolutePath(forRelative: rel) ?? ""
+                    // Naming profile (Settings): the asset gets its final name as it is first
+                    // written, so the duplicate check below can look it up by that name.
+                    let assetDate  = item.creationDate ?? item.modificationDate
+                    let targetName = NamingProfile.fileName(
+                        original: item.fileName, captureDate: assetDate, device: deviceName)
+                    let baseRel = FolderOrganization.current.relativePath(
+                        deviceName: deviceName, date: assetDate, fileName: targetName)
+                    let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
-                    // ── Physical existence check ─────────────────────────────
-                    // Accept if our estimated size is 0 (iCloud not downloaded) or it matches exactly.
-                    var presentPaths: [String] = []
-                    var missingTargets: [BackupTarget] = []
-                    for target in destinations {
-                        if let sz = await target.existingSize(forRelative: rel),
-                           item.fileSize == 0 || sz == item.fileSize {
-                            presentPaths.append(target.absolutePath(forRelative: rel))
-                        } else {
-                            missingTargets.append(target)
+                    // ── Content check: the SHA-256 alone decides ─────────────
+                    // The asset is hashed BEFORE anything is written (a read-only pass over the
+                    // Photos data, nothing staged on the device), and it is skipped only if a file
+                    // with the same checksum is already at EVERY destination. The name is never
+                    // evidence — files get renamed at any time — and Photos' size is only an
+                    // estimate, so the real byte count comes from this pass. Slow by design.
+                    var actualSize: Int64
+                    var precomputedSHA256: String
+                    do {
+                        let hashed = try await hashAsset(item: item) { bytesHashed in
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                fileBytesDone: bytesHashed, fileBytesTotal: item.fileSize,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                phase: .exporting))
                         }
-                    }
-
-                    if missingTargets.isEmpty {
-                        print("[PHBackupEngine] ✓ Already present — skipped: \(item.fileName)")
-                        await record(item: item, actualSize: item.fileSize, session: session,
+                        actualSize = hashed.bytes
+                        precomputedSHA256 = hashed.sha256
+                    } catch {
+                        print("[PHBackupEngine] ❌ Hash pass failed: \(item.fileName) — \(error)")
+                        DiagnosticLog.write("[COPY_ERROR] hash \(item.fileName): \(error.localizedDescription)")
+                        await record(item: item, actualSize: 0, session: session,
                                      deviceName: deviceName,
-                                     sha256: "", status: .skipped, verified: nil,
-                                     destPaths: presentPaths, note: nil)
+                                     sha256: "", status: .failed, verified: false,
+                                     destPaths: [], note: error.localizedDescription)
                         overallDone += item.fileSize
                         continuation.yield(CopyProgress(
                             fileIndex: index, totalFiles: items.count,
                             fileName: item.fileName,
-                            fileBytesDone: item.fileSize, fileBytesTotal: item.fileSize,
+                            fileBytesDone: 0, fileBytesTotal: item.fileSize,
+                            currentDestination: primaryDest,
+                            overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                            phase: .failed(error.localizedDescription)))
+                        continue
+                    }
+
+                    // Index paths are only hints (renamed in-app, or moved); each is re-verified by
+                    // checksum inside resolveCoverage.
+                    let knownPaths = await MainActor.run {
+                        IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
+                    }
+                    let coverage = await resolveCoverage(
+                        targets: destinations, relativePath: baseRel,
+                        size: actualSize, sha256: precomputedSHA256, knownPaths: knownPaths)
+                    let presentPaths = coverage.coveredPaths
+                    let missingTargets = coverage.missingTargets
+
+                    if missingTargets.isEmpty {
+                        print("[PHBackupEngine] ✓ Same checksum already at every destination — skipped: \(item.fileName)")
+                        await record(item: item, actualSize: actualSize, session: session,
+                                     deviceName: deviceName,
+                                     sha256: precomputedSHA256, status: .skipped, verified: nil,
+                                     destPaths: presentPaths, note: nil)
+                        overallDone += actualSize
+                        continuation.yield(CopyProgress(
+                            fileIndex: index, totalFiles: items.count,
+                            fileName: item.fileName,
+                            fileBytesDone: actualSize, fileBytesTotal: actualSize,
                             currentDestination: primaryDest,
                             overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
                             phase: .skipped
@@ -173,6 +211,11 @@ actor PHBackupEngine {
                     }
                     toCopyCount += 1
 
+                    // The content is genuinely new here. A file already holding the expected name is
+                    // therefore a DIFFERENT file (a same-content one was caught above): take a free
+                    // name instead of overwriting it.
+                    let rel = await uniqueRelativePath(baseRel, targets: missingTargets)
+
                     // ── Choose the export path ──────────────────────────────
                     // Whenever there is a local destination we stream the asset straight to it and
                     // no full copy ever touches the device volume. An SMB upload still needs a
@@ -183,8 +226,6 @@ actor PHBackupEngine {
                     let localURLs     = localTargets.map { $0.destinationURL(forRelative: rel) }
                     let canStream     = !localTargets.isEmpty
 
-                    var actualSize           = item.fileSize
-                    var precomputedSHA256    = ""
                     var writtenTargets: [BackupTarget] = []
                     var disconnectedThisFile = false
                     var hardCopyError: Error? = nil
@@ -239,53 +280,6 @@ actor PHBackupEngine {
                             hardCopyError = error
                         }
 
-                        // ── SHA-256 deduplication, after the fact ───────────────
-                        // Streaming only reveals the hash once the bytes have flowed, so the check
-                        // that the staging path runs *before* copying happens here *after*. If this
-                        // content already sits at every destination under a different name, delete
-                        // what we just wrote — this is what preserves dedup of renamed files.
-                        if !precomputedSHA256.isEmpty && !writtenTargets.isEmpty {
-                            let knownPaths = await MainActor.run {
-                                IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
-                            }
-                            // Exclude the files we just created, or they would count as covering themselves.
-                            let justWritten = Set(streamedURLs.map(\.path))
-                            var priorPaths  = knownPaths.filter { !justWritten.contains($0) }
-                            // Also catch a byte-identical twin already in the folder that the index
-                            // never knew (older app version, Finder copy). Size filters first; SHA-256
-                            // confirms. Excluding the just-written file keeps it from covering itself.
-                            for local in localTargets {
-                                let destURL = local.destinationURL(forRelative: rel)
-                                if let twin = existingLocalTwinPath(
-                                    inFolder: destURL.deletingLastPathComponent(),
-                                    excludingName: destURL.lastPathComponent,
-                                    size: actualSize,
-                                    sourceSHA256: precomputedSHA256
-                                ) {
-                                    priorPaths.append(twin)
-                                }
-                            }
-                            if let knownDestPaths = await coveredDestinationPaths(
-                                targets: destinations, knownPaths: priorPaths, expectedSize: actualSize) {
-                                for url in streamedURLs { try? FileManager.default.removeItem(at: url) }
-                                print("[PHBackupEngine] ✓ Known by SHA-256 on all dests — skipped: \(item.fileName)")
-                                await record(item: item, actualSize: actualSize, session: session,
-                                             deviceName: deviceName,
-                                             sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                             destPaths: knownDestPaths, note: nil)
-                                overallDone += actualSize
-                                continuation.yield(CopyProgress(
-                                    fileIndex: index, totalFiles: items.count,
-                                    fileName: item.fileName,
-                                    fileBytesDone: actualSize, fileBytesTotal: actualSize,
-                                    currentDestination: primaryDest,
-                                    overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                                    phase: .skipped
-                                ))
-                                continue
-                            }
-                        }
-
                         // ── Remote uploads, sourced from the copy we just wrote ──
                         // Reading from the external volume means no staging copy on the device.
                         // Running after the dedup check also means a renamed duplicate never costs
@@ -294,7 +288,7 @@ actor PHBackupEngine {
                             if let uploadSource = streamedURLs.first {
                                 let result = await uploadToRemotes(
                                     remoteTargets, from: uploadSource, relativePath: rel,
-                                    fileName: item.fileName, expectedSize: actualSize
+                                    fileName: item.fileName
                                 ) { bytesRead, destination in
                                     continuation.yield(CopyProgress(
                                         fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -304,8 +298,7 @@ actor PHBackupEngine {
                                         phase: .copying))
                                 }
                                 writtenTargets += result.written
-                                presentPaths += result.alreadyPresent
-                                hardCopyError = hardCopyError ?? result.failure
+                                        hardCopyError = hardCopyError ?? result.failure
                                 if result.disconnected > 0 { disconnectedThisFile = true }
                             } else {
                                 // Every local destination died mid-copy, so there is nothing to
@@ -314,14 +307,11 @@ actor PHBackupEngine {
                                 do {
                                     let temp = try await exportToTemp(item: item)
                                     defer { try? FileManager.default.removeItem(at: temp) }
-                                    if precomputedSHA256.isEmpty {
-                                        precomputedSHA256 = (try? await sha256(of: temp)) ?? ""
-                                    }
                                     let realSize = (try? temp.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? actualSize
                                     actualSize = realSize
                                     let result = await uploadToRemotes(
                                         remoteTargets, from: temp, relativePath: rel,
-                                        fileName: item.fileName, expectedSize: realSize
+                                        fileName: item.fileName
                                     ) { bytesRead, destination in
                                         continuation.yield(CopyProgress(
                                             fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -331,8 +321,7 @@ actor PHBackupEngine {
                                             phase: .copying))
                                     }
                                     writtenTargets += result.written
-                                    presentPaths += result.alreadyPresent
-                                    hardCopyError = hardCopyError ?? result.failure
+                                                hardCopyError = hardCopyError ?? result.failure
                                     if result.disconnected > 0 { disconnectedThisFile = true }
                                 } catch {
                                     DiagnosticLog.write("[COPY_ERROR] staging fallback for \(item.fileName): \(error.localizedDescription)")
@@ -395,40 +384,11 @@ actor PHBackupEngine {
                             forKeys: [.fileSizeKey]
                         ).fileSize).map(Int64.init) ?? item.fileSize
 
-                        // ── SHA-256 deduplication check ──────────────────────────
-                        // Skip only when EVERY destination root has at least one known
-                        // path for this hash that still exists on disk. A file present on
-                        // SSD1 but absent from SSD2 (e.g. its folder was deleted) must
-                        // still be copied to SSD2 — "known on any disk" is not sufficient.
-                        precomputedSHA256 = (try? await sha256(of: tempURL)) ?? ""
-                        if !precomputedSHA256.isEmpty {
-                            let knownPaths = await MainActor.run {
-                                IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
-                            }
-                            if let knownDestPaths = await coveredDestinationPaths(targets: destinations, knownPaths: knownPaths, expectedSize: actualSize) {
-                                print("[PHBackupEngine] ✓ Known by SHA-256 on all dests — skipped: \(item.fileName)")
-                                await record(item: item, actualSize: actualSize, session: session,
-                                             deviceName: deviceName,
-                                             sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                             destPaths: knownDestPaths, note: nil)
-                                overallDone += actualSize
-                                continuation.yield(CopyProgress(
-                                    fileIndex: index, totalFiles: items.count,
-                                    fileName: item.fileName,
-                                    fileBytesDone: actualSize, fileBytesTotal: actualSize,
-                                    currentDestination: primaryDest,
-                                    overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                                    phase: .skipped
-                                ))
-                                continue
-                            }
-                        }
-
                         // Remote uploads. This branch is NAS-only — a session with any local
                         // destination streams instead — so there is no local fan-out to do here.
                         let result = await uploadToRemotes(
                             remoteTargets, from: tempURL, relativePath: rel,
-                            fileName: item.fileName, expectedSize: actualSize
+                            fileName: item.fileName
                         ) { bytesRead, destination in
                             continuation.yield(CopyProgress(
                                 fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -438,28 +398,8 @@ actor PHBackupEngine {
                                 phase: .copying))
                         }
                         writtenTargets += result.written
-                        presentPaths += result.alreadyPresent
                         hardCopyError = hardCopyError ?? result.failure
                         if result.disconnected > 0 { disconnectedThisFile = true }
-                    }
-
-                    // Nothing needed writing because every target that looked missing turned out to
-                    // already hold the file once we re-checked against the real size. That is a skip,
-                    // not a failure.
-                    if writtenTargets.isEmpty && !disconnectedThisFile && hardCopyError == nil && !presentPaths.isEmpty {
-                        print("[PHBackupEngine] ✓ Already present (real-size re-check) — skipped: \(item.fileName)")
-                        await record(item: item, actualSize: actualSize, session: session,
-                                     deviceName: deviceName,
-                                     sha256: precomputedSHA256, status: .skipped, verified: nil,
-                                     destPaths: presentPaths, note: nil)
-                        overallDone += actualSize
-                        continuation.yield(CopyProgress(
-                            fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                            fileBytesDone: actualSize, fileBytesTotal: actualSize,
-                            currentDestination: primaryDest,
-                            overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                            phase: .skipped))
-                        continue
                     }
 
                     // Nothing was written to any destination.
@@ -879,6 +819,56 @@ actor PHBackupEngine {
                             disconnected: allDisconnected)
     }
 
+    /// Read-only pass over an asset's data: SHA-256 and true byte count, nothing written anywhere.
+    ///
+    /// Runs before every copy decision so the checksum — not the name, and not Photos' estimated
+    /// size — is what decides whether the asset must be copied. `requestData` paces itself on the
+    /// handler returning, so the footprint stays at one chunk whatever the file size.
+    private func hashAsset(
+        item: PHMediaItem,
+        onProgress: @escaping @Sendable (Int64) -> Void
+    ) async throws -> (sha256: String, bytes: Int64) {
+        let resource = try assetResource(for: item)
+        let sink = HashSink()
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = true   // allows iCloud download if needed
+
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            PHAssetResourceManager.default().requestData(
+                for: resource,
+                options: options,
+                dataReceivedHandler: { data in
+                    onProgress(sink.add(Data(data)))
+                },
+                completionHandler: { error in
+                    if let error { cont.resume(throwing: error) } else { cont.resume() }
+                })
+        }
+        return sink.finish()
+    }
+
+    /// Accumulates a running SHA-256 over chunks delivered serially by Photos.
+    private final class HashSink: @unchecked Sendable {
+        private let lock = NSLock()
+        private var hasher = SHA256()
+        private var bytes: Int64 = 0
+
+        /// Folds one chunk in and returns the byte total so far.
+        func add(_ chunk: Data) -> Int64 {
+            lock.withLock {
+                hasher.update(data: chunk)
+                bytes += Int64(chunk.count)
+                return bytes
+            }
+        }
+
+        func finish() -> (sha256: String, bytes: Int64) {
+            lock.withLock {
+                (hasher.finalize().map { String(format: "%02x", $0) }.joined(), bytes)
+            }
+        }
+    }
+
     /// Uploads one file to every remote target, reading from `localFile`.
     ///
     /// AMSMB2 exposes no incremental upload: `write(stream:)` drains its source into a single
@@ -891,23 +881,15 @@ actor PHBackupEngine {
         from localFile: URL,
         relativePath rel: String,
         fileName: String,
-        expectedSize: Int64,
         onProgress: @escaping @Sendable (Int64, String) -> Void
-    ) async -> (written: [BackupTarget], alreadyPresent: [String], failure: Error?, disconnected: Int) {
+    ) async -> (written: [BackupTarget], failure: Error?, disconnected: Int) {
         var written: [BackupTarget] = []
         var failure: Error?
         var disconnected = 0
 
-        // Re-check against the real (post-stream) size before spending bandwidth: the existence
-        // check that flagged these targets as missing used Photos' estimated size. See
-        // partitionRemotesByPresence.
-        let (needUpload, alreadyPresent) = await partitionRemotesByPresence(
-            remotes, relativePath: rel, expectedSize: expectedSize)
-        for path in alreadyPresent {
-            DiagnosticLog.write("[DEDUP] \(fileName) already present at \(path) at correct size — not re-uploaded")
-        }
-
-        for remote in needUpload {
+        // No presence shortcut here: the caller already compared checksums (`resolveCoverage`) and
+        // chose a free name (`uniqueRelativePath`), so every remote passed in genuinely needs this.
+        for remote in remotes {
             do {
                 try await remote.upload(localFile: localFile, toRelative: rel) { bytesRead in
                     onProgress(bytesRead, remote.absolutePath(forRelative: rel))
@@ -924,7 +906,7 @@ actor PHBackupEngine {
                 }
             }
         }
-        return (written, alreadyPresent, failure, disconnected)
+        return (written, failure, disconnected)
     }
 
     /// Resolves the best exportable resource for an item — shared by the staging and streamed paths.
@@ -1025,7 +1007,9 @@ actor PHBackupEngine {
                 session: session,
                 sourcePath: "photos-library://\(item.localIdentifier)",
                 sourceDevice: deviceName,
-                fileName: item.fileName,
+                // The destination's own file name (differs from the asset name when a naming
+                // profile is on) — see FileCopyEngine.record.
+                fileName: destPaths.first.map { ($0 as NSString).lastPathComponent } ?? item.fileName,
                 fileSize: actualSize,
                 captureDate: item.creationDate,
                 sha256: sha256,

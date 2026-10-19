@@ -1,6 +1,6 @@
 # PhotoVideoBackup — User Guide
 
-> **Version 2.5.1 · iOS**  
+> **Version 2.6.0 · iOS**  
 > A simple, reliable way to back up your photos and videos to an external SSD — or to a NAS over Wi-Fi.
 
 ---
@@ -349,43 +349,25 @@ The app copies the selected files to a temporary folder and opens the standard i
 
 Tap **Cancel** in the toolbar to exit selection mode without sharing.
 
-### Batch rename files
+### File names — renaming happens during the backup
 
-You can rename a group of files at once using a pattern with date tokens, an index counter, and the original filename.
+The app no longer has a separate "rename" step in the Browse tab. Instead, you set a **naming profile** once, and every file is given its final name **as it is first copied** to the destination — it is never stored under its camera name and renamed afterwards.
 
-1. Tap **Select** in the top-right corner of the media grid.
-2. Tap individual files, or tap **Select All** to select everything in the folder.
-
-![Browse — all files selected, Select All / Deselect All toolbar, Rename and Share buttons](images/browse_selection_all.png)
-
-3. Tap **Rename (N)** in the toolbar.
-
-The rename sheet opens with a pattern editor.
-
-![Browse — rename sheet with pattern tokens, index width picker, and live preview](images/browse_rename_sheet.png)
-
-**Available tokens:**
+Go to **Settings → Backup → File naming**, turn on **Rename files during backup**, and edit the pattern. Tap a token to insert it; anything else is literal text.
 
 | Token | Replaced by |
 |-------|-------------|
-| `{YYYY}` | Capture year — e.g. `2026` |
-| `{MM}` | Capture month — e.g. `06` |
-| `{DD}` | Capture day — e.g. `02` |
-| `{hh}` | Capture hour — e.g. `10` |
-| `{mm}` | Capture minute — e.g. `34` |
-| `{ss}` | Capture second — e.g. `28` |
-| `{index}` | Sequential number (width selectable: 2, 3, or 4 digits) |
-| `{original}` | Original filename without extension |
+| `{YYYY}` `{MM}` `{DD}` | Year, month, day of capture |
+| `{hh}` `{mm}` `{ss}` | Hour, minute, second of capture (local time) |
+| `{device}` | The device folder name, without spaces |
+| `{original}` | The original file name, without its extension |
 
-Anything typed between tokens is treated as literal text. Tap a token chip to insert it at the cursor.
+An **Example** line shows what a file will look like. The file extension is always kept.
 
-The **Index width** picker controls zero-padding: `2` → `01`, `3` → `001`, `4` → `0001`.
-
-The **Preview** section shows how the first three filenames will look before you confirm. Tap **Rename** to apply.
-
-> Dates are taken from the file's capture date (EXIF for photos, video container metadata for videos) — not the filesystem date.
-
-> If a target filename already exists, the app appends `_2`, `_3`… automatically to avoid conflicts.
+- **Nothing is ever overwritten.** If the name is already used by a *different* file, the new file is saved with a `-1`, `-2`… suffix. Include the seconds (or `{original}`) in your pattern so two shots taken together keep distinct names.
+- **Duplicates are recognised by that name.** On the next backup, the app looks for the file under the name the pattern gives it. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since (for example with an external metadata tool). If the name is taken but the app has no record of it, the contents are compared instead.
+- **Existing files are not renamed.** The profile applies to files copied from now on; files already on your drive keep their names.
+- With the profile off (the default), files keep their original names.
 
 ### LUT Grade — apply a look to LOG footage
 
@@ -507,7 +489,7 @@ A timeout almost always means the NAS isn't reachable on the network, not an app
 Yes. Every connected destination — SSD 1, SSD 2, and the NAS — receives the backup simultaneously.
 
 **Q: Will it copy the same file twice if I run it again?**  
-No. The app checks whether each file is already on the SSD before copying. Files that are already there are skipped. Running the backup a second time is fast and safe. As of version 2.5.0, it also detects a **byte-identical file already in the destination folder under a different name** — and skips it — even if that file was put there by something other than the app (for example an earlier copy made in the Finder). So a folder never ends up with two copies of the same clip.
+No. Each file is given a name at the destination (its own name, or the one from your **File naming** profile), and the next backup looks for it under that name. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since. If the name is taken but the app has no record of it (for example a copy made in the Finder, or the history was cleared), the app compares the SHA-256 fingerprints of the contents instead. A different file that happens to use the same name is never overwritten: the new one is saved with a `-1`, `-2`… suffix. If you rename or move files yourself, outside the app, the app can still recognise them by content — but that check reads the files, so it is slower, and it cannot match a file you have modified.
 
 **Q: My SD card appears as "Documents" — is that normal?**  
 Yes, some cameras store footage in a generic folder. When you add the source, simply type a meaningful name (like "Blackmagic" or "GoPro") in the naming dialog so you can recognise it easily.
@@ -546,7 +528,7 @@ Note that this frees the space taken by the *copies*. Your original photos are s
 Yes. When choosing a destination folder in Settings, you can navigate to iCloud Drive and select a folder there. The app will copy your files into iCloud Drive exactly as it would to a physical SSD.
 
 **Q: Is the incremental backup still reliable when the destination is iCloud Drive?**  
-Yes. The app checks whether a file is already present by reading its metadata (name and size) at the destination. iOS exposes this metadata for iCloud Drive files even when their content has been offloaded to save space, so the skip logic works correctly regardless of whether the files are locally stored or cloud-only.
+Yes. The app looks for each file under the name it was given at the destination, and checks its own records of what was copied. When it has to compare contents instead (for a file it has no record of), it reads the file, which downloads it again if iCloud had offloaded it to save space — so that check can be slow and use data, but it stays correct.
 
 **Q: Can I use the app to back up an SSD to iCloud Drive?**  
 Yes. Any folder you can open with the iOS file browser can be used as a source — including a folder on an external SSD. Select the SSD folder as your source and an iCloud Drive folder as your destination, and the app will copy only the files that are not already there.

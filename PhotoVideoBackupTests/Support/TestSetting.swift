@@ -7,6 +7,8 @@ enum TestSetting {
     case folderOrganization(FolderOrganization)
     case maxFiles(Int)
     case additionalExtensions([String])
+    /// Turns the backup naming profile on with this pattern.
+    case namingProfile(String)
 
     func apply() {
         switch self {
@@ -16,6 +18,9 @@ enum TestSetting {
             UserDefaults.standard.set(n, forKey: "backupFileLimit")
         case .additionalExtensions(let exts):
             UserDefaults.standard.set(exts.joined(separator: ","), forKey: "customExtensions")
+        case .namingProfile(let pattern):
+            UserDefaults.standard.set(true,    forKey: NamingProfile.enabledKey)
+            UserDefaults.standard.set(pattern, forKey: NamingProfile.patternKey)
         }
     }
 }

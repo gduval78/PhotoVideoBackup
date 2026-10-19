@@ -4,7 +4,7 @@ import XCTest
 // Locks the fix for the reported field bug: a folder ended up with two byte-identical files under
 // different names (`Insta360LunaUltra.mp4` and `Insta360LunaUltra-1.mp4`). The SHA-index cascade
 // only knows files this app streamed itself, so a twin left by an older version or a Finder copy was
-// invisible and got re-copied. `existingLocalTwinPath` closes that gap by reading the real folder:
+// invisible and got re-copied. `existingLocalDuplicatePath` closes that gap by reading the real folder:
 // size is the free filter, SHA-256 the confirmation. Pure function — no engine, no Photos, no SMB.
 final class TwinDedupTests: XCTestCase {
 
@@ -38,7 +38,7 @@ final class TwinDedupTests: XCTestCase {
         let existing = try makeFile("Insta360LunaUltra.mp4", bytes: 4096)
         let sha = try sha256OfFile(at: existing)
 
-        let twin = existingLocalTwinPath(
+        let twin = existingLocalDuplicatePath(
             inFolder: folder,
             excludingName: "Insta360LunaUltra-1.mp4",
             size: 4096,
@@ -56,7 +56,7 @@ final class TwinDedupTests: XCTestCase {
         let sha = try sha256OfFile(at: incoming)
         try FileManager.default.removeItem(at: incoming)   // not yet written to the folder
 
-        let twin = existingLocalTwinPath(
+        let twin = existingLocalDuplicatePath(
             inFolder: folder,
             excludingName: "incoming.mp4",
             size: 4096,
@@ -72,7 +72,7 @@ final class TwinDedupTests: XCTestCase {
         let self0 = try makeFile("clip.mp4", bytes: 2048)
         let sha = try sha256OfFile(at: self0)
 
-        let twin = existingLocalTwinPath(
+        let twin = existingLocalDuplicatePath(
             inFolder: folder,
             excludingName: "clip.mp4",
             size: 2048,
@@ -86,7 +86,7 @@ final class TwinDedupTests: XCTestCase {
         try makeFile("a.mp4", bytes: 1000, fill: 0x01)
         try makeFile("b.mp4", bytes: 2000, fill: 0x02)
 
-        let twin = existingLocalTwinPath(
+        let twin = existingLocalDuplicatePath(
             inFolder: folder,
             excludingName: "c.mp4",
             size: 3000,
@@ -102,9 +102,9 @@ final class TwinDedupTests: XCTestCase {
         let existing = try makeFile("x.mp4", bytes: 4096)
         let sha = try sha256OfFile(at: existing)
 
-        XCTAssertNil(existingLocalTwinPath(
+        XCTAssertNil(existingLocalDuplicatePath(
             inFolder: folder, excludingName: "y.mp4", size: 4096, sourceSHA256: ""))
-        XCTAssertNil(existingLocalTwinPath(
+        XCTAssertNil(existingLocalDuplicatePath(
             inFolder: folder, excludingName: "y.mp4", size: 0, sourceSHA256: sha))
     }
 }

@@ -1,31 +1,20 @@
 import Foundation
-import AVFoundation
-import ImageIO
 
 // MARK: - RenamePattern
 
+/// Expands a naming pattern (`{YYYY}-{MM}-{DD} {hh}H{mm}M{ss} {device}`…) into a file name.
+/// Used only by `NamingProfile`, which applies it as a file is first written to the destination.
 struct RenamePattern: Equatable {
     var raw: String
-    var indexWidth: Int = 3
 
-    static let tokens: [(label: String, token: String)] = [
-        ("YYYY", "{YYYY}"),
-        ("MM",   "{MM}"),
-        ("DD",   "{DD}"),
-        ("hh",   "{hh}"),
-        ("mm",   "{mm}"),
-        ("ss",   "{ss}"),
-        ("#",    "{index}"),
-        ("name", "{original}"),
-    ]
-
-    func filename(original: String, captureDate: Date?, index: Int) -> String {
+    /// Tokens: `{YYYY} {MM} {DD} {hh} {mm} {ss}` (capture date, local time) and `{original}`
+    /// (source name without extension). A nil date leaves the date tokens as `????`.
+    func filename(original: String, captureDate: Date?) -> String {
         let nsStr = original as NSString
         let ext   = nsStr.pathExtension
         let stem  = nsStr.deletingPathExtension
 
         var result = raw
-
         if let date = captureDate {
             var cal = Calendar(identifier: .gregorian)
             cal.timeZone = .current
@@ -37,63 +26,63 @@ struct RenamePattern: Equatable {
             result = result.replacingOccurrences(of: "{mm}",   with: String(format: "%02d", c.minute ?? 0))
             result = result.replacingOccurrences(of: "{ss}",   with: String(format: "%02d", c.second ?? 0))
         } else {
-            for (_, token) in Self.tokens where token.contains("Y") || token.contains("M") ||
-                                               token.contains("D") || token.contains("h") ||
-                                               token.contains("m") || token.contains("s") {
+            for token in ["{YYYY}", "{MM}", "{DD}", "{hh}", "{mm}", "{ss}"] {
                 result = result.replacingOccurrences(of: token, with: "????")
             }
         }
-
-        result = result.replacingOccurrences(of: "{index}",
-                                             with: String(format: "%0\(indexWidth)d", index + 1))
         result = result.replacingOccurrences(of: "{original}", with: stem)
-
         return result + (ext.isEmpty ? "" : "." + ext)
     }
+}
 
-    // MARK: - Capture date extraction (EXIF → video container → nil)
+// MARK: - NamingProfile (rename applied at backup time)
 
-    static func captureDate(at url: URL) -> Date? {
-        if let d = exifDate(at: url) { return d }
-        return videoContainerDate(at: url)
+/// The file-name profile applied **as a file is first written** to the destination, so it carries
+/// its final name from the start and the duplicate check can look it up by that deterministic name
+/// (see `resolveCoverage`). Off by default: the file then keeps its source name.
+///
+/// Tokens are `RenamePattern`'s, plus `{device}` (the source/device folder name with spaces
+/// removed). There is no `{index}`: a counter is not stable from one backup to the next, and a
+/// name must be reproducible so a later backup finds the same file again.
+/// Read synchronously from `UserDefaults`, like `FolderOrganization.current`, so both engines (and
+/// tests) share one source of truth.
+enum NamingProfile {
+    static let enabledKey = "namingProfileEnabled"
+    static let patternKey = "namingProfilePattern"
+    static let defaultPattern = "{YYYY}-{MM}-{DD} {hh}H{mm}M{ss} {device}"
+
+    /// Tokens offered by the Settings editor (no `{index}`).
+    static let tokens: [String] = [
+        "{YYYY}", "{MM}", "{DD}", "{hh}", "{mm}", "{ss}", "{device}", "{original}",
+    ]
+
+    static var isEnabled: Bool { UserDefaults.standard.bool(forKey: enabledKey) }
+
+    static var pattern: String {
+        UserDefaults.standard.string(forKey: patternKey) ?? defaultPattern
     }
 
-    private static func exifDate(at url: URL) -> Date? {
-        guard let src   = CGImageSourceCreateWithURL(url as CFURL, nil),
-              let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [String: Any]
-        else { return nil }
-        let exif = props[kCGImagePropertyExifDictionary as String] as? [String: Any]
-        let tiff = props[kCGImagePropertyTIFFDictionary as String] as? [String: Any]
-        guard let raw = exif?[kCGImagePropertyExifDateTimeOriginal as String] as? String
-                     ?? tiff?[kCGImagePropertyTIFFDateTime as String] as? String
-        else { return nil }
-        let fmt = DateFormatter()
-        fmt.locale     = Locale(identifier: "en_US_POSIX")
-        fmt.dateFormat = "yyyy:MM:dd HH:mm:ss"
-        return fmt.date(from: raw)
-    }
+    /// Final file name for a file being backed up. Returns `original` unchanged when the profile is
+    /// off, the pattern is blank, or it would produce an empty name.
+    static func fileName(original: String, captureDate: Date?, device: String,
+                         enabled: Bool = isEnabled, pattern: String = pattern) -> String {
+        guard enabled, !pattern.trimmingCharacters(in: .whitespaces).isEmpty else { return original }
 
-    private static let videoExts: Set<String> = ["mp4", "mov", "avi", "m4v", "insv", "braw"]
+        let deviceToken = device.filter { !$0.isWhitespace }
+        let raw = pattern
+            .replacingOccurrences(of: "{index}", with: "")
+            .replacingOccurrences(of: "{device}", with: deviceToken)
 
-    private static func videoContainerDate(at url: URL) -> Date? {
-        guard videoExts.contains(url.pathExtension.lowercased()) else { return nil }
-        let asset = AVURLAsset(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey: false])
-        let items = AVMetadataItem.metadataItems(from: asset.commonMetadata,
-                                                  withKey: AVMetadataKey.commonKeyCreationDate,
-                                                  keySpace: .common)
-        guard let item = items.first else { return nil }
-        if let d = item.dateValue { return d }
-        if let str = item.stringValue {
-            let iso = ISO8601DateFormatter()
-            iso.formatOptions = [.withInternetDateTime]
-            if let d = iso.date(from: str) { return d }
-            iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            if let d = iso.date(from: str) { return d }
-            let fmt = DateFormatter()
-            fmt.locale = Locale(identifier: "en_US_POSIX")
-            fmt.dateFormat = "yyyy:MM:dd HH:mm:ss"
-            return fmt.date(from: str)
-        }
-        return nil
+        let name = RenamePattern(raw: raw).filename(original: original, captureDate: captureDate)
+        // A name is a single path component: never let a token smuggle in a separator.
+        let cleaned = name
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: ":", with: "-")
+            .trimmingCharacters(in: .whitespaces)
+
+        let ext  = (original as NSString).pathExtension
+        let stem = (cleaned as NSString).deletingPathExtension
+        guard !stem.isEmpty, cleaned != "." + ext else { return original }
+        return cleaned
     }
 }

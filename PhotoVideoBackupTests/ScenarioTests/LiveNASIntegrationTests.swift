@@ -83,11 +83,12 @@ final class LiveNASIntegrationTests: XCTestCase {
         let remoteSHA = try await target.sha256(forRelative: rel)
         XCTAssertEqual(remoteSHA, localSHA, "SHA-256 mismatch after upload — content did not survive")
 
-        // 4. The regression: with the file already present at the real size, the dedup decision must
-        //    NOT queue it for re-upload.
-        let (needUpload, present) = await partitionRemotesByPresence(
-            [target], relativePath: rel, expectedSize: Int64(payload.count))
-        XCTAssertTrue(needUpload.isEmpty, "a file already on the NAS at the right size must not be re-uploaded")
-        XCTAssertEqual(present, [target.absolutePath(forRelative: rel)])
+        // 4. Dedup is by checksum: the file now on the NAS must be recognised as already covered,
+        //    so it is not re-uploaded.
+        let cov = await resolveCoverage(
+            targets: [target], relativePath: rel,
+            size: Int64(payload.count), sha256: localSHA, knownPaths: [])
+        XCTAssertTrue(cov.missingTargets.isEmpty, "a file already on the NAS with the same checksum must not be re-uploaded")
+        XCTAssertEqual(cov.coveredPaths, [target.absolutePath(forRelative: rel)])
     }
 }
