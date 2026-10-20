@@ -144,6 +144,11 @@ actor FileCopyEngine {
                         if !(await hashSource()) { continue }
                         coverage = await coverageFor(precomputedSHA256)
                     }
+                    if !coverage.stalePaths.isEmpty {
+                        // Listed in the index but gone from the destination: stop carrying them.
+                        let stale = coverage.stalePaths
+                        await MainActor.run { IndexStore.shared.forgetPaths(stale) }
+                    }
                     let presentPaths = coverage.coveredPaths
                     let missingTargets = coverage.missingTargets
 

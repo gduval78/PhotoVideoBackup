@@ -105,6 +105,29 @@ final class RemoteDedupTests: XCTestCase {
         XCTAssertEqual(cov.coveredPaths, [abs1])
     }
 
+    // SCENARIO: A ledger entry whose file is gone is reported stale
+    // The index still lists a path the destination no longer has (the file was deleted): the caller is
+    // told to forget it.
+    func test_ledgerEntryForDeletedFile_isReportedStale() async {
+        let abs = nas.absolutePath(forRelative: rel)   // nothing seeded: the file is gone
+
+        let cov = await coverage(adoptUnknown: true, ledger: [abs: [sha]])
+
+        XCTAssertEqual(cov.missingTargets.count, 1)
+        XCTAssertEqual(cov.stalePaths, [abs])
+    }
+
+    // SCENARIO: An unreachable destination never makes the ledger look stale
+    // A disconnected NAS/drive shows every file as absent; that must not be mistaken for deletion.
+    func test_unreachableDestination_neverReportsStale() async {
+        nas.reachable = false
+        let abs = nas.absolutePath(forRelative: rel)
+
+        let cov = await coverage(adoptUnknown: true, ledger: [abs: [sha]])
+
+        XCTAssertTrue(cov.stalePaths.isEmpty)
+    }
+
     // SCENARIO: An empty checksum never covers anything
     func test_emptyChecksum_coversNothing() async throws {
         try nas.seed(relativePath: rel, bytes: size)

@@ -356,6 +356,30 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
             device: "Dev", name: "a.mp4", size: 10, modified: Date(timeIntervalSince1970: 1_700_000_000)))
     }
 
+    // SCENARIO: A ledger entry for a deleted file is pruned from the index and from the sidecar
+    // The destination file is deleted, then a DIFFERENT source takes the same name. The old entry
+    // (path, old hash) is detected as stale when that name turns out to be free, forgotten, and the
+    // sidecar ends up with only the new source for that path.
+    func test_deletedFile_isPrunedFromIndexAndSidecar() async throws {
+        let ssd = ssd(named: "TravelSSD")
+        let first = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault, fill: 0x11)])
+        await backup(from: first, to: ssd)
+        ssd.remove("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4")
+
+        let second = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048,
+                     date: Date.scenarioDefault.addingTimeInterval(600), fill: 0x22)])
+        await backup(from: second, to: ssd)
+        expect(.copied(1))
+
+        let file = try JSONDecoder().decode(SidecarFile.self, from: Data(contentsOf: sidecarURL(ssd)))
+        XCTAssertEqual(file.entries.count, 1, "the entry of the deleted file must be gone")
+        XCTAssertEqual(file.entries.first?.p, "DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4")
+        let path = ssd.rootURL.appendingPathComponent("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4").path
+        XCTAssertEqual(IndexStore.shared.sourceHashes(writtenAt: path).count, 1)
+    }
+
     // SCENARIO: Naming profile off or blank keeps the original name
     func test_namingProfile_offOrBlank_keepsOriginalName() {
         XCTAssertEqual(NamingProfile.fileName(original: "IMG_1.dng", captureDate: .scenarioDefault, device: "X",

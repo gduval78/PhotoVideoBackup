@@ -106,7 +106,7 @@ final class IndexStore {
         )
         guard let files = try? context.fetch(descriptor) else { return [] }
         return files
-            .filter { $0.destinationPaths.contains(path) && !$0.sha256.isEmpty }
+            .filter { $0.destinationPaths.contains(path) && !$0.gonePaths.contains(path) && !$0.sha256.isEmpty }
             .map(\.sha256)
     }
 
@@ -136,6 +136,25 @@ final class IndexStore {
         return hit.map { KnownSource(sha256: $0.sha256, fileSize: $0.fileSize) }
     }
 
+    /// Forgets destination paths found to no longer exist, so the ledger and the sidecar stop
+    /// carrying them. A record only ever loaded from a sidecar (no session) is deleted once none of
+    /// its paths is left; a real session record keeps `destinationPaths` untouched (its report must
+    /// still say where the file went) and just marks the path as gone.
+    func forgetPaths(_ paths: [String]) {
+        for path in Set(paths) {
+            let name = (path as NSString).lastPathComponent
+            let descriptor = FetchDescriptor<IndexedFile>(predicate: #Predicate { $0.fileName == name })
+            guard let files = try? context.fetch(descriptor) else { continue }
+            for file in files where file.destinationPaths.contains(path) && !file.gonePaths.contains(path) {
+                file.gonePaths.append(path)
+                if file.session == nil, file.destinationPaths.allSatisfy({ file.gonePaths.contains($0) }) {
+                    context.delete(file)
+                }
+            }
+        }
+        save()
+    }
+
     // MARK: - Sidecar index (stored with the backup)
 
     /// Entries the index holds for `target`, in the portable form written to its sidecar file:
@@ -148,7 +167,7 @@ final class IndexStore {
         var seen = Set<String>()
         var entries: [SidecarEntry] = []
         for file in files where (file.copyStatus == .copied || file.copyStatus == .skipped) && !file.sha256.isEmpty {
-            for path in file.destinationPaths where path.hasPrefix(prefix) {
+            for path in file.destinationPaths where path.hasPrefix(prefix) && !file.gonePaths.contains(path) {
                 let rel = String(path.dropFirst(prefix.count))
                 guard seen.insert(rel + "|" + file.sha256).inserted else { continue }
                 entries.append(SidecarEntry(
@@ -169,7 +188,9 @@ final class IndexStore {
         let existing = (try? context.fetch(descriptor)) ?? []
         var known = Set<String>()
         for file in existing where !file.sha256.isEmpty {
-            for path in file.destinationPaths { known.insert(path + "|" + file.sha256) }
+            for path in file.destinationPaths where !file.gonePaths.contains(path) {
+                known.insert(path + "|" + file.sha256)
+            }
         }
         var added = 0
         for e in entries {

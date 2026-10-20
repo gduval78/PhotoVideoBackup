@@ -39,6 +39,9 @@ final class IndexedFile {
     var sourceName: String = ""
     var sourceSize: Int64 = -1
     var sourceModified: Date? = nil
+    /// Subset of `destinationPaths` found to no longer exist at the destination. Kept out of the
+    /// ledger and the sidecar, but left in `destinationPaths` so past session reports stay accurate.
+    var gonePaths: [String] = []
 
     var copyStatus: CopyStatus {
         get { CopyStatus(rawValue: copyStatusRaw) ?? .pending }

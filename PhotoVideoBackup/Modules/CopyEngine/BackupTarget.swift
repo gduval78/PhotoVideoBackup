@@ -84,6 +84,9 @@ struct TargetCoverage {
     var coveredPaths: [String] = []
     /// Targets that do not hold this source and still need a copy.
     var missingTargets: [BackupTarget] = []
+    /// Ledger paths found while resolving that no longer exist at a reachable destination — the file
+    /// was deleted. The caller drops them from the index.
+    var stalePaths: [String] = []
 }
 
 /// Decides, per target, whether this source is already there, by walking the name chain
@@ -113,8 +116,10 @@ func resolveCoverage(
 ) async -> TargetCoverage {
     var result = TargetCoverage()
     for target in targets {
-        if let path = await coveringPath(for: target, rel: rel, size: size, sha256: sha256,
-                                         adoptUnknown: adoptUnknown, ledger: ledger) {
+        let found = await coveringPath(for: target, rel: rel, size: size, sha256: sha256,
+                                       adoptUnknown: adoptUnknown, ledger: ledger)
+        result.stalePaths += found.stale
+        if let path = found.path {
             result.coveredPaths.append(path)
         } else {
             result.missingTargets.append(target)
@@ -126,22 +131,30 @@ func resolveCoverage(
 private func coveringPath(
     for target: BackupTarget, rel: String, size: Int64, sha256: String,
     adoptUnknown: Bool, ledger: (String) async -> [String]
-) async -> String? {
-    guard !sha256.isEmpty else { return nil }
+) async -> (path: String?, stale: [String]) {
+    guard !sha256.isEmpty else { return (nil, []) }
     var n = 0
     while n < 1000 {
         let candidate = relativePath(rel, withCollisionIndex: n)
-        guard await target.existingSize(forRelative: candidate) != nil else { return nil }
         let abs = target.absolutePath(forRelative: candidate)
+        guard await target.existingSize(forRelative: candidate) != nil else {
+            // A free name. If the index still lists something there, the file was deleted — but only
+            // call it stale when the destination is reachable, or an unplugged drive would empty the
+            // whole ledger.
+            let recorded = await ledger(abs)
+            guard !recorded.isEmpty else { return (nil, []) }
+            let reachable = await target.isReachable()
+            return (nil, reachable ? [abs] : [])
+        }
         let recorded = await ledger(abs)
-        if recorded.contains(sha256) { return abs }              // written for this source
+        if recorded.contains(sha256) { return (abs, []) }        // written for this source
         if recorded.isEmpty {                                    // unknown to the index
-            if adoptUnknown { return abs }
-            if await holdsSameContent(target, relative: candidate, size: size, sha256: sha256) { return abs }
+            if adoptUnknown { return (abs, []) }
+            if await holdsSameContent(target, relative: candidate, size: size, sha256: sha256) { return (abs, []) }
         }
         n += 1                                                   // a different media: next name
     }
-    return nil
+    return (nil, [])
 }
 
 /// True when the file at `rel` has the given size AND SHA-256 (local re-read / remote re-download).
