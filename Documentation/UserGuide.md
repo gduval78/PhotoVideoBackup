@@ -401,6 +401,9 @@ A timeout almost always means the NAS isn't reachable on the network, not an app
 **Q: Will it copy the same file twice if I run it again?**  
 No. Each file is given a name at the destination (its own name, or the one from your **File naming** profile), and the next backup looks for it under that name. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since. With the naming profile on, a file you already placed under the profile's name is recognised and recorded without being compared. The `-1`, `-2`… suffix only appears for genuinely different photos or videos that share a name (taken in the same second), and nothing is ever overwritten. If you rename or move files yourself to a name other than the profile's, the app can no longer recognise them and will copy the original again.
 
+**Q: Where does the app remember what it has already backed up?**  
+In two places. The app keeps its own database on the device, and it also writes a small **hidden file, `.pvb-index.json`, at the root of each destination** (your SSD or NAS folder). That second copy travels with the backup: if you reinstall the app, or back up from another iPhone or Mac, the app reads it and knows what is already there, so it does not copy again. The file is a few hundred kilobytes for thousands of files. You can leave it alone; if you delete it, the app simply rebuilds it (the next backup is slower while it re-learns what is there).
+
 **Q: My SD card appears as "Documents" — is that normal?**  
 Yes, some cameras store footage in a generic folder. When you add the source, simply type a meaningful name (like "Blackmagic" or "GoPro") in the naming dialog so you can recognise it easily.
 

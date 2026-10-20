@@ -29,6 +29,11 @@ protocol BackupTarget: Sendable {
     func sha256(forRelative rel: String) async throws -> String
     /// Whether the target is currently reachable (volume mounted / share connected).
     func isReachable() async -> Bool
+    /// Contents of a small control file at `rel` under the target root (the sidecar index), or nil
+    /// when it does not exist or cannot be read.
+    func readSmallFile(atRelative rel: String) async -> Data?
+    /// Writes (replaces) a small control file at `rel` under the target root.
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws
 }
 
 /// A remote target that receives files via network upload (implemented by `SMBTarget`).
@@ -221,5 +226,15 @@ struct LocalFileTarget: BackupTarget {
 
     func isReachable() async -> Bool {
         (try? root.resourceValues(forKeys: [.volumeTotalCapacityKey]))?.volumeTotalCapacity ?? 0 > 0
+    }
+
+    func readSmallFile(atRelative rel: String) async -> Data? {
+        try? Data(contentsOf: destinationURL(forRelative: rel))
+    }
+
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws {
+        let url = destinationURL(forRelative: rel)
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try data.write(to: url, options: .atomic)
     }
 }

@@ -102,6 +102,10 @@ actor PHBackupEngine {
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
 
+                // The index kept with the backup: learn what other devices (or a lost history)
+                // already put there before looking anything up.
+                await DestinationIndex.load(targets: destinations)
+
                 var overallDone: Int64 = 0
                 var toCopyCount = 0
 
@@ -122,6 +126,7 @@ actor PHBackupEngine {
                     // Periodic batch flush to reduce memory pressure
                     if index > 0 && index % Self.batchFlushInterval == 0 {
                         await MainActor.run { IndexStore.shared.save() }
+                        await DestinationIndex.flush(targets: destinations)
                         try? await Task.sleep(nanoseconds: 10_000_000)
                     }
                     // Diagnostic checkpoint every 50 files
@@ -526,6 +531,7 @@ actor PHBackupEngine {
                 }
 
                 await MainActor.run { IndexStore.shared.save() }
+                await DestinationIndex.flush(targets: destinations)
                 print("[PHBackupEngine] Session complete.")
                 continuation.finish()
             }

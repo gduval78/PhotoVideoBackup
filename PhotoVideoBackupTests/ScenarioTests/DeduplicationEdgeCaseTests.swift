@@ -44,7 +44,8 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
 
         let destPath = ssd.rootURL.appendingPathComponent("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4")
         try Data(repeating: 0x00, count: 100).write(to: destPath)
-        try IndexStore.shared.clearHistory()   // the index no longer knows this file
+        try IndexStore.shared.clearHistory()   // the local index no longer knows this file…
+        try FileManager.default.removeItem(at: sidecarURL(ssd))   // …nor does the one kept with the backup
 
         let sd2 = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files)
         await backup(from: sd2, to: ssd)
@@ -241,6 +242,118 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
         await backup(from: sd, to: ssd)
         expect(.copied(0))
         expect(.skipped(1))
+    }
+
+    // MARK: - Index stored with the backup (sidecar)
+
+    private func sidecarURL(_ ssd: SimulatedSSD) -> URL {
+        ssd.rootURL.appendingPathComponent(DestinationIndex.relativeName)
+    }
+
+    // SCENARIO: The backup carries its own index — a hidden file at the destination root
+    // After a backup, `.pvb-index.json` sits at the root with one entry per file, paths relative to
+    // the root (so it means the same on any device, whatever the mount path).
+    func test_sidecar_isWrittenAtDestinationRoot() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault),
+            TestFile(name: "DJI_0002.JPG", sizeInBytes: 512,  date: .scenarioDefault, fill: 0x22)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+
+        let data = try Data(contentsOf: sidecarURL(ssd))
+        let file = try JSONDecoder().decode(SidecarFile.self, from: data)
+        XCTAssertEqual(file.version, DestinationIndex.currentVersion)
+        XCTAssertEqual(file.entries.map(\.p).sorted(), [
+            "DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", "DJI Mini 3 Pro/2024-01-14/DJI_0002.JPG"])
+        XCTAssertTrue(file.entries.allSatisfy { !$0.h.isEmpty && !$0.n.isEmpty })
+        XCTAssertTrue(DestinationIndex.relativeName.hasPrefix("."), "the sidecar is a hidden file")
+    }
+
+    // SCENARIO: Another device (or a lost history) finds the ledger in the backup
+    // The local index is wiped, as on a second Mac/iPhone. The retouched destination file is still
+    // recognised through the sidecar — without it, the profile being off, the changed bytes would make
+    // it a different file and the source would be copied again as `-1`.
+    func test_sidecar_restoresLedgerOnAnotherDevice() async throws {
+        let files = [TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)]
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files)
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+
+        let dest = ssd.rootURL.appendingPathComponent("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4")
+        try Data(repeating: 0x00, count: 100).write(to: dest)      // retouched after the backup
+        try IndexStore.shared.clearHistory()                       // "another device"
+
+        await backup(from: sd, to: ssd)
+        expect(.copied(0))
+        expect(.skipped(1))
+        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001-1.MP4", from: ssd))
+    }
+
+    // SCENARIO: Fast recognition also works from the sidecar (the source is not re-read)
+    // Same proof as the in-app case: the source content is swapped (same size and date) after the
+    // local history is wiped; the file is still skipped because the sidecar supplies the hash.
+    func test_sidecar_enablesFastRecognitionOnAnotherDevice() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+        try IndexStore.shared.clearHistory()
+
+        try Data(repeating: 0x55, count: 2048).write(to: sourceURL(sd))
+        try FileManager.default.setAttributes([.modificationDate: Date.scenarioDefault],
+                                              ofItemAtPath: sourceURL(sd).path)
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(0))
+        expect(.skipped(1))
+    }
+
+    // SCENARIO: A damaged sidecar never breaks a backup and is replaced by a valid one
+    func test_corruptSidecar_isIgnoredAndRewritten() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        try Data("not json".utf8).write(to: sidecarURL(ssd))
+
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(1))
+        let file = try JSONDecoder().decode(SidecarFile.self, from: Data(contentsOf: sidecarURL(ssd)))
+        XCTAssertEqual(file.entries.count, 1)
+    }
+
+    // SCENARIO: A sidecar written by a newer app version is never overwritten
+    func test_newerSidecarVersion_isLeftUntouched() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        let future = Data(#"{"version":99,"entries":[]}"#.utf8)
+        try future.write(to: sidecarURL(ssd))
+
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(1))
+        XCTAssertEqual(try Data(contentsOf: sidecarURL(ssd)), future)
+    }
+
+    // SCENARIO: The sidecar works over a remote (SMB-like) target too
+    func test_sidecar_roundTripsThroughARemoteTarget() async throws {
+        let nas = FakeRemoteTarget(name: "TestNAS")
+        defer { nas.cleanup() }
+        let abs = nas.absolutePath(forRelative: "Dev/2024-01-14/a.mp4")
+        await MainActor.run {
+            IndexStore.shared.context.insert(IndexedFile(
+                sourcePath: "x", sourceDevice: "Dev", fileName: "a.mp4", fileSize: 10, sha256: "abc",
+                copyStatus: .copied, destinationPaths: [abs], sourceName: "a.mp4", sourceSize: 10,
+                sourceModified: Date(timeIntervalSince1970: 1_700_000_000)))
+        }
+        await DestinationIndex.flush(targets: [nas])
+        try IndexStore.shared.clearHistory()
+        await DestinationIndex.load(targets: [nas])
+
+        XCTAssertEqual(IndexStore.shared.sourceHashes(writtenAt: abs), ["abc"])
+        XCTAssertNotNil(IndexStore.shared.knownSource(
+            device: "Dev", name: "a.mp4", size: 10, modified: Date(timeIntervalSince1970: 1_700_000_000)))
     }
 
     // SCENARIO: Naming profile off or blank keeps the original name

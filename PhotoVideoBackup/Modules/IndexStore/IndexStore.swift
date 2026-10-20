@@ -135,4 +135,128 @@ final class IndexStore {
         }
         return hit.map { KnownSource(sha256: $0.sha256, fileSize: $0.fileSize) }
     }
+
+    // MARK: - Sidecar index (stored with the backup)
+
+    /// Entries the index holds for `target`, in the portable form written to its sidecar file:
+    /// paths relative to the target root, one entry per (path, source hash). Only records that ended
+    /// `copied` or `skipped` with a hash count.
+    func sidecarEntries(for target: BackupTarget) -> [SidecarEntry] {
+        let descriptor = FetchDescriptor<IndexedFile>()
+        guard let files = try? context.fetch(descriptor) else { return [] }
+        let prefix = target.rootIdentifier.hasSuffix("/") ? target.rootIdentifier : target.rootIdentifier + "/"
+        var seen = Set<String>()
+        var entries: [SidecarEntry] = []
+        for file in files where (file.copyStatus == .copied || file.copyStatus == .skipped) && !file.sha256.isEmpty {
+            for path in file.destinationPaths where path.hasPrefix(prefix) {
+                let rel = String(path.dropFirst(prefix.count))
+                guard seen.insert(rel + "|" + file.sha256).inserted else { continue }
+                entries.append(SidecarEntry(
+                    p: rel, h: file.sha256, n: file.sourceName, d: file.sourceDevice,
+                    s: file.sourceSize, m: file.sourceModified?.timeIntervalSince1970 ?? 0, z: file.fileSize))
+            }
+        }
+        return entries.sorted { ($0.p, $0.h) < ($1.p, $1.h) }
+    }
+
+    /// Merges a target's sidecar entries into the local index, skipping what it already holds, so the
+    /// ledger (`sourceHashes(writtenAt:)`) and fast recognition (`knownSource`) work for backups made
+    /// from another device, or after the local history was lost. Returns how many records were added.
+    @discardableResult
+    func mergeSidecar(_ entries: [SidecarEntry], target: BackupTarget) -> Int {
+        guard !entries.isEmpty else { return 0 }
+        let descriptor = FetchDescriptor<IndexedFile>()
+        let existing = (try? context.fetch(descriptor)) ?? []
+        var known = Set<String>()
+        for file in existing where !file.sha256.isEmpty {
+            for path in file.destinationPaths { known.insert(path + "|" + file.sha256) }
+        }
+        var added = 0
+        for e in entries {
+            let abs = target.absolutePath(forRelative: e.p)
+            guard known.insert(abs + "|" + e.h).inserted else { continue }
+            context.insert(IndexedFile(
+                session: nil,
+                sourcePath: "sidecar://" + e.p,
+                sourceDevice: e.d,
+                fileName: (e.p as NSString).lastPathComponent,
+                fileSize: e.z,
+                sha256: e.h,
+                copyStatus: .skipped,
+                destinationPaths: [abs],
+                sourceName: e.n,
+                sourceSize: e.s,
+                sourceModified: e.m > 0 ? Date(timeIntervalSince1970: e.m) : nil))
+            added += 1
+        }
+        if added > 0 { save() }
+        return added
+    }
+}
+
+// MARK: - SidecarEntry / DestinationIndex
+
+/// One line of the sidecar index: a path inside the backup and the source it was written for.
+struct SidecarEntry: Codable, Equatable, Sendable {
+    var p: String   // destination path, relative to the target root
+    var h: String   // SHA-256 of the SOURCE written (or adopted) there
+    var n: String   // source original name (Photos: local identifier) — fast-recognition key
+    var d: String   // source device
+    var s: Int64    // source size — fast-recognition key
+    var m: Double   // source modification date, seconds since 1970 (0 = unknown)
+    var z: Int64    // true size in bytes
+}
+
+struct SidecarFile: Codable {
+    var version: Int
+    var entries: [SidecarEntry]
+}
+
+/// The index kept **with the backup**: a hidden `.pvb-index.json` at each destination's root. The
+/// app's own database stays the working copy; this file makes the ledger independent of the device —
+/// another iPhone/Mac, a reinstall or a lost history all find what was already backed up.
+///
+/// Best effort by design: a missing, unreadable or unwritable sidecar is logged and never fails or
+/// slows a backup beyond the transfer of one small file.
+enum DestinationIndex {
+    static let relativeName = ".pvb-index.json"
+    static let currentVersion = 1
+
+    /// Roots whose sidecar was written by a newer app version: read-only, so it is never overwritten.
+    @MainActor private static var readOnlyRoots = Set<String>()
+
+    /// Merges every target's sidecar into the local index. Call before looking anything up.
+    static func load(targets: [BackupTarget]) async {
+        for target in targets {
+            guard let data = await target.readSmallFile(atRelative: relativeName) else { continue }
+            guard let file = try? JSONDecoder().decode(SidecarFile.self, from: data) else {
+                DiagnosticLog.write("[INDEX] unreadable sidecar on \(target.displayName) — ignored, will be rewritten")
+                continue
+            }
+            if file.version > currentVersion {
+                DiagnosticLog.write("[INDEX] sidecar on \(target.displayName) is version \(file.version) — left untouched")
+                await MainActor.run { _ = readOnlyRoots.insert(target.rootIdentifier) }
+                continue
+            }
+            let added = await MainActor.run { IndexStore.shared.mergeSidecar(file.entries, target: target) }
+            DiagnosticLog.write("[INDEX] \(target.displayName): \(file.entries.count) entries, \(added) new to this device")
+        }
+    }
+
+    /// Writes every target's sidecar from the local index. Call at the end of a run (and at batch
+    /// points, so a killed app loses little).
+    static func flush(targets: [BackupTarget]) async {
+        for target in targets {
+            let locked = await MainActor.run { readOnlyRoots.contains(target.rootIdentifier) }
+            if locked { continue }
+            let entries = await MainActor.run { IndexStore.shared.sidecarEntries(for: target) }
+            guard !entries.isEmpty else { continue }
+            do {
+                let data = try JSONEncoder().encode(SidecarFile(version: currentVersion, entries: entries))
+                try await target.writeSmallFile(data, atRelative: relativeName)
+            } catch {
+                DiagnosticLog.write("[INDEX_ERROR] could not write sidecar on \(target.displayName): \(error.localizedDescription)")
+            }
+        }
+    }
 }
