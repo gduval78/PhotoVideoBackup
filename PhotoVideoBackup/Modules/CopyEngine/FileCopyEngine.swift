@@ -88,43 +88,62 @@ actor FileCopyEngine {
                         deviceName: sourceDevice, date: fileDate, fileName: targetName)
                     let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
-                    // ── Content check: the SHA-256 alone decides ─────────────
-                    // The source is hashed before anything else, and a file is skipped only if a
-                    // file with the same checksum is already at EVERY destination. The name is
-                    // never evidence — files get renamed at any time — and size is only a
-                    // pre-filter inside `resolveCoverage`. Slow by design: correctness first.
-                    let precomputedSHA256: String
-                    do {
-                        precomputedSHA256 = try await sha256(of: file.path)
-                    } catch {
-                        let note = error.localizedDescription
-                        DiagnosticLog.write("[COPY_ERROR] cannot read source \(fileName): \(note)")
-                        await record(file: file, device: sourceDevice, session: session,
-                                     sha256: "", status: .failed, verified: false,
-                                     destPaths: [], captureDate: captureDate, note: note)
-                        overallDone += file.size
-                        continuation.yield(CopyProgress(
-                            fileIndex: index, totalFiles: files.count, fileName: fileName,
-                            fileBytesDone: file.size, fileBytesTotal: file.size,
-                            currentDestination: primaryDest,
-                            overallBytesDone: overallDone, overallBytesTotal: overallTotal,
-                            phase: .failed(note)))
-                        continue
+                    // ── Already backed up? The target name is the key ────────
+                    // The source's SHA-256 is the identity the index records for every path we write
+                    // (and the integrity reference for verification). Reading a whole file to hash it
+                    // is the slow part of a backup that has nothing to copy, so a source the index
+                    // already handled — same name, size and modification date — reuses the recorded
+                    // hash instead. A name already taken at the destination is the same file unless
+                    // the index says it was written for another source — see `resolveCoverage`.
+                    let remembered = await MainActor.run {
+                        IndexStore.shared.knownSource(device: sourceDevice, name: fileName,
+                                                      size: file.size, modified: file.modificationDate)
                     }
+                    var precomputedSHA256 = remembered?.sha256 ?? ""
+                    var hashedForReal = false
 
-                    // Index paths are only hints (a file renamed in-app or moved); each is
-                    // re-verified by checksum inside resolveCoverage.
-                    let knownPaths = await MainActor.run {
-                        IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
+                    func hashSource() async -> Bool {
+                        do {
+                            precomputedSHA256 = try await sha256(of: file.path)
+                            hashedForReal = true
+                            return true
+                        } catch {
+                            let note = error.localizedDescription
+                            DiagnosticLog.write("[COPY_ERROR] cannot read source \(fileName): \(note)")
+                            await record(file: file, device: sourceDevice, session: session,
+                                         sha256: "", status: .failed, verified: false,
+                                         destPaths: [], captureDate: captureDate, note: note)
+                            overallDone += file.size
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: files.count, fileName: fileName,
+                                fileBytesDone: file.size, fileBytesTotal: file.size,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: overallTotal,
+                                phase: .failed(note)))
+                            return false
+                        }
                     }
-                    let coverage = await resolveCoverage(
-                        targets: destinations, relativePath: baseRel,
-                        size: file.size, sha256: precomputedSHA256, knownPaths: knownPaths)
+                    if remembered == nil, !(await hashSource()) { continue }
+
+                    func coverageFor(_ sha: String) async -> TargetCoverage {
+                        await resolveCoverage(
+                            targets: destinations, relativePath: baseRel,
+                            size: file.size, sha256: sha,
+                            adoptUnknown: NamingProfile.isEnabled,
+                            ledger: { path in await MainActor.run { IndexStore.shared.sourceHashes(writtenAt: path) } })
+                    }
+                    var coverage = await coverageFor(precomputedSHA256)
+                    // The file really has to be copied: do not trust a remembered hash for that — read
+                    // the source now (it is about to be read for the copy anyway).
+                    if !coverage.missingTargets.isEmpty, !hashedForReal {
+                        if !(await hashSource()) { continue }
+                        coverage = await coverageFor(precomputedSHA256)
+                    }
                     let presentPaths = coverage.coveredPaths
                     let missingTargets = coverage.missingTargets
 
                     if missingTargets.isEmpty {
-                        print("[FileCopyEngine] ✓ Same checksum already at every destination — skipped: \(fileName)")
+                        print("[FileCopyEngine] ✓ Already at every destination — skipped: \(fileName)")
                         await record(file: file, device: sourceDevice, session: session,
                                      sha256: precomputedSHA256, status: .skipped, verified: nil,
                                      destPaths: presentPaths, captureDate: captureDate, note: nil)
@@ -482,7 +501,10 @@ actor FileCopyEngine {
                 verificationPassed: verified,
                 destinationPaths: destPaths,
                 copiedPaths: copiedPaths,
-                errorNote: note
+                errorNote: note,
+                sourceName: file.path.lastPathComponent,
+                sourceSize: file.size,
+                sourceModified: file.modificationDate
             )
             IndexStore.shared.context.insert(indexed)
         }

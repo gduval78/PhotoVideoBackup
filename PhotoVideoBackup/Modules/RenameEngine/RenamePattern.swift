@@ -39,7 +39,8 @@ struct RenamePattern: Equatable {
 
 /// The file-name profile applied **as a file is first written** to the destination, so it carries
 /// its final name from the start and the duplicate check can look it up by that deterministic name
-/// (see `resolveCoverage`). Off by default: the file then keeps its source name.
+/// (see `resolveCoverage`), which also treats a taken name the index knows nothing about as the
+/// same file. Off by default: the file then keeps its source name.
 ///
 /// Tokens are `RenamePattern`'s, plus `{device}` (the source/device folder name with spaces
 /// removed). There is no `{index}`: a counter is not stable from one backup to the next, and a

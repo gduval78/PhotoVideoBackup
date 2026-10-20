@@ -54,17 +54,6 @@ final class FakeRemoteTarget: RemoteBackupTarget, @unchecked Sendable {
 
     func isReachable() async -> Bool { reachable }
 
-    func listFiles(inRelativeFolder folder: String) async -> [(name: String, size: Int64)]? {
-        let dir = url(forRelative: folder)
-        guard let urls = try? FileManager.default.contentsOfDirectory(
-            at: dir, includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey]) else { return nil }
-        return urls.compactMap { u in
-            guard let v = try? u.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),
-                  v.isRegularFile == true, let sz = v.fileSize else { return nil }
-            return (u.lastPathComponent, Int64(sz))
-        }
-    }
-
     // MARK: RemoteBackupTarget
 
     func upload(localFile: URL, toRelative rel: String, onProgress: @escaping @Sendable (Int64) -> Void) async throws {

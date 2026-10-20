@@ -142,6 +142,107 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
         expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/2024-01-14-2.MP4", from: ssd))
     }
 
+    // SCENARIO: Naming profile — a file already at the profile name, unknown to the index, is adopted
+    // The migration case: the user had renamed (and retouched) files to the profile's names before
+    // enabling it. The index knows nothing about them, but the name is the same ⇒ same file ⇒ not
+    // copied again, and now recorded in the index (so a second run skips it through the ledger).
+    func test_namingProfile_existingFileAtProfileName_isAdopted() async throws {
+        use(.namingProfile("{YYYY}-{MM}-{DD} {device}"))
+        let files = [TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)]
+        let ssd = ssd(named: "TravelSSD")
+
+        let folder = ssd.rootURL.appendingPathComponent("DJI Mini 3 Pro/2024-01-14", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let existing = folder.appendingPathComponent("2024-01-14 DJIMini3Pro.MP4")
+        try Data(repeating: 0x00, count: 777).write(to: existing)   // retouched, unrelated bytes
+
+        await backup(from: sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files), to: ssd)
+        expect(.copied(0))
+        expect(.skipped(1))
+        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/2024-01-14 DJIMini3Pro-1.MP4", from: ssd))
+
+        let ledger = IndexStore.shared.sourceHashes(writtenAt: existing.path)
+        XCTAssertEqual(ledger.count, 1, "the adopted file must now be in the index")
+
+        await backup(from: sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files), to: ssd)
+        expect(.skipped(1))
+    }
+
+    // MARK: - Fast recognition of a source the index already handled (no re-read, no re-hash)
+
+    private func sourceURL(_ sd: SimulatedSDCard) -> URL {
+        sd.rootURL!.appendingPathComponent("DCIM/DJI_0001/DJI_0001.MP4")
+    }
+
+    // SCENARIO: A source the index already handled is recognised without being read again
+    // Same name, size and modification date as a previous record ⇒ the recorded SHA-256 is reused.
+    // Proof: the source's CONTENT is swapped for other bytes (same size, same date). Had the engine
+    // re-hashed it, the new hash would differ from the ledger and the file would be copied as `-1`;
+    // instead it is skipped, so the source was not read.
+    func test_knownSource_isRecognisedWithoutRereadingIt() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+        expect(.copied(1))
+
+        try Data(repeating: 0x55, count: 2048).write(to: sourceURL(sd))
+        try FileManager.default.setAttributes([.modificationDate: Date.scenarioDefault],
+                                              ofItemAtPath: sourceURL(sd).path)
+
+        await backup(from: sd, to: ssd)
+        expect(.copied(0))
+        expect(.skipped(1))
+        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001-1.MP4", from: ssd))
+    }
+
+    // SCENARIO: A remembered source is still copied when its destination file is gone
+    // Recognition only spares the hash. If the destination no longer has the file, it is read for real
+    // and copied again.
+    func test_knownSource_missingAtDestination_isCopiedAgain() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+        ssd.remove("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4")
+
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(1))
+        expect(.fileExists("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", on: ssd))
+    }
+
+    // SCENARIO: A source whose size changed is not fast-recognised — it is hashed and judged on content
+    func test_changedSource_isNotFastRecognised() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+
+        try Data(repeating: 0x55, count: 4096).write(to: sourceURL(sd))   // other size, other bytes
+        try FileManager.default.setAttributes([.modificationDate: Date.scenarioDefault],
+                                              ofItemAtPath: sourceURL(sd).path)
+
+        await backup(from: sd, to: ssd)
+        expect(.copied(1))
+        expect(.fileExists("DJI Mini 3 Pro/2024-01-14/DJI_0001-1.MP4", on: ssd))
+    }
+
+    // SCENARIO: A source whose date changed but content did not is hashed and still skipped
+    func test_touchedSource_sameContent_isStillSkipped() async throws {
+        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)])
+        let ssd = ssd(named: "TravelSSD")
+        await backup(from: sd, to: ssd)
+
+        try FileManager.default.setAttributes([.modificationDate: Date.scenarioDefault.addingTimeInterval(600)],
+                                              ofItemAtPath: sourceURL(sd).path)
+
+        await backup(from: sd, to: ssd)
+        expect(.copied(0))
+        expect(.skipped(1))
+    }
+
     // SCENARIO: Naming profile off or blank keeps the original name
     func test_namingProfile_offOrBlank_keepsOriginalName() {
         XCTAssertEqual(NamingProfile.fileName(original: "IMG_1.dng", captureDate: .scenarioDefault, device: "X",
@@ -153,30 +254,24 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
                        "{index} is not supported in a backup profile and must not yield an empty name")
     }
 
-    // SCENARIO: A destination file renamed by the user is still recognised as a duplicate
-    // Files get renamed at any time (Finder, batch rename, another tool). The checksum, not the
-    // name, decides: after renaming the backed-up file, a second backup must skip it and must not
-    // create a second copy under the original name.
-    func test_renamedDestFile_isStillADuplicate() async throws {
+    // SCENARIO: With the profile off, a file renamed outside the app is not recognised
+    // The target name is the key. Without a naming profile the name is the camera name, and a file the
+    // user renamed elsewhere no longer carries it: the source is copied again under its own name.
+    // (With the naming profile on, the profile name is what is looked up — see the profile tests.)
+    func test_renamedDestFile_profileOff_isCopiedAgain() async throws {
         let files = [TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault)]
-        let sd  = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files)
         let ssd = ssd(named: "TravelSSD")
-
-        await backup(from: sd, to: ssd)
-        expect(.copied(1))
+        await backup(from: sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files), to: ssd)
 
         let folder = ssd.rootURL.appendingPathComponent("DJI Mini 3 Pro/2024-01-14")
         try FileManager.default.moveItem(
             at: folder.appendingPathComponent("DJI_0001.MP4"),
             to: folder.appendingPathComponent("holiday_beach.MP4"))
 
-        let sd2 = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files)
-        await backup(from: sd2, to: ssd)
+        await backup(from: sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: files), to: ssd)
 
-        expect(.copied(0))
-        expect(.skipped(1))
-        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", from: ssd))
-        expect(.fileExists("DJI Mini 3 Pro/2024-01-14/holiday_beach.MP4", on: ssd))
+        expect(.copied(1))
+        expect(.fileExists("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", on: ssd))
     }
 
     // SCENARIO: Same name, same size, different content is NOT a duplicate
@@ -191,7 +286,10 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
         expect(.copied(1))
 
         let second = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
-            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault, fill: 0x22),
+            // Another shot: a camera counter that restarted gives the same name, but the file was
+            // written at another time (same day, so the same date folder).
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048,
+                     date: Date.scenarioDefault.addingTimeInterval(600), fill: 0x22),
         ])
         await backup(from: second, to: ssd)
 
@@ -203,10 +301,10 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
         XCTAssertEqual(original, Data(repeating: 0x11, count: 2048), "the first clip must be untouched")
     }
 
-    // SCENARIO: Two source files with identical content but different names are stored once
-    // Content decides, not names: the second identical file finds the first at the destination
-    // (within the same run) and is skipped.
-    func test_identicalContentDifferentNames_storedOnce() async throws {
+    // SCENARIO: Two source files are two files, whatever their content
+    // The target name is the key: DJI_0001 and DJI_0002 have different names, so both are copied even
+    // when their bytes happen to be identical.
+    func test_identicalContentDifferentNames_areBothCopied() async throws {
         let sd = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
             TestFile(name: "DJI_0001.MP4", sizeInBytes: 2048, date: .scenarioDefault),
             TestFile(name: "DJI_0002.MP4", sizeInBytes: 2048, date: .scenarioDefault),
@@ -215,8 +313,7 @@ final class DeduplicationEdgeCaseTests: ScenarioTestCase {
 
         await backup(from: sd, to: ssd)
 
-        expect(.copied(1))
-        expect(.skipped(1))
+        expect(.copied(2))
     }
 
     // SCENARIO: A sibling folder whose name merely starts with the destination root is not "inside" it

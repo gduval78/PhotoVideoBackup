@@ -87,21 +87,45 @@ final class IndexStore {
         try? context.save()
     }
 
-    /// Returns every destination path ever recorded for a given SHA-256 (union across **all**
-    /// records of that content), or empty if unknown.
+    /// The ledger: SHA-256s of the sources the app recorded as written at `path`.
     ///
-    /// These are only *candidates* — hints about where a copy may live (e.g. after a rename inside
-    /// the app, or a file moved to another folder). The caller must still verify each one by
-    /// checksum before treating it as a duplicate (`resolveCoverage`). The union matters: the same
-    /// content gets one record per session, each listing a different subset of destinations, so
-    /// reading a single arbitrary record could hide the path that actually covers a target.
-    func knownDestinationPaths(forSHA256 hash: String) -> [String] {
-        guard !hash.isEmpty else { return [] }
+    /// Empty means the app knows nothing about that file (it predates the backup, was renamed outside
+    /// the app, or the history was cleared). Looked up through `fileName`, which holds the
+    /// destination file name — the same value the path ends with.
+    func sourceHashes(writtenAt path: String) -> [String] {
+        let name = (path as NSString).lastPathComponent
         let descriptor = FetchDescriptor<IndexedFile>(
-            predicate: #Predicate { $0.sha256 == hash }
+            predicate: #Predicate { $0.fileName == name }
         )
         guard let files = try? context.fetch(descriptor) else { return [] }
-        var seen = Set<String>()
-        return files.flatMap(\.destinationPaths).filter { seen.insert($0).inserted }
+        return files
+            .filter { $0.destinationPaths.contains(path) && !$0.sha256.isEmpty }
+            .map(\.sha256)
+    }
+
+    /// What the index already knows about a source: the SHA-256 and true size recorded when it was
+    /// last copied or recognised.
+    struct KnownSource: Sendable {
+        let sha256: String
+        let fileSize: Int64
+    }
+
+    /// Fast recognition of a source already handled, **without reading it**: same device, same
+    /// original name, same size and same modification date (to the second) as a record that ended
+    /// `copied` or `skipped` with a hash. The caller then reuses the recorded SHA-256 instead of
+    /// hashing the whole file again. A source whose size or date changed does not match and is
+    /// hashed as usual; a failed record never matches.
+    func knownSource(device: String, name: String, size: Int64, modified: Date) -> KnownSource? {
+        guard !name.isEmpty else { return nil }
+        let descriptor = FetchDescriptor<IndexedFile>(
+            predicate: #Predicate { $0.sourceName == name && $0.sourceDevice == device && $0.sourceSize == size }
+        )
+        guard let files = try? context.fetch(descriptor) else { return nil }
+        let hit = files.first {
+            ($0.copyStatus == .copied || $0.copyStatus == .skipped)
+                && !$0.sha256.isEmpty
+                && abs(($0.sourceModified ?? .distantPast).timeIntervalSince(modified)) < 1
+        }
+        return hit.map { KnownSource(sha256: $0.sha256, fileSize: $0.fileSize) }
     }
 }

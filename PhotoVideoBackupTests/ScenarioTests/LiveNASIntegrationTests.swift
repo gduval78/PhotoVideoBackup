@@ -83,12 +83,14 @@ final class LiveNASIntegrationTests: XCTestCase {
         let remoteSHA = try await target.sha256(forRelative: rel)
         XCTAssertEqual(remoteSHA, localSHA, "SHA-256 mismatch after upload — content did not survive")
 
-        // 4. Dedup is by checksum: the file now on the NAS must be recognised as already covered,
-        //    so it is not re-uploaded.
+        // 4. The file now on the NAS is found again by its name: with the index saying this path was
+        //    written for this source, it is "already there" and is not re-uploaded.
+        let abs = target.absolutePath(forRelative: rel)
         let cov = await resolveCoverage(
             targets: [target], relativePath: rel,
-            size: Int64(payload.count), sha256: localSHA, knownPaths: [])
-        XCTAssertTrue(cov.missingTargets.isEmpty, "a file already on the NAS with the same checksum must not be re-uploaded")
-        XCTAssertEqual(cov.coveredPaths, [target.absolutePath(forRelative: rel)])
+            size: Int64(payload.count), sha256: localSHA, adoptUnknown: false,
+            ledger: { $0 == abs ? [localSHA] : [] })
+        XCTAssertTrue(cov.missingTargets.isEmpty, "a file already on the NAS must not be re-uploaded")
+        XCTAssertEqual(cov.coveredPaths, [abs])
     }
 }

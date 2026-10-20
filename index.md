@@ -365,7 +365,7 @@ Go to **Settings → Backup → File naming**, turn on **Rename files during bac
 An **Example** line shows what a file will look like. The file extension is always kept.
 
 - **Nothing is ever overwritten.** If the name is already used by a *different* file, the new file is saved with a `-1`, `-2`… suffix. Include the seconds (or `{original}`) in your pattern so two shots taken together keep distinct names.
-- **Duplicates are recognised by that name.** On the next backup, the app looks for the file under the name the pattern gives it. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since (for example with an external metadata tool). If the name is taken but the app has no record of it, the contents are compared instead.
+- **Duplicates are recognised by that name.** On the next backup, the app looks for the file under the name the pattern gives it. If the app's records show it was copied from the very same original, it is skipped — even if you edited it since (for example with an external metadata tool). If the name is taken by a file the app has no record of (for example a file you renamed to the same name before turning the profile on), the app treats it as the same file and records it. Only when the records show the name belongs to a *different* original — two shots taken in the same second — is the new file saved with a `-1`, `-2`… suffix.
 - **Existing files are not renamed.** The profile applies to files copied from now on; files already on your drive keep their names.
 - With the profile off (the default), files keep their original names.
 
@@ -489,7 +489,7 @@ A timeout almost always means the NAS isn't reachable on the network, not an app
 Yes. Every connected destination — SSD 1, SSD 2, and the NAS — receives the backup simultaneously.
 
 **Q: Will it copy the same file twice if I run it again?**  
-No. Each file is given a name at the destination (its own name, or the one from your **File naming** profile), and the next backup looks for it under that name. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since. If the name is taken but the app has no record of it (for example a copy made in the Finder, or the history was cleared), the app compares the SHA-256 fingerprints of the contents instead. A different file that happens to use the same name is never overwritten: the new one is saved with a `-1`, `-2`… suffix. If you rename or move files yourself, outside the app, the app can still recognise them by content — but that check reads the files, so it is slower, and it cannot match a file you have modified.
+No. Each file is given a name at the destination (its own name, or the one from your **File naming** profile), and the next backup looks for it under that name. If the app's records show that file was copied from the very same original, it is skipped — even if you edited it since. With the naming profile on, a file you already placed under the profile's name is recognised and recorded without being compared. The `-1`, `-2`… suffix only appears for genuinely different photos or videos that share a name (taken in the same second), and nothing is ever overwritten. If you rename or move files yourself to a name other than the profile's, the app can no longer recognise them and will copy the original again.
 
 **Q: My SD card appears as "Documents" — is that normal?**  
 Yes, some cameras store footage in a generic folder. When you add the source, simply type a meaningful name (like "Blackmagic" or "GoPro") in the naming dialog so you can recognise it easily.
@@ -528,7 +528,7 @@ Note that this frees the space taken by the *copies*. Your original photos are s
 Yes. When choosing a destination folder in Settings, you can navigate to iCloud Drive and select a folder there. The app will copy your files into iCloud Drive exactly as it would to a physical SSD.
 
 **Q: Is the incremental backup still reliable when the destination is iCloud Drive?**  
-Yes. The app looks for each file under the name it was given at the destination, and checks its own records of what was copied. When it has to compare contents instead (for a file it has no record of), it reads the file, which downloads it again if iCloud had offloaded it to save space — so that check can be slow and use data, but it stays correct.
+Yes. The app looks for each file under the name it was given at the destination and checks its own records of what was copied — it does not need to read the files in iCloud Drive, so nothing is downloaded again just to check.
 
 **Q: Can I use the app to back up an SSD to iCloud Drive?**  
 Yes. Any folder you can open with the iOS file browser can be used as a source — including a folder on an external SSD. Select the SSD folder as your source and an iCloud Drive folder as your destination, and the app will copy only the files that are not already there.

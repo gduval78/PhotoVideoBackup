@@ -138,56 +138,76 @@ actor PHBackupEngine {
                         deviceName: deviceName, date: assetDate, fileName: targetName)
                     let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
-                    // ── Content check: the SHA-256 alone decides ─────────────
-                    // The asset is hashed BEFORE anything is written (a read-only pass over the
-                    // Photos data, nothing staged on the device), and it is skipped only if a file
-                    // with the same checksum is already at EVERY destination. The name is never
-                    // evidence — files get renamed at any time — and Photos' size is only an
-                    // estimate, so the real byte count comes from this pass. Slow by design.
-                    var actualSize: Int64
-                    var precomputedSHA256: String
-                    do {
-                        let hashed = try await hashAsset(item: item) { bytesHashed in
+                    // ── Already backed up? The target name is the key ────────
+                    // The asset's SHA-256 is the identity the index records for every path we write.
+                    // Computing it is a read-only pass over the Photos data (nothing staged on the
+                    // device) that also yields the true byte count (Photos' size is only an
+                    // estimate) — the slow part of a backup with nothing to copy. An asset the index
+                    // already handled (same identifier, estimated size and modification date) reuses
+                    // the recorded hash and size instead. A name already taken at the destination is
+                    // the same file unless the index says it was written for another source — see
+                    // `resolveCoverage`.
+                    let remembered = await MainActor.run {
+                        IndexStore.shared.knownSource(device: deviceName, name: item.localIdentifier,
+                                                      size: item.fileSize, modified: item.modificationDate)
+                    }
+                    var actualSize: Int64 = remembered?.fileSize ?? item.fileSize
+                    var precomputedSHA256 = remembered?.sha256 ?? ""
+                    var hashedForReal = false
+
+                    func hashAssetForReal() async -> Bool {
+                        do {
+                            let hashed = try await hashAsset(item: item) { bytesHashed in
+                                continuation.yield(CopyProgress(
+                                    fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                    fileBytesDone: bytesHashed, fileBytesTotal: item.fileSize,
+                                    currentDestination: primaryDest,
+                                    overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                    phase: .exporting))
+                            }
+                            actualSize = hashed.bytes
+                            precomputedSHA256 = hashed.sha256
+                            hashedForReal = true
+                            return true
+                        } catch {
+                            print("[PHBackupEngine] ❌ Hash pass failed: \(item.fileName) — \(error)")
+                            DiagnosticLog.write("[COPY_ERROR] hash \(item.fileName): \(error.localizedDescription)")
+                            await record(item: item, actualSize: 0, session: session,
+                                         deviceName: deviceName,
+                                         sha256: "", status: .failed, verified: false,
+                                         destPaths: [], note: error.localizedDescription)
+                            overallDone += item.fileSize
                             continuation.yield(CopyProgress(
-                                fileIndex: index, totalFiles: items.count, fileName: item.fileName,
-                                fileBytesDone: bytesHashed, fileBytesTotal: item.fileSize,
+                                fileIndex: index, totalFiles: items.count,
+                                fileName: item.fileName,
+                                fileBytesDone: 0, fileBytesTotal: item.fileSize,
                                 currentDestination: primaryDest,
                                 overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                                phase: .exporting))
+                                phase: .failed(error.localizedDescription)))
+                            return false
                         }
-                        actualSize = hashed.bytes
-                        precomputedSHA256 = hashed.sha256
-                    } catch {
-                        print("[PHBackupEngine] ❌ Hash pass failed: \(item.fileName) — \(error)")
-                        DiagnosticLog.write("[COPY_ERROR] hash \(item.fileName): \(error.localizedDescription)")
-                        await record(item: item, actualSize: 0, session: session,
-                                     deviceName: deviceName,
-                                     sha256: "", status: .failed, verified: false,
-                                     destPaths: [], note: error.localizedDescription)
-                        overallDone += item.fileSize
-                        continuation.yield(CopyProgress(
-                            fileIndex: index, totalFiles: items.count,
-                            fileName: item.fileName,
-                            fileBytesDone: 0, fileBytesTotal: item.fileSize,
-                            currentDestination: primaryDest,
-                            overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
-                            phase: .failed(error.localizedDescription)))
-                        continue
                     }
+                    if remembered == nil, !(await hashAssetForReal()) { continue }
 
-                    // Index paths are only hints (renamed in-app, or moved); each is re-verified by
-                    // checksum inside resolveCoverage.
-                    let knownPaths = await MainActor.run {
-                        IndexStore.shared.knownDestinationPaths(forSHA256: precomputedSHA256)
+                    func coverageFor(_ sha: String, _ size: Int64) async -> TargetCoverage {
+                        await resolveCoverage(
+                            targets: destinations, relativePath: baseRel,
+                            size: size, sha256: sha,
+                            adoptUnknown: NamingProfile.isEnabled,
+                            ledger: { path in await MainActor.run { IndexStore.shared.sourceHashes(writtenAt: path) } })
                     }
-                    let coverage = await resolveCoverage(
-                        targets: destinations, relativePath: baseRel,
-                        size: actualSize, sha256: precomputedSHA256, knownPaths: knownPaths)
+                    var coverage = await coverageFor(precomputedSHA256, actualSize)
+                    // The asset really has to be copied: do not trust a remembered hash for that —
+                    // read it now (it is about to be read for the copy anyway).
+                    if !coverage.missingTargets.isEmpty, !hashedForReal {
+                        if !(await hashAssetForReal()) { continue }
+                        coverage = await coverageFor(precomputedSHA256, actualSize)
+                    }
                     let presentPaths = coverage.coveredPaths
                     let missingTargets = coverage.missingTargets
 
                     if missingTargets.isEmpty {
-                        print("[PHBackupEngine] ✓ Same checksum already at every destination — skipped: \(item.fileName)")
+                        print("[PHBackupEngine] ✓ Already at every destination — skipped: \(item.fileName)")
                         await record(item: item, actualSize: actualSize, session: session,
                                      deviceName: deviceName,
                                      sha256: precomputedSHA256, status: .skipped, verified: nil,
@@ -887,7 +907,7 @@ actor PHBackupEngine {
         var failure: Error?
         var disconnected = 0
 
-        // No presence shortcut here: the caller already compared checksums (`resolveCoverage`) and
+        // No presence shortcut here: the caller already resolved coverage (`resolveCoverage`) and
         // chose a free name (`uniqueRelativePath`), so every remote passed in genuinely needs this.
         for remote in remotes {
             do {
@@ -1017,7 +1037,10 @@ actor PHBackupEngine {
                 verificationPassed: verified,
                 destinationPaths: destPaths,
                 copiedPaths: copiedPaths,
-                errorNote: note
+                errorNote: note,
+                sourceName: item.localIdentifier,
+                sourceSize: item.fileSize,
+                sourceModified: item.modificationDate
             )
             IndexStore.shared.context.insert(indexed)
         }
