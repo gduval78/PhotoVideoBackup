@@ -21,6 +21,13 @@ class ScenarioTestCase: XCTestCase {
     // Set by backup(), read by expect().
     private(set) var lastResult: BackupResult?
 
+    // The test target runs inside the app's container and shares its UserDefaults, so every key a
+    // scenario touches is saved here and put back in tearDown — otherwise running the tests would
+    // overwrite the user's real settings.
+    private static let touchedKeys = ["folderOrganization", "backupFileLimit", "customExtensions",
+                                      NamingProfile.enabledKey, NamingProfile.patternKey]
+    private var savedDefaults: [String: Any] = [:]
+
     // MARK: - XCTest lifecycle
 
     override func setUp() async throws {
@@ -30,9 +37,11 @@ class ScenarioTestCase: XCTestCase {
         lastResult = nil
         // Start each scenario with a clean IndexStore.
         try? IndexStore.shared.clearHistory()
-        // Reset backup-relevant UserDefaults keys so settings don't bleed between scenarios.
-        for key in ["folderOrganization", "backupFileLimit", "customExtensions",
-                    NamingProfile.enabledKey, NamingProfile.patternKey] {
+        // Reset backup-relevant UserDefaults keys so settings don't bleed between scenarios — after
+        // saving the user's values, restored in tearDown.
+        savedDefaults = [:]
+        for key in Self.touchedKeys {
+            if let value = UserDefaults.standard.object(forKey: key) { savedDefaults[key] = value }
             UserDefaults.standard.removeObject(forKey: key)
         }
     }
@@ -41,6 +50,10 @@ class ScenarioTestCase: XCTestCase {
         sdCards.forEach { $0.cleanup() }
         ssds.forEach    { $0.cleanup() }
         try? IndexStore.shared.clearHistory()
+        for key in Self.touchedKeys {
+            if let value = savedDefaults[key] { UserDefaults.standard.set(value, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
         try await super.tearDown()
     }
 

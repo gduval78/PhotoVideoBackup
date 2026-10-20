@@ -11,12 +11,19 @@ final class IndexStore {
     /// True if the SwiftData store was corrupted and had to be wiped at launch.
     private(set) var didResetHistory = false
 
+    /// True when the process is hosting XCTest. The "Designed for iPad" test target runs **inside the
+    /// app's own container**, so a test touching the persistent store would wipe the user's real
+    /// backup history (`clearHistory()` in every scenario's setUp/tearDown). Under XCTest the store
+    /// is therefore in-memory only.
+    static let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        || ProcessInfo.processInfo.environment["XCTestBundlePath"] != nil
+
     private init() {
         let schema = Schema([BackupSession.self, IndexedFile.self])
         let config = ModelConfiguration(
             "PhotoVideoBackup",
             schema: schema,
-            isStoredInMemoryOnly: false
+            isStoredInMemoryOnly: Self.isRunningTests
         )
 
         // First attempt — normal path.
