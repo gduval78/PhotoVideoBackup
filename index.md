@@ -83,6 +83,8 @@ When you open PhotoVideoBackup for the first time, a welcome screen gives you an
 
 ![Onboarding — Advanced setup: iPhone → Hub → Battery + SD Card + two SSDs](images/onboarding_advanced.png)
 
+![Onboarding — NAS: iPhone → Wi-Fi / VPN → NAS](images/onboarding_nas.png)
+
 iOS will then ask for permission to access your photo library.
 
 Tap **Allow Full Access**. Without this permission, the app cannot read your photos and videos.
@@ -324,7 +326,9 @@ Tap a device folder to open it. At the top you will see a **LUT Grade** section 
 
 Tap a date to open the media grid for that day: a gallery of thumbnails for all the files copied on that date. Photos show a preview; videos show a thumbnail with a play icon.
 
-![Browse — media grid](images/browse_media_grid.png)
+![Browse — the files of a date folder, named by the naming profile](images/browse_media_grid.png)
+
+On a NAS the files of a day appear as a list instead of a thumbnail grid. With the **File naming** profile turned on, each name is the one the profile gave the file when it was copied (here `2026-09-21 11H4… LunaUltra.mp4`).
 
 Tap a photo to view it full size. Tap a video to play it in full-screen with transport controls.
 
