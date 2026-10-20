@@ -15,7 +15,11 @@ struct SettingsView: View {
     @State private var showPicker: Bool = false
     @State private var pickerIndex: Int = 0
     @State private var showPaywall: Bool = false
-    @FocusState private var limitFieldFocused: Bool
+    /// Which text field has the keyboard. One state for every field of this screen, so the keyboard's
+    /// Done button can dismiss whichever one is active (it used to track only the file-limit field,
+    /// so Done did nothing while editing the folder name).
+    private enum Field { case deviceName, fileLimit }
+    @FocusState private var focusedField: Field?
     @State private var limitText: String = ""   // editing buffer, decoupled from @AppStorage
     @AppStorage("deviceName") private var deviceName: String = ""
     @AppStorage("folderOrganization") private var folderOrganizationRaw: String = FolderOrganization.byDate.rawValue
@@ -30,6 +34,9 @@ struct SettingsView: View {
                     Text("Folder name")
                     Spacer()
                     TextField("e.g. Gerard's iPhone", text: $deviceName)
+                        .focused($focusedField, equals: .deviceName)
+                        .submitLabel(.done)
+                        .onSubmit { focusedField = nil }
                         .multilineTextAlignment(.trailing)
                         .foregroundStyle(.secondary)
                 }
@@ -46,12 +53,13 @@ struct SettingsView: View {
                     Spacer()
                     TextField("Unlimited", text: $limitText)
                         .keyboardType(.numberPad)
-                        .focused($limitFieldFocused)
+                        .focused($focusedField, equals: .fileLimit)
                         .multilineTextAlignment(.trailing)
                         .foregroundStyle(.secondary)
                         .frame(width: 100)
-                        .onChange(of: limitFieldFocused) { _, focused in
-                            if !focused { commitLimit() }
+                        .onChange(of: focusedField) { oldField, newField in
+                            // Leaving the file-limit field (Done, or tapping another field) commits it.
+                            if oldField == .fileLimit && newField != .fileLimit { commitLimit() }
                         }
                 }
                 NavigationLink {
@@ -153,7 +161,7 @@ struct SettingsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("Done") { limitFieldFocused = false }
+                Button("Done") { focusedField = nil }
             }
         }
         .onAppear { loadNames() }
@@ -408,6 +416,7 @@ struct NamingProfileView: View {
     @AppStorage(NamingProfile.enabledKey) private var enabled: Bool = false
     @AppStorage(NamingProfile.patternKey) private var pattern: String = NamingProfile.defaultPattern
     @AppStorage("deviceName") private var deviceName: String = ""
+    @FocusState private var patternFocused: Bool
 
     /// Fixed sample so the example is stable: 28 Sep 2026, 11:35:25 local time.
     private var sampleDate: Date {
@@ -433,6 +442,9 @@ struct NamingProfileView: View {
             if enabled {
                 Section {
                     TextField("Pattern", text: $pattern)
+                        .focused($patternFocused)
+                        .submitLabel(.done)
+                        .onSubmit { patternFocused = false }
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .font(.system(.body, design: .monospaced))
@@ -474,5 +486,11 @@ struct NamingProfileView: View {
         }
         .navigationTitle("File naming")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { patternFocused = false }
+            }
+        }
     }
 }
