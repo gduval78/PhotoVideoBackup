@@ -359,6 +359,8 @@ The app no longer has a separate "rename" step in the Browse tab. Instead, you s
 
 Go to **Settings → Backup → File naming**, turn on **Rename files during backup**, and edit the pattern. Tap a token to insert it; anything else is literal text.
 
+![Settings — File naming: switch, pattern, tokens and live example](images/settings_file_naming.png)
+
 | Token | Replaced by |
 |-------|-------------|
 | `{YYYY}` `{MM}` `{DD}` | Year, month, day of capture |
