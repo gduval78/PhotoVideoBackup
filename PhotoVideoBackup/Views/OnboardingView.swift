@@ -45,7 +45,7 @@ struct OnboardingView: View {
                     featureRow(icon: "externaldrive.fill",    color: .mint,    text: "Direct copy to your USB-C SSD")
                     featureRow(icon: "checkmark.circle.fill", color: .green,   text: "Already-backed-up files are skipped")
                     featureRow(icon: "camera.filters",        color: .purple,  text: "Preview and grade LOG footage with a LUT")
-                    featureRow(icon: "pencil.and.list.clipboard", color: .blue,    text: "Batch rename files with date & index tokens")
+                    featureRow(icon: "pencil.and.list.clipboard", color: .blue,    text: "Files are named automatically as they are backed up")
                     featureRow(icon: "icloud",                   color: .cyan,    text: "Back up to iCloud Drive, SSD, or both at once")
                     featureRow(icon: "externaldrive.connected.to.line.below", color: .indigo, text: "Back up over Wi-Fi to a NAS — even remotely")
                 }
@@ -72,7 +72,7 @@ struct OnboardingView: View {
         }
     }
 
-    private func featureRow(icon: String, color: Color, text: String) -> some View {
+    private func featureRow(icon: String, color: Color, text: LocalizedStringKey) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .foregroundStyle(color)
