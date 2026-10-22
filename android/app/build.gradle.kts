@@ -15,8 +15,11 @@ android {
         applicationId = "gduvalsc.photovideobackup"
         minSdk = 28                  // >= 28: the platform BouncyCastle is repackaged, so smbj's own copy does not clash
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        // Same user-visible number as the iOS app (PhotoVideoBackup.xcodeproj MARKETING_VERSION). Play's integer
+        // versionCode is derived from it so it always grows with the version: 2.6.0 -> 20600, 2.6.1 -> 20601.
+        val appVersion = "2.6.0"
+        versionName = appVersion
+        versionCode = appVersion.split(".").let { it[0].toInt() * 10000 + it[1].toInt() * 100 + it[2].toInt() }
         // The 8 languages of the iOS app: only these are packaged (libraries bring dozens of others).
         resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "ru")
     }

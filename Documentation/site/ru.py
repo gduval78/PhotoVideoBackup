@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Руководство пользователя",
     "tagline": "Копируйте фото и видео на внешний SSD, SD-карту или NAS — с iPhone или Android-телефона.",
-    "version_line": "Руководство для PhotoVideoBackup 2.6 (iPhone, iOS 16 и новее) и 1.0 (Android 9 и новее)",
+    "version_line": "Руководство для PhotoVideoBackup 2.6 — iPhone (iOS 16 и новее) и Android (9 и новее)",
     "toc": "Содержание",
     "privacy_link": "Политика конфиденциальности",
     "contact": "Поддержка",

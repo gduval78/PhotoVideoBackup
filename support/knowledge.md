@@ -4,7 +4,7 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 
 ## Versions
 - iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.6.0.
-- Android: 1.0.0 (same engine and same features as iOS except iCloud Drive, which does not exist on Android).
+- Android: 2.6.0 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
 ## Pro

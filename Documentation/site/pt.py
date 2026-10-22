@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Guia do utilizador",
     "tagline": "Copie as suas fotos e vídeos para um SSD externo, um cartão SD ou um NAS — a partir do seu iPhone ou do seu telemóvel Android.",
-    "version_line": "Guia do PhotoVideoBackup 2.6 (iPhone, iOS 16 ou posterior) e 1.0 (Android 9 ou posterior)",
+    "version_line": "Guia do PhotoVideoBackup 2.6 — iPhone (iOS 16 ou posterior) e Android (9 ou posterior)",
     "toc": "Índice",
     "privacy_link": "Política de privacidade",
     "contact": "Suporte",
