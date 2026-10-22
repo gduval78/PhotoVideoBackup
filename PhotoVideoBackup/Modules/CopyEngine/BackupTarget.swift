@@ -29,6 +29,11 @@ protocol BackupTarget: Sendable {
     func sha256(forRelative rel: String) async throws -> String
     /// Whether the target is currently reachable (volume mounted / share connected).
     func isReachable() async -> Bool
+    /// Contents of a small control file at `rel` under the target root (the sidecar index), or nil
+    /// when it does not exist or cannot be read.
+    func readSmallFile(atRelative rel: String) async -> Data?
+    /// Writes (replaces) a small control file at `rel` under the target root.
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws
 }
 
 /// A remote target that receives files via network upload (implemented by `SMBTarget`).
@@ -58,100 +63,135 @@ func sha256OfFile(at url: URL, chunkSize: Int = 4 * 1024 * 1024) throws -> Strin
     return hasher.finalize().map { String(format: "%02x", $0) }.joined()
 }
 
-// MARK: - Deduplication helper
+// MARK: - Duplicate detection: the target name is the key
 
-/// SHA-256 dedup cascade, target-agnostic. Returns one still-valid known path per target
-/// (so the file can be recorded as skipped) **only if EVERY target is covered** — otherwise nil.
+// A file is always written under a deterministic name (the naming profile, or its source name), so a
+// later backup recomputes that name and looks the file up there. Two files with the same name are
+// the same file — the single exception being genuinely different media that land on the same name
+// (two shots in the same second). The index tells those apart: it records, for every path the app
+// wrote, the SHA-256 of the source it was written for.
+
+/// True when `path` lies inside `root`. Compares whole path components: a plain `hasPrefix` made
+/// `/Volumes/SSD/Backup` "contain" `/Volumes/SSD/Backup 2/…`.
+func isPath(_ path: String, underRoot root: String) -> Bool {
+    let prefix = root.hasSuffix("/") ? root : root + "/"
+    return path == root || path.hasPrefix(prefix)
+}
+
+/// Outcome of looking for one source file at every destination.
+struct TargetCoverage {
+    /// One path per covered target — the file that already stands for this source.
+    var coveredPaths: [String] = []
+    /// Targets that do not hold this source and still need a copy.
+    var missingTargets: [BackupTarget] = []
+    /// Ledger paths found while resolving that no longer exist at a reachable destination — the file
+    /// was deleted. The caller drops them from the index.
+    var stalePaths: [String] = []
+}
+
+/// Decides, per target, whether this source is already there, by walking the name chain
+/// `rel`, `rel-1`, `rel-2`… (the exact sequence a copy would take). At each taken name:
 ///
-/// A known path counts as coverage only when it still exists **and** its size matches
-/// `expectedSize`, so a corrupted or truncated file at a known path forces a re-copy.
+/// - the index recorded that path **for this very source** (`ledger` returns this `sha256`) ⇒ it is
+///   the same file, **whatever its bytes are now** — it may have been retouched since (exiftool,
+///   Photoshop…) and must not be copied again; nothing is re-read;
+/// - the index recorded it for **another** source ⇒ a different media that landed on the same name
+///   (same second): move on to the next name;
+/// - the index knows nothing about that path (a file from before the profile, renamed outside the
+///   app, or a cleared index) ⇒ with `adoptUnknown` (naming profile on, where a name encodes the
+///   capture second) it is **the same file**, adopted and recorded by the caller; otherwise the
+///   contents are compared by SHA-256, because a camera name like `DJI_0001.MP4` proves nothing.
 ///
-/// Invariant preserved from the filesystem version: a file present on target A but absent from
-/// target B must still be copied to B. "Known on any target" is insufficient; every target root
-/// must have at least one valid known path for this hash.
-func coveredDestinationPaths(targets: [BackupTarget], knownPaths: [String], expectedSize: Int64) async -> [String]? {
-    var result: [String] = []
+/// The chain ends at the first free name, which is where a missing target will be written.
+/// An empty `sha256` covers nothing, so a file we could not hash is never skipped.
+///
+/// - Parameter ledger: SHA-256s of the sources the app recorded as written at a destination path.
+func resolveCoverage(
+    targets: [BackupTarget],
+    relativePath rel: String,
+    size: Int64,
+    sha256: String,
+    adoptUnknown: Bool,
+    ledger: (String) async -> [String]
+) async -> TargetCoverage {
+    var result = TargetCoverage()
     for target in targets {
-        var found: String? = nil
-        for known in knownPaths where known.hasPrefix(target.rootIdentifier) {
-            if await target.size(atAbsolutePath: known) == expectedSize { found = known; break }
+        let found = await coveringPath(for: target, rel: rel, size: size, sha256: sha256,
+                                       adoptUnknown: adoptUnknown, ledger: ledger)
+        result.stalePaths += found.stale
+        if let path = found.path {
+            result.coveredPaths.append(path)
+        } else {
+            result.missingTargets.append(target)
         }
-        guard let path = found else { return nil }   // this target not covered → must copy
-        result.append(path)
     }
     return result
 }
 
-// MARK: - Same-folder twin detection (content dedup independent of the index)
-
-/// Finds a byte-identical file already sitting in `folder` under a name other than
-/// `excludingName`, and returns its absolute path (or nil if none).
-///
-/// This guarantees a folder never ends up with two physical copies of the same content —
-/// **regardless of how the first copy got there.** Unlike the SHA-index cascade
-/// (`coveredDestinationPaths`), which only knows files this app streamed itself, this reads
-/// the real filesystem, so it also catches a twin left by an older app version or a Finder
-/// drag — precisely the case that produced two identical `…​.mp4` / `…​-1.mp4` files in the
-/// field.
-///
-/// Size is the free discriminator — a `stat`, no bytes read — so a folder with no size
-/// collision costs only a directory listing. `hashFile` (SHA-256, full read) is computed
-/// **only** for a same-size candidate, and SHA-256 is the final judge, so no non-identical
-/// file is ever mistaken for a duplicate.
-///
-/// Local targets only: an SMB folder would have to download each candidate to hash it, so
-/// remote dedup stays on the index + `partitionRemotesByPresence` path.
-func existingLocalTwinPath(
-    inFolder folder: URL,
-    excludingName: String,
-    size: Int64,
-    sourceSHA256: String,
-    hashFile: (URL) -> String? = { try? sha256OfFile(at: $0) }
-) -> String? {
-    guard !sourceSHA256.isEmpty, size > 0 else { return nil }
-    let keys: Set<URLResourceKey> = [.fileSizeKey, .isRegularFileKey]
-    guard let entries = try? FileManager.default.contentsOfDirectory(
-        at: folder, includingPropertiesForKeys: Array(keys), options: [.skipsHiddenFiles]
-    ) else { return nil }
-    for url in entries where url.lastPathComponent != excludingName {
-        guard let vals = try? url.resourceValues(forKeys: keys),
-              vals.isRegularFile == true,
-              Int64(vals.fileSize ?? -1) == size
-        else { continue }
-        if hashFile(url) == sourceSHA256 { return url.path }
+private func coveringPath(
+    for target: BackupTarget, rel: String, size: Int64, sha256: String,
+    adoptUnknown: Bool, ledger: (String) async -> [String]
+) async -> (path: String?, stale: [String]) {
+    guard !sha256.isEmpty else { return (nil, []) }
+    var n = 0
+    while n < 1000 {
+        let candidate = relativePath(rel, withCollisionIndex: n)
+        let abs = target.absolutePath(forRelative: candidate)
+        guard await target.existingSize(forRelative: candidate) != nil else {
+            // A free name. If the index still lists something there, the file was deleted — but only
+            // call it stale when the destination is reachable, or an unplugged drive would empty the
+            // whole ledger.
+            let recorded = await ledger(abs)
+            guard !recorded.isEmpty else { return (nil, []) }
+            let reachable = await target.isReachable()
+            return (nil, reachable ? [abs] : [])
+        }
+        let recorded = await ledger(abs)
+        if recorded.contains(sha256) { return (abs, []) }        // written for this source
+        if recorded.isEmpty {                                    // unknown to the index
+            if adoptUnknown { return (abs, []) }
+            if await holdsSameContent(target, relative: candidate, size: size, sha256: sha256) { return (abs, []) }
+        }
+        n += 1                                                   // a different media: next name
     }
-    return nil
+    return (nil, [])
 }
 
-// MARK: - Remote upload dedup
+/// True when the file at `rel` has the given size AND SHA-256 (local re-read / remote re-download).
+private func holdsSameContent(_ target: BackupTarget, relative rel: String, size: Int64, sha256: String) async -> Bool {
+    guard await target.existingSize(forRelative: rel) == size else { return false }
+    return (try? await target.sha256(forRelative: rel)) == sha256
+}
 
-/// Splits remote targets into those that still need `rel` uploaded and those that already hold it
-/// at `expectedSize`. Pulled out of the engine so the decision can be unit-tested without Photos or
-/// a live SMB share — it is where the "re-uploaded a file the NAS already had" bug lived.
-///
-/// The comparison uses `expectedSize`, which the caller passes **after** streaming has revealed the
-/// true byte count. That is the whole point: the engine's first existence check runs against Photos'
-/// *estimated* size, which for video/HEIC often differs from reality and wrongly marks an
-/// already-uploaded file as missing. A second look with the real size corrects it.
-///
-/// When `expectedSize <= 0` (size genuinely unknown) nothing is treated as present — an upload we
-/// cannot rule out must proceed, since skipping it could lose the file.
-func partitionRemotesByPresence(
-    _ remotes: [RemoteBackupTarget],
-    relativePath rel: String,
-    expectedSize: Int64
-) async -> (needUpload: [RemoteBackupTarget], alreadyPresentPaths: [String]) {
-    guard expectedSize > 0 else { return (remotes, []) }
-    var needUpload: [RemoteBackupTarget] = []
-    var present: [String] = []
-    for remote in remotes {
-        if await remote.existingSize(forRelative: rel) == expectedSize {
-            present.append(remote.absolutePath(forRelative: rel))
-        } else {
-            needUpload.append(remote)
+// MARK: - Collision-free destination names
+
+/// `a/b/X.mp4` → `a/b/X-1.mp4` (n = 1). Used only to keep from overwriting a *different* file that
+/// happens to carry the same name; it plays no part in deciding whether to copy.
+func relativePath(_ rel: String, withCollisionIndex n: Int) -> String {
+    guard n > 0 else { return rel }
+    let ns = rel as NSString
+    let ext = ns.pathExtension
+    let stem = (ns.deletingPathExtension as NSString).lastPathComponent
+    let dir = (rel as NSString).deletingLastPathComponent
+    let name = ext.isEmpty ? "\(stem)-\(n)" : "\(stem)-\(n).\(ext)"
+    return dir.isEmpty ? name : dir + "/" + name
+}
+
+/// First `rel`, `rel-1`, `rel-2`… that is free on **every** given target. Called once the content
+/// check has established the file really must be written, so a name already taken at this point
+/// belongs to a different file — which must never be overwritten.
+func uniqueRelativePath(_ rel: String, targets: [BackupTarget]) async -> String {
+    var n = 0
+    while n < 10_000 {
+        let candidate = relativePath(rel, withCollisionIndex: n)
+        var taken = false
+        for target in targets {
+            if await target.existingSize(forRelative: candidate) != nil { taken = true; break }
         }
+        if !taken { return candidate }
+        n += 1
     }
-    return (needUpload, present)
+    return relativePath(rel, withCollisionIndex: n)
 }
 
 // MARK: - LocalFileTarget
@@ -199,5 +239,15 @@ struct LocalFileTarget: BackupTarget {
 
     func isReachable() async -> Bool {
         (try? root.resourceValues(forKeys: [.volumeTotalCapacityKey]))?.volumeTotalCapacity ?? 0 > 0
+    }
+
+    func readSmallFile(atRelative rel: String) async -> Data? {
+        try? Data(contentsOf: destinationURL(forRelative: rel))
+    }
+
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws {
+        let url = destinationURL(forRelative: rel)
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try data.write(to: url, options: .atomic)
     }
 }

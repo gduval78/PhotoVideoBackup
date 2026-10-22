@@ -32,6 +32,16 @@ final class IndexedFile {
     /// treating a `.copied` file's whole `destinationPaths` as copied (the pre-migration behaviour).
     var copiedPaths: [String] = []
     var errorNote: String? = nil
+    /// Fast-recognition key of the **source** (see `IndexStore.knownSource`): its original name
+    /// (Photos: the asset's local identifier), size and modification date. Lets a later backup
+    /// recognise a source it already handled without re-reading it to hash it. Empty / -1 / nil on
+    /// records written before this existed (lightweight migration): those are simply not fast-matched.
+    var sourceName: String = ""
+    var sourceSize: Int64 = -1
+    var sourceModified: Date? = nil
+    /// Subset of `destinationPaths` found to no longer exist at the destination. Kept out of the
+    /// ledger and the sidecar, but left in `destinationPaths` so past session reports stay accurate.
+    var gonePaths: [String] = []
 
     var copyStatus: CopyStatus {
         get { CopyStatus(rawValue: copyStatusRaw) ?? .pending }
@@ -51,7 +61,10 @@ final class IndexedFile {
         verificationPassed: Bool? = nil,
         destinationPaths: [String] = [],
         copiedPaths: [String] = [],
-        errorNote: String? = nil
+        errorNote: String? = nil,
+        sourceName: String = "",
+        sourceSize: Int64 = -1,
+        sourceModified: Date? = nil
     ) {
         self.id = id
         self.session = session
@@ -66,5 +79,8 @@ final class IndexedFile {
         self.destinationPaths = destinationPaths
         self.copiedPaths = copiedPaths
         self.errorNote = errorNote
+        self.sourceName = sourceName
+        self.sourceSize = sourceSize
+        self.sourceModified = sourceModified
     }
 }

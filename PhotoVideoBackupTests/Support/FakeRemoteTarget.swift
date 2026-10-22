@@ -54,6 +54,14 @@ final class FakeRemoteTarget: RemoteBackupTarget, @unchecked Sendable {
 
     func isReachable() async -> Bool { reachable }
 
+    func readSmallFile(atRelative rel: String) async -> Data? { try? Data(contentsOf: url(forRelative: rel)) }
+
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws {
+        let dest = url(forRelative: rel)
+        try FileManager.default.createDirectory(at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try data.write(to: dest)
+    }
+
     // MARK: RemoteBackupTarget
 
     func upload(localFile: URL, toRelative rel: String, onProgress: @escaping @Sendable (Int64) -> Void) async throws {
@@ -67,9 +75,9 @@ final class FakeRemoteTarget: RemoteBackupTarget, @unchecked Sendable {
     }
 
     /// Places a file directly, as if a previous backup had uploaded it — without touching uploadCount.
-    func seed(relativePath rel: String, bytes: Int) throws {
+    func seed(relativePath rel: String, bytes: Int, fill: UInt8 = 0xCD) throws {
         let dest = url(forRelative: rel)
         try FileManager.default.createDirectory(at: dest.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try Data(repeating: 0xCD, count: bytes).write(to: dest)
+        try Data(repeating: fill, count: bytes).write(to: dest)
     }
 }

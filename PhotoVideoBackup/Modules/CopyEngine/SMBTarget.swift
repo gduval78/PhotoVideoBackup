@@ -72,6 +72,30 @@ final class SMBTarget: RemoteBackupTarget, @unchecked Sendable {
         return try sha256OfFile(at: tempURL)
     }
 
+    // MARK: - Small control files (sidecar index)
+
+    func readSmallFile(atRelative rel: String) async -> Data? {
+        guard await existingSize(forRelative: rel) != nil else { return nil }
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pvb_ctl_" + UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: tempURL) }
+        do {
+            try await client.downloadItem(atPath: smbPath(forRelative: rel), to: tempURL, progress: nil)
+            return try Data(contentsOf: tempURL)
+        } catch { return nil }
+    }
+
+    func writeSmallFile(_ data: Data, atRelative rel: String) async throws {
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("pvb_ctl_" + UUID().uuidString)
+        try data.write(to: tempURL)
+        defer { try? FileManager.default.removeItem(at: tempURL) }
+        let path = smbPath(forRelative: rel)
+        try? await client.removeFile(atPath: path)          // replace: the sidecar is rebuildable
+        try await ensureParentDirectory(ofSMBPath: path)
+        try await client.uploadItem(at: tempURL, toPath: path, progress: { _ in true })
+    }
+
     // MARK: - Upload
 
     func upload(localFile: URL, toRelative rel: String, onProgress: @escaping @Sendable (Int64) -> Void) async throws {

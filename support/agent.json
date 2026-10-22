@@ -1,0 +1,11 @@
+{
+  "name": "PhotoVideoBackup",
+  "description": "backs up photos and videos from iPhone, iPad, Apple-silicon Mac (Designed for iPad) and Android to an external SSD, an SD card source or a NAS (SMB)",
+  "platforms": ["ios", "android"],
+  "latest_version": {"ios": "2.6.0", "android": "1.0.0"},
+  "signature": "L'équipe PhotoVideoBackup",
+  "docs": ["en/index.html", "support/knowledge.md"],
+  "code_globs": [],
+  "escalate": ["refunds", "billing and charges", "Apple ID or Google account problems", "App Store or Google Play review/listing questions"],
+  "never_say": ["internal file names or source code", "the CLAUDE.md notes"]
+}

@@ -57,7 +57,6 @@
 		CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100F00 /* ICloudEvictionTests.swift */; };
 		CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101000 /* FakeRemoteTarget.swift */; };
 		CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101100 /* RemoteDedupTests.swift */; };
-		CC0000000000000000201A00 /* TwinDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101500 /* TwinDedupTests.swift */; };
 		CC0000000000000000201B00 /* FileLimitFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101600 /* FileLimitFieldTests.swift */; };
 		CC0000000000000000201C00 /* PartialReasonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101700 /* PartialReasonTests.swift */; };
 		CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101200 /* LiveNASIntegrationTests.swift */; };
@@ -82,7 +81,6 @@
 		F001INF000000000000000001 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F001INF000000000000000002 /* InfoPlist.xcstrings */; };
 		F001LNG000000000000000001 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001LNG000000000000000002 /* LanguageManager.swift */; };
 		F001LOC000000000000000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F001LOC000000000000000002 /* Localizable.xcstrings */; };
-		F001REN000000000000000101 /* RenameSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001REN000000000000000102 /* RenameSheet.swift */; };
 		F001REN000000000000000201 /* RenamePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001REN000000000000000202 /* RenamePattern.swift */; };
 		F1BD6D0CD5E22517EEFB9342 /* PHMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4918B830276FA0B8442E881 /* PHMediaItem.swift */; };
 		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
@@ -166,7 +164,6 @@
 		CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflightTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100F00 /* ICloudEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101100 /* RemoteDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDedupTests.swift; sourceTree = "<group>"; };
-		CC0000000000000000101500 /* TwinDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwinDedupTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101600 /* FileLimitFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLimitFieldTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101700 /* PartialReasonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialReasonTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101200 /* LiveNASIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveNASIntegrationTests.swift; sourceTree = "<group>"; };
@@ -192,7 +189,6 @@
 		F001INF000000000000000002 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		F001LNG000000000000000002 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		F001LOC000000000000000002 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		F001REN000000000000000102 /* RenameSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameSheet.swift; sourceTree = "<group>"; };
 		F001REN000000000000000202 /* RenamePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenamePattern.swift; sourceTree = "<group>"; };
 		F132AD972A4ABA4B9CA93519 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
@@ -377,7 +373,6 @@
 			children = (
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
-				F001REN000000000000000102 /* RenameSheet.swift */,
 				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
 				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
 				FF00AB0000000000000000002 /* OnboardingView.swift */,
@@ -424,7 +419,6 @@
 				CC0000000000000000101300 /* DestinationIndependenceTests.swift */,
 				CC0000000000000000101200 /* LiveNASIntegrationTests.swift */,
 				CC0000000000000000101100 /* RemoteDedupTests.swift */,
-				CC0000000000000000101500 /* TwinDedupTests.swift */,
 				CC0000000000000000101600 /* FileLimitFieldTests.swift */,
 				CC0000000000000000101700 /* PartialReasonTests.swift */,
 				CC0000000000000000100F00 /* ICloudEvictionTests.swift */,
@@ -657,7 +651,6 @@
 				F001ABCDE00000000001AE01 /* VideoGradingEngine.swift in Sources */,
 				F001ABCDE00000000001B001 /* SourceDeletionManager.swift in Sources */,
 				F001ABCDE00000000001B101 /* DeleteConfirmationSheet.swift in Sources */,
-				F001REN000000000000000101 /* RenameSheet.swift in Sources */,
 				F001REN000000000000000201 /* RenamePattern.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -679,7 +672,6 @@
 				CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */,
 				CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */,
 				CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */,
-				CC0000000000000000201A00 /* TwinDedupTests.swift in Sources */,
 				CC0000000000000000201B00 /* FileLimitFieldTests.swift in Sources */,
 				CC0000000000000000201C00 /* PartialReasonTests.swift in Sources */,
 				CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */,
@@ -773,7 +765,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -781,7 +773,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.1;
+				MARKETING_VERSION = 2.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -835,7 +827,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -843,7 +835,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.1;
+				MARKETING_VERSION = 2.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
