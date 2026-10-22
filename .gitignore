@@ -17,3 +17,11 @@ DerivedData/
 # Live NAS integration test — local credentials, never committed
 nas-test-config.json
 *.nas-config.json
+
+# Android
+.gradle/
+local.properties
+android/keystore/
+android/keystore.properties
+android/dist/
+*.jks

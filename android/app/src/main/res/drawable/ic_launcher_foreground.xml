@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- A photo frame with a mountain and sun, over an upward arrow into a drive: "back up your media". -->
+    <path android:fillColor="#FFFFFF" android:pathData="M30,34h48a4,4 0 0 1 4,4v26a4,4 0 0 1 -4,4h-48a4,4 0 0 1 -4,-4v-26a4,4 0 0 1 4,-4z" />
+    <path android:fillColor="#1F5FBF" android:pathData="M30,64l14,-16l10,11l7,-8l17,13z" />
+    <path android:fillColor="#1F5FBF" android:pathData="M64,43m-4,0a4,4 0 1 0 8,0a4,4 0 1 0 -8,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M30,74h48v6h-48z" />
+</vector>
