@@ -482,7 +482,9 @@ Use `AppConstants.supportEmail` everywhere an email address is needed (Settings 
    - Settings screen: any time a new setting is added or a section changes
    - Dashboard/History/Report: any time a new status, badge, or row format changes
    - Browse tab: any time navigation depth or grid layout changes
-5. **Commit the docs with the rest** — the generated site folders and `images/` live on `main`; a normal `git push origin main` publishes the site (Pages builds from `main` root). No separate repo/submodule.
+5. **Update `support/knowledge.md`** (curated notes read by the support agent) with the new feature / limit / known issue and the version it appears in, and bump `latest_version` in `support/agent.json` **when a store build is delivered**.
+6. **Tag the delivery** so the support agent picks the new knowledge up: after the build is submitted, `git tag release-<version>` (e.g. `release-ios-2.7.0`, `release-android-1.1.0`) and `git push origin <tag>`. The agent reads `support/agent.json`, `support/knowledge.md` and the docs **at the newest `release-*` tag** — no agent redeploy needed.
+7. **Commit the docs with the rest** — the generated site folders and `images/` live on `main`; a normal `git push origin main` publishes the site (Pages builds from `main` root). No separate repo/submodule.
 
 **What you cannot do alone (flag to the user):**
 - Take screenshots on a real device or simulator
