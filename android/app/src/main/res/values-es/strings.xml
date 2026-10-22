@@ -17,6 +17,12 @@
     <string name="backup_failed">Error de copia de seguridad</string>
     <string name="backup_in_progress">Copia en progreso</string>
     <string name="backup_report">Informe de copia de seguridad</string>
+    <string name="browse_downloading">Descargando…</string>
+    <string name="browse_not_connected">Este destino no está conectado.</string>
+    <string name="browse_open_with">Abrir con…</string>
+    <string name="browse_preview_unavailable">Este archivo no se puede previsualizar aquí.</string>
+    <string name="browse_share_failed">No se pudieron preparar los archivos para compartir.</string>
+    <string name="browse_title">Explorar copias</string>
     <string name="cancel">Cancelar</string>
     <string name="choose_ellipsis">Elegir…</string>
     <string name="clear">Borrar</string>
@@ -25,13 +31,16 @@
     <string name="clear_history_title">¿Borrar todo el historial de copias?</string>
     <string name="close">Cerrar</string>
     <string name="completed">Completada</string>
+    <string name="connect_ssd_hint">Conecte su SSD y configure un destino en Ajustes.</string>
     <string name="connected">Conectado</string>
     <string name="connecting">Conectando al NAS…</string>
     <string name="contact_support">Contactar soporte</string>
     <string name="copied">Copiados</string>
     <string name="copied_count_fmt">%1$d copiados</string>
     <string name="copying_ellipsis">Copiando…</string>
+    <string name="could_not_connect_nas">No se pudo conectar al NAS.</string>
     <string name="date">Fecha</string>
+    <string name="deselect_all">Deseleccionar todo</string>
     <string name="destination">Destino</string>
     <string name="destination_1">Destino 1 (principal)</string>
     <string name="destination_2">Destino 2 (secundario)</string>
@@ -43,6 +52,7 @@
     <string name="disconnected">Desconectado</string>
     <string name="documentation">Documentación</string>
     <string name="duration">Duración</string>
+    <string name="empty_folder">Carpeta vacía</string>
     <string name="err_device_name">Defina un nombre de dispositivo en Ajustes antes de iniciar la copia.</string>
     <string name="err_external_pro">La copia de fuentes externas requiere la actualización Pro.</string>
     <string name="err_gallery_permission">Permite el acceso a fotos y vídeos en los ajustes de Android para copiar la galería.</string>
@@ -66,6 +76,7 @@
     <string name="feature_sources">Tarjetas SD, USB, Insta360, DJI y más</string>
     <string name="file_naming">Nombre de archivos</string>
     <string name="files_found_fmt">%1$d archivos encontrados</string>
+    <string name="files_in_folder_fmt">%1$d archivos en esta carpeta</string>
     <string name="folder">Carpeta</string>
     <string name="folder_structure">Estructura de carpetas</string>
     <string name="folders_by_date">Por fecha</string>
@@ -88,6 +99,7 @@
     <string name="naming_collision_note">Nunca se sobrescribe un archivo: si el nombre ya lo usa otro archivo, el nuevo se guarda con el sufijo -1, -2… Incluye los segundos o {original} para que dos fotos tomadas a la vez conserven nombres distintos.</string>
     <string name="naming_explainer">Cada archivo recibe su nombre definitivo al copiarse por primera vez, así nunca se guarda con el nombre de la cámara para renombrarlo después. Los duplicados se reconocen entonces por ese nombre. Desactívalo para conservar los nombres originales.</string>
     <string name="naming_tokens_hint">Toca un token para insertarlo. Todo lo demás es texto literal. {device} es el nombre de la carpeta del dispositivo sin espacios; {original} es el nombre original sin extensión.</string>
+    <string name="nas">NAS</string>
     <string name="nas_connected_fmt">Conectado — %1$d elemento(s) encontrado(s).</string>
     <string name="nas_data_warning">Parece que estás usando datos móviles. La copia al NAS puede consumir tu plan de datos — toca Detener para pararla.</string>
     <string name="nas_explainer">El NAS se usa como destino de copia adicional por Wi-Fi. Los archivos se escriben directamente en el recurso compartido y se verifican con SHA-256. La contraseña se guarda cifrada en el Keystore de Android.</string>
@@ -99,7 +111,10 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">El NAS no es accesible — comprueba el Wi-Fi/VPN y los ajustes.</string>
     <string name="no_backup_history">Sin historial de copias</string>
+    <string name="no_backups_yet">Aún no hay copias en este SSD.</string>
     <string name="no_destination_hint">Sin destino configurado — vaya a Ajustes.</string>
+    <string name="no_media_files">Sin archivos multimedia</string>
+    <string name="no_ssd_connected">Sin SSD conectado</string>
     <string name="none">Ninguno</string>
     <string name="not_configured">No configurado</string>
     <string name="not_connected">No conectado</string>
@@ -120,6 +135,7 @@
     <string name="onboarding_naming">Los archivos se nombran automáticamente al copiarse</string>
     <string name="onboarding_sources">Tarjetas SD, DJI, Insta360, GoPro y más</string>
     <string name="onboarding_tagline">Haga copia de sus medios en un SSD externo\nen pocos toques.</string>
+    <string name="one_file_in_folder">1 archivo en esta carpeta</string>
     <string name="one_time_purchase">Compra única — sin suscripción</string>
     <string name="partial">Parcial</string>
     <string name="partial_backup">Copia de seguridad parcial</string>
@@ -130,6 +146,7 @@
     <string name="pattern">Patrón</string>
     <string name="port">Puerto</string>
     <string name="preparing_ellipsis">Preparando…</string>
+    <string name="preparing_n_fmt">Preparando %1$d archivo(s)…</string>
     <string name="pro">Pro</string>
     <string name="pro_active">PhotoVideoBackup Pro está activo</string>
     <string name="pro_active_detail">¡Gracias por tu apoyo!</string>
@@ -145,10 +162,13 @@
     <string name="retry">Reintentar</string>
     <string name="running">En ejecución</string>
     <string name="save">Guardar</string>
+    <string name="select">Seleccionar</string>
+    <string name="select_all">Seleccionar todo</string>
     <string name="send">Enviar</string>
     <string name="set_device_name_hint">Establezca un nombre de dispositivo en Ajustes.</string>
     <string name="settings">Ajustes</string>
     <string name="share">Compartir</string>
+    <string name="share_n_fmt">Compartir (%1$d)</string>
     <string name="share_report">Compartir informe</string>
     <string name="show_welcome">Mostrar pantalla de bienvenida</string>
     <string name="skipped">Omitidos</string>
@@ -162,6 +182,7 @@
     <string name="stopping">Deteniendo…</string>
     <string name="support">Soporte</string>
     <string name="system_default">Idioma del sistema</string>
+    <string name="tab_browse">Explorar</string>
     <string name="test_connection">Probar conexión</string>
     <string name="total_fmt">%1$s en total</string>
     <string name="unlimited">Sin límite</string>

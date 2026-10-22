@@ -3,6 +3,7 @@ package gduvalsc.photovideobackup
 import com.hierynomus.msdtyp.AccessMask
 import com.hierynomus.mserref.NtStatus
 import com.hierynomus.mssmb2.SMBApiException
+import com.hierynomus.msfscc.FileAttributes
 import com.hierynomus.mssmb2.SMB2CreateDisposition
 import com.hierynomus.mssmb2.SMB2ShareAccess
 import com.hierynomus.smbj.SMBClient
@@ -11,7 +12,8 @@ import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.connection.Connection
 import com.hierynomus.smbj.session.Session
 import com.hierynomus.smbj.share.DiskShare
-import gduvalsc.pvb.core.BackupTarget
+import gduvalsc.pvb.core.BrowsableTarget
+import gduvalsc.pvb.core.TargetEntry
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -30,7 +32,7 @@ class SmbTarget private constructor(
     private val connection: Connection,
     private val session: Session,
     private val share: DiskShare,
-) : BackupTarget {
+) : BrowsableTarget {
 
     private val base = config.basePath.trim('/', '\\').replace('\\', '/')
     private val madeDirs = HashSet<String>()
@@ -72,6 +74,18 @@ class SmbTarget private constructor(
         val p = smbPath(rel)
         if (fileExistsSafe(p)) share.getFileInformation(p).standardInformation.endOfFile else null
     }.getOrNull()
+
+    override suspend fun list(rel: String): List<TargetEntry> =
+        share.list(smbPathOf(rel))
+            .filter { it.fileName != "." && it.fileName != ".." }
+            .map { e ->
+                val isDir = (e.fileAttributes and FileAttributes.FILE_ATTRIBUTE_DIRECTORY.value) != 0L
+                TargetEntry(e.fileName, isDir, e.endOfFile, e.lastWriteTime?.toEpochMillis() ?: 0L)
+            }
+
+    /** Like [smbPath], but "" is the base folder itself. */
+    private fun smbPathOf(rel: String): String =
+        (if (rel.isEmpty()) base else if (base.isEmpty()) rel else "$base/$rel").replace('/', '\\')
 
     override suspend fun openOutput(rel: String): OutputStream {
         ensureDirs(rel)

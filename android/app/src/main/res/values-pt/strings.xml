@@ -17,6 +17,12 @@
     <string name="backup_failed">Backup falhou</string>
     <string name="backup_in_progress">Backup em curso</string>
     <string name="backup_report">Relatório de backup</string>
+    <string name="browse_downloading">A transferir…</string>
+    <string name="browse_not_connected">Este destino não está ligado.</string>
+    <string name="browse_open_with">Abrir com…</string>
+    <string name="browse_preview_unavailable">Este ficheiro não pode ser pré-visualizado aqui.</string>
+    <string name="browse_share_failed">Não foi possível preparar os ficheiros para partilhar.</string>
+    <string name="browse_title">Explorar backup</string>
     <string name="cancel">Cancelar</string>
     <string name="choose_ellipsis">Escolher…</string>
     <string name="clear">Limpar</string>
@@ -25,13 +31,16 @@
     <string name="clear_history_title">Limpar todo o histórico de backup?</string>
     <string name="close">Fechar</string>
     <string name="completed">Concluído</string>
+    <string name="connect_ssd_hint">Conecte o seu SSD e configure um destino nas definições.</string>
     <string name="connected">Conectado</string>
     <string name="connecting">A ligar ao NAS…</string>
     <string name="contact_support">Contactar suporte</string>
     <string name="copied">Copiados</string>
     <string name="copied_count_fmt">%1$d copiados</string>
     <string name="copying_ellipsis">Copiando…</string>
+    <string name="could_not_connect_nas">Não foi possível ligar ao NAS.</string>
     <string name="date">Data</string>
+    <string name="deselect_all">Deselecionar tudo</string>
     <string name="destination">Destino</string>
     <string name="destination_1">Destino 1 (principal)</string>
     <string name="destination_2">Destino 2 (secundário)</string>
@@ -43,6 +52,7 @@
     <string name="disconnected">Desconectado</string>
     <string name="documentation">Documentação</string>
     <string name="duration">Duração</string>
+    <string name="empty_folder">Pasta vazia</string>
     <string name="err_device_name">Defina um nome de dispositivo nas definições antes de iniciar um backup.</string>
     <string name="err_external_pro">O backup de fontes externas requer a atualização Pro.</string>
     <string name="err_gallery_permission">Permita o acesso a fotos e vídeos nas definições do Android para copiar a galeria.</string>
@@ -66,6 +76,7 @@
     <string name="feature_sources">Cartões SD, USB, Insta360, DJI e mais</string>
     <string name="file_naming">Nomes dos ficheiros</string>
     <string name="files_found_fmt">%1$d ficheiros encontrados</string>
+    <string name="files_in_folder_fmt">%1$d ficheiros nesta pasta</string>
     <string name="folder">Pasta</string>
     <string name="folder_structure">Estrutura de pastas</string>
     <string name="folders_by_date">Por data</string>
@@ -88,6 +99,7 @@
     <string name="naming_collision_note">Um ficheiro nunca é substituído: se o nome já for usado por outro ficheiro, o novo é guardado com o sufixo -1, -2… Inclua os segundos ou {original} para que dois disparos simultâneos mantenham nomes distintos.</string>
     <string name="naming_explainer">Cada ficheiro recebe o nome definitivo na primeira cópia, pelo que nunca é guardado com o nome da câmara e mudado depois. Os duplicados são então reconhecidos por esse nome. Desative para manter os nomes originais.</string>
     <string name="naming_tokens_hint">Toque num token para o inserir. Tudo o resto é texto literal. {device} é o nome da pasta do dispositivo sem espaços; {original} é o nome original sem extensão.</string>
+    <string name="nas">NAS</string>
     <string name="nas_connected_fmt">Ligado — %1$d item(ns) encontrado(s).</string>
     <string name="nas_data_warning">Parece que está a usar dados móveis. A cópia para o NAS pode consumir o seu plano de dados — toque em Parar para a interromper.</string>
     <string name="nas_explainer">O NAS é usado como destino de cópia adicional por Wi-Fi. Os ficheiros são escritos diretamente na partilha e verificados com SHA-256. A palavra-passe é guardada cifrada no Keystore do Android.</string>
@@ -99,7 +111,10 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">O NAS está inacessível — verifique o Wi-Fi/VPN e as definições.</string>
     <string name="no_backup_history">Sem histórico de backup</string>
+    <string name="no_backups_yet">Ainda sem backups neste SSD.</string>
     <string name="no_destination_hint">Nenhum destino configurado — vá às definições.</string>
+    <string name="no_media_files">Nenhum ficheiro de média</string>
+    <string name="no_ssd_connected">Nenhum SSD conectado</string>
     <string name="none">Nenhum</string>
     <string name="not_configured">Não configurado</string>
     <string name="not_connected">Não conectado</string>
@@ -120,6 +135,7 @@
     <string name="onboarding_naming">Os ficheiros são nomeados automaticamente durante a cópia</string>
     <string name="onboarding_sources">Cartões SD, DJI, Insta360, GoPro e mais</string>
     <string name="onboarding_tagline">Faça backup dos seus ficheiros para um SSD externo\ncom apenas alguns toques.</string>
+    <string name="one_file_in_folder">1 ficheiro nesta pasta</string>
     <string name="one_time_purchase">Compra única — sem subscrição</string>
     <string name="partial">Parcial</string>
     <string name="partial_backup">Backup parcial</string>
@@ -130,6 +146,7 @@
     <string name="pattern">Padrão</string>
     <string name="port">Porta</string>
     <string name="preparing_ellipsis">Preparando…</string>
+    <string name="preparing_n_fmt">A preparar %1$d ficheiro(s)…</string>
     <string name="pro">Pro</string>
     <string name="pro_active">O PhotoVideoBackup Pro está ativo</string>
     <string name="pro_active_detail">Obrigado pelo seu apoio!</string>
@@ -145,10 +162,13 @@
     <string name="retry">Tentar novamente</string>
     <string name="running">Em execução</string>
     <string name="save">Salvar</string>
+    <string name="select">Selecionar</string>
+    <string name="select_all">Selecionar tudo</string>
     <string name="send">Enviar</string>
     <string name="set_device_name_hint">Defina um nome de dispositivo nas definições.</string>
     <string name="settings">Definições</string>
     <string name="share">Partilhar</string>
+    <string name="share_n_fmt">Partilhar (%1$d)</string>
     <string name="share_report">Compartilhar relatório</string>
     <string name="show_welcome">Mostrar tela de boas-vindas</string>
     <string name="skipped">Ignorados</string>
@@ -162,6 +182,7 @@
     <string name="stopping">A parar…</string>
     <string name="support">Suporte</string>
     <string name="system_default">Idioma do sistema</string>
+    <string name="tab_browse">Explorar</string>
     <string name="test_connection">Testar ligação</string>
     <string name="total_fmt">%1$s no total</string>
     <string name="unlimited">Ilimitado</string>

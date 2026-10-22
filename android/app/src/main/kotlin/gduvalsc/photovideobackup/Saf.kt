@@ -9,7 +9,8 @@ import android.os.StatFs
 import android.os.storage.StorageManager
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
-import gduvalsc.pvb.core.BackupTarget
+import gduvalsc.pvb.core.BrowsableTarget
+import gduvalsc.pvb.core.TargetEntry
 import gduvalsc.pvb.core.FsNode
 import gduvalsc.pvb.core.MediaFile
 import gduvalsc.pvb.core.DeviceType
@@ -144,7 +145,7 @@ class SafTarget(
     private val context: Context,
     private val treeUri: Uri,
     override val displayName: String,
-) : BackupTarget {
+) : BrowsableTarget {
 
     private val cr = context.contentResolver
     private val rootDocId = DocumentsContract.getTreeDocumentId(treeUri)
@@ -190,6 +191,16 @@ class SafTarget(
     override suspend fun existingSize(rel: String): Long? = runCatching {
         lookup(rel.split('/'))?.takeIf { !it.isDirectory }?.size
     }.getOrNull()
+
+    override suspend fun list(rel: String): List<TargetEntry> {
+        val node = if (rel.isEmpty()) rootNode() else lookup(rel.split('/')) ?: throw FileNotFoundException(rel)
+        // A browse always re-reads the folder: the backup (or the user, in another app) may have changed it.
+        synchronized(this) { listings.remove(node.docId) }
+        return listing(node).values.map { TargetEntry(it.name, it.isDirectory, it.size, it.modifiedMs) }
+    }
+
+    /** The document URI of the file at [rel], for viewers that read it in place (no copy). */
+    fun documentUri(rel: String): Uri? = runCatching { lookup(rel.split('/'))?.uri }.getOrNull()
 
     override suspend fun openOutput(rel: String): OutputStream {
         val parts = rel.split('/')

@@ -17,6 +17,12 @@
     <string name="backup_failed">备份失败</string>
     <string name="backup_in_progress">备份进行中</string>
     <string name="backup_report">备份报告</string>
+    <string name="browse_downloading">正在下载…</string>
+    <string name="browse_not_connected">此目标未连接。</string>
+    <string name="browse_open_with">用其他应用打开…</string>
+    <string name="browse_preview_unavailable">无法在此预览该文件。</string>
+    <string name="browse_share_failed">无法准备要分享的文件。</string>
+    <string name="browse_title">浏览备份</string>
     <string name="cancel">取消</string>
     <string name="choose_ellipsis">选择…</string>
     <string name="clear">清除</string>
@@ -25,13 +31,16 @@
     <string name="clear_history_title">清除所有备份历史记录？</string>
     <string name="close">关闭</string>
     <string name="completed">已完成</string>
+    <string name="connect_ssd_hint">请连接 SSD 并在设置中配置目标位置。</string>
     <string name="connected">已连接</string>
     <string name="connecting">正在连接 NAS…</string>
     <string name="contact_support">联系支持</string>
     <string name="copied">已复制</string>
     <string name="copied_count_fmt">已复制 %1$d 个</string>
     <string name="copying_ellipsis">正在复制…</string>
+    <string name="could_not_connect_nas">无法连接到 NAS。</string>
     <string name="date">日期</string>
+    <string name="deselect_all">取消全选</string>
     <string name="destination">目标</string>
     <string name="destination_1">目标 1(主要)</string>
     <string name="destination_2">目标 2(次要)</string>
@@ -43,6 +52,7 @@
     <string name="disconnected">已断开连接</string>
     <string name="documentation">文档</string>
     <string name="duration">时长</string>
+    <string name="empty_folder">空文件夹</string>
     <string name="err_device_name">开始备份前，请在设置中设置设备名称。</string>
     <string name="err_external_pro">外部源备份需要升级至 Pro 版。</string>
     <string name="err_gallery_permission">请在 Android 设置中允许访问照片和视频,以备份相册。</string>
@@ -66,6 +76,7 @@
     <string name="feature_sources">SD 卡、USB、Insta360、DJI 等</string>
     <string name="file_naming">文件命名</string>
     <string name="files_found_fmt">找到 %1$d 个文件</string>
+    <string name="files_in_folder_fmt">此文件夹中有 %1$d 个文件</string>
     <string name="folder">文件夹</string>
     <string name="folder_structure">文件夹结构</string>
     <string name="folders_by_date">按日期</string>
@@ -88,6 +99,7 @@
     <string name="naming_collision_note">文件绝不会被覆盖：如果名称已被其他文件使用，新文件会加上 -1、-2… 后缀。请在模式中包含秒数或 {original}，以便同时拍摄的两张照片保持不同名称。</string>
     <string name="naming_explainer">每个文件在首次复制时就获得最终名称，不会先以相机名称保存再重命名。之后将根据该名称识别重复文件。关闭后保留原始文件名。</string>
     <string name="naming_tokens_hint">点击标记即可插入。其他内容均为普通文本。{device} 为设备文件夹名称（不含空格）；{original} 为不含扩展名的原始名称。</string>
+    <string name="nas">NAS</string>
     <string name="nas_connected_fmt">已连接 — 找到 %1$d 个项目。</string>
     <string name="nas_data_warning">您似乎正在使用移动数据。备份到 NAS 可能会消耗您的流量 — 点按“停止”以中止。</string>
     <string name="nas_explainer">NAS 通过 Wi-Fi 用作额外的备份目标。文件直接写入共享并通过 SHA-256 校验。密码加密存储在 Android Keystore 中。</string>
@@ -99,7 +111,10 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">无法访问 NAS — 请检查 Wi-Fi/VPN 和设置。</string>
     <string name="no_backup_history">无备份历史记录</string>
+    <string name="no_backups_yet">此 SSD 上尚无备份。</string>
     <string name="no_destination_hint">未配置目标位置 — 请前往设置。</string>
+    <string name="no_media_files">无媒体文件</string>
+    <string name="no_ssd_connected">未连接 SSD</string>
     <string name="none">无</string>
     <string name="not_configured">未配置</string>
     <string name="not_connected">未连接</string>
@@ -120,6 +135,7 @@
     <string name="onboarding_naming">备份时自动命名文件</string>
     <string name="onboarding_sources">SD 卡、DJI、Insta360、GoPro 等</string>
     <string name="onboarding_tagline">只需轻点几下，即可将媒体\n备份到外部 SSD。</string>
+    <string name="one_file_in_folder">此文件夹中有 1 个文件</string>
     <string name="one_time_purchase">一次性购买 — 无需订阅</string>
     <string name="partial">部分完成</string>
     <string name="partial_backup">部分备份</string>
@@ -130,6 +146,7 @@
     <string name="pattern">模式</string>
     <string name="port">端口</string>
     <string name="preparing_ellipsis">正在准备…</string>
+    <string name="preparing_n_fmt">正在准备 %1$d 个文件…</string>
     <string name="pro">Pro</string>
     <string name="pro_active">PhotoVideoBackup Pro 已启用</string>
     <string name="pro_active_detail">感谢您的支持!</string>
@@ -145,10 +162,13 @@
     <string name="retry">重试</string>
     <string name="running">运行中</string>
     <string name="save">保存</string>
+    <string name="select">选择</string>
+    <string name="select_all">全选</string>
     <string name="send">发送</string>
     <string name="set_device_name_hint">请在设置中设置设备名称。</string>
     <string name="settings">设置</string>
     <string name="share">共享</string>
+    <string name="share_n_fmt">共享 (%1$d)</string>
     <string name="share_report">分享报告</string>
     <string name="show_welcome">显示欢迎界面</string>
     <string name="skipped">已跳过</string>
@@ -162,6 +182,7 @@
     <string name="stopping">正在停止…</string>
     <string name="support">支持</string>
     <string name="system_default">系统语言</string>
+    <string name="tab_browse">浏览</string>
     <string name="test_connection">测试连接</string>
     <string name="total_fmt">共 %1$s</string>
     <string name="unlimited">无限制</string>

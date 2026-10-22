@@ -91,6 +91,14 @@ REUSED = {
     "upgrade_to_pro": "Upgrade to Pro", "use_this_nas": "Use this NAS for backups", "username": "Username",
     "verified_of_fmt": "%lld / %lld verified", "verified_sha_fmt": "%lld verified by SHA-256", "verifying": "Verifying…",
     "version": "Version", "version_fmt": "Version %@ (%@)",
+    # Browse tab
+    "tab_browse": "Browse", "browse_title": "Browse Backup", "no_ssd_connected": "No SSD Connected",
+    "connect_ssd_hint": "Connect your SSD and configure a destination in Settings.",
+    "no_backups_yet": "No backups yet on this SSD.", "empty_folder": "Empty folder",
+    "one_file_in_folder": "1 file in this folder", "files_in_folder_fmt": "%lld files in this folder",
+    "no_media_files": "No media files", "select": "Select", "select_all": "Select All", "deselect_all": "Deselect All",
+    "share_n_fmt": "Share (%lld)", "preparing_n_fmt": "Preparing %lld file(s)…", "nas": "NAS",
+    "could_not_connect_nas": "Could not connect to the NAS.",
 }
 
 # Android-only strings: name -> {lang: text}. Format args use %s / %d (positional when several).
@@ -115,6 +123,11 @@ EXTRA = {
     "pro_active_detail": {"en": "Thank you for your support!", "fr": "Merci pour votre soutien !", "de": "Danke für Ihre Unterstützung!", "es": "¡Gracias por tu apoyo!", "it": "Grazie per il tuo supporto!", "pt": "Obrigado pelo seu apoio!", "zh-Hans": "感谢您的支持!", "ru": "Спасибо за поддержку!"},
     "send": {"en": "Send", "fr": "Envoyer", "de": "Senden", "es": "Enviar", "it": "Invia", "pt": "Enviar", "zh-Hans": "发送", "ru": "Отправить"},
     "nas_explainer": {"en": "The NAS is used as an additional backup destination over Wi-Fi. Files are written directly to the share and verified by SHA-256. The password is stored encrypted in the Android Keystore.", "fr": "Le NAS sert de destination de sauvegarde supplémentaire via le Wi-Fi. Les fichiers sont écrits directement sur le partage et vérifiés par SHA-256. Le mot de passe est stocké chiffré dans le Keystore Android.", "de": "Das NAS dient als zusätzliches Sicherungsziel über WLAN. Dateien werden direkt auf die Freigabe geschrieben und per SHA-256 geprüft. Das Passwort wird verschlüsselt im Android Keystore gespeichert.", "es": "El NAS se usa como destino de copia adicional por Wi-Fi. Los archivos se escriben directamente en el recurso compartido y se verifican con SHA-256. La contraseña se guarda cifrada en el Keystore de Android.", "it": "Il NAS è usato come destinazione di backup aggiuntiva via Wi-Fi. I file vengono scritti direttamente sulla condivisione e verificati con SHA-256. La password è memorizzata cifrata nel Keystore di Android.", "pt": "O NAS é usado como destino de cópia adicional por Wi-Fi. Os ficheiros são escritos diretamente na partilha e verificados com SHA-256. A palavra-passe é guardada cifrada no Keystore do Android.", "zh-Hans": "NAS 通过 Wi-Fi 用作额外的备份目标。文件直接写入共享并通过 SHA-256 校验。密码加密存储在 Android Keystore 中。", "ru": "NAS используется как дополнительное место резервного копирования по Wi-Fi. Файлы записываются прямо в общую папку и проверяются по SHA-256. Пароль хранится в зашифрованном виде в Android Keystore."},
+    "browse_preview_unavailable": {"en": "This file can't be previewed here.", "fr": "Ce fichier ne peut pas être prévisualisé ici.", "de": "Diese Datei kann hier nicht angezeigt werden.", "es": "Este archivo no se puede previsualizar aquí.", "it": "Questo file non può essere visualizzato qui.", "pt": "Este ficheiro não pode ser pré-visualizado aqui.", "zh-Hans": "无法在此预览该文件。", "ru": "Этот файл нельзя просмотреть здесь."},
+    "browse_open_with": {"en": "Open with…", "fr": "Ouvrir avec…", "de": "Öffnen mit …", "es": "Abrir con…", "it": "Apri con…", "pt": "Abrir com…", "zh-Hans": "用其他应用打开…", "ru": "Открыть в…"},
+    "browse_downloading": {"en": "Downloading…", "fr": "Téléchargement…", "de": "Wird geladen …", "es": "Descargando…", "it": "Download in corso…", "pt": "A transferir…", "zh-Hans": "正在下载…", "ru": "Загрузка…"},
+    "browse_share_failed": {"en": "Could not prepare the files to share.", "fr": "Impossible de préparer les fichiers à partager.", "de": "Die Dateien konnten nicht zum Teilen vorbereitet werden.", "es": "No se pudieron preparar los archivos para compartir.", "it": "Impossibile preparare i file da condividere.", "pt": "Não foi possível preparar os ficheiros para partilhar.", "zh-Hans": "无法准备要分享的文件。", "ru": "Не удалось подготовить файлы для отправки."},
+    "browse_not_connected": {"en": "This destination is not connected.", "fr": "Cette destination n'est pas connectée.", "de": "Dieses Ziel ist nicht verbunden.", "es": "Este destino no está conectado.", "it": "Questa destinazione non è connessa.", "pt": "Este destino não está ligado.", "zh-Hans": "此目标未连接。", "ru": "Это место назначения не подключено."},
 }
 
 PLACEHOLDER = re.compile(r"%(\d+\$)?(@|lld|ld|d)")

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
@@ -26,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import gduvalsc.photovideobackup.Prefs
 import gduvalsc.photovideobackup.R
 
-private enum class Tab { BACKUP, HISTORY, SETTINGS }
+private enum class Tab { BACKUP, BROWSE, HISTORY, SETTINGS }
 
 /** Full-screen pages pushed over the tabs. */
 private sealed interface Page {
@@ -65,6 +66,7 @@ fun AppRoot() {
                 bottomBar = {
                     NavigationBar {
                         NavigationBarItem(tab == Tab.BACKUP, { tab = Tab.BACKUP }, { Icon(Icons.Default.Storage, null) }, label = { Text(stringResource(R.string.backup)) })
+                        NavigationBarItem(tab == Tab.BROWSE, { tab = Tab.BROWSE }, { Icon(Icons.Default.FolderOpen, null) }, label = { Text(stringResource(R.string.tab_browse)) })
                         NavigationBarItem(tab == Tab.HISTORY, { tab = Tab.HISTORY }, { Icon(Icons.Default.History, null) }, label = { Text(stringResource(R.string.history)) })
                         NavigationBarItem(tab == Tab.SETTINGS, { tab = Tab.SETTINGS }, { Icon(Icons.Default.Settings, null) }, label = { Text(stringResource(R.string.settings)) })
                     }
@@ -73,6 +75,7 @@ fun AppRoot() {
                 Box(Modifier.padding(inner).statusBarsPadding()) {
                     when (tab) {
                         Tab.BACKUP -> DashboardScreen(onGoSettings = { tab = Tab.SETTINGS }, onPaywall = { page = Page.Paywall })
+                        Tab.BROWSE -> BrowseScreen()
                         Tab.HISTORY -> HistoryScreen(onOpen = { page = Page.Report(it) })
                         Tab.SETTINGS -> SettingsScreen(
                             onPaywall = { page = Page.Paywall }, onNaming = { page = Page.Naming },
