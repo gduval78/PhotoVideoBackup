@@ -68,6 +68,21 @@ import gduvalsc.pvb.core.TargetEntry
 @Composable
 fun MediaViewer(source: BrowseSource, folderRel: String, items: List<TargetEntry>, start: Int, lut: CubeLut?, onClose: () -> Unit) {
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
+    // A dialog window covers the whole screen, status and navigation bars included (the tabs sit inside the insets).
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onClose,
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+    ) {
+    // The dialog window keeps the system-bar scrims unless told otherwise: draw edge to edge, bars transparent.
+    (androidx.compose.ui.platform.LocalView.current.parent as? androidx.compose.ui.window.DialogWindowProvider)?.window?.let { w ->
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(w, false)
+        w.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+        w.addFlags(android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        w.statusBarColor = android.graphics.Color.TRANSPARENT
+        w.navigationBarColor = android.graphics.Color.TRANSPARENT
+        androidx.core.view.WindowCompat.getInsetsController(w, w.decorView).isAppearanceLightStatusBars = false
+    }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 0) { page ->
             ViewerPage(source, Browse.child(folderRel, items[page].name), items[page], active = pager.currentPage == page, lut = lut)
@@ -80,6 +95,7 @@ fun MediaViewer(source: BrowseSource, folderRel: String, items: List<TargetEntry
             )
             IconButton(onClick = onClose) { Icon(Icons.Default.Close, stringResource(R.string.close), tint = Color.White) }
         }
+    }
     }
 }
 
