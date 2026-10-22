@@ -36,11 +36,11 @@ The app uses a custom `LanguageManager` that swizzles `Bundle.main` with `Langua
 The app language follows the iPhone system language by default. Users can override it in Settings → Language (in-app picker powered by `LanguageManager`).
 
 ## Documentation
-- **User-facing documentation is `index.md` at the repo root** — GitHub Pages serves the site from `main` at path `/` (`https://gduval78.github.io/PhotoVideoBackup/`). Editing `index.md` on `main` and pushing publishes the site; no separate repo or submodule.
+- **User-facing documentation is a generated static site in 8 languages (iPhone + Android in one guide)** — GitHub Pages serves it from `main` at path `/` (`https://gduval78.github.io/PhotoVideoBackup/`; the root `index.html` and `privacy-policy.html` redirect on the browser language). The content lives in `Documentation/site/<lang>.py` (`en.py` = reference); `python3 Documentation/site/build_site.py` regenerates `en/ fr/ de/ es/ it/ pt/ zh-Hans/ ru/`, `assets/` and the two root pages, and **refuses a language whose structure differs from English**. Commit the generated folders with the sources and push `main` to publish; no separate repo or submodule. There is no `index.md` any more (Jekyll is disabled by `.nojekyll`).
 - GitHub repo: `git@github.com:gduval78/PhotoVideoBackup.git`
-- To publish: edit `index.md` (and `images/`), commit and `git push origin main`.
+- To publish: edit the `Documentation/site/*.py` files (and `images/`), run `build_site.py`, commit and `git push origin main`.
 - Screenshots are in `images/` at the repo root.
-- Internal documentation (not published) is in `Documentation/UserGuide.md` — keep it in sync with `index.md`.
+- `Documentation/UserGuide.md` only explains the generator (the guide itself is `Documentation/site/*.py`).
 - **History note:** docs used to live in a `docs-publish/` submodule pointing at this same repo. That self-referential submodule caused `main` (app) and the docs line to diverge; it was removed in 2.2.1. The pre-removal docs history is preserved on the `origin/docs-backup` branch. Do **not** re-introduce a docs submodule.
 
 ## Versioning
@@ -475,14 +475,14 @@ Use `AppConstants.supportEmail` everywhere an email address is needed (Settings 
 
 **After any feature or UI change, always do the following before closing the session:**
 
-1. **Update `index.md`** (repo root) — version header, affected sections (Settings, History, Browse, Completion, FAQ). The user cannot do this without reading the code; you can.
-2. **Update `Documentation/UserGuide.md`** — keep it in sync with `index.md`.
+1. **Update `Documentation/site/en.py`, then the 7 other languages** (`fr de es it pt zh ru` — same sections/blocks, button names taken from `Localizable.xcstrings`), and run `build_site.py` (it fails if a language drifts). Version line is in each file's `UI["version_line"]`. The user cannot do this without reading the code; you can.
+2. **Update the privacy policy** (`PRIVACY` in each language file) if the app starts touching new data or the network.
 3. **Update the Version Changelog** below (already in CLAUDE.md).
 4. **Identify screenshots that need retaking** — you cannot take device screenshots yourself. At the end of the session, list explicitly which screenshots in `images/` (repo root) are now stale and what the new screen should show, so the user knows exactly what to capture. Common candidates:
    - Settings screen: any time a new setting is added or a section changes
    - Dashboard/History/Report: any time a new status, badge, or row format changes
    - Browse tab: any time navigation depth or grid layout changes
-5. **Commit the docs with the rest** — `index.md` and `images/` live on `main`; a normal `git push origin main` publishes the site (Pages builds from `main` root). No separate repo/submodule.
+5. **Commit the docs with the rest** — the generated site folders and `images/` live on `main`; a normal `git push origin main` publishes the site (Pages builds from `main` root). No separate repo/submodule.
 
 **What you cannot do alone (flag to the user):**
 - Take screenshots on a real device or simulator
@@ -634,7 +634,7 @@ The engines that touch SMB cannot run in a unit test (no live NAS, and `PHBackup
 
 ## IAP price
 - Pro upgrade price: **$1.99** (changed from $4.99).
-- Price is referenced in `Configuration.storekit`, `Products.storekit`, and `index.md` (repo root).
+- Price is referenced in `Configuration.storekit`, `Products.storekit`, and `Documentation/site/*.py` (the guide says "one-time purchase" without a figure).
 - The real price on the App Store is set in **App Store Connect → Pricing and Availability** — the `.storekit` files only affect the simulator and TestFlight.
 
 ## Android port (`android/`)
@@ -678,4 +678,6 @@ python3 tools/gen_android_strings.py                              # regenerate e
 
 **R8**: release is minified + resource-shrunk (`app/proguard-rules.pro` keeps smbj, BouncyCastle, mbassador and the `@Serializable` classes): release APK ≈ 9 MB (debug 67 MB). The `qa` build type (`gradle :app:assembleQa`) is that same minified code but debuggable and debug-signed, so the Pro toggle works — run the NAS/backup smoke test on it after touching the proguard rules (done 2026-10-21: backup to local + Samba OK under R8).
 
-**Not done yet / next**: HEVC export is verified only through its H.264 fallback (the emulator cannot encode HEVC) — try a real grading on a phone; Play listing texts (8 languages; icon, feature graphic and 8 phone screenshots are done — `android/store/`, icons generated by `android/tools/make_icons.py`; the signed release AAB/APK are built into the gitignored `android/dist/`); Play Console app + in-app product `photovideobackup_pro` + closed test (personal account: 12 testers × 14 days); the release keystore exists locally (`android/keystore/`, gitignored — **back it up outside the repo**, losing it means no more updates); `index.md` / `Documentation/UserGuide.md` section for Android; instrumented test of `SqliteIndexStore` (its semantics are only covered through `InMemoryIndexStore`); real-device test with a USB-C SD reader/SSD (only an emulated `/sdcard` folder was tried — SAF volume names, capacity and eject/reinsert behave differently on real removable media); real NAS (Synology SMB3 signing/encryption) not tried from Android.
+**Store assets (done)**: `android/store/` holds the 512 px icon, the feature graphic, 8 phone screenshots and `play_listing.json` (title / short / full description in the 8 Play locales, generated by `android/tools/make_play_listing.py`, limits checked: 30 / 80 / 4000); icons come from `android/tools/make_icons.py`; the signed release AAB/APK are built into the gitignored `android/dist/`. The privacy-policy URL is `https://gduval78.github.io/PhotoVideoBackup/privacy-policy.html` (8 languages, see Documentation).
+
+**Not done yet / next**: HEVC export is verified only through its H.264 fallback (the emulator cannot encode HEVC) — try a real grading on a phone; Play Console app + in-app product `photovideobackup_pro` + closed test (personal account: 12 testers × 14 days); the release keystore exists locally (`android/keystore/`, gitignored — **back it up outside the repo**, losing it means no more updates); instrumented test of `SqliteIndexStore` (its semantics are only covered through `InMemoryIndexStore`); real-device test with a USB-C SD reader/SSD (only an emulated `/sdcard` folder was tried — SAF volume names, capacity and eject/reinsert behave differently on real removable media); real NAS (Synology SMB3 signing/encryption) not tried from Android.
