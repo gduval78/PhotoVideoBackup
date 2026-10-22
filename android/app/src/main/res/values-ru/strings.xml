@@ -7,6 +7,7 @@
     <string name="additional_file_types">Доп. типы файлов</string>
     <string name="all_files">Все файлы</string>
     <string name="all_photos_videos">все фото и видео</string>
+    <string name="already_deleted">Эти файлы уже были удалены.</string>
     <string name="already_present">Уже присутствует</string>
     <string name="analyzing_source">Анализ источника…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">Записи сеанса удалены. Файлы на SSD не затронуты.</string>
     <string name="clear_history_title">Очистить всю историю резервного копирования?</string>
     <string name="close">Закрыть</string>
+    <string name="code">Код</string>
     <string name="completed">Завершено</string>
     <string name="connect_ssd_hint">Подключите SSD и настройте назначение в Настройках.</string>
     <string name="connected">Подключено</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">Копирование…</string>
     <string name="could_not_connect_nas">Не удалось подключиться к NAS.</string>
     <string name="date">Дата</string>
+    <string name="delete_footer_fmt">Безвозвратно удаляет %1$d файлов, скопированных в этом сеансе, из источника. Резервная копия не затрагивается.</string>
+    <string name="delete_grant_hint">Чтобы удалить файлы этого источника, Android требуется доступ на запись. Выберите ту же папку ещё раз и разрешите доступ.</string>
+    <string name="delete_irreversible">Это действие нельзя отменить. Убедитесь, что резервная копия завершена.</string>
+    <string name="delete_n_files_fmt">Удалить %1$d файлов</string>
+    <string name="delete_n_files_msg">%1$d файлов будут безвозвратно удалены из %2$s.</string>
+    <string name="delete_old_android">Для удаления фото из галереи требуется Android 11 или новее.</string>
+    <string name="delete_one_file">Удалить 1 файл</string>
+    <string name="delete_one_file_msg">1 файл будет безвозвратно удалён из %1$s.</string>
+    <string name="delete_source_files">Удалить исходные файлы</string>
+    <string name="delete_source_files_ellipsis">Удалить исходные файлы…</string>
+    <string name="deleted_failed_fmt">%1$d удалено, %2$d с ошибкой.</string>
+    <string name="deleting">Удаление…</string>
+    <string name="deletion_complete">Удаление завершено</string>
     <string name="deselect_all">Снять выбор</string>
     <string name="destination">Назначение</string>
     <string name="destination_1">Назначение 1 (основное)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">Документация</string>
     <string name="duration">Длительность</string>
     <string name="empty_folder">Пустая папка</string>
+    <string name="enter_code">Введите этот код для подтверждения удаления:</string>
     <string name="err_device_name">Пожалуйста, задайте имя устройства в Настройках перед началом резервного копирования.</string>
     <string name="err_external_pro">Резервное копирование внешних источников требует версии Pro.</string>
     <string name="err_gallery_permission">Разрешите доступ к фото и видео в настройках Android, чтобы создать копию галереи.</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">Хост / IP</string>
     <string name="language">Язык</string>
     <string name="max_files_per_session">Макс. файлов за сеанс</string>
+    <string name="n_deleted_ok">%1$d файлов успешно удалено.</string>
     <string name="name">Имя</string>
     <string name="name_not_configured">Имя не настроено</string>
     <string name="name_source_message">Дайте этому источнику имя, чтобы легко его узнать.</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">Файлы автоматически именуются при резервном копировании</string>
     <string name="onboarding_sources">SD-карты, DJI, Insta360, GoPro и другие</string>
     <string name="onboarding_tagline">Резервное копирование медиа на внешний SSD\nза несколько нажатий.</string>
+    <string name="one_deleted_ok">%1$d файл успешно удалён.</string>
     <string name="one_file_in_folder">1 файл в этой папке</string>
     <string name="one_time_purchase">Единовременная покупка — без подписки</string>
     <string name="partial">Частично</string>

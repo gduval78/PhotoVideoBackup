@@ -1,7 +1,23 @@
 package gduvalsc.photovideobackup.ui
 
 import android.content.Intent
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import gduvalsc.photovideobackup.SourceDeleter
+import gduvalsc.photovideobackup.Saf
+import gduvalsc.pvb.core.DeletionResult
+import gduvalsc.pvb.core.SourceDeletion
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -138,6 +154,55 @@ fun ReportScreen(sessionId: String, onBack: () -> Unit) {
     var filter by remember { mutableStateOf(Filter.ALL) }
     val locale = context.resources.configuration.locales[0] ?: Locale.getDefault()
 
+    // "Delete Source Files…"
+    val scope = rememberCoroutineScope()
+    val deletable = remember(files) { SourceDeletion.deletable(files) }
+    var canDelete by remember { mutableStateOf(false) }
+    var showDelete by remember { mutableStateOf(false) }
+    var deleting by remember { mutableStateOf(false) }
+    var deletionResult by remember { mutableStateOf<DeletionResult?>(null) }
+    var needGrantHint by remember { mutableStateOf(false) }
+    var pendingGallery by remember { mutableStateOf<Pair<Int, Int>?>(null) }   // (items asked, already gone)
+    LaunchedEffect(session, deletable) { if (session != null) canDelete = SourceDeleter.canDelete(context, session, deletable) }
+
+    fun deleteDocuments() = scope.launch {
+        deleting = true
+        deletionResult = SourceDeleter.deleteDocuments(context, deletable)
+        deleting = false; showDelete = false
+    }
+    val galleryConfirm = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { res ->
+        val (asked, gone) = pendingGallery ?: (0 to 0)
+        deleting = false; showDelete = false
+        // The system dialog deletes all the listed items at once, or none when the user refuses.
+        if (res.resultCode == Activity.RESULT_OK) deletionResult = DeletionResult(asked, 0, gone)
+        pendingGallery = null
+    }
+    val grantPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) {
+            Saf.persist(context, uri, write = true)
+            if (Saf.hasGrant(context, uri, write = true)) deleteDocuments() else deleting = false
+        } else deleting = false
+    }
+    fun startDeletion() {
+        val sess = session ?: return
+        scope.launch {
+            deleting = true
+            val tree = SourceDeleter.sourceTree(sess, deletable)
+            if (tree == null) {                                   // gallery
+                if (!SourceDeleter.galleryDeleteSupported) { deleting = false; showDelete = false; android.widget.Toast.makeText(context, R.string.delete_old_android, android.widget.Toast.LENGTH_LONG).show(); return@launch }
+                val (present, gone) = SourceDeleter.presentGalleryItems(context, deletable)
+                if (present.isEmpty()) { deleting = false; showDelete = false; deletionResult = DeletionResult(0, 0, gone); return@launch }
+                pendingGallery = present.size to gone
+                val request = SourceDeleter.galleryDeleteRequest(context, present)
+                if (request == null) { deleting = false; showDelete = false; pendingGallery = null; deletionResult = DeletionResult(0, present.size, gone); return@launch }
+                galleryConfirm.launch(IntentSenderRequest.Builder(request).build())
+            } else if (!Saf.hasGrant(context, tree, write = true)) { // a source added read-only: ask for write access
+                showDelete = false          // the code dialog would otherwise stay behind the hint
+                needGrantHint = true
+            } else deleteDocuments()
+        }
+    }
+
     Column(Modifier.fillMaxSize()) {
         SubScreenBar(stringResource(R.string.backup_report), onBack) {
             if (session != null) IconButton(onClick = {
@@ -146,6 +211,14 @@ fun ReportScreen(sessionId: String, onBack: () -> Unit) {
             }) { Icon(Icons.Default.Share, stringResource(R.string.share_report)) }
         }
         if (session == null) return@Column
+
+        DeletionDialogs(
+            session, showDelete, deletable.size, deleting, onConfirm = { startDeletion() }, onDismiss = { showDelete = false },
+            needGrantHint = needGrantHint,
+            onGrant = { needGrantHint = false; SourceDeleter.sourceTree(session, deletable)?.let { grantPicker.launch(it) } },
+            onGrantDismiss = { needGrantHint = false; deleting = false },
+            result = deletionResult, onResultDismiss = { deletionResult = null },
+        )
 
         val copied = files.count { it.copyStatus == CopyStatus.COPIED }
         val skipped = files.count { it.copyStatus == CopyStatus.SKIPPED }
@@ -210,8 +283,18 @@ fun ReportScreen(sessionId: String, onBack: () -> Unit) {
                     }
                 }
             }
+            if (canDelete) item {
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    OutlinedButton(onClick = { showDelete = true }, colors = ButtonDefaults.outlinedButtonColors(contentColor = Tone.bad)) {
+                        Icon(Icons.Default.Delete, null, Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.delete_source_files_ellipsis))
+                    }
+                    Text(stringResource(R.string.delete_footer_fmt, deletable.size), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
+                }
+            }
             item {
-                Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(filter == Filter.ALL, { filter = Filter.ALL }, { Text(stringResource(R.string.all_files)) })
                     FilterChip(filter == Filter.COPIED, { filter = Filter.COPIED }, { Text(stringResource(R.string.copied)) })
                     FilterChip(filter == Filter.SKIPPED, { filter = Filter.SKIPPED }, { Text(stringResource(R.string.skipped)) })
@@ -238,6 +321,38 @@ fun ReportScreen(sessionId: String, onBack: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DeletionDialogs(
+    session: BackupSession?, showDelete: Boolean, count: Int, deleting: Boolean, onConfirm: () -> Unit, onDismiss: () -> Unit,
+    needGrantHint: Boolean, onGrant: () -> Unit, onGrantDismiss: () -> Unit,
+    result: DeletionResult?, onResultDismiss: () -> Unit,
+) {
+    if (showDelete && session != null) DeleteConfirmationDialog(count, session.sourceDisplayName, deleting, onConfirm, onDismiss)
+    if (needGrantHint) AlertDialog(
+        onDismissRequest = onGrantDismiss,
+        title = { Text(stringResource(R.string.delete_source_files)) },
+        text = { Text(stringResource(R.string.delete_grant_hint)) },
+        confirmButton = { TextButton(onClick = onGrant) { Text(stringResource(R.string.choose_ellipsis)) } },
+        dismissButton = { TextButton(onClick = onGrantDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+    result?.let { r ->
+        AlertDialog(
+            onDismissRequest = onResultDismiss,
+            title = { Text(stringResource(R.string.deletion_complete)) },
+            text = {
+                Text(
+                    when {
+                        r.nothingToDelete -> stringResource(R.string.already_deleted)
+                        r.failed == 0 -> if (r.deleted == 1) stringResource(R.string.one_deleted_ok, r.deleted) else stringResource(R.string.n_deleted_ok, r.deleted)
+                        else -> stringResource(R.string.deleted_failed_fmt, r.deleted, r.failed)
+                    },
+                )
+            },
+            confirmButton = { TextButton(onClick = onResultDismiss) { Text(stringResource(R.string.ok)) } },
+        )
     }
 }
 

@@ -7,6 +7,7 @@
     <string name="additional_file_types">Types de fichiers supplémentaires</string>
     <string name="all_files">Tous les fichiers</string>
     <string name="all_photos_videos">toutes les photos et vidéos</string>
+    <string name="already_deleted">Ces fichiers ont déjà été supprimés.</string>
     <string name="already_present">Déjà présent</string>
     <string name="analyzing_source">Analyse de la source…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">Les enregistrements de session sont supprimés. Les fichiers sur votre SSD ne sont pas affectés.</string>
     <string name="clear_history_title">Effacer tout l\'historique de sauvegarde ?</string>
     <string name="close">Fermer</string>
+    <string name="code">Code</string>
     <string name="completed">Terminée</string>
     <string name="connect_ssd_hint">Connectez votre SSD et configurez une destination dans Réglages.</string>
     <string name="connected">Connecté</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">Copie…</string>
     <string name="could_not_connect_nas">Impossible de se connecter au NAS.</string>
     <string name="date">Date</string>
+    <string name="delete_footer_fmt">Supprime définitivement les %1$d fichiers copiés lors de cette session depuis la source d\'origine. Votre sauvegarde n\'est pas affectée.</string>
+    <string name="delete_grant_hint">Pour supprimer les fichiers de cette source, Android demande un accès en écriture. Choisissez à nouveau le même dossier et autorisez-le.</string>
+    <string name="delete_irreversible">Cette action est irréversible. Assurez-vous que votre sauvegarde est terminée avant de continuer.</string>
+    <string name="delete_n_files_fmt">Supprimer %1$d fichiers</string>
+    <string name="delete_n_files_msg">%1$d fichiers seront définitivement supprimés de %2$s.</string>
+    <string name="delete_old_android">La suppression de photos de la galerie nécessite Android 11 ou plus récent.</string>
+    <string name="delete_one_file">Supprimer 1 fichier</string>
+    <string name="delete_one_file_msg">1 fichier sera définitivement supprimé de %1$s.</string>
+    <string name="delete_source_files">Supprimer les fichiers source</string>
+    <string name="delete_source_files_ellipsis">Supprimer les fichiers source…</string>
+    <string name="deleted_failed_fmt">%1$d supprimés, %2$d échoués.</string>
+    <string name="deleting">Suppression…</string>
+    <string name="deletion_complete">Suppression terminée</string>
     <string name="deselect_all">Tout désélectionner</string>
     <string name="destination">Destination</string>
     <string name="destination_1">Destination 1 (principale)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">Documentation</string>
     <string name="duration">Durée</string>
     <string name="empty_folder">Dossier vide</string>
+    <string name="enter_code">Saisissez ce code pour confirmer la suppression :</string>
     <string name="err_device_name">Veuillez définir un nom d\'appareil dans Réglages avant de lancer une sauvegarde.</string>
     <string name="err_external_pro">La sauvegarde de source externe nécessite la mise à niveau Pro.</string>
     <string name="err_gallery_permission">Autorisez l\'accès aux photos et vidéos dans les réglages Android pour sauvegarder la galerie.</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">Hôte / IP</string>
     <string name="language">Langue</string>
     <string name="max_files_per_session">Fichiers max par session</string>
+    <string name="n_deleted_ok">%1$d fichiers supprimés avec succès.</string>
     <string name="name">Nom</string>
     <string name="name_not_configured">Nom non configuré</string>
     <string name="name_source_message">Donnez un nom à cette source pour la reconnaître facilement.</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">Les fichiers sont nommés automatiquement pendant la sauvegarde</string>
     <string name="onboarding_sources">Cartes SD, DJI, Insta360, GoPro et plus</string>
     <string name="onboarding_tagline">Sauvegardez vos médias sur un SSD externe\nen quelques gestes.</string>
+    <string name="one_deleted_ok">%1$d fichier supprimé avec succès.</string>
     <string name="one_file_in_folder">1 fichier dans ce dossier</string>
     <string name="one_time_purchase">Achat unique — sans abonnement</string>
     <string name="partial">Partielle</string>

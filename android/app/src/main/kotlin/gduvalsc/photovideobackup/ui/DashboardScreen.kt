@@ -115,7 +115,7 @@ fun DashboardScreen(onGoSettings: () -> Unit, onPaywall: () -> Unit) {
     }
     val sourcePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
-        Saf.persist(context, uri, write = false)
+        Saf.persist(context, uri, write = true)   // write access is what lets the report delete the files it copied
         val id = reconnecting
         if (id != null) {
             // The card was ejected and reinserted: a fresh grant replaces the dead one, name and type are kept.

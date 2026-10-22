@@ -7,6 +7,7 @@
     <string name="additional_file_types">Tipi di file aggiuntivi</string>
     <string name="all_files">Tutti i file</string>
     <string name="all_photos_videos">tutte le foto e i video</string>
+    <string name="already_deleted">Questi file sono già stati eliminati.</string>
     <string name="already_present">Già presente</string>
     <string name="analyzing_source">Analisi della sorgente…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">I record di sessione vengono rimossi. I file sul tuo SSD non vengono modificati.</string>
     <string name="clear_history_title">Cancellare tutta la cronologia di backup?</string>
     <string name="close">Chiudi</string>
+    <string name="code">Codice</string>
     <string name="completed">Completato</string>
     <string name="connect_ssd_hint">Collega il tuo SSD e configura una destinazione nelle impostazioni.</string>
     <string name="connected">Connesso</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">Copia…</string>
     <string name="could_not_connect_nas">Impossibile connettersi al NAS.</string>
     <string name="date">Data</string>
+    <string name="delete_footer_fmt">Elimina definitivamente i %1$d file copiati durante questa sessione dalla sorgente originale. Il tuo backup non verrà modificato.</string>
+    <string name="delete_grant_hint">Per eliminare i file di questa sorgente, Android richiede l\'accesso in scrittura. Scegli di nuovo la stessa cartella e consenti l\'accesso.</string>
+    <string name="delete_irreversible">Questa azione non può essere annullata. Assicurati che il tuo backup sia completo prima di procedere.</string>
+    <string name="delete_n_files_fmt">Elimina %1$d file</string>
+    <string name="delete_n_files_msg">%1$d file verranno eliminati definitivamente da %2$s.</string>
+    <string name="delete_old_android">Per eliminare le foto dalla galleria serve Android 11 o successivo.</string>
+    <string name="delete_one_file">Elimina 1 file</string>
+    <string name="delete_one_file_msg">1 file verrà eliminato definitivamente da %1$s.</string>
+    <string name="delete_source_files">Elimina file sorgente</string>
+    <string name="delete_source_files_ellipsis">Elimina file sorgente…</string>
+    <string name="deleted_failed_fmt">%1$d eliminati, %2$d falliti.</string>
+    <string name="deleting">Eliminazione…</string>
+    <string name="deletion_complete">Eliminazione completata</string>
     <string name="deselect_all">Deseleziona tutto</string>
     <string name="destination">Destinazione</string>
     <string name="destination_1">Destinazione 1 (principale)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">Documentazione</string>
     <string name="duration">Durata</string>
     <string name="empty_folder">Cartella vuota</string>
+    <string name="enter_code">Inserisci questo codice per confermare l\'eliminazione:</string>
     <string name="err_device_name">Imposta un nome dispositivo nelle impostazioni prima di avviare un backup.</string>
     <string name="err_external_pro">Il backup da sorgente esterna richiede l\'upgrade Pro.</string>
     <string name="err_gallery_permission">Consenti l\'accesso a foto e video nelle impostazioni di Android per eseguire il backup della galleria.</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">Host / IP</string>
     <string name="language">Lingua</string>
     <string name="max_files_per_session">Max file per sessione</string>
+    <string name="n_deleted_ok">%1$d file eliminati con successo.</string>
     <string name="name">Nome</string>
     <string name="name_not_configured">Nome non configurato</string>
     <string name="name_source_message">Dai un nome a questa sorgente per riconoscerla facilmente.</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">I file vengono nominati automaticamente durante il backup</string>
     <string name="onboarding_sources">Schede SD, DJI, Insta360, GoPro e altro</string>
     <string name="onboarding_tagline">Salva i tuoi media su un SSD esterno\nin pochi tocchi.</string>
+    <string name="one_deleted_ok">%1$d file eliminato con successo.</string>
     <string name="one_file_in_folder">1 file in questa cartella</string>
     <string name="one_time_purchase">Acquisto unico — nessun abbonamento</string>
     <string name="partial">Parziale</string>

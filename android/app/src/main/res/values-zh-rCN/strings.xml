@@ -7,6 +7,7 @@
     <string name="additional_file_types">其他文件类型</string>
     <string name="all_files">所有文件</string>
     <string name="all_photos_videos">所有照片和视频</string>
+    <string name="already_deleted">这些文件已被删除。</string>
     <string name="already_present">已存在</string>
     <string name="analyzing_source">正在分析来源…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">会话记录已删除。SSD 上的文件不受影响。</string>
     <string name="clear_history_title">清除所有备份历史记录？</string>
     <string name="close">关闭</string>
+    <string name="code">代码</string>
     <string name="completed">已完成</string>
     <string name="connect_ssd_hint">请连接 SSD 并在设置中配置目标位置。</string>
     <string name="connected">已连接</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">正在复制…</string>
     <string name="could_not_connect_nas">无法连接到 NAS。</string>
     <string name="date">日期</string>
+    <string name="delete_footer_fmt">将从原始来源中永久删除本次会话中复制的 %1$d 个文件。您的备份不受影响。</string>
+    <string name="delete_grant_hint">要删除此来源的文件,Android 需要写入权限。请再次选择同一文件夹并允许访问。</string>
+    <string name="delete_irreversible">此操作无法撤销。请确保备份已完成后再继续。</string>
+    <string name="delete_n_files_fmt">删除 %1$d 个文件</string>
+    <string name="delete_n_files_msg">将从 %1$s 中永久删除 %2$d 个文件。</string>
+    <string name="delete_old_android">从相册删除照片需要 Android 11 或更高版本。</string>
+    <string name="delete_one_file">删除 1 个文件</string>
+    <string name="delete_one_file_msg">将从 %1$s 中永久删除 1 个文件。</string>
+    <string name="delete_source_files">删除源文件</string>
+    <string name="delete_source_files_ellipsis">删除源文件…</string>
+    <string name="deleted_failed_fmt">已删除 %1$d 个，%2$d 个失败。</string>
+    <string name="deleting">正在删除…</string>
+    <string name="deletion_complete">删除完成</string>
     <string name="deselect_all">取消全选</string>
     <string name="destination">目标</string>
     <string name="destination_1">目标 1(主要)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">文档</string>
     <string name="duration">时长</string>
     <string name="empty_folder">空文件夹</string>
+    <string name="enter_code">输入此代码以确认删除：</string>
     <string name="err_device_name">开始备份前，请在设置中设置设备名称。</string>
     <string name="err_external_pro">外部源备份需要升级至 Pro 版。</string>
     <string name="err_gallery_permission">请在 Android 设置中允许访问照片和视频,以备份相册。</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">主机 / IP</string>
     <string name="language">语言</string>
     <string name="max_files_per_session">每次会话最大文件数</string>
+    <string name="n_deleted_ok">已成功删除 %1$d 个文件。</string>
     <string name="name">名称</string>
     <string name="name_not_configured">未配置名称</string>
     <string name="name_source_message">为此来源命名以便于识别。</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">备份时自动命名文件</string>
     <string name="onboarding_sources">SD 卡、DJI、Insta360、GoPro 等</string>
     <string name="onboarding_tagline">只需轻点几下，即可将媒体\n备份到外部 SSD。</string>
+    <string name="one_deleted_ok">已成功删除 %1$d 个文件。</string>
     <string name="one_file_in_folder">此文件夹中有 1 个文件</string>
     <string name="one_time_purchase">一次性购买 — 无需订阅</string>
     <string name="partial">部分完成</string>

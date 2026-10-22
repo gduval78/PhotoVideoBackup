@@ -7,6 +7,7 @@
     <string name="additional_file_types">Tipos de ficheiro adicionais</string>
     <string name="all_files">Todos os ficheiros</string>
     <string name="all_photos_videos">todas as fotos e vídeos</string>
+    <string name="already_deleted">Estes ficheiros já foram eliminados.</string>
     <string name="already_present">Já presente</string>
     <string name="analyzing_source">A analisar a origem…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">Os registos de sessão são removidos. Os ficheiros no seu SSD não são afetados.</string>
     <string name="clear_history_title">Limpar todo o histórico de backup?</string>
     <string name="close">Fechar</string>
+    <string name="code">Código</string>
     <string name="completed">Concluído</string>
     <string name="connect_ssd_hint">Conecte o seu SSD e configure um destino nas definições.</string>
     <string name="connected">Conectado</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">Copiando…</string>
     <string name="could_not_connect_nas">Não foi possível ligar ao NAS.</string>
     <string name="date">Data</string>
+    <string name="delete_footer_fmt">Elimina permanentemente os %1$d ficheiros copiados durante esta sessão da fonte original. O seu backup não é afetado.</string>
+    <string name="delete_grant_hint">Para eliminar os ficheiros desta origem, o Android precisa de acesso de escrita. Escolha novamente a mesma pasta e permita o acesso.</string>
+    <string name="delete_irreversible">Esta ação não pode ser desfeita. Certifique-se de que o seu backup está completo antes de continuar.</string>
+    <string name="delete_n_files_fmt">Eliminar %1$d ficheiros</string>
+    <string name="delete_n_files_msg">%1$d ficheiros serão eliminados permanentemente de %2$s.</string>
+    <string name="delete_old_android">Eliminar fotos da galeria requer Android 11 ou posterior.</string>
+    <string name="delete_one_file">Eliminar 1 ficheiro</string>
+    <string name="delete_one_file_msg">1 ficheiro será eliminado permanentemente de %1$s.</string>
+    <string name="delete_source_files">Eliminar ficheiros fonte</string>
+    <string name="delete_source_files_ellipsis">Eliminar ficheiros fonte…</string>
+    <string name="deleted_failed_fmt">%1$d eliminados, %2$d falharam.</string>
+    <string name="deleting">Excluindo…</string>
+    <string name="deletion_complete">Eliminação concluída</string>
     <string name="deselect_all">Deselecionar tudo</string>
     <string name="destination">Destino</string>
     <string name="destination_1">Destino 1 (principal)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">Documentação</string>
     <string name="duration">Duração</string>
     <string name="empty_folder">Pasta vazia</string>
+    <string name="enter_code">Introduza este código para confirmar a eliminação:</string>
     <string name="err_device_name">Defina um nome de dispositivo nas definições antes de iniciar um backup.</string>
     <string name="err_external_pro">O backup de fontes externas requer a atualização Pro.</string>
     <string name="err_gallery_permission">Permita o acesso a fotos e vídeos nas definições do Android para copiar a galeria.</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">Anfitrião / IP</string>
     <string name="language">Idioma</string>
     <string name="max_files_per_session">Máx. ficheiros por sessão</string>
+    <string name="n_deleted_ok">%1$d ficheiros eliminados com sucesso.</string>
     <string name="name">Nome</string>
     <string name="name_not_configured">Nome não configurado</string>
     <string name="name_source_message">Dê um nome a esta fonte para a identificar facilmente.</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">Os ficheiros são nomeados automaticamente durante a cópia</string>
     <string name="onboarding_sources">Cartões SD, DJI, Insta360, GoPro e mais</string>
     <string name="onboarding_tagline">Faça backup dos seus ficheiros para um SSD externo\ncom apenas alguns toques.</string>
+    <string name="one_deleted_ok">%1$d ficheiro eliminado com sucesso.</string>
     <string name="one_file_in_folder">1 ficheiro nesta pasta</string>
     <string name="one_time_purchase">Compra única — sem subscrição</string>
     <string name="partial">Parcial</string>

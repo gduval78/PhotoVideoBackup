@@ -99,6 +99,17 @@ REUSED = {
     "no_media_files": "No media files", "select": "Select", "select_all": "Select All", "deselect_all": "Deselect All",
     "share_n_fmt": "Share (%lld)", "preparing_n_fmt": "Preparing %lld file(s)…", "nas": "NAS",
     "could_not_connect_nas": "Could not connect to the NAS.",
+    # Delete source files
+    "delete_source_files_ellipsis": "Delete Source Files…", "delete_source_files": "Delete Source Files",
+    "delete_one_file_msg": "1 file will be permanently deleted from **%@**.",
+    "delete_n_files_msg": "%lld files will be permanently deleted from **%@**.",
+    "delete_irreversible": "This action cannot be undone. Make sure your backup is complete before proceeding.",
+    "enter_code": "Enter this code to confirm deletion:", "code": "Code", "delete_one_file": "Delete 1 file",
+    "delete_n_files_fmt": "Delete %lld files", "deletion_complete": "Deletion Complete",
+    "already_deleted": "These files have already been deleted.", "one_deleted_ok": "%lld file deleted successfully.",
+    "n_deleted_ok": "%lld files deleted successfully.", "deleted_failed_fmt": "%lld deleted, %lld failed.",
+    "delete_footer_fmt": "Permanently deletes the %lld files that were copied during this session from the original source. Your backup is not affected.",
+    "deleting": "Deleting…",
 }
 
 # Android-only strings: name -> {lang: text}. Format args use %s / %d (positional when several).
@@ -127,6 +138,8 @@ EXTRA = {
     "browse_open_with": {"en": "Open with…", "fr": "Ouvrir avec…", "de": "Öffnen mit …", "es": "Abrir con…", "it": "Apri con…", "pt": "Abrir com…", "zh-Hans": "用其他应用打开…", "ru": "Открыть в…"},
     "browse_downloading": {"en": "Downloading…", "fr": "Téléchargement…", "de": "Wird geladen …", "es": "Descargando…", "it": "Download in corso…", "pt": "A transferir…", "zh-Hans": "正在下载…", "ru": "Загрузка…"},
     "browse_share_failed": {"en": "Could not prepare the files to share.", "fr": "Impossible de préparer les fichiers à partager.", "de": "Die Dateien konnten nicht zum Teilen vorbereitet werden.", "es": "No se pudieron preparar los archivos para compartir.", "it": "Impossibile preparare i file da condividere.", "pt": "Não foi possível preparar os ficheiros para partilhar.", "zh-Hans": "无法准备要分享的文件。", "ru": "Не удалось подготовить файлы для отправки."},
+    "delete_grant_hint": {"en": "To delete files on this source, Android needs write access. Choose the same folder again and allow it.", "fr": "Pour supprimer les fichiers de cette source, Android demande un accès en écriture. Choisissez à nouveau le même dossier et autorisez-le.", "de": "Zum Löschen von Dateien dieser Quelle braucht Android Schreibzugriff. Wählen Sie denselben Ordner erneut und erlauben Sie den Zugriff.", "es": "Para eliminar los archivos de este origen, Android necesita acceso de escritura. Elige de nuevo la misma carpeta y permítelo.", "it": "Per eliminare i file di questa sorgente, Android richiede l'accesso in scrittura. Scegli di nuovo la stessa cartella e consenti l'accesso.", "pt": "Para eliminar os ficheiros desta origem, o Android precisa de acesso de escrita. Escolha novamente a mesma pasta e permita o acesso.", "zh-Hans": "要删除此来源的文件,Android 需要写入权限。请再次选择同一文件夹并允许访问。", "ru": "Чтобы удалить файлы этого источника, Android требуется доступ на запись. Выберите ту же папку ещё раз и разрешите доступ."},
+    "delete_old_android": {"en": "Deleting photos from the gallery needs Android 11 or later.", "fr": "La suppression de photos de la galerie nécessite Android 11 ou plus récent.", "de": "Zum Löschen von Fotos aus der Galerie ist Android 11 oder neuer nötig.", "es": "Eliminar fotos de la galería requiere Android 11 o posterior.", "it": "Per eliminare le foto dalla galleria serve Android 11 o successivo.", "pt": "Eliminar fotos da galeria requer Android 11 ou posterior.", "zh-Hans": "从相册删除照片需要 Android 11 或更高版本。", "ru": "Для удаления фото из галереи требуется Android 11 или новее."},
     "browse_not_connected": {"en": "This destination is not connected.", "fr": "Cette destination n'est pas connectée.", "de": "Dieses Ziel ist nicht verbunden.", "es": "Este destino no está conectado.", "it": "Questa destinazione non è connessa.", "pt": "Este destino não está ligado.", "zh-Hans": "此目标未连接。", "ru": "Это место назначения не подключено."},
 }
 
@@ -141,7 +154,7 @@ def to_android(text: str) -> str:
         idx = (m.group(1) or f"{n}$")
         return f"%{idx}{'s' if m.group(2) == '@' else 'd'}"
     out = PLACEHOLDER.sub(sub, text)
-    out = escape(out)
+    out = escape(out.replace("**", ""))   # iOS uses Markdown bold in a few strings; plain text here
     out = out.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"').replace("\n", "\\n")
     if out.startswith(("@", "?")):
         out = "\\" + out

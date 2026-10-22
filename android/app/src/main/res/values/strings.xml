@@ -7,6 +7,7 @@
     <string name="additional_file_types">Additional file types</string>
     <string name="all_files">All files</string>
     <string name="all_photos_videos">all photos &amp; videos</string>
+    <string name="already_deleted">These files have already been deleted.</string>
     <string name="already_present">Already present</string>
     <string name="analyzing_source">Analyzing source…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
@@ -30,6 +31,7 @@
     <string name="clear_history_message">Session records are removed. Files on your SSD are not affected.</string>
     <string name="clear_history_title">Clear all backup history?</string>
     <string name="close">Close</string>
+    <string name="code">Code</string>
     <string name="completed">Completed</string>
     <string name="connect_ssd_hint">Connect your SSD and configure a destination in Settings.</string>
     <string name="connected">Connected</string>
@@ -40,6 +42,19 @@
     <string name="copying_ellipsis">Copying…</string>
     <string name="could_not_connect_nas">Could not connect to the NAS.</string>
     <string name="date">Date</string>
+    <string name="delete_footer_fmt">Permanently deletes the %1$d files that were copied during this session from the original source. Your backup is not affected.</string>
+    <string name="delete_grant_hint">To delete files on this source, Android needs write access. Choose the same folder again and allow it.</string>
+    <string name="delete_irreversible">This action cannot be undone. Make sure your backup is complete before proceeding.</string>
+    <string name="delete_n_files_fmt">Delete %1$d files</string>
+    <string name="delete_n_files_msg">%1$d files will be permanently deleted from %2$s.</string>
+    <string name="delete_old_android">Deleting photos from the gallery needs Android 11 or later.</string>
+    <string name="delete_one_file">Delete 1 file</string>
+    <string name="delete_one_file_msg">1 file will be permanently deleted from %1$s.</string>
+    <string name="delete_source_files">Delete Source Files</string>
+    <string name="delete_source_files_ellipsis">Delete Source Files…</string>
+    <string name="deleted_failed_fmt">%1$d deleted, %2$d failed.</string>
+    <string name="deleting">Deleting…</string>
+    <string name="deletion_complete">Deletion Complete</string>
     <string name="deselect_all">Deselect All</string>
     <string name="destination">Destination</string>
     <string name="destination_1">Destination 1 (primary)</string>
@@ -53,6 +68,7 @@
     <string name="documentation">Documentation</string>
     <string name="duration">Duration</string>
     <string name="empty_folder">Empty folder</string>
+    <string name="enter_code">Enter this code to confirm deletion:</string>
     <string name="err_device_name">Please set a device name in Settings before starting a backup.</string>
     <string name="err_external_pro">External source backup requires the Pro upgrade.</string>
     <string name="err_gallery_permission">Allow access to your photos and videos in Android settings to back up the gallery.</string>
@@ -92,6 +108,7 @@
     <string name="host_ip">Host / IP</string>
     <string name="language">Language</string>
     <string name="max_files_per_session">Max files per session</string>
+    <string name="n_deleted_ok">%1$d files deleted successfully.</string>
     <string name="name">Name</string>
     <string name="name_not_configured">Name not configured</string>
     <string name="name_source_message">Give this source a name so you can recognise it easily.</string>
@@ -135,6 +152,7 @@
     <string name="onboarding_naming">Files are named automatically as they are backed up</string>
     <string name="onboarding_sources">SD cards, DJI, Insta360, GoPro and more</string>
     <string name="onboarding_tagline">Back up your media to an external SSD\nin just a few taps.</string>
+    <string name="one_deleted_ok">%1$d file deleted successfully.</string>
     <string name="one_file_in_folder">1 file in this folder</string>
     <string name="one_time_purchase">One-time purchase — no subscription</string>
     <string name="partial">Partial</string>
