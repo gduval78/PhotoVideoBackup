@@ -11,6 +11,8 @@
     <string name="already_present">Уже присутствует</string>
     <string name="analyzing_source">Анализ источника…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">Назначить LUT…</string>
+    <string name="available_luts">Доступные LUT</string>
     <string name="back">Назад</string>
     <string name="backup">Резервная копия</string>
     <string name="backup_complete">Резервное копирование завершено</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">Копирование…</string>
     <string name="could_not_connect_nas">Не удалось подключиться к NAS.</string>
     <string name="date">Дата</string>
+    <string name="delete">Удалить</string>
     <string name="delete_footer_fmt">Безвозвратно удаляет %1$d файлов, скопированных в этом сеансе, из источника. Резервная копия не затрагивается.</string>
     <string name="delete_grant_hint">Чтобы удалить файлы этого источника, Android требуется доступ на запись. Выберите ту же папку ещё раз и разрешите доступ.</string>
     <string name="delete_irreversible">Это действие нельзя отменить. Убедитесь, что резервная копия завершена.</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s свободно</string>
     <string name="gallery">Галерея</string>
     <string name="get_started">Начать</string>
+    <string name="grade">Обработать</string>
+    <string name="grade_failed_fmt">Не удалось обработать видео: %1$d.</string>
+    <string name="grading_complete">Обработка завершена</string>
+    <string name="grading_ellipsis">Обработка…</string>
+    <string name="grading_n_fmt">Обработка %1$d / %2$d</string>
     <string name="history">История</string>
     <string name="history_empty_hint">Здесь будут отображаться завершённые сеансы.</string>
     <string name="host_ip">Хост / IP</string>
+    <string name="import_failed">Импорт не удался</string>
+    <string name="import_lut_cube">Импортировать LUT (.cube)…</string>
     <string name="language">Язык</string>
+    <string name="lut_grade">LUT-обработка</string>
+    <string name="lut_invalid">Этот файл не является корректной LUT .cube.</string>
+    <string name="lut_on">LUT ВКЛ</string>
     <string name="max_files_per_session">Макс. файлов за сеанс</string>
     <string name="n_deleted_ok">%1$d файлов успешно удалено.</string>
     <string name="name">Имя</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">NAS используется как дополнительное место резервного копирования по Wi-Fi. Файлы записываются прямо в общую папку и проверяются по SHA-256. Пароль хранится в зашифрованном виде в Android Keystore.</string>
     <string name="nas_fill_fields">Заполните хост, общую папку и имя пользователя.</string>
     <string name="nas_folder_placeholder">необязательно, напр. Backups</string>
+    <string name="nas_grading_note">Загрузка, обработка и выгрузка в копию «(Graded)» на NAS.</string>
     <string name="nas_invalid_port">Неверный хост или порт.</string>
     <string name="nas_name_placeholder">напр. Synology NAS</string>
     <string name="nas_share_placeholder">напр. photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">Нет истории резервного копирования</string>
     <string name="no_backups_yet">На этом SSD ещё нет резервных копий.</string>
     <string name="no_destination_hint">Назначение не настроено — перейдите в Настройки.</string>
+    <string name="no_luts_yet">LUT ещё не импортированы.</string>
     <string name="no_media_files">Нет медиафайлов</string>
     <string name="no_ssd_connected">SSD не подключён</string>
     <string name="none">Нет</string>
@@ -182,6 +197,9 @@
     <string name="save">Сохранить</string>
     <string name="select">Выбрать</string>
     <string name="select_all">Выбрать всё</string>
+    <string name="select_log_hint">Выбирайте только видео в LOG для обработки.</string>
+    <string name="select_lut">Выбрать LUT</string>
+    <string name="select_videos_hint">Выберите видео в сетке, затем нажмите «Обработать».</string>
     <string name="send">Отправить</string>
     <string name="set_device_name_hint">Задайте имя устройства в Настройках.</string>
     <string name="settings">Настройки</string>

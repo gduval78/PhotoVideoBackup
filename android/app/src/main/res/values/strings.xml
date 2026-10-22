@@ -11,6 +11,8 @@
     <string name="already_present">Already present</string>
     <string name="analyzing_source">Analyzing source…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">Assign LUT…</string>
+    <string name="available_luts">Available LUTs</string>
     <string name="back">Back</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup Complete</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">Copying…</string>
     <string name="could_not_connect_nas">Could not connect to the NAS.</string>
     <string name="date">Date</string>
+    <string name="delete">Delete</string>
     <string name="delete_footer_fmt">Permanently deletes the %1$d files that were copied during this session from the original source. Your backup is not affected.</string>
     <string name="delete_grant_hint">To delete files on this source, Android needs write access. Choose the same folder again and allow it.</string>
     <string name="delete_irreversible">This action cannot be undone. Make sure your backup is complete before proceeding.</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s free</string>
     <string name="gallery">Gallery</string>
     <string name="get_started">Get Started</string>
+    <string name="grade">Grade</string>
+    <string name="grade_failed_fmt">%1$d video(s) could not be graded.</string>
+    <string name="grading_complete">Grading complete</string>
+    <string name="grading_ellipsis">Grading…</string>
+    <string name="grading_n_fmt">Grading %1$d / %2$d</string>
     <string name="history">History</string>
     <string name="history_empty_hint">Completed backup sessions will appear here.</string>
     <string name="host_ip">Host / IP</string>
+    <string name="import_failed">Import Failed</string>
+    <string name="import_lut_cube">Import LUT (.cube)…</string>
     <string name="language">Language</string>
+    <string name="lut_grade">LUT Grade</string>
+    <string name="lut_invalid">This file is not a valid .cube LUT.</string>
+    <string name="lut_on">LUT ON</string>
     <string name="max_files_per_session">Max files per session</string>
     <string name="n_deleted_ok">%1$d files deleted successfully.</string>
     <string name="name">Name</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">The NAS is used as an additional backup destination over Wi-Fi. Files are written directly to the share and verified by SHA-256. The password is stored encrypted in the Android Keystore.</string>
     <string name="nas_fill_fields">Please fill in host, share and username.</string>
     <string name="nas_folder_placeholder">optional, e.g. Backups</string>
+    <string name="nas_grading_note">Downloading, grading, and uploading to a “(Graded)” copy on the NAS.</string>
     <string name="nas_invalid_port">Invalid host or port.</string>
     <string name="nas_name_placeholder">e.g. Synology NAS</string>
     <string name="nas_share_placeholder">e.g. photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">No Backup History</string>
     <string name="no_backups_yet">No backups yet on this SSD.</string>
     <string name="no_destination_hint">No destination configured — go to Settings.</string>
+    <string name="no_luts_yet">No LUTs imported yet.</string>
     <string name="no_media_files">No media files</string>
     <string name="no_ssd_connected">No SSD Connected</string>
     <string name="none">None</string>
@@ -182,6 +197,9 @@
     <string name="save">Save</string>
     <string name="select">Select</string>
     <string name="select_all">Select All</string>
+    <string name="select_log_hint">Select only your LOG videos to grade.</string>
+    <string name="select_lut">Select LUT</string>
+    <string name="select_videos_hint">Select videos in the grid, then tap Grade.</string>
     <string name="send">Send</string>
     <string name="set_device_name_hint">Set a device name in Settings.</string>
     <string name="settings">Settings</string>

@@ -11,6 +11,8 @@ import gduvalsc.pvb.core.FolderOrganization
 import gduvalsc.pvb.core.NamingProfile
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
@@ -53,6 +55,7 @@ data class NasConfig(
 object Prefs {
     private lateinit var sp: SharedPreferences
     private val json = Json { ignoreUnknownKeys = true }
+    private val STRING_MAP = MapSerializer(String.serializer(), String.serializer())
     private var revision by mutableIntStateOf(0)
 
     const val MAX_LOCAL_DESTINATIONS = 2
@@ -129,6 +132,11 @@ object Prefs {
     var debugPro: Boolean
         get() = read { sp.getBoolean("debugPro", false) }
         set(v) = write { putBoolean("debugPro", v) }
+
+    /** LUT assignment per folder: a device folder name (local) or `nas:<subPath>` → the imported `.cube` file name. */
+    var lutAssignments: Map<String, String>
+        get() = read { sp.getString("lutAssignments", null)?.let { runCatching { json.decodeFromString(STRING_MAP, it) }.getOrNull() } ?: emptyMap() }
+        set(v) = write { putString("lutAssignments", json.encodeToString(STRING_MAP, v)) }
 
     var lastBackupAtMs: Long
         get() = read { sp.getLong("lastBackupAtMs", 0L) }

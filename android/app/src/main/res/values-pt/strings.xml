@@ -11,6 +11,8 @@
     <string name="already_present">Já presente</string>
     <string name="analyzing_source">A analisar a origem…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">Atribuir LUT…</string>
+    <string name="available_luts">LUTs disponíveis</string>
     <string name="back">Voltar</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup concluído</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">Copiando…</string>
     <string name="could_not_connect_nas">Não foi possível ligar ao NAS.</string>
     <string name="date">Data</string>
+    <string name="delete">Eliminar</string>
     <string name="delete_footer_fmt">Elimina permanentemente os %1$d ficheiros copiados durante esta sessão da fonte original. O seu backup não é afetado.</string>
     <string name="delete_grant_hint">Para eliminar os ficheiros desta origem, o Android precisa de acesso de escrita. Escolha novamente a mesma pasta e permita o acesso.</string>
     <string name="delete_irreversible">Esta ação não pode ser desfeita. Certifique-se de que o seu backup está completo antes de continuar.</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s disponível</string>
     <string name="gallery">Galeria</string>
     <string name="get_started">Começar</string>
+    <string name="grade">Gradação</string>
+    <string name="grade_failed_fmt">Não foi possível processar %1$d vídeo(s).</string>
+    <string name="grading_complete">Gradação concluída</string>
+    <string name="grading_ellipsis">Gradando…</string>
+    <string name="grading_n_fmt">A graduar %1$d / %2$d</string>
     <string name="history">Histórico</string>
     <string name="history_empty_hint">As sessões de backup concluídas aparecerão aqui.</string>
     <string name="host_ip">Anfitrião / IP</string>
+    <string name="import_failed">Importação falhada</string>
+    <string name="import_lut_cube">Importar LUT (.cube)…</string>
     <string name="language">Idioma</string>
+    <string name="lut_grade">LUT Grade</string>
+    <string name="lut_invalid">Este ficheiro não é uma LUT .cube válida.</string>
+    <string name="lut_on">LUT ON</string>
     <string name="max_files_per_session">Máx. ficheiros por sessão</string>
     <string name="n_deleted_ok">%1$d ficheiros eliminados com sucesso.</string>
     <string name="name">Nome</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">O NAS é usado como destino de cópia adicional por Wi-Fi. Os ficheiros são escritos diretamente na partilha e verificados com SHA-256. A palavra-passe é guardada cifrada no Keystore do Android.</string>
     <string name="nas_fill_fields">Preencha o anfitrião, a partilha e o utilizador.</string>
     <string name="nas_folder_placeholder">opcional, ex. Backups</string>
+    <string name="nas_grading_note">A baixar, gradar e enviar para uma cópia “(Graded)” no NAS.</string>
     <string name="nas_invalid_port">Anfitrião ou porta inválidos.</string>
     <string name="nas_name_placeholder">ex. Synology NAS</string>
     <string name="nas_share_placeholder">ex. photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">Sem histórico de backup</string>
     <string name="no_backups_yet">Ainda sem backups neste SSD.</string>
     <string name="no_destination_hint">Nenhum destino configurado — vá às definições.</string>
+    <string name="no_luts_yet">Nenhum LUT importado ainda.</string>
     <string name="no_media_files">Nenhum ficheiro de média</string>
     <string name="no_ssd_connected">Nenhum SSD conectado</string>
     <string name="none">Nenhum</string>
@@ -182,6 +197,9 @@
     <string name="save">Salvar</string>
     <string name="select">Selecionar</string>
     <string name="select_all">Selecionar tudo</string>
+    <string name="select_log_hint">Selecione apenas os seus vídeos em LOG para gradar.</string>
+    <string name="select_lut">Selecionar LUT</string>
+    <string name="select_videos_hint">Selecione os vídeos na grelha, depois toque em Gradação.</string>
     <string name="send">Enviar</string>
     <string name="set_device_name_hint">Defina um nome de dispositivo nas definições.</string>
     <string name="settings">Definições</string>

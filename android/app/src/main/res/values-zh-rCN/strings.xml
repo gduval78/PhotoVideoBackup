@@ -11,6 +11,8 @@
     <string name="already_present">已存在</string>
     <string name="analyzing_source">正在分析来源…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">分配 LUT…</string>
+    <string name="available_luts">可用的 LUT</string>
     <string name="back">返回</string>
     <string name="backup">备份</string>
     <string name="backup_complete">备份完成</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">正在复制…</string>
     <string name="could_not_connect_nas">无法连接到 NAS。</string>
     <string name="date">日期</string>
+    <string name="delete">删除</string>
     <string name="delete_footer_fmt">将从原始来源中永久删除本次会话中复制的 %1$d 个文件。您的备份不受影响。</string>
     <string name="delete_grant_hint">要删除此来源的文件,Android 需要写入权限。请再次选择同一文件夹并允许访问。</string>
     <string name="delete_irreversible">此操作无法撤销。请确保备份已完成后再继续。</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s 可用</string>
     <string name="gallery">相册</string>
     <string name="get_started">开始使用</string>
+    <string name="grade">调色</string>
+    <string name="grade_failed_fmt">有 %1$d 个视频无法调色。</string>
+    <string name="grading_complete">调色完成</string>
+    <string name="grading_ellipsis">调色中…</string>
+    <string name="grading_n_fmt">调色 %1$d / %2$d</string>
     <string name="history">历史记录</string>
     <string name="history_empty_hint">已完成的备份会话将显示在此处。</string>
     <string name="host_ip">主机 / IP</string>
+    <string name="import_failed">导入失败</string>
+    <string name="import_lut_cube">导入 LUT (.cube)…</string>
     <string name="language">语言</string>
+    <string name="lut_grade">LUT 调色</string>
+    <string name="lut_invalid">此文件不是有效的 .cube LUT。</string>
+    <string name="lut_on">LUT 开启</string>
     <string name="max_files_per_session">每次会话最大文件数</string>
     <string name="n_deleted_ok">已成功删除 %1$d 个文件。</string>
     <string name="name">名称</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">NAS 通过 Wi-Fi 用作额外的备份目标。文件直接写入共享并通过 SHA-256 校验。密码加密存储在 Android Keystore 中。</string>
     <string name="nas_fill_fields">请填写主机、共享和用户名。</string>
     <string name="nas_folder_placeholder">可选，例如 Backups</string>
+    <string name="nas_grading_note">下载、调色并上传到 NAS 上的“(Graded)”副本。</string>
     <string name="nas_invalid_port">主机或端口无效。</string>
     <string name="nas_name_placeholder">例如 Synology NAS</string>
     <string name="nas_share_placeholder">例如 photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">无备份历史记录</string>
     <string name="no_backups_yet">此 SSD 上尚无备份。</string>
     <string name="no_destination_hint">未配置目标位置 — 请前往设置。</string>
+    <string name="no_luts_yet">尚未导入 LUT。</string>
     <string name="no_media_files">无媒体文件</string>
     <string name="no_ssd_connected">未连接 SSD</string>
     <string name="none">无</string>
@@ -182,6 +197,9 @@
     <string name="save">保存</string>
     <string name="select">选择</string>
     <string name="select_all">全选</string>
+    <string name="select_log_hint">仅选择你的 LOG 视频进行调色。</string>
+    <string name="select_lut">选择 LUT</string>
+    <string name="select_videos_hint">在网格中选择视频，然后点按\"调色\"。</string>
     <string name="send">发送</string>
     <string name="set_device_name_hint">请在设置中设置设备名称。</string>
     <string name="settings">设置</string>

@@ -75,7 +75,7 @@ fun AppRoot() {
                 Box(Modifier.padding(inner).statusBarsPadding()) {
                     when (tab) {
                         Tab.BACKUP -> DashboardScreen(onGoSettings = { tab = Tab.SETTINGS }, onPaywall = { page = Page.Paywall })
-                        Tab.BROWSE -> BrowseScreen()
+                        Tab.BROWSE -> BrowseScreen(onPaywall = { page = Page.Paywall })
                         Tab.HISTORY -> HistoryScreen(onOpen = { page = Page.Report(it) })
                         Tab.SETTINGS -> SettingsScreen(
                             onPaywall = { page = Page.Paywall }, onNaming = { page = Page.Naming },

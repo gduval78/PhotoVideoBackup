@@ -46,6 +46,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <service
+            android:name=".GradingService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <!-- Keeps the language chosen in Settings across launches on Android < 13. -->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -65,16 +66,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gduvalsc.photovideobackup.AppState
+import gduvalsc.photovideobackup.BrowseSource
+import gduvalsc.photovideobackup.GradeItem
+import gduvalsc.photovideobackup.GradingController
+import gduvalsc.photovideobackup.GradingJob
+import gduvalsc.photovideobackup.LutStore
+import gduvalsc.photovideobackup.NAS_ROOT_KEY
+import gduvalsc.photovideobackup.openBrowseSource
+import gduvalsc.pvb.core.CubeLut
+import gduvalsc.pvb.core.Grading
 import gduvalsc.photovideobackup.MediaLoader
 import gduvalsc.photovideobackup.Prefs
 import gduvalsc.photovideobackup.Pro
 import gduvalsc.photovideobackup.R
 import gduvalsc.photovideobackup.SafTarget
-import gduvalsc.photovideobackup.SecretStore
-import gduvalsc.photovideobackup.SmbTarget
 import gduvalsc.pvb.core.Browse
-import gduvalsc.pvb.core.BrowsableTarget
 import gduvalsc.pvb.core.MediaKind
 import gduvalsc.pvb.core.TargetEntry
 import gduvalsc.pvb.core.pathExtension
@@ -84,36 +92,15 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 
-/** A destination opened for browsing: a SAF folder (read in place) or the NAS (downloaded on demand). */
-class BrowseSource(
-    val title: String,
-    val target: BrowsableTarget,
-    val remote: Boolean,
-    val close: () -> Unit = {},
-)
-
 private sealed interface SourceState {
     data object Loading : SourceState
     class Ready(val source: BrowseSource) : SourceState
     class Failed(val message: String) : SourceState
 }
 
-private const val NAS_KEY = "nas"
-
-private suspend fun openSource(context: android.content.Context, key: String): BrowseSource = withContext(Dispatchers.IO) {
-    if (key == NAS_KEY) {
-        val nas = Prefs.nas ?: error("NAS not configured")
-        val target = SmbTarget.connect(nas, SecretStore.get(context, SecretStore.NAS_PASSWORD).orEmpty())
-        BrowseSource(nas.label, target, remote = true) { target.close() }
-    } else {
-        val d = Prefs.destinations.first { it.uri == key }
-        BrowseSource(d.name, SafTarget(context, Uri.parse(key), d.name), remote = false)
-    }
-}
-
 /** The "Browse" tab: the destinations' folders, thumbnails, a full-screen viewer and sharing. */
 @Composable
-fun BrowseScreen() {
+fun BrowseScreen(onPaywall: () -> Unit) {
     val context = LocalContext.current
     var rootKey by rememberSaveable { mutableStateOf<String?>(null) }
     var path by rememberSaveable(stateSaver = listSaver<List<String>, String>(save = { it }, restore = { it })) { mutableStateOf(emptyList()) }
@@ -122,8 +109,10 @@ fun BrowseScreen() {
     DisposableEffect(Unit) { onDispose { MediaLoader.clearDownloads(context) } }
 
     val key = rootKey
+    // A local destination is entered at a device folder (its root is the destination list), the NAS at its root.
+    val minDepth = if (key == NAS_ROOT_KEY) 0 else 1
     BackHandler(enabled = key != null) {
-        if (path.isNotEmpty()) path = path.dropLast(1) else rootKey = null
+        if (path.size > minDepth) path = path.dropLast(1) else { rootKey = null; path = emptyList() }
     }
 
     if (key == null) {
@@ -133,6 +122,7 @@ fun BrowseScreen() {
             rootKey = key, path = path,
             onPath = { path = it },
             onExit = { rootKey = null; path = emptyList() },
+            onPaywall = onPaywall,
         )
     }
 }
@@ -176,7 +166,7 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
             }
             if (nas != null) {
                 item { SectionHeader(stringResource(R.string.nas)) }
-                item { Row2(nas.displayName.ifBlank { nas.host }, onClick = { onOpen(NAS_KEY, null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) }) }
+                item { Row2(nas.displayName.ifBlank { nas.host }, onClick = { onOpen(NAS_ROOT_KEY, null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) }) }
             }
         }
     }
@@ -186,13 +176,13 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<String>) -> Unit, onExit: () -> Unit) {
+private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<String>) -> Unit, onExit: () -> Unit, onPaywall: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val state by produceState<SourceState>(SourceState.Loading, rootKey) {
         value = SourceState.Loading
-        val opened = runCatching { openSource(context, rootKey) }
+        val opened = runCatching { openBrowseSource(context, rootKey) }
         value = opened.fold({ SourceState.Ready(it) }, { SourceState.Failed(it.message ?: it.javaClass.simpleName) })
         awaitDispose { (value as? SourceState.Ready)?.source?.close?.invoke() }
     }
@@ -220,6 +210,21 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
             var viewer by remember(rel) { mutableStateOf<Int?>(null) }
             val title = path.lastOrNull() ?: src.title
 
+            // LUT Grade: a LUT is assigned per device folder (local) or per NAS folder; the section shows at the device
+            // folder level (any non-root NAS level), and grading is offered wherever the folder's LUT applies.
+            val isNas = rootKey == NAS_ROOT_KEY
+            val lutKey: String? = when {
+                isNas -> if (path.isNotEmpty() && !Grading.isGradedFolder(path.last())) Grading.nasKey(rel) else null
+                else -> path.firstOrNull()?.takeIf { !Grading.isGradedFolder(it) }
+            }
+            val showLutSection = lutKey != null && (isNas || path.size == 1)
+            LaunchedEffect(Unit) { LutStore.refresh(context) }
+            val lutItem = lutKey?.let { LutStore.assigned(it) }
+            val cubeLut by produceState<CubeLut?>(null, lutItem) { value = lutItem?.let { LutStore.load(it) } }
+            val gradingState by GradingController.state.collectAsStateWithLifecycle()
+            val gradesFinished by GradingController.finishedCount.collectAsStateWithLifecycle()
+            LaunchedEffect(gradesFinished) { if (gradesFinished > 0) reload++ }   // the new "(Graded)" folder shows up
+
             val listing = entries?.getOrNull()
             val folders = listing?.let { Browse.folders(it, newestFirst = path.isNotEmpty()) }.orEmpty()
             val media = listing?.let { Browse.mediaFiles(it) }.orEmpty()
@@ -233,7 +238,7 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
                         title = if (selectionMode) "${selected.size}" else title,
                         onBack = {
                             if (selectionMode) { selectionMode = false; selected = emptySet() }
-                            else if (path.isNotEmpty()) onPath(path.dropLast(1)) else onExit()
+                            else if (path.size > (if (isNas) 0 else 1)) onPath(path.dropLast(1)) else onExit()
                         },
                     ) {
                         if (media.isNotEmpty()) {
@@ -241,6 +246,22 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
                                 TextButton(onClick = { selected = if (selected.size == media.size) emptySet() else media.map { it.name }.toSet() }) {
                                     Text(stringResource(if (selected.size == media.size) R.string.deselect_all else R.string.select_all))
                                 }
+                                if (lutItem != null) IconButton(
+                                    enabled = media.any { it.name in selected && Grading.isGradable(it.name) } && gradingState?.isFinished != false,
+                                    onClick = {
+                                        if (!Pro.isPro) { onPaywall(); return@IconButton }
+                                        val key = lutKey ?: return@IconButton
+                                        val items = media.filter { it.name in selected && Grading.isGradable(it.name) }.map {
+                                            GradeItem(
+                                                rel = Browse.child(rel, it.name),
+                                                relFromBase = if (isNas) it.name else (path.drop(1) + it.name).joinToString("/"),
+                                                size = it.size,
+                                            )
+                                        }
+                                        GradingController.start(context, GradingJob(rootKey, if (isNas) rel else path[0], key, lutItem.file.name, items))
+                                        selectionMode = false; selected = emptySet()
+                                    },
+                                ) { Icon(Icons.Default.Tune, stringResource(R.string.grade)) }
                                 IconButton(
                                     enabled = selected.isNotEmpty() && !preparing,
                                     onClick = {
@@ -257,6 +278,8 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
                             }
                         }
                     }
+
+                    if (showLutSection && lutKey != null) LutSection(lutKey, lutItem, isNas, gradingState)
 
                     when {
                         entries == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -309,7 +332,7 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
                     }
                 }
 
-                viewer?.let { start -> MediaViewer(src, rel, media, start, onClose = { viewer = null }) }
+                viewer?.let { start -> MediaViewer(src, rel, media, start, cubeLut, onClose = { viewer = null }) }
             }
         }
     }

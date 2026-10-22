@@ -110,6 +110,13 @@ REUSED = {
     "n_deleted_ok": "%lld files deleted successfully.", "deleted_failed_fmt": "%lld deleted, %lld failed.",
     "delete_footer_fmt": "Permanently deletes the %lld files that were copied during this session from the original source. Your backup is not affected.",
     "deleting": "Deleting…",
+    # LUT Grade
+    "lut_grade": "LUT Grade", "assign_lut": "Assign LUT…", "grade": "Grade", "grading_n_fmt": "Grading %lld / %lld",
+    "grading_complete": "Grading complete", "grading_ellipsis": "Grading…", "import_lut_cube": "Import LUT (.cube)…",
+    "import_failed": "Import Failed", "no_luts_yet": "No LUTs imported yet.", "select_lut": "Select LUT",
+    "available_luts": "Available LUTs", "select_videos_hint": "Select videos in the grid, then tap Grade.",
+    "select_log_hint": "Select only your LOG videos to grade.", "lut_on": "LUT ON",
+    "nas_grading_note": "Downloading, grading, and uploading to a “(Graded)” copy on the NAS.", "delete": "Delete",
 }
 
 # Android-only strings: name -> {lang: text}. Format args use %s / %d (positional when several).
@@ -140,6 +147,8 @@ EXTRA = {
     "browse_share_failed": {"en": "Could not prepare the files to share.", "fr": "Impossible de préparer les fichiers à partager.", "de": "Die Dateien konnten nicht zum Teilen vorbereitet werden.", "es": "No se pudieron preparar los archivos para compartir.", "it": "Impossibile preparare i file da condividere.", "pt": "Não foi possível preparar os ficheiros para partilhar.", "zh-Hans": "无法准备要分享的文件。", "ru": "Не удалось подготовить файлы для отправки."},
     "delete_grant_hint": {"en": "To delete files on this source, Android needs write access. Choose the same folder again and allow it.", "fr": "Pour supprimer les fichiers de cette source, Android demande un accès en écriture. Choisissez à nouveau le même dossier et autorisez-le.", "de": "Zum Löschen von Dateien dieser Quelle braucht Android Schreibzugriff. Wählen Sie denselben Ordner erneut und erlauben Sie den Zugriff.", "es": "Para eliminar los archivos de este origen, Android necesita acceso de escritura. Elige de nuevo la misma carpeta y permítelo.", "it": "Per eliminare i file di questa sorgente, Android richiede l'accesso in scrittura. Scegli di nuovo la stessa cartella e consenti l'accesso.", "pt": "Para eliminar os ficheiros desta origem, o Android precisa de acesso de escrita. Escolha novamente a mesma pasta e permita o acesso.", "zh-Hans": "要删除此来源的文件,Android 需要写入权限。请再次选择同一文件夹并允许访问。", "ru": "Чтобы удалить файлы этого источника, Android требуется доступ на запись. Выберите ту же папку ещё раз и разрешите доступ."},
     "delete_old_android": {"en": "Deleting photos from the gallery needs Android 11 or later.", "fr": "La suppression de photos de la galerie nécessite Android 11 ou plus récent.", "de": "Zum Löschen von Fotos aus der Galerie ist Android 11 oder neuer nötig.", "es": "Eliminar fotos de la galería requiere Android 11 o posterior.", "it": "Per eliminare le foto dalla galleria serve Android 11 o successivo.", "pt": "Eliminar fotos da galeria requer Android 11 ou posterior.", "zh-Hans": "从相册删除照片需要 Android 11 或更高版本。", "ru": "Для удаления фото из галереи требуется Android 11 или новее."},
+    "lut_invalid": {"en": "This file is not a valid .cube LUT.", "fr": "Ce fichier n'est pas une LUT .cube valide.", "de": "Diese Datei ist keine gültige .cube-LUT.", "es": "Este archivo no es una LUT .cube válida.", "it": "Questo file non è una LUT .cube valida.", "pt": "Este ficheiro não é uma LUT .cube válida.", "zh-Hans": "此文件不是有效的 .cube LUT。", "ru": "Этот файл не является корректной LUT .cube."},
+    "grade_failed_fmt": {"en": "%1$d video(s) could not be graded.", "fr": "%1$d vidéo(s) n'ont pas pu être étalonnée(s).", "de": "%1$d Video(s) konnten nicht bearbeitet werden.", "es": "No se pudieron procesar %1$d vídeo(s).", "it": "Impossibile elaborare %1$d video.", "pt": "Não foi possível processar %1$d vídeo(s).", "zh-Hans": "有 %1$d 个视频无法调色。", "ru": "Не удалось обработать видео: %1$d."},
     "browse_not_connected": {"en": "This destination is not connected.", "fr": "Cette destination n'est pas connectée.", "de": "Dieses Ziel ist nicht verbunden.", "es": "Este destino no está conectado.", "it": "Questa destinazione non è connessa.", "pt": "Este destino não está ligado.", "zh-Hans": "此目标未连接。", "ru": "Это место назначения не подключено."},
 }
 

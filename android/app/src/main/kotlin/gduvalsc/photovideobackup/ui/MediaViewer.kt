@@ -2,8 +2,13 @@ package gduvalsc.photovideobackup.ui
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.MediaController
-import android.widget.VideoView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import androidx.compose.runtime.DisposableEffect
+import gduvalsc.photovideobackup.VideoGrader
+import gduvalsc.pvb.core.CubeLut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import gduvalsc.photovideobackup.BrowseSource
 import gduvalsc.photovideobackup.MediaLoader
 import gduvalsc.photovideobackup.R
 import gduvalsc.photovideobackup.SafTarget
@@ -60,11 +66,11 @@ import gduvalsc.pvb.core.TargetEntry
 
 /** Full-screen viewer: swipe between the folder's photos and videos, pinch to zoom, tap a video to play it. */
 @Composable
-fun MediaViewer(source: BrowseSource, folderRel: String, items: List<TargetEntry>, start: Int, onClose: () -> Unit) {
+fun MediaViewer(source: BrowseSource, folderRel: String, items: List<TargetEntry>, start: Int, lut: CubeLut?, onClose: () -> Unit) {
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 0) { page ->
-            ViewerPage(source, Browse.child(folderRel, items[page].name), items[page], active = pager.currentPage == page)
+            ViewerPage(source, Browse.child(folderRel, items[page].name), items[page], active = pager.currentPage == page, lut = lut)
         }
         Row(Modifier.statusBarsPadding().fillMaxSize().padding(4.dp), verticalAlignment = Alignment.Top) {
             Text(
@@ -84,7 +90,7 @@ private sealed interface Resolved {
 }
 
 @Composable
-private fun ViewerPage(source: BrowseSource, rel: String, entry: TargetEntry, active: Boolean) {
+private fun ViewerPage(source: BrowseSource, rel: String, entry: TargetEntry, active: Boolean, lut: CubeLut?) {
     val context = LocalContext.current
     val kind = Browse.kind(entry.name)
     // A SAF file is read in place; a NAS file is downloaded into the cache the first time it is shown.
@@ -102,7 +108,7 @@ private fun ViewerPage(source: BrowseSource, rel: String, entry: TargetEntry, ac
                 if (source.remote) { Spacer(Modifier.size(12.dp)); Text(stringResource(R.string.browse_downloading), color = Color.White) }
             }
             Resolved.Failed -> Unavailable(null)
-            is Resolved.Ready -> if (kind == MediaKind.VIDEO) VideoPage(r.uri, active) else PhotoPage(r.uri)
+            is Resolved.Ready -> if (kind == MediaKind.VIDEO) VideoPage(r.uri, active, lut) else PhotoPage(r.uri)
         }
     }
 }
@@ -144,8 +150,9 @@ private fun PhotoPage(uri: Uri) {
     )
 }
 
+@OptIn(UnstableApi::class)
 @Composable
-private fun VideoPage(uri: Uri, active: Boolean) {
+private fun VideoPage(uri: Uri, active: Boolean, lut: CubeLut?) {
     val context = LocalContext.current
     var playing by remember(uri) { mutableStateOf(false) }
     val poster by produceState<android.graphics.Bitmap?>(null, uri) { value = MediaLoader.videoPoster(context, uri) }
@@ -158,19 +165,25 @@ private fun VideoPage(uri: Uri, active: Boolean) {
         }
         return
     }
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { ctx ->
-            VideoView(ctx).apply {
-                val controller = MediaController(ctx).also { it.setAnchorView(this) }
-                setMediaController(controller)
-                setVideoURI(uri)
-                setOnPreparedListener { start() }
-                setOnErrorListener { _, _, _ -> true }
-            }
-        },
-        onRelease = { it.stopPlayback() },
-    )
+    // ExoPlayer: with a LUT assigned the preview is graded live (the LUT is a video effect on the player).
+    val player = remember(uri, lut) {
+        ExoPlayer.Builder(context).build().apply {
+            setMediaItem(MediaItem.fromUri(uri))
+            if (lut != null) setVideoEffects(listOf(VideoGrader.effect(lut)))
+            prepare()
+            playWhenReady = true
+        }
+    }
+    DisposableEffect(player) { onDispose { player.release() } }
+    Box(Modifier.fillMaxSize()) {
+        AndroidView(modifier = Modifier.fillMaxSize(), factory = { ctx -> PlayerView(ctx).apply { this.player = player; useController = true } })
+        if (lut != null) {
+            Text(
+                stringResource(R.string.lut_on), color = Color.White, style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                modifier = Modifier.align(Alignment.BottomStart).padding(12.dp).background(Color.Black.copy(alpha = 0.55f)).padding(horizontal = 8.dp, vertical = 4.dp),
+            )
+        }
+    }
 }
 
 @Composable

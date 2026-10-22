@@ -11,6 +11,8 @@
     <string name="already_present">Ya presente</string>
     <string name="analyzing_source">Analizando el origen…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">Asignar LUT…</string>
+    <string name="available_luts">LUTs disponibles</string>
     <string name="back">Atrás</string>
     <string name="backup">Copia</string>
     <string name="backup_complete">Copia de seguridad completa</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">Copiando…</string>
     <string name="could_not_connect_nas">No se pudo conectar al NAS.</string>
     <string name="date">Fecha</string>
+    <string name="delete">Eliminar</string>
     <string name="delete_footer_fmt">Elimina permanentemente los %1$d archivos copiados en esta sesión desde la fuente original. Su copia de seguridad no se ve afectada.</string>
     <string name="delete_grant_hint">Para eliminar los archivos de este origen, Android necesita acceso de escritura. Elige de nuevo la misma carpeta y permítelo.</string>
     <string name="delete_irreversible">Esta acción no se puede deshacer. Asegúrese de que su copia esté completa antes de continuar.</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s libres</string>
     <string name="gallery">Galería</string>
     <string name="get_started">Comenzar</string>
+    <string name="grade">Clasificar</string>
+    <string name="grade_failed_fmt">No se pudieron procesar %1$d vídeo(s).</string>
+    <string name="grading_complete">Clasificación completa</string>
+    <string name="grading_ellipsis">Gradando…</string>
+    <string name="grading_n_fmt">Clasificando %1$d / %2$d</string>
     <string name="history">Historial</string>
     <string name="history_empty_hint">Las sesiones de copia completadas aparecerán aquí.</string>
     <string name="host_ip">Host / IP</string>
+    <string name="import_failed">Error de importación</string>
+    <string name="import_lut_cube">Importar LUT (.cube)…</string>
     <string name="language">Idioma</string>
+    <string name="lut_grade">LUT Grade</string>
+    <string name="lut_invalid">Este archivo no es una LUT .cube válida.</string>
+    <string name="lut_on">LUT ON</string>
     <string name="max_files_per_session">Máx. archivos por sesión</string>
     <string name="n_deleted_ok">%1$d archivos eliminados correctamente.</string>
     <string name="name">Nombre</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">El NAS se usa como destino de copia adicional por Wi-Fi. Los archivos se escriben directamente en el recurso compartido y se verifican con SHA-256. La contraseña se guarda cifrada en el Keystore de Android.</string>
     <string name="nas_fill_fields">Rellena el host, el recurso compartido y el usuario.</string>
     <string name="nas_folder_placeholder">opcional, p. ej. Backups</string>
+    <string name="nas_grading_note">Descarga, clasificación y subida a una copia «(Graded)» en el NAS.</string>
     <string name="nas_invalid_port">Host o puerto no válido.</string>
     <string name="nas_name_placeholder">p. ej. Synology NAS</string>
     <string name="nas_share_placeholder">p. ej. photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">Sin historial de copias</string>
     <string name="no_backups_yet">Aún no hay copias en este SSD.</string>
     <string name="no_destination_hint">Sin destino configurado — vaya a Ajustes.</string>
+    <string name="no_luts_yet">Ningún LUT importado aún.</string>
     <string name="no_media_files">Sin archivos multimedia</string>
     <string name="no_ssd_connected">Sin SSD conectado</string>
     <string name="none">Ninguno</string>
@@ -182,6 +197,9 @@
     <string name="save">Guardar</string>
     <string name="select">Seleccionar</string>
     <string name="select_all">Seleccionar todo</string>
+    <string name="select_log_hint">Selecciona solo tus vídeos en LOG para clasificar.</string>
+    <string name="select_lut">Seleccionar LUT</string>
+    <string name="select_videos_hint">Seleccione videos en la cuadrícula y toque Clasificar.</string>
     <string name="send">Enviar</string>
     <string name="set_device_name_hint">Establezca un nombre de dispositivo en Ajustes.</string>
     <string name="settings">Ajustes</string>

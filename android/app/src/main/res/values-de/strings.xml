@@ -11,6 +11,8 @@
     <string name="already_present">Bereits vorhanden</string>
     <string name="analyzing_source">Quelle wird analysiert…</string>
     <string name="app_name" translatable="false">PhotoVideoBackup</string>
+    <string name="assign_lut">LUT zuweisen…</string>
+    <string name="available_luts">Verfügbare LUTs</string>
     <string name="back">Zurück</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup abgeschlossen</string>
@@ -42,6 +44,7 @@
     <string name="copying_ellipsis">Kopieren…</string>
     <string name="could_not_connect_nas">Verbindung zum NAS nicht möglich.</string>
     <string name="date">Datum</string>
+    <string name="delete">Löschen</string>
     <string name="delete_footer_fmt">Löscht die %1$d in dieser Sitzung kopierten Dateien dauerhaft von der Originalquelle. Ihr Backup ist davon nicht betroffen.</string>
     <string name="delete_grant_hint">Zum Löschen von Dateien dieser Quelle braucht Android Schreibzugriff. Wählen Sie denselben Ordner erneut und erlauben Sie den Zugriff.</string>
     <string name="delete_irreversible">Diese Aktion kann nicht rückgängig gemacht werden. Stellen Sie sicher, dass das Backup abgeschlossen ist.</string>
@@ -103,10 +106,20 @@
     <string name="free_fmt">%1$s frei</string>
     <string name="gallery">Galerie</string>
     <string name="get_started">Loslegen</string>
+    <string name="grade">Graden</string>
+    <string name="grade_failed_fmt">%1$d Video(s) konnten nicht bearbeitet werden.</string>
+    <string name="grading_complete">Grading abgeschlossen</string>
+    <string name="grading_ellipsis">Farbkorrektur…</string>
+    <string name="grading_n_fmt">Grading %1$d / %2$d</string>
     <string name="history">Verlauf</string>
     <string name="history_empty_hint">Abgeschlossene Backup-Sitzungen erscheinen hier.</string>
     <string name="host_ip">Host / IP</string>
+    <string name="import_failed">Import fehlgeschlagen</string>
+    <string name="import_lut_cube">LUT importieren (.cube)…</string>
     <string name="language">Sprache</string>
+    <string name="lut_grade">LUT Grade</string>
+    <string name="lut_invalid">Diese Datei ist keine gültige .cube-LUT.</string>
+    <string name="lut_on">LUT EIN</string>
     <string name="max_files_per_session">Max. Dateien pro Sitzung</string>
     <string name="n_deleted_ok">%1$d Dateien erfolgreich gelöscht.</string>
     <string name="name">Name</string>
@@ -122,6 +135,7 @@
     <string name="nas_explainer">Das NAS dient als zusätzliches Sicherungsziel über WLAN. Dateien werden direkt auf die Freigabe geschrieben und per SHA-256 geprüft. Das Passwort wird verschlüsselt im Android Keystore gespeichert.</string>
     <string name="nas_fill_fields">Bitte Host, Freigabe und Benutzername ausfüllen.</string>
     <string name="nas_folder_placeholder">optional, z. B. Backups</string>
+    <string name="nas_grading_note">Herunterladen, Graden und Hochladen in eine „(Graded)“-Kopie auf dem NAS.</string>
     <string name="nas_invalid_port">Ungültiger Host oder Port.</string>
     <string name="nas_name_placeholder">z. B. Synology NAS</string>
     <string name="nas_share_placeholder">z. B. photo</string>
@@ -130,6 +144,7 @@
     <string name="no_backup_history">Kein Backup-Verlauf</string>
     <string name="no_backups_yet">Noch keine Backups auf dieser SSD.</string>
     <string name="no_destination_hint">Kein Ziel konfiguriert — zu Einstellungen gehen.</string>
+    <string name="no_luts_yet">Noch keine LUTs importiert.</string>
     <string name="no_media_files">Keine Mediendateien</string>
     <string name="no_ssd_connected">Kein SSD verbunden</string>
     <string name="none">Keine</string>
@@ -182,6 +197,9 @@
     <string name="save">Sichern</string>
     <string name="select">Auswählen</string>
     <string name="select_all">Alle auswählen</string>
+    <string name="select_log_hint">Wähle nur deine LOG-Videos zum Graden aus.</string>
+    <string name="select_lut">LUT auswählen</string>
+    <string name="select_videos_hint">Videos im Raster auswählen, dann Graden tippen.</string>
     <string name="send">Senden</string>
     <string name="set_device_name_hint">Gerätename in Einstellungen festlegen.</string>
     <string name="settings">Einstellungen</string>
