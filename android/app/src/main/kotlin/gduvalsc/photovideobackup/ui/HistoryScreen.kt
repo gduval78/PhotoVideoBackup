@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,9 @@ fun HistoryScreen(onOpen: (String) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var confirmClear by remember { mutableStateOf(false) }
+    // The list is read from the index when the tab opens: the app can start straight on this tab, before
+    // the Backup tab (which used to be the only one refreshing AppState) was ever shown.
+    LaunchedEffect(Unit) { AppState.refresh(context) }
     val sessions = AppState.sessions
 
     if (sessions.isEmpty()) {

@@ -125,6 +125,11 @@ object Prefs {
         get() = read { sp.getBoolean("proCached", false) }
         set(v) = write { putBoolean("proCached", v) }
 
+    /** Debug/qa builds only: the local Pro test switch, which Google Play's answer must not overwrite. */
+    var debugPro: Boolean
+        get() = read { sp.getBoolean("debugPro", false) }
+        set(v) = write { putBoolean("debugPro", v) }
+
     var lastBackupAtMs: Long
         get() = read { sp.getLong("lastBackupAtMs", 0L) }
         set(v) = write { putLong("lastBackupAtMs", v) }

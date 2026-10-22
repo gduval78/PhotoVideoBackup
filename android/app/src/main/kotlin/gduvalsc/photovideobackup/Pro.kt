@@ -35,13 +35,16 @@ object Pro {
     var isBusy by mutableStateOf(false); private set
     var purchaseError by mutableStateOf<String?>(null)
 
+    /** What Google Play says (cached while offline). */
+    private var billingPro = false
     private var client: BillingClient? = null
     private var details: ProductDetails? = null
 
     fun init(app: Context) {
         if (client != null) return
         // Last known state: a paying user is not shown "free" while offline; Google Play corrects it as soon as it answers.
-        isPro = Prefs.proCached
+        billingPro = Prefs.proCached
+        recompute()
         client = BillingClient.newBuilder(app)
             .setListener(PurchasesUpdatedListener { r, list -> onPurchases(r, list) })
             .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
@@ -100,10 +103,13 @@ object Pro {
         }
     }
 
-    private fun apply(on: Boolean) { isPro = on; Prefs.proCached = on }
+    private fun apply(on: Boolean) { billingPro = on; Prefs.proCached = on; recompute() }
+
+    /** Pro = a Play purchase, or — debug/qa builds only — the local test switch (Settings → Version). */
+    private fun recompute() { isPro = billingPro || (gduvalsc.photovideobackup.BuildConfig.DEBUG && Prefs.debugPro) }
 
     /** Debug builds only: flips Pro locally so the gated flows can be tested without a Play purchase. */
-    fun debugToggle() { if (gduvalsc.photovideobackup.BuildConfig.DEBUG) { isPro = !isPro; Prefs.proCached = isPro } }
+    fun debugToggle() { if (gduvalsc.photovideobackup.BuildConfig.DEBUG) { Prefs.debugPro = !Prefs.debugPro; recompute() } }
 
     fun purchase(activity: Activity) {
         val d = details ?: return
