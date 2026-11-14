@@ -64,6 +64,20 @@ final class PartialReasonTests: XCTestCase {
         XCTAssertFalse(PHBackupEngine.isOutOfSpace(CopyError.allDestinationsDisconnected))
     }
 
+    // SCENARIO: "All files failed" only when nothing at all is backed up
+    // The field report: a re-run skipped 409 files (already backed up) and failed on 1, yet the Report
+    // announced that all files had failed. Skipped files ARE backed up, so the session is not failed.
+    func test_sessionStatus_failedOnlyWhenNothingIsBackedUp() {
+        typealias VM = DashboardViewModel
+        XCTAssertEqual(VM.sessionStatus(copied: 0, skipped: 409, failed: 1, interrupted: false), .completed)
+        XCTAssertEqual(VM.sessionStatus(copied: 0, skipped: 409, failed: 1, interrupted: true), .partial)
+        XCTAssertEqual(VM.sessionStatus(copied: 3, skipped: 0, failed: 2, interrupted: false), .completed)
+        XCTAssertEqual(VM.sessionStatus(copied: 0, skipped: 0, failed: 5, interrupted: false), .failed)
+        XCTAssertEqual(VM.sessionStatus(copied: 0, skipped: 0, failed: 5, interrupted: true), .failed)
+        XCTAssertEqual(VM.sessionStatus(copied: 0, skipped: 0, failed: 0, interrupted: false), .completed)
+        XCTAssertEqual(VM.sessionStatus(copied: 7, skipped: 0, failed: 0, interrupted: true), .partial)
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.

@@ -674,6 +674,18 @@ final class DashboardViewModel {
 
     // MARK: - Shared finish logic
 
+    /// Pure classifier for the session's overall status.
+    ///
+    /// `.failed` means *nothing at all* is backed up by this run: no file copied **and none already
+    /// present** (skipped). A re-run that skips 409 files and fails 1 is not a failed backup — the
+    /// field report showed "all files failed" for exactly that — so it ends `.completed` (with
+    /// errors, listed in the Report) or `.partial` when something interrupted the run.
+    nonisolated static func sessionStatus(copied: Int, skipped: Int, failed: Int,
+                                          interrupted: Bool) -> SessionStatus {
+        if copied == 0 && skipped == 0 && failed > 0 { return .failed }
+        return interrupted ? .partial : .completed
+    }
+
     /// Pure classifier for why a `.partial` session ended, so user-facing text names the real cause.
     /// Precedence: cancellation (the user asked to stop) → disconnection → file limit. This exists as
     /// a standalone function so it can be unit-tested (`PartialReasonTests`) — the field bug it guards
@@ -738,14 +750,10 @@ final class DashboardViewModel {
             DiagnosticLog.write("[DISC_ERROR] session ended with \(result.disconnectedCount) disconnection(s)")
             refreshDestinationStatuses()
         }
-        let sessionStatus: SessionStatus
-        if result.wasLimited || result.disconnectedCount > 0 || result.wasCancelled || result.wasLowSpace {
-            sessionStatus = result.copiedCount == 0 && result.failedCount > 0 ? .failed : .partial
-        } else if result.copiedCount == 0 && result.failedCount > 0 {
-            sessionStatus = .failed
-        } else {
-            sessionStatus = .completed
-        }
+        let sessionStatus = Self.sessionStatus(
+            copied: result.copiedCount, skipped: result.skippedCount, failed: result.failedCount,
+            interrupted: result.wasLimited || result.disconnectedCount > 0
+                || result.wasCancelled || result.wasLowSpace)
 
         // Which of the three partial causes actually fired. Only meaningful for a `.partial`
         // session; the notification and Report must say the right thing (a disconnection is not
