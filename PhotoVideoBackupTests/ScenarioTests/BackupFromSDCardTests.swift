@@ -99,4 +99,38 @@ final class BackupFromSDCardTests: ScenarioTestCase {
         expect(.skipped(2))   // the 2 still present — must not consume the limit
         expect(.completed)    // limit of 2 exactly met by real copies → NOT partial
     }
+
+    // SCENARIO: A write that fails mid-copy leaves no truncated file, and the retry keeps the real name
+    // A destination that cannot take the whole file (disk full — simulated here with a process file-size
+    // limit so the write fails on a volume that is still reachable) must not keep the partial file under
+    // the final name. Otherwise the next run finds the name taken by unknown content and stores the real
+    // file as "name-1", leaving the truncated one behind (field report, iCloud Drive, 2.6.0).
+    func test_failedWrite_leavesNoPartialFile_andRetryUsesTheRealName() async throws {
+        let sd = sdCard(.djiMini3Pro, named: "DJI Mini 3 Pro", files: [
+            TestFile(name: "DJI_0001.MP4", sizeInBytes: 6 * 1024 * 1024, date: .scenarioDefault),
+        ])
+        let ssd = ssd(named: "TravelSSD")
+        use(.folderOrganization(.byDate))
+
+        // Exceeding RLIMIT_FSIZE raises SIGXFSZ (fatal by default); ignored, the write fails with EFBIG.
+        var previous = rlimit()
+        getrlimit(RLIMIT_FSIZE, &previous)
+        let previousHandler = signal(SIGXFSZ, SIG_IGN)
+        var capped = previous
+        capped.rlim_cur = 1024 * 1024
+        setrlimit(RLIMIT_FSIZE, &capped)
+        await backup(from: sd, to: ssd)
+        setrlimit(RLIMIT_FSIZE, &previous)
+        signal(SIGXFSZ, previousHandler)
+
+        expect(.copied(0))
+        expect(.failed(1))
+        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", from: ssd))
+
+        await backup(from: sd, to: ssd)
+
+        expect(.copied(1))
+        expect(.fileExists("DJI Mini 3 Pro/2024-01-14/DJI_0001.MP4", on: ssd))
+        expect(.fileAbsent("DJI Mini 3 Pro/2024-01-14/DJI_0001-1.MP4", from: ssd))
+    }
 }
