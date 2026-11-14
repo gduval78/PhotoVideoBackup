@@ -19,8 +19,8 @@ struct BackupBrowserView: View {
             if browser.destinations.isEmpty && !nasConfigured {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
-                    title: "No SSD Connected",
-                    message: "Connect your SSD and configure a destination in Settings."
+                    title: "No destination available",
+                    message: "Create a backup in the Backups tab and connect its drive."
                 )
             } else {
                 List {
@@ -28,7 +28,7 @@ struct BackupBrowserView: View {
                         let folders = browser.deviceFolders(in: dest.url)
                         Section(dest.name) {
                             if folders.isEmpty {
-                                Text("No backups yet on this SSD.")
+                                Text("No backups here yet.")
                                     .foregroundStyle(.secondary)
                                     .font(.subheadline)
                             } else {
@@ -761,7 +761,7 @@ struct MediaDetailView: View {
 
 // MARK: - Shared empty state helper
 
-private func emptyState(icon: String, title: String, message: String?) -> some View {
+private func emptyState(icon: String, title: LocalizedStringKey, message: LocalizedStringKey?) -> some View {
     VStack(spacing: 12) {
         Image(systemName: icon)
             .font(.largeTitle)

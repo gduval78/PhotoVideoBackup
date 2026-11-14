@@ -19,6 +19,7 @@ struct DashboardView: View {
     var body: some View {
         List {
             destinationsSection
+            profileDestinationsSection
             sourcesSection
 
             if !viewModel.isRunning, let banner = viewModel.completionBanner {
@@ -107,7 +108,7 @@ struct DashboardView: View {
 
     private var destinationsSection: some View {
         Section("Destinations") {
-            if viewModel.destinationStatuses.isEmpty {
+            if viewModel.destinationStatuses.isEmpty && viewModel.profileDestinationStatuses.isEmpty {
                 Label("No destination configured — go to Settings.",
                       systemImage: "externaldrive.badge.exclamationmark")
                     .foregroundStyle(.secondary)
@@ -116,6 +117,22 @@ struct DashboardView: View {
                 ForEach(viewModel.destinationStatuses) { status in
                     DestinationRow(status: status)
                 }
+            }
+        }
+    }
+
+    /// Folders that belong to backup profiles, shown after the global slots.
+    @ViewBuilder
+    private var profileDestinationsSection: some View {
+        if !viewModel.profileDestinationStatuses.isEmpty {
+            Section {
+                ForEach(viewModel.profileDestinationStatuses) { status in
+                    DestinationRow(status: status)
+                }
+            } header: {
+                Text("Backup profiles")
+            } footer: {
+                Text("These folders belong to the backups of the Backups tab. Run them from there.")
             }
         }
     }

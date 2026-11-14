@@ -11,6 +11,9 @@ final class DashboardViewModel {
     // MARK: State
 
     private(set) var destinationStatuses: [DestinationStatus] = []
+    /// Folders owned by backup profiles (not the two global slots), for the Advanced screen: with n
+    /// profiles there are potentially n destinations, and the dashboard must not hide them.
+    private(set) var profileDestinationStatuses: [DestinationStatus] = []
     private(set) var currentProgress: CopyProgress?
     private(set) var isRunning: Bool = false
     /// Coarse pre-copy phase, so the UI can acknowledge the tap instantly and show that the
@@ -289,8 +292,32 @@ final class DashboardViewModel {
                                               isConnected: false, isRemote: true))
         }
         destinationStatuses = statuses
+        profileDestinationStatuses = profileFolderStatuses(excluding: statuses)
         retryOfflineSources()
         refreshNASStatus()
+    }
+
+    /// Status of each profile-owned folder, once per folder and never repeating a global slot already
+    /// shown. A drive that is unplugged keeps a grayed row, like the slots do.
+    private func profileFolderStatuses(excluding shown: [DestinationStatus]) -> [DestinationStatus] {
+        let dm = DestinationManager.shared
+        let legacy = Set((0...1).map { dm.key(for: $0) })
+        var seen = Set(shown.compactMap { $0.rootURL?.standardizedFileURL.path })
+        var result: [DestinationStatus] = []
+        for key in ProfileStore.shared.profiles.flatMap(\.folderKeys) where !legacy.contains(key) {
+            guard dm.isConfigured(forKey: key) else { continue }
+            let folderPath = dm.folderName(forKey: key)
+            let savedName  = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
+            guard let url = dm.resolveBookmark(forKey: key) else {
+                result.append(DestinationStatus(id: UUID(), displayName: savedName, folderPath: folderPath,
+                                                rootURL: nil, totalCapacity: 0, availableCapacity: 0,
+                                                isConnected: false))
+                continue
+            }
+            guard seen.insert(url.standardizedFileURL.path).inserted else { continue }
+            result.append(destinationStatus(for: url, folderPath: folderPath, savedName: savedName))
+        }
+        return result
     }
 
     /// Connects to the NAS in the background and replaces its row with live connection + capacity.
