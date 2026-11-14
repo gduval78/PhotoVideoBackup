@@ -80,6 +80,17 @@ enum DiagnosticLog {
         nc.addObserver(forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: main) { _ in
             write("[POWER] lowPowerMode=\(ProcessInfo.processInfo.isLowPowerModeEnabled ? "on" : "off")")
         }
+        // Screen / sleep breadcrumbs. `idleTimer=off` means the app is asking iOS not to auto-lock
+        // (only during a backup). A resign-active followed by a background and a data-protection
+        // "locked" line is a lock (side button or auto-lock); the idle-timer state next to it says
+        // whether iOS was told to stay awake — if it was, the screen was locked on purpose.
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        nc.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: main) { _ in
+            write("[SCREEN] resign-active — \(screenState())")
+        }
+        nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: main) { _ in
+            write("[SCREEN] active — \(screenState())")
+        }
         nc.addObserver(forName: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil, queue: main) { _ in
             write("[DATA_PROTECTION] unavailable (device locked)")
         }
@@ -89,6 +100,21 @@ enum DiagnosticLog {
     }
 
     // MARK: - System metrics (cheap, side-effect-free — safe to call from any context)
+
+    /// `idleTimer=off` while the app keeps the screen awake (a backup is running), plus charging and
+    /// battery level — the two things that decide whether the phone should stay lit.
+    static func screenState() -> String {
+        let dev = UIDevice.current
+        let state: String
+        switch dev.batteryState {
+        case .charging:  state = "charging"
+        case .full:      state = "full"
+        case .unplugged: state = "unplugged"
+        default:         state = "?"
+        }
+        let level = dev.batteryLevel >= 0 ? "\(Int(dev.batteryLevel * 100))%" : "?"
+        return "idleTimer=\(UIApplication.shared.isIdleTimerDisabled ? "off" : "on") battery=\(level) \(state)"
+    }
 
     /// Compact one-liner: used/total RAM, free disk, thermal state, low-power, language.
     static func envSnapshot() -> String {
