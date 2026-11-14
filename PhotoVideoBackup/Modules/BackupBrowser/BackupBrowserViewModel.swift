@@ -49,18 +49,39 @@ final class BackupBrowserViewModel {
 
     // MARK: - Security-scoped access
 
+    /// Every backup folder the app can write to, in the order the user meets them: the two global
+    /// slots of the Advanced screens, then the folders of each profile. With n profiles there are
+    /// potentially n destinations — Browse must show all of them, not only the global slots.
+    nonisolated static func destinationKeys(legacy: [String], profiles: [BackupProfile]) -> [String] {
+        legacy + profiles.flatMap(\.folderKeys)
+    }
+
+    /// Several profiles (or a profile and a legacy slot) can point at the same folder — a migrated
+    /// profile reuses the legacy key. Browse lists a folder once. Compared on the standardized path.
+    nonisolated static func uniqueByFolder(_ entries: [(key: String, url: URL)]) -> [(key: String, url: URL)] {
+        var seen = Set<String>()
+        return entries.filter { seen.insert($0.url.standardizedFileURL.path).inserted }
+    }
+
     func startAccess() {
         loadLUTAssignments()
         let dm = DestinationManager.shared
+        let keys = Self.destinationKeys(legacy: (0...1).map { dm.key(for: $0) },
+                                        profiles: ProfileStore.shared.profiles)
+        // An unplugged drive (bookmark that does not resolve) simply does not appear, as before.
+        let resolved: [(key: String, url: URL)] = keys.compactMap { key in
+            guard dm.isConfigured(forKey: key), let url = dm.resolveBookmark(forKey: key) else { return nil }
+            return (key, url)
+        }
         var entries: [Destination] = []
         var accessed: [URL] = []
-        for index in 0...1 {
-            let key = dm.key(for: index)
-            guard dm.isConfigured(forKey: key),
-                  let url = dm.resolveBookmark(forKey: key) else { continue }
+        for (key, url) in Self.uniqueByFolder(resolved) {
             _ = url.startAccessingSecurityScopedResource()
             accessed.append(url)
-            entries.append(Destination(name: dm.displayName(forKey: key), url: url))
+            // "Volume / Folder" tells two folders of the same drive apart; a profile's folder has
+            // no volume-only name worth showing alone.
+            let label = dm.destinationLabel(for: url)
+            entries.append(Destination(name: label.isEmpty ? dm.displayName(forKey: key) : label, url: url))
         }
         accessedURLs = accessed
         destinations = entries

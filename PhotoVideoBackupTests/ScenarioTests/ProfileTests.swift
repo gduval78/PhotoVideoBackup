@@ -109,4 +109,24 @@ final class ProfileTests: XCTestCase {
         XCTAssertNotEqual(key, DestinationManager.shared.key(for: 0))
         XCTAssertNotEqual(key, BackupProfile.folderKey(profileID: id, index: 1))
     }
+
+    // SCENARIO: Browse lists the folders of every profile, once each
+    // With n profiles there are potentially n destinations. The legacy slots come first, then each
+    // profile's folders; a migrated profile reuses a legacy key and several profiles can share a
+    // folder — the browser must show it a single time.
+    func test_browse_destinations_coverEveryProfile_withoutDuplicates() {
+        let a = BackupProfile(name: "A", template: .photosToDrive, source: .photos,
+                              destinations: [.folder(bookmarkKey: "k.profile.a")])
+        let b = BackupProfile(name: "B", template: .photosToDriveAndNAS, source: .photos,
+                              destinations: [.folder(bookmarkKey: "k.profile.b"), .nas])
+        let nasOnly = BackupProfile(name: "N", template: .photosToNAS, source: .photos, destinations: [.nas])
+        let keys = BackupBrowserViewModel.destinationKeys(legacy: ["k.ssd1", "k.ssd2"], profiles: [a, b, nasOnly])
+        XCTAssertEqual(keys, ["k.ssd1", "k.ssd2", "k.profile.a", "k.profile.b"])   // the NAS has no folder key
+
+        let drive = URL(fileURLWithPath: "/Volumes/SSD/Backup")
+        let other = URL(fileURLWithPath: "/Volumes/SSD/Backup 2")
+        let unique = BackupBrowserViewModel.uniqueByFolder([
+            ("k.ssd1", drive), ("k.profile.a", drive), ("k.profile.b", other), ("k.profile.c", drive)])
+        XCTAssertEqual(unique.map(\.key), ["k.ssd1", "k.profile.b"])            // same folder once; "Backup 2" is another
+    }
 }
