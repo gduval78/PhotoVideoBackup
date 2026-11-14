@@ -22899,6 +22899,266 @@
           }
         }
       }
+    },
+    "Another folder…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another folder…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un autre dossier…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderer Ordner …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otra carpeta…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un'altra cartella…"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outra pasta…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他文件夹…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другая папка…"
+          }
+        }
+      }
+    },
+    "A NAS" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A NAS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un NAS"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein NAS"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un NAS"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un NAS"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um NAS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS"
+          }
+        }
+      }
+    },
+    "Add a destination" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a destination"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter une destination"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziel hinzufügen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un destino"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi una destinazione"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar um destino"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加目标位置"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить место назначения"
+          }
+        }
+      }
+    },
+    "A backup can copy to several destinations at once. Swipe to remove one. Choosing another folder is for a replaced drive or an access that no longer works — files already copied stay where they are." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A backup can copy to several destinations at once. Swipe to remove one. Choosing another folder is for a replaced drive or an access that no longer works — files already copied stay where they are."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une sauvegarde peut copier vers plusieurs destinations à la fois. Balayez pour en retirer une. Choisir un autre dossier sert quand le disque est remplacé ou que son accès ne fonctionne plus — les fichiers déjà copiés restent où ils sont."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Backup kann auf mehrere Ziele gleichzeitig kopieren. Zum Entfernen wischen. Einen anderen Ordner wählen Sie bei einem ersetzten Laufwerk oder wenn der Zugriff nicht mehr funktioniert — bereits kopierte Dateien bleiben, wo sie sind."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una copia puede copiar a varios destinos a la vez. Deslice para quitar uno. Elegir otra carpeta sirve cuando se cambia la unidad o su acceso deja de funcionar: los archivos ya copiados se quedan donde están."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un backup può copiare su più destinazioni contemporaneamente. Scorri per rimuoverne una. Scegliere un'altra cartella serve quando il disco viene sostituito o il suo accesso non funziona più — i file già copiati restano dove sono."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uma cópia pode copiar para vários destinos ao mesmo tempo. Deslize para remover um. Escolher outra pasta serve quando o disco é substituído ou o acesso deixa de funcionar — os ficheiros já copiados ficam onde estão."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一个备份可同时复制到多个目标位置。滑动即可移除。当驱动器被更换或访问失效时，请选择其他文件夹——已复制的文件保持原处。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Одна копия может копироваться сразу в несколько мест. Смахните, чтобы удалить. Другую папку выбирают, когда диск заменён или доступ к нему перестал работать — уже скопированные файлы остаются на месте."
+          }
+        }
+      }
+    },
+    "These are the defaults for new backups. Each backup then has its own settings: Backups tab, long press a backup, Settings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "These are the defaults for new backups. Each backup then has its own settings: Backups tab, long press a backup, Settings."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce sont les valeurs par défaut des nouvelles sauvegardes. Chaque sauvegarde a ensuite ses propres réglages : onglet Sauvegardes, appui long sur une sauvegarde, Réglages."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dies sind die Standardwerte für neue Backups. Jedes Backup hat danach eigene Einstellungen: Tab „Backups“, Backup lange drücken, Einstellungen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estos son los valores por defecto de las copias nuevas. Cada copia tiene después sus propios ajustes: pestaña Copias, pulsación larga en una copia, Ajustes."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questi sono i valori predefiniti dei nuovi backup. Ogni backup ha poi le proprie impostazioni: scheda Backup, pressione prolungata su un backup, Impostazioni."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estes são os valores predefinidos das novas cópias. Cada cópia tem depois as suas próprias definições: separador Cópias, toque longo numa cópia, Definições."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些是新备份的默认值。之后每个备份都有自己的设置：“备份”标签页，长按某个备份，再点“设置”。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это значения по умолчанию для новых копий. Затем у каждой копии свои настройки: вкладка «Копии», долгое нажатие на копию, «Настройки»."
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

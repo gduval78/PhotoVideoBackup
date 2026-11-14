@@ -15,7 +15,6 @@
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
-		5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AF01 /* NASSettingsView.swift */; };
 		5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B001 /* NASBrowserView.swift */; };
 		0C38A6313682FBEE115C0C9C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E239A5D423378D22B03B1D6 /* SettingsView.swift */; };
 		1B005CEE7160380ED87FFC67 /* PHLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FE5C101F7EC2D8FC7E5945 /* PHLibraryScanner.swift */; };
@@ -70,7 +69,6 @@
 		CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */; };
 		DAEBD40C15F10838833D31FB /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99679842AE35CEA05BD43B37 /* ReportView.swift */; };
 		DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6127433D81E6C7548DB93070 /* FileCopyEngine.swift */; };
-		EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */; };
 		ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */; };
 		F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AB02 /* FolderOrganization.swift */; };
 		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
@@ -138,12 +136,10 @@
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
-		5B0BF11E000000000000AF01 /* NASSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASSettingsView.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000B001 /* NASBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASBrowserView.swift; sourceTree = "<group>"; };
 		5AFF8DE591BF6877017B539C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6127433D81E6C7548DB93070 /* FileCopyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCopyEngine.swift; sourceTree = "<group>"; };
 		66D758241D912B2FD844B1D8 /* MediaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFile.swift; sourceTree = "<group>"; };
-		681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		6AB2853380E67D3AF8405DF0 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		6DDE4F1F23E464C829762900 /* ReportBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportBuilder.swift; sourceTree = "<group>"; };
 		6F06456A9F582C56C57FE1DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -406,14 +402,12 @@
 				5C2730249C3567714F8C821D /* CompletionBannerSection.swift */,
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
-				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
 				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
 				FF00AB0000000000000000002 /* OnboardingView.swift */,
 				0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */,
 				99679842AE35CEA05BD43B37 /* ReportView.swift */,
 				E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */,
 				4E239A5D423378D22B03B1D6 /* SettingsView.swift */,
-				5B0BF11E000000000000AF01 /* NASSettingsView.swift */,
 				5B0BF11E000000000000B001 /* NASBrowserView.swift */,
 			);
 			path = Views;
@@ -668,7 +662,6 @@
 				3603A7623094313F11545323 /* BackupSession.swift in Sources */,
 				01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */,
 				747A459C1D9D7B856F6F9423 /* CopyProgress.swift in Sources */,
-				EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */,
 				BFFF864679964C7331AC6CFB /* DashboardViewModel.swift in Sources */,
 				564A2559BFE5AFEF028876EC /* DestinationManager.swift in Sources */,
 				60E221556845F8210B84DF0C /* ExternalSource.swift in Sources */,
@@ -680,7 +673,6 @@
 				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
 				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
-				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
 				5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */,
 				8A91ED4CC7469FB65F4CFAEE /* HistoryView.swift in Sources */,
 				80595690DA37BA49EC92E6DC /* IndexStore.swift in Sources */,

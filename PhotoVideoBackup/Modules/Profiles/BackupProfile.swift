@@ -200,7 +200,6 @@ final class ProfileStore {
     private enum Keys {
         static let profiles = "PhotoVideoBackup.profiles"
         static let migrated = "PhotoVideoBackup.profiles.migrated"
-        static let advanced = "showAdvancedScreens"
     }
 
     private(set) var profiles: [BackupProfile] = []
@@ -265,8 +264,7 @@ final class ProfileStore {
 
     /// Runs once, the first time 2.7.0 starts. Idempotent: the flag is set even when there was
     /// nothing to migrate (a fresh install starts with no profile and shows the empty state).
-    /// Returns true when the install already had a setup (an upgrade) — the caller keeps the
-    /// Advanced screens visible for those users.
+    /// Returns true when the install already had a setup (an upgrade).
     @discardableResult
     func migrateIfNeeded(configuredFolderKeys: [String], nasConfigured: Bool,
                          externalSources: [ProfileMigration.LegacySource],
@@ -280,7 +278,6 @@ final class ProfileStore {
             nasPasswordAccount: nasPasswordAccount)
         let upgrade = !configuredFolderKeys.isEmpty || nasConfigured || !externalSources.isEmpty
         if profiles.isEmpty { profiles = migrated; persist() }
-        if upgrade { defaults.set(true, forKey: Keys.advanced) }
         defaults.set(true, forKey: Keys.migrated)
         return upgrade
     }

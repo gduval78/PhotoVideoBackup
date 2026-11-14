@@ -11,6 +11,10 @@ struct BackupsView: View {
     @State private var renameText = ""
     @State private var deleting: BackupProfile?
     @State private var editing: BackupProfile?
+    /// What the folder picker is reconnecting: a card/drive source or a destination folder.
+    private enum Reconnect { case source(UUID), folder(String) }
+    @State private var reconnecting: Reconnect?
+    @State private var showImporter = false
     @State private var connections: [UUID: DashboardViewModel.ProfileConnection] = [:]
 
     var body: some View {
@@ -26,6 +30,7 @@ struct BackupsView: View {
                                     onRun: { Task { await viewModel.runProfile(profile) } },
                                     onRename: { renameText = profile.name; renaming = profile },
                                     onSettings: { editing = profile },
+                                    onReconnect: { startReconnect(profile) },
                                     onDelete: { deleting = profile })
                     }
                 }
@@ -67,12 +72,17 @@ struct BackupsView: View {
         }
         .alert("Delete this backup?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
             Button("Delete", role: .destructive) {
-                if let p = deleting { profileStore.delete(p.id); connections[p.id] = nil }
+                if let p = deleting { delete(p) }
                 deleting = nil
             }
             Button("Cancel", role: .cancel) { deleting = nil }
         } message: {
             Text("The backup settings are removed. Files already copied are not affected.")
+        }
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.folder],
+                      allowsMultipleSelection: false) { result in
+            guard case .success(let urls) = result, let url = urls.first else { reconnecting = nil; return }
+            finishReconnect(url)
         }
         .onAppear { refreshConnections() }
         .onChange(of: viewModel.isRunning) { _, running in if !running { refreshConnections() } }
@@ -109,6 +119,47 @@ struct BackupsView: View {
         connections = map
     }
 
+    /// Deleting a backup also forgets a camera card / drive that no other backup uses.
+    private func delete(_ profile: BackupProfile) {
+        profileStore.delete(profile.id)
+        connections[profile.id] = nil
+        if case .external(let id) = profile.source,
+           !profileStore.profiles.contains(where: { $0.source == .external(id) }) {
+            viewModel.removeExternalSource(id: id)
+        }
+    }
+
+    /// The card shows a *Reconnect* button when its source or one of its folders cannot be reached.
+    private func startReconnect(_ profile: BackupProfile) {
+        if case .external(let id) = profile.source, !sourceAvailable(for: profile) {
+            reconnecting = .source(id)
+        } else if let key = connections[profile.id]?.disconnectedFolderKey {
+            reconnecting = .folder(key)
+        } else { return }
+        if ProcessInfo.processInfo.isiOSAppOnMac {
+            guard let url = MacOpenPanel.pickFolder() else { reconnecting = nil; return }
+            finishReconnect(url)
+        } else {
+            showImporter = true
+        }
+    }
+
+    private func finishReconnect(_ url: URL) {
+        defer { reconnecting = nil; refreshConnections() }
+        switch reconnecting {
+        case .source(let id):
+            // The bookmark must be made right here, while the picker's access is active.
+            _ = url.startAccessingSecurityScopedResource()
+            let bookmark = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+            url.stopAccessingSecurityScopedResource()
+            if let bookmark { viewModel.reconnectSource(id: id, url: url, bookmarkData: bookmark) }
+        case .folder(let key):
+            DestinationManager.shared.saveBookmark(url: url, forKey: key)
+        case nil:
+            break
+        }
+    }
+
     private func sourceName(for profile: BackupProfile) -> String {
         switch profile.source {
         case .photos: return String(localized: "Photos Library", locale: languageManager.currentLocale)
@@ -127,6 +178,7 @@ struct BackupsView: View {
 // MARK: - Card
 
 private struct ProfileCard: View {
+    @Environment(LanguageManager.self) private var languageManager
     let profile: BackupProfile
     let sourceName: String
     let connection: DashboardViewModel.ProfileConnection?
@@ -135,6 +187,7 @@ private struct ProfileCard: View {
     let onRun: () -> Void
     let onRename: () -> Void
     let onSettings: () -> Void
+    let onReconnect: () -> Void
     let onDelete: () -> Void
 
     private var destinations: String { connection?.destinationNames.joined(separator: ", ") ?? "" }
@@ -151,13 +204,29 @@ private struct ProfileCard: View {
                     .font(.caption).foregroundStyle(.secondary).lineLimit(2)
                 if !ready {
                     Text("Not connected").font(.caption2).foregroundStyle(.orange)
+                } else if let free = connection?.freeBytes {
+                    // Free space of the fullest destination, so a nearly full drive is seen before a run.
+                    HStack(spacing: 6) {
+                        Text("\(free.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))) free")
+                            .font(.caption2).foregroundStyle(.secondary)
+                        if let used = connection?.usedFraction {
+                            ProgressView(value: used).tint(used > 0.9 ? .red : .accentColor).frame(maxWidth: 80)
+                        }
+                    }
                 }
             }
             Spacer()
-            Button("Run", action: onRun)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .disabled(isRunning || !ready)
+            if ready {
+                Button("Run", action: onRun)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .disabled(isRunning)
+            } else {
+                Button("Reconnect", action: onReconnect)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .disabled(isRunning)
+            }
         }
         .padding(.vertical, 4)
         .contextMenu {

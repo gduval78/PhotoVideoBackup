@@ -56,7 +56,7 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(ProfileStore(defaults: defaults).profiles.isEmpty)
     }
 
-    // SCENARIO: Migration runs once, and an upgrade keeps the Advanced screens
+    // SCENARIO: Migration runs once and says whether the install was an upgrade
     func test_migrateIfNeeded_isIdempotent_andFlagsUpgrades() {
         let defaults = isolatedDefaults()
         let store = ProfileStore(defaults: defaults)
@@ -64,7 +64,6 @@ final class ProfileTests: XCTestCase {
                                              externalSources: [], photosName: "Photos", nasName: "NAS")
         XCTAssertTrue(upgraded)
         XCTAssertEqual(store.profiles.count, 1)
-        XCTAssertTrue(defaults.bool(forKey: "showAdvancedScreens"))
 
         let again = store.migrateIfNeeded(configuredFolderKeys: ["k.ssd1", "k.ssd2"], nasConfigured: true,
                                           externalSources: [], photosName: "Photos", nasName: "NAS")
@@ -72,14 +71,13 @@ final class ProfileTests: XCTestCase {
         XCTAssertEqual(store.profiles.count, 1)                                 // not migrated a second time
     }
 
-    // SCENARIO: A fresh install starts empty and without the Advanced screens
+    // SCENARIO: A fresh install starts with no profile
     func test_migrateIfNeeded_freshInstall() {
         let defaults = isolatedDefaults()
         let store = ProfileStore(defaults: defaults)
         XCTAssertFalse(store.migrateIfNeeded(configuredFolderKeys: [], nasConfigured: false,
                                              externalSources: [], photosName: "P", nasName: "N"))
         XCTAssertTrue(store.profiles.isEmpty)
-        XCTAssertFalse(defaults.bool(forKey: "showAdvancedScreens"))
     }
 
     // SCENARIO: Each template asks for the right things and the Pro gates match the app

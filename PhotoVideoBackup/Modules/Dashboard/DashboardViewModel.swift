@@ -11,9 +11,6 @@ final class DashboardViewModel {
     // MARK: State
 
     private(set) var destinationStatuses: [DestinationStatus] = []
-    /// Folders owned by backup profiles (not the two global slots), for the Advanced screen: with n
-    /// profiles there are potentially n destinations, and the dashboard must not hide them.
-    private(set) var profileDestinationStatuses: [DestinationStatus] = []
     private(set) var currentProgress: CopyProgress?
     private(set) var isRunning: Bool = false
     /// Coarse pre-copy phase, so the UI can acknowledge the tap instantly and show that the
@@ -299,32 +296,8 @@ final class DashboardViewModel {
                                               isConnected: false, isRemote: true))
         }
         destinationStatuses = statuses
-        profileDestinationStatuses = profileFolderStatuses(excluding: statuses)
         retryOfflineSources()
         refreshNASStatus()
-    }
-
-    /// Status of each profile-owned folder, once per folder and never repeating a global slot already
-    /// shown. A drive that is unplugged keeps a grayed row, like the slots do.
-    private func profileFolderStatuses(excluding shown: [DestinationStatus]) -> [DestinationStatus] {
-        let dm = DestinationManager.shared
-        let legacy = Set((0...1).map { dm.key(for: $0) })
-        var seen = Set(shown.compactMap { $0.rootURL?.standardizedFileURL.path })
-        var result: [DestinationStatus] = []
-        for key in ProfileStore.shared.profiles.flatMap(\.folderKeys) where !legacy.contains(key) {
-            guard dm.isConfigured(forKey: key) else { continue }
-            let folderPath = dm.folderName(forKey: key)
-            let savedName  = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
-            guard let url = dm.resolveBookmark(forKey: key) else {
-                result.append(DestinationStatus(id: UUID(), displayName: savedName, folderPath: folderPath,
-                                                rootURL: nil, totalCapacity: 0, availableCapacity: 0,
-                                                isConnected: false))
-                continue
-            }
-            guard seen.insert(url.standardizedFileURL.path).inserted else { continue }
-            result.append(destinationStatus(for: url, folderPath: folderPath, savedName: savedName))
-        }
-        return result
     }
 
     /// Connects to the NAS in the background and replaces its row with live connection + capacity.
@@ -514,29 +487,43 @@ final class DashboardViewModel {
         var isConnected: Bool
         /// Human-readable destinations, e.g. "TravelSSD / Backup", "NAS".
         var destinationNames: [String]
+        /// Free space of the fullest connected folder, and how full it is — nil when no folder is connected.
+        var freeBytes: Int64? = nil
+        var usedFraction: Double? = nil
+        /// The first folder that cannot be reached: *Reconnect* offers to choose it again.
+        var disconnectedFolderKey: String? = nil
     }
 
     func connection(of profile: BackupProfile) -> ProfileConnection {
         let dm = DestinationManager.shared
         var names: [String] = []
         var connected = true
+        var free: Int64? = nil
+        var used: Double? = nil
+        var missingKey: String? = nil
         for key in profile.folderKeys {
             let saved = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
             let folder = dm.folderName(forKey: key)
             guard let url = dm.resolveBookmark(forKey: key) else {
                 connected = false
+                missingKey = missingKey ?? key
                 names.append(saved.isEmpty ? folder : saved)
                 continue
             }
             let status = destinationStatus(for: url, folderPath: folder, savedName: saved)
-            if !status.isConnected { connected = false }
+            if !status.isConnected { connected = false; missingKey = missingKey ?? key }
+            else {
+                if free == nil || status.availableCapacity < (free ?? .max) { free = status.availableCapacity }
+                if used == nil || status.usedFraction > (used ?? 0) { used = status.usedFraction }
+            }
             names.append(status.displayName.isEmpty ? url.lastPathComponent : status.displayName)
         }
         if profile.usesNAS {
             if let cfg = profile.nas ?? dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
             else { connected = false; names.append(String(localized: "NAS")) }
         }
-        return ProfileConnection(isConnected: connected, destinationNames: names)
+        return ProfileConnection(isConnected: connected, destinationNames: names,
+                                 freeBytes: free, usedFraction: used, disconnectedFolderKey: missingKey)
     }
 
     /// Runs a profile with the existing engines: same scan, same copy, same dedup, same reports —

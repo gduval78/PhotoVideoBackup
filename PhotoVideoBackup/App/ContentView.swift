@@ -4,9 +4,6 @@ struct ContentView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(BackupBrowserViewModel.self) private var browser
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
-    /// The pre-profiles dashboard. Shown to users who upgraded with a setup, and on request
-    /// (Settings → Interface) for everyone else.
-    @AppStorage("showAdvancedScreens") private var showAdvanced = false
 
     var body: some View {
         TabView {
@@ -15,15 +12,6 @@ struct ContentView: View {
             }
             .tabItem {
                 Label("Backups", systemImage: "arrow.triangle.2.circlepath.circle.fill")
-            }
-
-            if showAdvanced {
-                NavigationStack {
-                    DashboardView()
-                }
-                .tabItem {
-                    Label("Advanced", systemImage: "slider.horizontal.3")
-                }
             }
 
             NavigationStack {

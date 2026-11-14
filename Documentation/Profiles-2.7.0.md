@@ -4,7 +4,7 @@ Goal (Andreas's wish, support 2026-11): *the user decides what to back up and wh
 
 ## Decisions (taken 2026-11-14)
 
-- **Profiles are the home screen** ("Backups" tab, first). The current dashboard stays as the **Advanced** tab; new installs start without it, upgraders keep it (Settings → Interface → *Show Advanced screens*).
+- **Profiles are the only way to run a backup** ("Backups" tab, first). The old dashboard ("Advanced") is removed: several destinations per profile, Reconnect and free space moved into the profiles (decided 2026-11-14).
 - **Existing setups are migrated** at first launch of 2.7.0: one profile for the Photos library with the current destinations, one per external source — no reconfiguration.
 - **Six starting templates** (below). A profile = template + the user's own drive/folder choices **and its own configuration**: its NAS (host, share, folder, credentials), folder structure, file naming, file limit and extra file types. A profile is self-contained — with n profiles there are potentially n destinations, n NAS and n sets of options (decided 2026-11-14). New profiles start from a copy of the global settings; migrated ones get a snapshot.
 - iOS first; Android follows with the same model once validated.

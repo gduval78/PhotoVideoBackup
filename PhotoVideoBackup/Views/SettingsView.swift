@@ -7,15 +7,6 @@ struct SettingsView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(StoreManager.self)       private var store
     @Environment(LanguageManager.self)    private var languageManager
-    @State private var ssd1Name:   String = ""
-    @State private var ssd2Name:   String = ""
-    @State private var ssd1Folder: String = ""
-    @State private var ssd2Folder: String = ""
-    @State private var nasLabel:   String = ""   // empty = NAS not configured
-    @State private var showPicker: Bool = false
-    @AppStorage("showAdvancedScreens") private var showAdvancedScreens = false
-    @State private var pickerIndex: Int = 0
-    @State private var showPaywall: Bool = false
     /// Which text field has the keyboard. One state for every field of this screen, so the keyboard's
     /// Done button can dismiss whichever one is active (it used to track only the file-limit field,
     /// so Done did nothing while editing the folder name).
@@ -43,7 +34,7 @@ struct SettingsView: View {
                 }
             }
 
-            Section("Backup") {
+            Section {
                 Picker("Folder structure", selection: $folderOrganizationRaw) {
                     ForEach(FolderOrganization.allCases, id: \.rawValue) { mode in
                         Text(mode.labelKey).tag(mode.rawValue)
@@ -92,14 +83,10 @@ struct SettingsView: View {
                         }
                     }
                 }
-            }
-
-            Section {
-                Toggle("Show Advanced screens", isOn: $showAdvancedScreens)
             } header: {
-                Text("Interface")
+                Text("Backup")
             } footer: {
-                Text("The Advanced screens show every source, destination and detail. Most people only need the Backups tab.")
+                Text("These are the defaults for new backups. Each backup then has its own settings: Backups tab, long press a backup, Settings.")
             }
 
             Section("Language") {
@@ -115,18 +102,6 @@ struct SettingsView: View {
                     Text("中文").tag("zh-Hans")
                     Text("Русский").tag("ru")
                 }
-            }
-
-            Section("Destinations") {
-                destinationRow(index: 0, name: $ssd1Name, folder: $ssd1Folder, label: "SSD 1 (primary)")
-                ssd2Row
-                nasRow
-            }
-
-            Section {
-                Text("Connect your USB-C SSD or SD card, then tap Choose… to select the destination folder. You can create a new folder directly in the Files picker before selecting it. Access is preserved across launches via secure bookmarks.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
 
             Section("About") {
@@ -175,134 +150,6 @@ struct SettingsView: View {
         }
         .onAppear { loadNames() }
         .onDisappear { commitLimit() }
-        .fileImporter(
-            isPresented: $showPicker,
-            allowedContentTypes: [.folder],
-            allowsMultipleSelection: false
-        ) { result in
-            guard case .success(let urls) = result, let url = urls.first else { return }
-            let dm = DestinationManager.shared
-            dm.saveBookmark(url: url, forKey: dm.key(for: pickerIndex))
-            loadNames()
-            viewModel.refreshDestinationStatuses()
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
-        }
-    }
-
-    // MARK: - SSD 2 / NAS rows (Pro only)
-
-    @ViewBuilder
-    private var ssd2Row: some View {
-        if store.isPremium {
-            destinationRow(index: 1, name: $ssd2Name, folder: $ssd2Folder, label: "SSD 2 (mirror)")
-        } else {
-            proLockedRow(label: "SSD 2 (mirror)")
-        }
-    }
-
-    @ViewBuilder
-    private var nasRow: some View {
-        if store.isPremium {
-            NavigationLink {
-                NASSettingsView()
-            } label: {
-                Label {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("NAS (SMB)").font(.subheadline)
-                        if nasLabel.isEmpty {
-                            Text("Not configured").font(.caption).foregroundStyle(.secondary)
-                        } else {
-                            Text(verbatim: nasLabel)
-                                .font(.caption).foregroundStyle(.secondary)
-                                .lineLimit(1).truncationMode(.middle)
-                        }
-                    }
-                } icon: {
-                    Image(systemName: "externaldrive.connected.to.line.below")
-                }
-            }
-        } else {
-            proLockedRow(label: "NAS (SMB)")
-        }
-    }
-
-    @ViewBuilder
-    private func proLockedRow(label: LocalizedStringKey) -> some View {
-        HStack {
-            Label {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(label).font(.subheadline)
-                    Text("Pro feature").font(.caption).foregroundStyle(.secondary)
-                }
-            } icon: {
-                Image(systemName: "externaldrive.fill")
-            }
-            Spacer()
-            Button("Unlock") { showPaywall = true }
-                .font(.callout)
-                .foregroundStyle(Color.accentColor)
-            Image(systemName: "lock.fill")
-                .foregroundStyle(.secondary)
-                .font(.caption)
-        }
-    }
-
-    @ViewBuilder
-    private func destinationRow(index: Int, name: Binding<String>, folder: Binding<String>, label: LocalizedStringKey) -> some View {
-        HStack {
-            Label {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(label).font(.subheadline)
-                    if name.wrappedValue.isEmpty {
-                        Text("Not configured").font(.caption).foregroundStyle(.secondary)
-                    } else {
-                        Text(name.wrappedValue)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.head)
-                        if !folder.wrappedValue.isEmpty {
-                            Text(folder.wrappedValue)
-                                .font(.system(.caption2, design: .monospaced))
-                                .foregroundStyle(.tertiary)
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                        }
-                    }
-                }
-            } icon: {
-                Image(systemName: "externaldrive.fill")
-            }
-
-            Spacer()
-
-            Button("Choose…") {
-                if ProcessInfo.processInfo.isiOSAppOnMac {
-                    guard let url = MacOpenPanel.pickFolder() else { return }
-                    let dm = DestinationManager.shared
-                    dm.saveBookmark(url: url, forKey: dm.key(for: index))
-                    loadNames()
-                    viewModel.refreshDestinationStatuses()
-                } else {
-                    pickerIndex = index
-                    showPicker = true
-                }
-            }
-            .font(.callout)
-
-            if !name.wrappedValue.isEmpty {
-                Button(role: .destructive) {
-                    DestinationManager.shared.clearBookmark(forKey: DestinationManager.shared.key(for: index))
-                    loadNames()
-                    viewModel.refreshDestinationStatuses()
-                } label: {
-                    Image(systemName: "trash").foregroundStyle(.red)
-                }
-                .buttonStyle(.borderless)
-            }
-        }
     }
 
     private var customExtensionsLabel: String {
@@ -322,16 +169,6 @@ struct SettingsView: View {
     }
 
     private func loadNames() {
-        let dm = DestinationManager.shared
-        ssd1Name   = dm.displayName(forKey: dm.key(for: 0))
-        ssd2Name   = dm.displayName(forKey: dm.key(for: 1))
-        ssd1Folder = dm.folderName(forKey: dm.key(for: 0))
-        ssd2Folder = dm.folderName(forKey: dm.key(for: 1))
-        if let cfg = dm.loadNASConfig(), cfg.isComplete {
-            nasLabel = cfg.label
-        } else {
-            nasLabel = ""
-        }
         // Mirror the stored limit into the editing buffer. 0 = unlimited → empty field so the
         // "Unlimited" placeholder shows (a plain Int would render "0" and hide the placeholder).
         limitText = backupFileLimit > 0 ? String(backupFileLimit) : ""
