@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Guida utente",
     "tagline": "Copia le tue foto e i tuoi video su un SSD esterno, una scheda SD o un NAS — dal tuo iPhone o dal tuo telefono Android.",
-    "version_line": "Guida di PhotoVideoBackup 2.6 — iPhone (iOS 16 o successivo) e Android (9 o successivo)",
+    "version_line": "Guida di PhotoVideoBackup 2.7 — iPhone (iOS 16 o successivo) e Android (9 o successivo)",
     "toc": "Indice",
     "privacy_link": "Informativa sulla privacy",
     "contact": "Assistenza",
@@ -22,6 +22,7 @@ GUIDE = [
         ("p", "PhotoVideoBackup è gratuita. Un acquisto <b>Pro</b> — pagato una sola volta, <b>senza abbonamento</b> — sblocca le funzioni avanzate:"),
         ("table", ["Funzione", "Gratis", "Pro"], [
             ["Copiare la libreria foto su un'unità o una cartella", "✓", "✓"],
+            ["Più backup, ciascuno con i propri dischi, NAS e impostazioni (iPhone)", "—", "✓"],
             ["Sfogliare e visualizzare i backup (anteprima LUT inclusa)", "✓", "✓"],
             ["Copiare schede di fotocamere e unità USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Mirror su una seconda unità", "—", "✓"],
@@ -45,18 +46,18 @@ GUIDE = [
         ("note", "L'app legge le tue foto solo per copiarle. Non le modifica, non le condivide e non le invia da nessuna parte."),
     ]),
     ("setup", "Imposta il nome del dispositivo e la destinazione", [
-        ("ol", ["Apri la scheda <b>Impostazioni</b>. Nella sezione <b>Dispositivo</b>, scrivi un <b>nome cartella</b> — per esempio <i>iPhone di Anna</i> o <i>Pixel 8</i>. Diventa il nome della cartella sull'unità, così due telefoni che salvano sulla stessa unità restano separati. Un backup non parte finché non c'è un nome.", "Collega la tua unità.", "In <b>Destinazioni</b>, tocca <b>Scegli…</b> e seleziona l'unità, o una cartella al suo interno, nel gestore file del sistema. Su Android puoi anche scegliere una cartella nella memoria del telefono.", "Il nome dell'unità appare in Impostazioni e nella scheda Backup, con lo spazio libero. Lo fai una volta sola: la prossima volta l'app riconosce l'unità."]),
+        ("ol", ["Apri la scheda <b>Impostazioni</b>. Nella sezione <b>Dispositivo</b>, scrivi un <b>nome cartella</b> — per esempio <i>iPhone di Anna</i> o <i>Pixel 8</i>. Diventa il nome della cartella sull'unità, così due telefoni che salvano sulla stessa unità restano separati. Un backup non parte finché non c'è un nome.", "Collega la tua unità.", "<b>iPhone / iPad</b>: apri la scheda <b>Backup</b>, tocca <b>Nuovo backup</b> (o <b>+</b>), scegli <i>Libreria foto → disco esterno</i>, poi tocca <b>Scegli…</b> e seleziona l'unità, o una cartella al suo interno, nel gestore file del sistema. <b>Android</b>: in <b>Destinazioni</b>, tocca <b>Scegli…</b> e seleziona l'unità o una cartella (anche nella memoria del telefono).", "Il nome dell'unità appare sulla scheda del backup (iPhone) o nella scheda Backup (Android), con lo spazio libero. Lo fai una volta sola: la prossima volta l'app riconosce l'unità."]),
         ("fig", "settings_configured", "Impostazioni: nome del dispositivo e prima destinazione."),
         ("note", "Una destinazione può anche essere una cartella di <b>iCloud Drive</b> (iPhone) — l'app libera la copia locale quando iCloud conferma il caricamento, così il telefono non si riempie. Se l'iPhone è comunque quasi pieno (meno di circa 1 GB liberi), il backup <b>si mette in pausa da solo</b> e riprende appena torna spazio; se dopo alcuni minuti nulla migliora, si ferma come <b>Parziale</b>."),
     ]),
     ("photos", "Copia le tue foto e i tuoi video", [
-        ("p", "Apri la scheda <b>Backup</b>. In alto vedi le destinazioni con lo spazio libero. In <b>Sorgenti</b>, la riga <b>Libreria Foto</b> mostra il nome del tuo dispositivo. Tocca il suo pulsante <b>Backup</b>."),
+        ("p", "<b>iPhone / iPad</b>: apri la scheda <b>Backup</b>. Ogni backup è una carta con il suo nome, l'origine e la destinazione, e lo spazio libero del suo disco. Tocca <b>Avvia</b>. Con Pro puoi creare più backup — per esempio uno su un disco e uno su un NAS — ciascuno con le proprie impostazioni: pressione prolungata su una carta, poi <b>Impostazioni</b>. <b>Android</b>: apri la scheda <b>Backup</b>. In alto vedi le tue destinazioni con lo spazio libero. In <b>Origini</b>, la riga <b>Libreria foto</b> mostra il nome del dispositivo. Tocca il suo pulsante <b>Backup</b>."),
         ("fig", "dashboard_ready", "La scheda Backup: destinazione collegata, libreria foto pronta."),
         ("p", "L'app analizza la libreria e poi copia. Il <b>primo backup è il più lungo</b>; i successivi copiano solo il nuovo e sono molto più veloci."),
         ("ul", ["Le foto presenti solo su iCloud / Google Foto vengono prima scaricate — servono una connessione e un po' di tempo.", "L'app copia ogni file direttamente nella destinazione, quindi funziona anche con il telefono quasi pieno.", "Puoi uscire dall'app: una notifica ti avvisa quando il backup finisce."]),
     ]),
     ("sd", "Copia una scheda di fotocamera (Pro)", [
-        ("ol", ["Collega il lettore di schede al telefono e inserisci la scheda (usa un hub se anche l'SSD deve restare collegato).", "Nella scheda Backup, tocca <b>Aggiungi sorgente (SD, USB…)</b>, trova la scheda nel gestore file e conferma.", "Dai un nome alla sorgente — <i>Blackmagic</i>, <i>Viaggio in Giappone</i>… Il tipo di dispositivo viene riconosciuto da solo.", "Tocca <b>Backup</b> sulla riga della sorgente."]),
+        ("ol", ["Collega il lettore di schede al telefono e inserisci la scheda (usa un hub se anche l'SSD deve restare collegato).", "<b>iPhone / iPad</b>: nella scheda <b>Backup</b>, tocca <b>+</b> e scegli <i>Fotocamera o scheda SD → disco esterno</i>, poi <b>Aggiungi un'origine…</b> e seleziona la scheda nel gestore file. <b>Android</b>: nella scheda Backup, tocca <b>Aggiungi origine (scheda SD, unità USB…)</b>, trova la scheda nel gestore file e conferma.", "Scegli la destinazione e dagli un nome — <i>Blackmagic</i>, <i>Viaggio in Giappone</i>… Il tipo di dispositivo viene riconosciuto da solo.", "Tocca <b>Avvia</b> (iPhone / iPad) o <b>Backup</b> sulla riga dell'origine (Android)."]),
         ("table", ["Dispositivo riconosciuto", "Che cosa viene copiato"], [
             ["DJI Mini 3 Pro", "Foto, video, DNG e la telemetria (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Video, foto, DNG, audio e la telemetria (.srt)"],
@@ -64,8 +65,8 @@ GUIDE = [
             ["GoPro HERO", "Video e foto; i file proxy (.lrv) e delle miniature (.thm) vengono ignorati"],
             ["Tutto il resto", "Formati comuni di foto, video e RAW"],
         ]),
-        ("note", "Una scheda espulsa e reinserita richiede un tocco su <b>Riconnetti</b>: il sistema dà all'app un nuovo accesso a ogni montaggio della scheda. Nome e tipo della sorgente restano invariati."),
-        ("p", "Per rimuovere una sorgente dall'elenco usa il <b>–</b> rosso (iPhone) o il pulsante di rimozione della riga (Android). Nessun file viene eliminato."),
+        ("note", "Una scheda espulsa e reinserita richiede un tocco su <b>Riconnetti</b> (sulla carta del backup su iPhone, sulla riga dell'origine su Android): il sistema dà all'app un nuovo accesso a ogni montaggio della scheda. Nome e tipo dell'origine vengono mantenuti."),
+        ("p", "Per rimuovere un'origine: su iPhone, elimina il backup che la usa (la scheda viene dimenticata se nessun altro backup la usa); su Android, usa il pulsante di rimozione della riga. Nessun file viene eliminato."),
     ]),
     ("progress", "Mentre il backup è in corso", [
         ("p", "Un pannello <b>Backup in corso</b> compare appena tocchi Backup. Prima <b>Preparazione…</b> (connessione alle destinazioni), poi <b>Analisi della sorgente…</b> con un contatore in tempo reale dei file trovati — su una libreria grande può richiedere un po', non è bloccata."),
@@ -127,13 +128,13 @@ GUIDE = [
         ("ul", ["La gradazione si fa video per video, mai «tutto» — una cartella spesso mescola clip LOG e normali, e una LUT LOG rovinerebbe quelle normali.", "I file già graduati vengono ignorati, quindi puoi rilanciare senza rischi. Annulla quando vuoi: i file terminati restano.", "La gradazione è impegnativa: tieni l'app aperta e l'unità collegata. Il telefono può scaldarsi.", "Su un NAS i clip vengono scaricati, graduati sul telefono e caricati in una cartella <b>Dispositivo (Graded)</b> sul NAS — più lento e consuma dati."]),
     ]),
     ("mirror", "Due destinazioni insieme (Pro)", [
-        ("p", "In Impostazioni, aggiungi una seconda destinazione: ogni file viene copiato su entrambe contemporaneamente — due unità, oppure un'unità e un NAS. Il backup non dura il doppio. Se una destinazione si guasta o sparisce, <b>l'altra prosegue</b>, e il report dice che cosa manca dove."),
+        ("p", "Aggiungi una seconda destinazione — su iPhone, pressione prolungata sulla carta del backup, poi <b>Impostazioni</b> e <b>Aggiungi una destinazione</b>; su Android, nelle Impostazioni. Ogni file viene copiato su entrambe contemporaneamente — due dischi, o un disco e un NAS. Il backup non dura il doppio. Se una destinazione fallisce o scompare, <b>l'altra continua</b>, e il report indica a quale manca cosa."),
         ("note", "Se all'avvio è collegata una sola delle due unità, l'app copia comunque su di essa e contrassegna la sessione come incompleta per l'altra."),
     ]),
     ("nas", "Copia su un NAS via Wi-Fi (Pro)", [
         ("p", "Al posto di un'unità — o in aggiunta — puoi copiare direttamente su un <b>NAS</b> (Synology, QNAP, TrueNAS, qualsiasi dispositivo che parli SMB) attraverso la rete. Niente cavo, niente cloud, e ogni file viene verificato con SHA-256."),
-        ("ol", ["Sul NAS, abilita la <b>condivisione file SMB</b> e dai a un utente accesso in lettura e scrittura a una cartella condivisa.", "Nell'app: <b>Impostazioni → Destinazioni → NAS (SMB)</b>.", "Compila <b>host</b> (es. <code>192.168.1.20</code>), <b>condivisione</b> (es. <code>photo</code>), una <b>cartella</b> facoltativa, e il tuo <b>nome utente</b> e <b>password</b>. La password è conservata nel Portachiavi di iOS o nel Keystore di Android.", "Tocca <b>Prova connessione</b>: un messaggio conferma la connessione e quanti elementi sono stati trovati. Poi <b>Salva</b>."]),
-        ("p", "Il NAS ora compare nella scheda Backup con il suo spazio libero. Puoi copiare anche <b>fuori casa</b> se il NAS è raggiungibile — il modo più semplice e sicuro è una VPN come <b>Tailscale</b>: installala sul NAS e sul telefono e usa l'indirizzo <code>100.x.x.x</code> del NAS come host."),
+        ("ol", ["Sul NAS, abilita la <b>condivisione file SMB</b> e dai a un utente accesso in lettura e scrittura a una cartella condivisa.", "Nell'app: su iPhone, crea un backup con il modello <i>Libreria foto → NAS</i> (o aggiungi un NAS a un backup esistente dalle sue <b>Impostazioni</b>); su Android, <b>Impostazioni → Destinazioni → NAS (SMB)</b>.", "Compila <b>host</b> (es. <code>192.168.1.20</code>), <b>condivisione</b> (es. <code>photo</code>), una <b>cartella</b> facoltativa, e il tuo <b>nome utente</b> e <b>password</b>. La password è conservata nel Portachiavi di iOS o nel Keystore di Android.", "Tocca <b>Prova connessione</b>: <i>«Connesso — N elemento/i trovato/i.»</i> Poi <b>Crea</b> (iPhone) o <b>Salva</b> (Android)."]),
+        ("p", "Il NAS ora compare sulla carta del backup (iPhone) o nella scheda Backup (Android), con lo spazio libero. Su iPhone ogni backup ha il proprio NAS, quindi puoi usarne più di uno. Puoi copiare anche <b>fuori casa</b> se il NAS è raggiungibile — il modo più semplice e sicuro è una VPN come <b>Tailscale</b>: installala sul NAS e sul telefono e usa l'indirizzo <code>100.x.x.x</code> del NAS come host."),
         ("note", "Con i dati mobili, un banner arancione ti avverte che i video grandi possono consumare molti dati; <b>Interrompi</b> ferma il backup (viene contrassegnato come Parziale)."),
     ]),
     ("android", "Android e iPhone: le differenze", [

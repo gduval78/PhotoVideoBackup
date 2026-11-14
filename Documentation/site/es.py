@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Guía del usuario",
     "tagline": "Copia tus fotos y vídeos en un SSD externo, una tarjeta SD o un NAS — desde tu iPhone o tu móvil Android.",
-    "version_line": "Guía de PhotoVideoBackup 2.6 — iPhone (iOS 16 o posterior) y Android (9 o posterior)",
+    "version_line": "Guía de PhotoVideoBackup 2.7 — iPhone (iOS 16 o posterior) y Android (9 o posterior)",
     "toc": "Contenido",
     "privacy_link": "Política de privacidad",
     "contact": "Soporte",
@@ -22,6 +22,7 @@ GUIDE = [
         ("p", "PhotoVideoBackup se descarga gratis. Una compra <b>Pro</b> — pago único, <b>sin suscripción</b> — desbloquea las funciones avanzadas:"),
         ("table", ["Función", "Gratis", "Pro"], [
             ["Copiar la biblioteca de fotos a una unidad o carpeta", "✓", "✓"],
+            ["Varias copias, cada una con sus unidades, NAS y ajustes (iPhone)", "—", "✓"],
             ["Explorar y previsualizar las copias (con vista previa de LUT)", "✓", "✓"],
             ["Copiar tarjetas de cámara y unidades USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Réplica en una segunda unidad", "—", "✓"],
@@ -45,18 +46,18 @@ GUIDE = [
         ("note", "La aplicación solo lee tus fotos para copiarlas. No las modifica, no las comparte y no las envía a ninguna parte."),
     ]),
     ("setup", "Define el nombre del dispositivo y el destino", [
-        ("ol", ["Abre la pestaña <b>Ajustes</b>. En la sección <b>Dispositivo</b>, escribe un <b>nombre de carpeta</b> — por ejemplo <i>iPhone de Ana</i> o <i>Pixel 8</i>. Será el nombre de la carpeta en la unidad, de modo que dos móviles que copian en la misma unidad quedan separados. Una copia no empieza hasta que haya un nombre.", "Conecta tu unidad.", "En <b>Destinos</b>, toca <b>Elegir…</b> y selecciona la unidad, o una carpeta de ella, en el explorador de archivos del sistema. En Android también puedes elegir una carpeta del almacenamiento del móvil.", "El nombre de la unidad aparece en Ajustes y en la pestaña Copia, con su espacio libre. Solo lo haces una vez: la aplicación reconoce la unidad la próxima vez."]),
+        ("ol", ["Abre la pestaña <b>Ajustes</b>. En la sección <b>Dispositivo</b>, escribe un <b>nombre de carpeta</b> — por ejemplo <i>iPhone de Ana</i> o <i>Pixel 8</i>. Será el nombre de la carpeta en la unidad, de modo que dos móviles que copian en la misma unidad quedan separados. Una copia no empieza hasta que haya un nombre.", "Conecta tu unidad.", "<b>iPhone / iPad</b>: abre la pestaña <b>Copias</b>, toca <b>Nueva copia</b> (o <b>+</b>), elige <i>Fototeca → unidad externa</i>, toca <b>Elegir…</b> y selecciona la unidad, o una carpeta de ella, en el explorador de archivos del sistema. <b>Android</b>: en <b>Destinos</b>, toca <b>Elegir…</b> y selecciona la unidad o una carpeta (también en el almacenamiento del móvil).", "El nombre de la unidad aparece en la tarjeta de la copia (iPhone) o en la pestaña Copia (Android), con su espacio libre. Solo lo haces una vez: la aplicación reconoce la unidad la próxima vez."]),
         ("fig", "settings_configured", "Ajustes: nombre del dispositivo y primer destino."),
         ("note", "Un destino también puede ser una carpeta de <b>iCloud Drive</b> (iPhone) — la aplicación libera la copia local cuando iCloud confirma la subida, para que el móvil no se llene. Si aun así el iPhone está casi lleno (menos de unos 1 GB libres), la copia <b>se pausa sola</b> y continúa cuando vuelve a haber espacio; si no mejora tras unos minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copia tus fotos y vídeos", [
-        ("p", "Abre la pestaña <b>Copia</b>. Arriba ves tus destinos con su espacio libre. En <b>Fuentes</b>, la fila <b>Biblioteca de Fotos</b> muestra el nombre de tu dispositivo. Toca su botón <b>Copia</b>."),
+        ("p", "<b>iPhone / iPad</b>: abre la pestaña <b>Copias</b>. Cada copia es una tarjeta con su nombre, su origen y su destino, y el espacio libre de su unidad. Toca <b>Iniciar</b>. Con Pro puedes crear varias copias — por ejemplo una a una unidad y otra a un NAS — cada una con sus propios ajustes: pulsación larga en una tarjeta y <b>Ajustes</b>. <b>Android</b>: abre la pestaña <b>Copia</b>. Arriba ves tus destinos con su espacio libre. En <b>Orígenes</b>, la fila <b>Fototeca</b> muestra el nombre de tu dispositivo. Toca su botón <b>Copia</b>."),
         ("fig", "dashboard_ready", "La pestaña Copia: destino conectado, biblioteca de fotos lista."),
         ("p", "La aplicación analiza la biblioteca y después copia. La <b>primera copia es la más larga</b>; las siguientes solo copian lo nuevo y son mucho más rápidas."),
         ("ul", ["Las fotos guardadas solo en iCloud / Google Fotos se descargan primero — hace falta conexión y algo de tiempo.", "La aplicación copia cada archivo directamente al destino, así que funciona incluso con el móvil casi lleno.", "Puedes salir de la aplicación: una notificación te avisa cuando termina la copia."]),
     ]),
     ("sd", "Copia una tarjeta de cámara (Pro)", [
-        ("ol", ["Conecta el lector de tarjetas al móvil e inserta la tarjeta (usa un hub si el SSD debe seguir conectado).", "En la pestaña Copia, toca <b>Agregar fuente (tarjeta SD, USB…)</b>, localiza la tarjeta en el explorador de archivos y confirma.", "Ponle un nombre a la fuente — <i>Blackmagic</i>, <i>Viaje a Japón</i>… El tipo de dispositivo se reconoce solo.", "Toca <b>Copia</b> en la fila de la fuente."]),
+        ("ol", ["Conecta el lector de tarjetas al móvil e inserta la tarjeta (usa un hub si el SSD debe seguir conectado).", "<b>iPhone / iPad</b>: en la pestaña <b>Copias</b>, toca <b>+</b> y elige <i>Cámara o tarjeta SD → unidad externa</i>, luego <b>Añadir un origen…</b> y selecciona la tarjeta en el explorador de archivos. <b>Android</b>: en la pestaña Copia, toca <b>Añadir origen (tarjeta SD, unidad USB…)</b>, busca la tarjeta en el explorador de archivos y confirma.", "Elige el destino y ponle un nombre — <i>Blackmagic</i>, <i>Viaje a Japón</i>… El tipo de dispositivo se reconoce solo.", "Toca <b>Iniciar</b> (iPhone / iPad) o <b>Copia</b> en la fila del origen (Android)."]),
         ("table", ["Dispositivo reconocido", "Qué se copia"], [
             ["DJI Mini 3 Pro", "Fotos, vídeos, DNG y la telemetría (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Vídeos, fotos, DNG, audio y la telemetría (.srt)"],
@@ -64,8 +65,8 @@ GUIDE = [
             ["GoPro HERO", "Vídeos y fotos; se omiten los archivos proxy (.lrv) y de miniaturas (.thm)"],
             ["Cualquier otro", "Formatos habituales de foto, vídeo y RAW"],
         ]),
-        ("note", "Una tarjeta expulsada y vuelta a insertar necesita un toque en <b>Reconectar</b>: el sistema da a la aplicación un acceso nuevo cada vez que se monta la tarjeta. El nombre y el tipo de la fuente se conservan."),
-        ("p", "Para quitar una fuente de la lista, usa el <b>–</b> rojo (iPhone) o el botón de quitar de la fila (Android). No se borra ningún archivo."),
+        ("note", "Una tarjeta expulsada y vuelta a poner necesita un toque en <b>Reconectar</b> (en la tarjeta de la copia en iPhone, en la fila del origen en Android): el sistema da a la aplicación un acceso nuevo cada vez que se monta la tarjeta. Se conservan el nombre y el tipo del origen."),
+        ("p", "Para quitar un origen: en iPhone, elimina la copia que lo usa (la tarjeta también se olvida si ninguna otra copia la usa); en Android, usa el botón de quitar de la fila. No se borra ningún archivo."),
     ]),
     ("progress", "Mientras se copia", [
         ("p", "Aparece un panel <b>Copia en progreso</b> en cuanto tocas Copia. Primero <b>Preparando…</b> (conexión con tus destinos) y luego <b>Analizando el origen…</b> con un contador en vivo de archivos encontrados — en una biblioteca grande puede tardar un poco, no está bloqueado."),
@@ -127,13 +128,13 @@ GUIDE = [
         ("ul", ["El gradado se hace vídeo a vídeo, nunca «todo» — una carpeta suele mezclar clips LOG y normales, y una LUT LOG estropearía los normales.", "Los archivos ya gradados se omiten, así que puedes repetir sin riesgo. Cancela cuando quieras: los terminados se conservan.", "El gradado es exigente: mantén la aplicación abierta y la unidad conectada. El móvil puede calentarse.", "En un NAS, los clips se descargan, se gradan en el móvil y se suben a una carpeta <b>Dispositivo (Graded)</b> del NAS — más lento y consume datos."]),
     ]),
     ("mirror", "Dos destinos a la vez (Pro)", [
-        ("p", "En Ajustes, añade un segundo destino: cada archivo se copia en los dos a la vez — dos unidades, o una unidad y un NAS. La copia no dura el doble. Si un destino falla o desaparece, <b>el otro continúa</b>, y el informe dice qué falta en cuál."),
+        ("p", "Añade un segundo destino — en iPhone, pulsación larga en la tarjeta de la copia, luego <b>Ajustes</b> y <b>Añadir un destino</b>; en Android, en Ajustes. Cada archivo se copia a ambos a la vez — dos unidades, o una unidad y un NAS. La copia no tarda el doble. Si un destino falla o desaparece, <b>el otro continúa</b>, y el informe indica a cuál le falta qué."),
         ("note", "Si al empezar solo está conectada una de las dos unidades, la aplicación copia igualmente en ella y marca la sesión como incompleta para la otra."),
     ]),
     ("nas", "Copia a un NAS por Wi-Fi (Pro)", [
         ("p", "En lugar de una unidad — o además de ella — puedes copiar directamente a un <b>NAS</b> (Synology, QNAP, TrueNAS, cualquier equipo que hable SMB) por la red. Sin cable, sin nube, y cada archivo se verifica con SHA-256."),
-        ("ol", ["En el NAS, activa el <b>uso compartido de archivos SMB</b> y da a un usuario acceso de lectura y escritura a una carpeta compartida.", "En la aplicación: <b>Ajustes → Destinos → NAS (SMB)</b>.", "Rellena el <b>host</b> (p. ej. <code>192.168.1.20</code>), el <b>recurso compartido</b> (p. ej. <code>photo</code>), una <b>carpeta</b> opcional, y tu <b>usuario</b> y <b>contraseña</b>. La contraseña se guarda en el llavero de iOS o en el Keystore de Android.", "Toca <b>Probar conexión</b>: un mensaje confirma la conexión y cuántos elementos se han encontrado. Luego <b>Guardar</b>."]),
-        ("p", "El NAS aparece ahora en la pestaña Copia con su espacio libre. Puedes copiar <b>fuera de casa</b> si el NAS es accesible — lo más sencillo y seguro es una VPN como <b>Tailscale</b>: instálala en el NAS y en el móvil, y usa la dirección <code>100.x.x.x</code> del NAS como host."),
+        ("ol", ["En el NAS, activa el <b>uso compartido de archivos SMB</b> y da a un usuario acceso de lectura y escritura a una carpeta compartida.", "En la aplicación: en iPhone, crea una copia con la plantilla <i>Fototeca → NAS</i> (o añade un NAS a una copia existente desde sus <b>Ajustes</b>); en Android, <b>Ajustes → Destinos → NAS (SMB)</b>.", "Rellena el <b>host</b> (p. ej. <code>192.168.1.20</code>), el <b>recurso compartido</b> (p. ej. <code>photo</code>), una <b>carpeta</b> opcional, y tu <b>usuario</b> y <b>contraseña</b>. La contraseña se guarda en el llavero de iOS o en el Keystore de Android.", "Toca <b>Probar conexión</b>: <i>«Conectado — N elemento(s) encontrado(s).»</i> Luego <b>Crear</b> (iPhone) o <b>Guardar</b> (Android)."]),
+        ("p", "El NAS aparece ahora en la tarjeta de la copia (iPhone) o en la pestaña Copia (Android), con su espacio libre. En iPhone cada copia tiene su propio NAS, así que puedes usar varios. Puedes copiar <b>fuera de casa</b> si el NAS es accesible — lo más sencillo y seguro es una VPN como <b>Tailscale</b>: instálala en el NAS y en el móvil, y usa la dirección <code>100.x.x.x</code> del NAS como host."),
         ("note", "Con datos móviles, un aviso naranja te advierte de que los vídeos grandes pueden consumir muchos datos; <b>Detener</b> interrumpe la copia (queda marcada como Parcial)."),
     ]),
     ("android", "Android e iPhone: en qué se diferencian", [

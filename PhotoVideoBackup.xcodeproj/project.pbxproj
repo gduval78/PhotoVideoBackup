@@ -817,7 +817,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 49;
+				CURRENT_PROJECT_VERSION = 50;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -825,7 +825,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -879,7 +879,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 49;
+				CURRENT_PROJECT_VERSION = 50;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -887,7 +887,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
