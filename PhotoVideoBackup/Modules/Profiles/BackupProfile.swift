@@ -204,6 +204,20 @@ final class ProfileStore {
 
     private(set) var profiles: [BackupProfile] = []
 
+    // MARK: Overlapping destinations
+
+    /// True when `candidate` is the same folder as one of `existing`, lies inside one, or contains one.
+    /// Two destinations of one backup must be independent: a folder that contains another would hold
+    /// the files twice in the same tree, mix their index and make one of them look empty. Compared on
+    /// the standardized path, by whole components (`Backup` does not contain `Backup 2`).
+    nonisolated static func overlaps(_ candidate: URL, with existing: [URL]) -> Bool {
+        let c = candidate.standardizedFileURL.path
+        return existing.contains { other in
+            let o = other.standardizedFileURL.path
+            return isPath(c, underRoot: o) || isPath(o, underRoot: c)
+        }
+    }
+
     // MARK: Free tier
 
     /// The free version has one backup; any number of backups is Pro.

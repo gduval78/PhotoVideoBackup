@@ -118,8 +118,10 @@ final class ProfileTests: XCTestCase {
         let b = BackupProfile(name: "B", template: .photosToDriveAndNAS, source: .photos,
                               destinations: [.folder(bookmarkKey: "k.profile.b"), .nas])
         let nasOnly = BackupProfile(name: "N", template: .photosToNAS, source: .photos, destinations: [.nas])
-        let keys = BackupBrowserViewModel.destinationKeys(legacy: ["k.ssd1", "k.ssd2"], profiles: [a, b, nasOnly])
-        XCTAssertEqual(keys, ["k.ssd1", "k.ssd2", "k.profile.a", "k.profile.b"])   // the NAS has no folder key
+        let keys = BackupBrowserViewModel.destinationKeys(profiles: [a, b, nasOnly])
+        XCTAssertEqual(keys, ["k.profile.a", "k.profile.b"])                      // the NAS has no folder key
+        // Delete every backup: nothing is left to browse.
+        XCTAssertTrue(BackupBrowserViewModel.destinationKeys(profiles: []).isEmpty)
 
         let drive = URL(fileURLWithPath: "/Volumes/SSD/Backup")
         let other = URL(fileURLWithPath: "/Volumes/SSD/Backup 2")
@@ -149,6 +151,10 @@ final class ProfileTests: XCTestCase {
         XCTAssertEqual(entries.map(\.passwordAccount), ["nas.primary", "profile.2.nas"])
         // Without a global NAS, a profile's own still shows.
         XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: nil, globalAccount: "g", profiles: [p2]).count, 1)
+        // The global NAS is not listed on its own: only when a backup that uses it has no config of its own.
+        XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: home, globalAccount: "g", profiles: [p2]).map(\.config.host),
+                       ["office.local"])
+        XCTAssertTrue(BackupBrowserViewModel.nasEntries(global: home, globalAccount: "g", profiles: []).isEmpty)
     }
 
     // SCENARIO: The free version has one backup; Pro has as many as it wants
@@ -162,5 +168,22 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(ProfileStore.isAllowed(index: 0, isPremium: false))
         XCTAssertFalse(ProfileStore.isAllowed(index: 1, isPremium: false))
         XCTAssertTrue(ProfileStore.isAllowed(index: 5, isPremium: true))
+    }
+
+    // SCENARIO: A backup's destinations must be independent folders
+    // The field case: the second destination was the iCloud Drive root, which contains the first one
+    // (a folder inside it) — files twice in one tree, a mixed index, a destination that looks empty.
+    // The same folder, a folder inside another and a folder containing another are all refused;
+    // a sibling with a similar name is fine (whole path components).
+    func test_destinations_overlapDetection() {
+        let root = URL(fileURLWithPath: "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs")
+        let inner = root.appendingPathComponent("PhotoVideoBackup")
+        XCTAssertTrue(ProfileStore.overlaps(root, with: [inner]))                          // contains
+        XCTAssertTrue(ProfileStore.overlaps(inner.appendingPathComponent("Gerard"), with: [inner])) // inside
+        XCTAssertTrue(ProfileStore.overlaps(inner, with: [inner]))                          // same
+        XCTAssertFalse(ProfileStore.overlaps(root.appendingPathComponent("PhotoVideoBackup 2"), with: [inner]))
+        XCTAssertFalse(ProfileStore.overlaps(URL(fileURLWithPath: "/Volumes/SSD2/Backup"),
+                                             with: [URL(fileURLWithPath: "/Volumes/SSD1/Backup")]))
+        XCTAssertFalse(ProfileStore.overlaps(inner, with: []))
     }
 }

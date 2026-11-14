@@ -23315,6 +23315,110 @@
           }
         }
       }
+    },
+    "This folder overlaps another destination" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This folder overlaps another destination"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce dossier chevauche une autre destination"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Ordner überschneidet sich mit einem anderen Ziel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta carpeta se solapa con otro destino"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa cartella si sovrappone a un'altra destinazione"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta pasta sobrepõe-se a outro destino"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此文件夹与另一个目标位置重叠"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта папка пересекается с другим местом назначения"
+          }
+        }
+      }
+    },
+    "Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un dossier qui n'est pas dans une autre destination de cette sauvegarde et qui n'en contient aucune : les fichiers seraient écrits deux fois au même endroit."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wählen Sie einen Ordner, der nicht in einem anderen Ziel dieses Backups liegt und keines enthält: Die Dateien würden sonst zweimal am selben Ort geschrieben."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elija una carpeta que no esté dentro de otro destino de esta copia y que no contenga ninguno: los archivos se escribirían dos veces en el mismo lugar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scegli una cartella che non sia dentro un'altra destinazione di questo backup e che non ne contenga nessuna: i file verrebbero scritti due volte nello stesso posto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha uma pasta que não esteja dentro de outro destino desta cópia e que não contenha nenhum: os ficheiros seriam escritos duas vezes no mesmo local."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择一个不在此备份其他目标位置内、也不包含其他目标位置的文件夹：否则文件会在同一位置被写入两次。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите папку, которая не находится внутри другого места назначения этой копии и не содержит его: иначе файлы будут записаны дважды в одном месте."
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

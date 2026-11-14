@@ -49,11 +49,12 @@ final class BackupBrowserViewModel {
 
     // MARK: - Security-scoped access
 
-    /// Every backup folder the app can write to, in the order the user meets them: the two global
-    /// slots of the Advanced screens, then the folders of each profile. With n profiles there are
-    /// potentially n destinations — Browse must show all of them, not only the global slots.
-    nonisolated static func destinationKeys(legacy: [String], profiles: [BackupProfile]) -> [String] {
-        legacy + profiles.flatMap(\.folderKeys)
+    /// The backup folders Browse shows: those of the existing backups, and only those. With n
+    /// profiles there are potentially n destinations; with none there is nothing to browse. The two
+    /// legacy slots are not listed on their own any more — migration copied them into profiles (which
+    /// reuse the same keys), so deleting every backup really empties Browse.
+    nonisolated static func destinationKeys(profiles: [BackupProfile]) -> [String] {
+        profiles.flatMap(\.folderKeys)
     }
 
     /// A NAS the Browse tab can open: the global one (Advanced settings) or a backup's own.
@@ -64,9 +65,10 @@ final class BackupBrowserViewModel {
         var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? "NAS" : config.displayName }
     }
 
-    /// Every distinct NAS: the global one first, then each profile's own. Two entries describing the
-    /// same server, share, folder and user are one NAS. A profile that uses the NAS but carries no
-    /// config of its own is covered by the global one.
+    /// Every distinct NAS of the existing backups: each profile's own, plus the global one only when
+    /// a backup that uses the NAS carries no config of its own (a profile saved by an earlier
+    /// development build). Two entries describing the same server, share, folder and user are one NAS.
+    /// With no backup using a NAS, none is listed.
     nonisolated static func nasEntries(global: NASConfig?, globalAccount: String,
                                        profiles: [BackupProfile]) -> [NASEntry] {
         func identity(_ c: NASConfig) -> String {
@@ -76,7 +78,8 @@ final class BackupBrowserViewModel {
         }
         var seen = Set<String>()
         var result: [NASEntry] = []
-        if let global, global.isComplete, seen.insert(identity(global)).inserted {
+        let needsGlobal = profiles.contains { $0.usesNAS && $0.nas == nil }
+        if needsGlobal, let global, global.isComplete, seen.insert(identity(global)).inserted {
             result.append(NASEntry(config: global, passwordAccount: globalAccount))
         }
         for profile in profiles where profile.usesNAS {
@@ -102,8 +105,7 @@ final class BackupBrowserViewModel {
     func startAccess() {
         loadLUTAssignments()
         let dm = DestinationManager.shared
-        let keys = Self.destinationKeys(legacy: (0...1).map { dm.key(for: $0) },
-                                        profiles: ProfileStore.shared.profiles)
+        let keys = Self.destinationKeys(profiles: ProfileStore.shared.profiles)
         // An unplugged drive (bookmark that does not resolve) simply does not appear, as before.
         let resolved: [(key: String, url: URL)] = keys.compactMap { key in
             guard dm.isConfigured(forKey: key), let url = dm.resolveBookmark(forKey: key) else { return nil }

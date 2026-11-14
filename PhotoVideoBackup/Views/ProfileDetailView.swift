@@ -16,6 +16,7 @@ struct ProfileDetailView: View {
     @State private var pickingIndex: Int?
     @State private var showImporter = false
     @State private var showPaywall = false
+    @State private var showOverlapAlert = false
     /// Next number for the keys of folders picked in this session (never collides with stored ones).
     @State private var nextKeyIndex = 100
 
@@ -62,6 +63,11 @@ struct ProfileDetailView: View {
             apply(url)
         }
         .sheet(isPresented: $showPaywall) { PaywallView() }
+        .alert("This folder overlaps another destination", isPresented: $showOverlapAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place.")
+        }
     }
 
     // MARK: Destinations
@@ -143,6 +149,18 @@ struct ProfileDetailView: View {
     /// Saves the bookmark right away (the picker's access is only valid here) under a key of this
     /// session; it is kept or discarded when the user saves or cancels.
     private func apply(_ url: URL) {
+        // The other destinations of this backup (not the one being replaced): the new folder must be
+        // independent of all of them.
+        let dm = DestinationManager.shared
+        let others = profile.destinations.enumerated().compactMap { offset, destination -> URL? in
+            guard offset != pickingIndex, case .folder(let key) = destination else { return nil }
+            return dm.resolveBookmark(forKey: key)
+        }
+        if ProfileStore.overlaps(url, with: others) {
+            pickingIndex = nil
+            showOverlapAlert = true
+            return
+        }
         let key = BackupProfile.folderKey(profileID: profile.id, index: nextKeyIndex)
         nextKeyIndex += 1
         DestinationManager.shared.saveBookmark(url: url, forKey: key)
