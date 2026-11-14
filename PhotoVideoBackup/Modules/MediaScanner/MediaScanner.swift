@@ -11,11 +11,13 @@ actor MediaScanner {
     // MARK: - Custom extensions (user-defined, stored in UserDefaults)
 
     static func customExtensions() -> Set<String> {
-        let raw = UserDefaults.standard.string(forKey: "customExtensions") ?? ""
-        return Set(raw.split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespaces).lowercased() }
-            .filter { !$0.isEmpty })
+        RunSettings.parseExtensions(UserDefaults.standard.string(forKey: "customExtensions") ?? "")
     }
+
+    /// Extra file types for this scan: a profile's own list, or the global setting when nil.
+    private let extraExtensions: Set<String>?
+    init(extraExtensions: Set<String>? = nil) { self.extraExtensions = extraExtensions }
+    private var effectiveExtensions: Set<String> { extraExtensions ?? Self.customExtensions() }
 
     // MARK: - Scan progress (live count reported while dates are being extracted)
 
@@ -101,7 +103,7 @@ actor MediaScanner {
         let dcim = root.appendingPathComponent("DCIM")
         let fm   = FileManager.default
         var result: [MediaFile] = []
-        let customExts = Self.customExtensions()
+        let customExts = effectiveExtensions
 
         guard let djiDirs = try? fm.contentsOfDirectory(
             at: dcim,
@@ -147,7 +149,7 @@ actor MediaScanner {
         let dcim = root.appendingPathComponent("DCIM")
         let fm   = FileManager.default
         var result: [MediaFile] = []
-        let customExts = Self.customExtensions()
+        let customExts = effectiveExtensions
 
         guard let dirs = try? fm.contentsOfDirectory(
             at: dcim,
@@ -197,7 +199,7 @@ actor MediaScanner {
         let dcim = root.appendingPathComponent("DCIM")
         let fm   = FileManager.default
         var result: [MediaFile] = []
-        let customExts = Self.customExtensions()
+        let customExts = effectiveExtensions
 
         guard let dirs = try? fm.contentsOfDirectory(
             at: dcim,
@@ -236,7 +238,7 @@ actor MediaScanner {
         let fm   = FileManager.default
         let exts = Set(["mp4", "mov", "avi", "jpg", "jpeg", "heic", "png",
                         "dng", "raw", "cr2", "cr3", "arw", "nef", "rw2",
-                        "insv", "insp", "braw", "mp3"]).union(Self.customExtensions())
+                        "insv", "insp", "braw", "mp3"]).union(effectiveExtensions)
         var result: [MediaFile] = []
 
         guard let enumerator = fm.enumerator(

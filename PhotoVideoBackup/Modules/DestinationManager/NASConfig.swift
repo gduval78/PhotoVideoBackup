@@ -4,7 +4,7 @@ import Foundation
 
 /// A saved SMB/NAS destination. Persisted as JSON in UserDefaults; the password is stored
 /// separately in the Keychain (see `KeychainStore`) and never written to UserDefaults.
-struct NASConfig: Codable, Equatable {
+struct NASConfig: Codable, Equatable, Hashable {
     var host: String            // "192.168.1.20"
     var port: Int               // 445
     var share: String           // DSM shared folder, e.g. "photo"

@@ -44,12 +44,15 @@ actor FileCopyEngine {
         sourceDevice: String,
         destinations: [BackupTarget],
         session: BackupSession,
-        fileLimit: Int? = nil
+        fileLimit: Int? = nil,
+        settings: RunSettings? = nil
     ) -> AsyncStream<CopyProgress> {
 
         guard !destinations.isEmpty else {
             return AsyncStream { $0.finish() }
         }
+        // Folder structure and naming for this run: the profile's, or the global settings.
+        let runSettings = settings ?? RunSettings.global()
 
         let overallTotal = files.reduce(Int64(0)) { $0 + $1.size }
 
@@ -97,8 +100,9 @@ actor FileCopyEngine {
                     // Naming profile (Settings): the file gets its final name as it is first
                     // written, so the duplicate check below can look it up by that name.
                     let targetName = NamingProfile.fileName(
-                        original: fileName, captureDate: fileDate, device: sourceDevice)
-                    let baseRel = FolderOrganization.current.relativePath(
+                        original: fileName, captureDate: fileDate, device: sourceDevice,
+                        enabled: runSettings.namingEnabled, pattern: runSettings.namingPattern)
+                    let baseRel = runSettings.organization.relativePath(
                         deviceName: sourceDevice, date: fileDate, fileName: targetName)
                     let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
@@ -143,7 +147,7 @@ actor FileCopyEngine {
                         await resolveCoverage(
                             targets: destinations, relativePath: baseRel,
                             size: file.size, sha256: sha,
-                            adoptUnknown: NamingProfile.isEnabled,
+                            adoptUnknown: runSettings.namingEnabled,
                             ledger: { path in await MainActor.run { IndexStore.shared.sourceHashes(writtenAt: path) } })
                     }
                     var coverage = await coverageFor(precomputedSHA256)

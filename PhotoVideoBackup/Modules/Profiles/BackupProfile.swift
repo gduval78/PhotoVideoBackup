@@ -118,12 +118,28 @@ struct BackupProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var template: ProfileTemplate
     var source: ProfileSource
     var destinations: [ProfileDestination]
+    /// The profile's own settings (folder structure, naming, limits). nil = follow the global
+    /// settings — a profile saved by a build that predates this field keeps working.
+    var settings: ProfileSettings?
+    /// The profile's own NAS (when `destinations` contains `.nas`). nil = the NAS configured in the
+    /// Advanced settings, as before this field existed.
+    var nas: NASConfig?
+    /// Keychain account holding the password of `nas`.
+    var nasPasswordAccount: String?
 
     init(id: UUID = UUID(), name: String, template: ProfileTemplate,
-         source: ProfileSource, destinations: [ProfileDestination]) {
+         source: ProfileSource, destinations: [ProfileDestination],
+         settings: ProfileSettings? = nil, nas: NASConfig? = nil, nasPasswordAccount: String? = nil) {
         self.id = id; self.name = name; self.template = template
         self.source = source; self.destinations = destinations
+        self.settings = settings; self.nas = nas; self.nasPasswordAccount = nasPasswordAccount
     }
+
+    /// The settings a run of this profile uses.
+    var runSettings: RunSettings { settings?.run ?? RunSettings.global() }
+
+    /// The Keychain account for the NAS password of a profile created by the "New backup" flow.
+    static func nasPasswordAccount(profileID: UUID) -> String { "profile.\(profileID.uuidString).nas" }
 
     /// The bookmark keys of this profile's folders, in order.
     var folderKeys: [String] {
@@ -146,20 +162,28 @@ enum ProfileMigration {
 
     struct LegacySource: Equatable, Sendable { let id: UUID; let name: String }
 
+    /// `settings` and `nas` are snapshots of the global configuration: each migrated profile gets its
+    /// own copy, so it is self-contained from then on.
     static func profiles(configuredFolderKeys: [String], nasConfigured: Bool,
                          externalSources: [LegacySource],
-                         photosName: String, nasName: String) -> [BackupProfile] {
+                         photosName: String, nasName: String,
+                         settings: ProfileSettings? = nil, nas: NASConfig? = nil,
+                         nasPasswordAccount: String? = nil) -> [BackupProfile] {
         var result: [BackupProfile] = []
         var destinations: [ProfileDestination] = configuredFolderKeys.map { .folder(bookmarkKey: $0) }
         if nasConfigured { destinations.append(.nas) }
+        let profileNAS = nasConfigured ? nas : nil
+        let account = nasConfigured ? nasPasswordAccount : nil
         // The photo library profile exists only when there is somewhere to send it.
         if !destinations.isEmpty {
-            result.append(BackupProfile(name: photosName, template: .custom,
-                                        source: .photos, destinations: destinations))
+            result.append(BackupProfile(name: photosName, template: .custom, source: .photos,
+                                        destinations: destinations, settings: settings,
+                                        nas: profileNAS, nasPasswordAccount: account))
         }
         for source in externalSources where !destinations.isEmpty {
-            result.append(BackupProfile(name: source.name, template: .custom,
-                                        source: .external(source.id), destinations: destinations))
+            result.append(BackupProfile(name: source.name, template: .custom, source: .external(source.id),
+                                        destinations: destinations, settings: settings,
+                                        nas: profileNAS, nasPasswordAccount: account))
         }
         return result
     }
@@ -207,6 +231,13 @@ final class ProfileStore {
         persist()
     }
 
+    /// Replaces a stored profile (settings, NAS, name…) with an edited copy, keeping its place.
+    func update(_ profile: BackupProfile) {
+        guard let i = profiles.firstIndex(where: { $0.id == profile.id }) else { return }
+        profiles[i] = profile
+        persist()
+    }
+
     func rename(_ id: UUID, to name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let i = profiles.firstIndex(where: { $0.id == id }) else { return }
@@ -221,6 +252,11 @@ final class ProfileStore {
         for key in profile.folderKeys where key.hasPrefix("PhotoVideoBackup.profile.") {
             DestinationManager.shared.clearBookmark(forKey: key)
         }
+        // The NAS password of a profile created by the "New backup" flow dies with it. The legacy
+        // account is shared with the Advanced NAS settings and is never touched.
+        if let account = profile.nasPasswordAccount, account.hasPrefix("profile.") {
+            KeychainStore.delete(account: account)
+        }
         profiles.removeAll { $0.id == id }
         persist()
     }
@@ -234,11 +270,14 @@ final class ProfileStore {
     @discardableResult
     func migrateIfNeeded(configuredFolderKeys: [String], nasConfigured: Bool,
                          externalSources: [ProfileMigration.LegacySource],
-                         photosName: String, nasName: String) -> Bool {
+                         photosName: String, nasName: String,
+                         nas: NASConfig? = nil, nasPasswordAccount: String? = nil) -> Bool {
         guard !defaults.bool(forKey: Keys.migrated) else { return false }
         let migrated = ProfileMigration.profiles(
             configuredFolderKeys: configuredFolderKeys, nasConfigured: nasConfigured,
-            externalSources: externalSources, photosName: photosName, nasName: nasName)
+            externalSources: externalSources, photosName: photosName, nasName: nasName,
+            settings: ProfileSettings.fromGlobal(defaults: defaults), nas: nas,
+            nasPasswordAccount: nasPasswordAccount)
         let upgrade = !configuredFolderKeys.isEmpty || nasConfigured || !externalSources.isEmpty
         if profiles.isEmpty { profiles = migrated; persist() }
         if upgrade { defaults.set(true, forKey: Keys.advanced) }

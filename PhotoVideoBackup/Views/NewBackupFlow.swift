@@ -67,11 +67,14 @@ private struct NewBackupSetup: View {
     @State private var pickTarget: PickTarget = .destination
     @State private var created = false
     @AppStorage("deviceName") private var deviceName: String = ""
+    /// This backup's own NAS. Pre-filled with the NAS from Settings when there is one (a convenience
+    /// for the common case); change it freely — it is this backup's copy.
+    @State private var nasConfig: NASConfig = DestinationManager.shared.loadNASConfig() ?? .empty
+    @State private var nasPassword: String = KeychainStore.get(account: DestinationManager.shared.legacyNASPasswordAccount) ?? ""
 
     private enum PickTarget { case destination, source }
 
     private var folderKey: String { BackupProfile.folderKey(profileID: profileID, index: 0) }
-    private var nasConfigured: Bool { DestinationManager.shared.isNASConfigured() }
     private var availableSources: [ExternalSource] { viewModel.externalSources.filter(\.isAvailable) }
 
     /// A photo-library backup is filed under the device name; without one the engine refuses to
@@ -85,14 +88,14 @@ private struct NewBackupSetup: View {
             && !needsDeviceName
             && (template.folderCount == 0 || folderLabel != nil)
             && (!template.usesExternalSource || sourceID != nil)
-            && (!template.includesNAS || nasConfigured)
+            && (!template.includesNAS || nasConfig.isComplete)
     }
 
     var body: some View {
         Form {
             if template.usesExternalSource { sourceSection }
             if template.folderCount > 0 { destinationSection }
-            if template.includesNAS { nasSection }
+            if template.includesNAS { ProfileNASEditor(config: $nasConfig, password: $nasPassword) }
             if !template.usesExternalSource { deviceNameSection }
             Section("Name") {
                 TextField("Name", text: $name)
@@ -171,17 +174,6 @@ private struct NewBackupSetup: View {
         }
     }
 
-    private var nasSection: some View {
-        Section("NAS") {
-            if nasConfigured, let cfg = DestinationManager.shared.loadNASConfig() {
-                Label { Text(verbatim: cfg.label) } icon: { Image(systemName: "server.rack") }
-            } else {
-                Label("Set up your NAS in Settings first, then come back.", systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange).font(.subheadline)
-            }
-        }
-    }
-
     // MARK: Actions
 
     private func pick(_ target: PickTarget) {
@@ -219,9 +211,25 @@ private struct NewBackupSetup: View {
         if template.folderCount > 0 { destinations.append(.folder(bookmarkKey: folderKey)) }
         if template.includesNAS { destinations.append(.nas) }
         let source: ProfileSource = template.usesExternalSource ? .external(sourceID ?? UUID()) : .photos
+        // The backup owns its NAS and its password; its options start as a copy of today's settings.
+        var ownNAS: NASConfig? = nil
+        var account: String? = nil
+        if template.includesNAS {
+            var cleaned = nasConfig
+            cleaned.host = nasConfig.host.trimmingCharacters(in: .whitespaces)
+            cleaned.share = nasConfig.share.trimmingCharacters(in: .whitespaces)
+            cleaned.basePath = nasConfig.basePath.trimmingCharacters(in: .whitespaces)
+            cleaned.username = nasConfig.username.trimmingCharacters(in: .whitespaces)
+            cleaned.displayName = nasConfig.displayName.trimmingCharacters(in: .whitespaces)
+            ownNAS = cleaned
+            account = BackupProfile.nasPasswordAccount(profileID: profileID)
+            KeychainStore.set(nasPassword, account: account!)
+        }
         let profile = BackupProfile(id: profileID,
                                     name: name.trimmingCharacters(in: .whitespaces),
-                                    template: template, source: source, destinations: destinations)
+                                    template: template, source: source, destinations: destinations,
+                                    settings: ProfileSettings.fromGlobal(),
+                                    nas: ownNAS, nasPasswordAccount: account)
         ProfileStore.shared.add(profile)
         created = true
         onDone()

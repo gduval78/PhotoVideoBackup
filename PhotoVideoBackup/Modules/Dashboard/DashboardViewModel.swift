@@ -119,10 +119,17 @@ final class DashboardViewModel {
 
     /// Full backup target set: local volumes plus the NAS (SMB) when configured, enabled,
     /// reachable, and the user is Pro. Connecting to the NAS happens here, once per backup.
-    private func resolvedTargets(localURLs: [URL], includeNAS: Bool = true) async -> [BackupTarget] {
+    private func resolvedTargets(localURLs: [URL], run: ProfileRun? = nil) async -> [BackupTarget] {
         var targets = localTargets(localURLs)
-        if includeNAS, StoreManager.shared.isPremium, let nas = await DestinationManager.shared.makeSMBTarget() {
-            targets.append(nas)
+        guard StoreManager.shared.isPremium else { return targets }
+        if let run {
+            // A profile connects to its own NAS (or to none).
+            if let nas = run.nas,
+               let smb = await DestinationManager.shared.makeSMBTarget(from: nas.config, password: nas.password) {
+                targets.append(smb)
+            }
+        } else if let smb = await DestinationManager.shared.makeSMBTarget() {
+            targets.append(smb)
         }
         return targets
     }
@@ -494,7 +501,11 @@ final class DashboardViewModel {
     struct ProfileRun {
         let name: String
         let localURLs: [URL]
-        let includeNAS: Bool
+        /// The profile's own NAS and its password, or nil when the profile has no NAS.
+        let nas: (config: NASConfig, password: String)?
+        /// The profile's own folder structure, naming, limits and extensions.
+        let settings: RunSettings
+        var includeNAS: Bool { nas != nil }
     }
 
     /// Connection state of a profile's destinations, for its card: every folder reachable (and the
@@ -522,7 +533,7 @@ final class DashboardViewModel {
             names.append(status.displayName.isEmpty ? url.lastPathComponent : status.displayName)
         }
         if profile.usesNAS {
-            if let cfg = dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
+            if let cfg = profile.nas ?? dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
             else { connected = false; names.append(String(localized: "NAS")) }
         }
         return ProfileConnection(isConnected: connected, destinationNames: names)
@@ -538,7 +549,18 @@ final class DashboardViewModel {
             backupError = String(localized: "A destination of this backup is not connected.")
             return
         }
-        let run = ProfileRun(name: profile.name, localURLs: urls, includeNAS: profile.usesNAS)
+        // The profile's own NAS (or, for a profile saved before it carried one, the Advanced settings').
+        var nas: (config: NASConfig, password: String)? = nil
+        if profile.usesNAS {
+            let config = profile.nas ?? dm.loadNASConfig()
+            let account = profile.nasPasswordAccount ?? dm.legacyNASPasswordAccount
+            guard let config, config.isComplete else {
+                backupError = String(localized: "The NAS of this backup is not set up.")
+                return
+            }
+            nas = (config, KeychainStore.get(account: account) ?? "")
+        }
+        let run = ProfileRun(name: profile.name, localURLs: urls, nas: nas, settings: profile.runSettings)
         switch profile.source {
         case .photos:
             await requestPhotosBackup(run: run)
@@ -624,6 +646,8 @@ final class DashboardViewModel {
 
     func startBackup(run: ProfileRun? = nil) async {
         guard !isRunning else { return }
+        // Folder structure, naming, limits and extensions: the profile's, or the global settings.
+        let runSettings = run?.settings ?? RunSettings.global()
 
         // Fail-fast (D): a missing device name is a synchronous precondition — check it BEFORE
         // committing to a run, so it never costs a full library scan to surface the error.
@@ -658,7 +682,7 @@ final class DashboardViewModel {
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
 
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
-        let targets = await resolvedTargets(localURLs: accessed, includeNAS: run?.includeNAS ?? true)
+        let targets = await resolvedTargets(localURLs: accessed, run: run)
         guard !targets.isEmpty else {
             abortRun(String(localized: "No backup destination is configured or connected."))
             return
@@ -705,12 +729,12 @@ final class DashboardViewModel {
             destinations: targets.map(\.rootIdentifier),
             incompleteMirror: targets.count < 2,
             sourceDisplayName: rawName,
-            folderOrganizationRaw: FolderOrganization.current.rawValue,
+            folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)
         )
         try? IndexStore.shared.insert(session)
 
-        let fileLimit = Self.resolvedFileLimit()
+        let fileLimit = runSettings.fileLimit
         backupPhase = .copying
         DiagnosticLog.write("[BACKUP_START] source=Photos files=\(items.count) dest=\(targets.count) device=\"\(deviceName)\" \(DiagnosticLog.memoryTag)")
         let stream = await libraryEngine.run(
@@ -718,7 +742,8 @@ final class DashboardViewModel {
             destinations: targets,
             session: session,
             deviceName: deviceName,
-            fileLimit: fileLimit
+            fileLimit: fileLimit,
+            settings: runSettings
         )
         for await progress in stream {
             currentProgress = progress
@@ -734,6 +759,8 @@ final class DashboardViewModel {
 
     func startBackup(from source: ExternalSource, run: ProfileRun? = nil) async {
         guard !isRunning else { return }
+        // Folder structure, naming, limits and extensions: the profile's, or the global settings.
+        let runSettings = run?.settings ?? RunSettings.global()
 
         guard let sourceURL = source.rootURL else {
             backupError = String(localized: "\"\(source.displayName)\" is not connected. Reconnect the SD card and try again.")
@@ -771,7 +798,7 @@ final class DashboardViewModel {
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
 
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
-        let targets = await resolvedTargets(localURLs: accessed, includeNAS: run?.includeNAS ?? true)
+        let targets = await resolvedTargets(localURLs: accessed, run: run)
         guard !targets.isEmpty else {
             abortRun(String(localized: "No backup destination is configured or connected."))
             return
@@ -781,7 +808,7 @@ final class DashboardViewModel {
 
         backupPhase = .scanning(found: 0)
         DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)\(run.map { " profile=\"\($0.name)\"" } ?? "")")
-        let scanner = MediaScanner()
+        let scanner = MediaScanner(extraExtensions: runSettings.extraExtensions)
         let files: [MediaFile]
         do {
             files = try await scanner.scan(root: sourceURL, deviceType: source.deviceType) { [weak self] found in
@@ -816,12 +843,12 @@ final class DashboardViewModel {
             destinations: targets.map(\.rootIdentifier),
             incompleteMirror: targets.count < 2,
             sourceDisplayName: source.displayName,
-            folderOrganizationRaw: FolderOrganization.current.rawValue,
+            folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)
         )
         try? IndexStore.shared.insert(session)
 
-        let fileLimit = Self.resolvedFileLimit()
+        let fileLimit = runSettings.fileLimit
         backupPhase = .copying
         DiagnosticLog.write("[BACKUP_START] source=\"\(source.displayName)\" files=\(files.count) dest=\(targets.count) device=\"\(deviceFolder)\" \(DiagnosticLog.memoryTag)")
         let stream = await fileEngine.run(
@@ -829,7 +856,8 @@ final class DashboardViewModel {
             sourceDevice: deviceFolder,
             destinations: targets,
             session: session,
-            fileLimit: fileLimit
+            fileLimit: fileLimit,
+            settings: runSettings
         )
         for await progress in stream {
             currentProgress = progress

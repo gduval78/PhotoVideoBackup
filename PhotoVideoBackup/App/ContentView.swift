@@ -71,6 +71,7 @@ struct ContentView: View {
         let sources = viewModel.externalSources.map { ProfileMigration.LegacySource(id: $0.id, name: $0.displayName) }
         ProfileStore.shared.migrateIfNeeded(
             configuredFolderKeys: keys, nasConfigured: dm.isNASConfigured(), externalSources: sources,
-            photosName: String(localized: "Photos Library"), nasName: String(localized: "NAS"))
+            photosName: String(localized: "Photos Library"), nasName: String(localized: "NAS"),
+            nas: dm.loadNASConfig(), nasPasswordAccount: dm.legacyNASPasswordAccount)
     }
 }

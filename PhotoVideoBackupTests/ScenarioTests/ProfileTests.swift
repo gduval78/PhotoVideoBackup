@@ -129,4 +129,27 @@ final class ProfileTests: XCTestCase {
             ("k.ssd1", drive), ("k.profile.a", drive), ("k.profile.b", other), ("k.profile.c", drive)])
         XCTAssertEqual(unique.map(\.key), ["k.ssd1", "k.profile.b"])            // same folder once; "Backup 2" is another
     }
+
+    // SCENARIO: Browse shows each distinct NAS once — the global one and every backup's own
+    func test_browse_nasEntries_distinctPerServer() {
+        func nas(_ host: String, share: String = "photo", user: String = "me") -> NASConfig {
+            NASConfig(host: host, port: 445, share: share, basePath: "PVB", username: user,
+                      displayName: host, enabled: true)
+        }
+        let home = nas("home.local")
+        let office = nas("office.local")
+        let p1 = BackupProfile(name: "1", template: .photosToNAS, source: .photos, destinations: [.nas],
+                               nas: home, nasPasswordAccount: "profile.1.nas")          // same NAS as the global one
+        let p2 = BackupProfile(name: "2", template: .photosToNAS, source: .photos, destinations: [.nas],
+                               nas: office, nasPasswordAccount: "profile.2.nas")
+        let old = BackupProfile(name: "3", template: .photosToNAS, source: .photos, destinations: [.nas]) // no own config
+        let noNAS = BackupProfile(name: "4", template: .photosToDrive, source: .photos,
+                                  destinations: [.folder(bookmarkKey: "k")], nas: office)
+        let entries = BackupBrowserViewModel.nasEntries(global: home, globalAccount: "nas.primary",
+                                                        profiles: [p1, p2, old, noNAS])
+        XCTAssertEqual(entries.map(\.config.host), ["home.local", "office.local"])
+        XCTAssertEqual(entries.map(\.passwordAccount), ["nas.primary", "profile.2.nas"])
+        // Without a global NAS, a profile's own still shows.
+        XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: nil, globalAccount: "g", profiles: [p2]).count, 1)
+    }
 }

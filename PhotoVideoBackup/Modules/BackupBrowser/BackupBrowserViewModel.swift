@@ -56,6 +56,42 @@ final class BackupBrowserViewModel {
         legacy + profiles.flatMap(\.folderKeys)
     }
 
+    /// A NAS the Browse tab can open: the global one (Advanced settings) or a backup's own.
+    struct NASEntry: Equatable {
+        let config: NASConfig
+        /// Keychain account of its password.
+        let passwordAccount: String
+        var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? "NAS" : config.displayName }
+    }
+
+    /// Every distinct NAS: the global one first, then each profile's own. Two entries describing the
+    /// same server, share, folder and user are one NAS. A profile that uses the NAS but carries no
+    /// config of its own is covered by the global one.
+    nonisolated static func nasEntries(global: NASConfig?, globalAccount: String,
+                                       profiles: [BackupProfile]) -> [NASEntry] {
+        func identity(_ c: NASConfig) -> String {
+            [c.host.lowercased(), String(c.port), c.share.lowercased(),
+             c.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased(),
+             c.username.lowercased()].joined(separator: "|")
+        }
+        var seen = Set<String>()
+        var result: [NASEntry] = []
+        if let global, global.isComplete, seen.insert(identity(global)).inserted {
+            result.append(NASEntry(config: global, passwordAccount: globalAccount))
+        }
+        for profile in profiles where profile.usesNAS {
+            guard let cfg = profile.nas, cfg.isComplete, seen.insert(identity(cfg)).inserted else { continue }
+            result.append(NASEntry(config: cfg, passwordAccount: profile.nasPasswordAccount ?? globalAccount))
+        }
+        return result
+    }
+
+    var nasEntries: [NASEntry] {
+        let dm = DestinationManager.shared
+        return Self.nasEntries(global: dm.loadNASConfig(), globalAccount: dm.legacyNASPasswordAccount,
+                               profiles: ProfileStore.shared.profiles)
+    }
+
     /// Several profiles (or a profile and a legacy slot) can point at the same folder — a migrated
     /// profile reuses the legacy key. Browse lists a folder once. Compared on the standardized path.
     nonisolated static func uniqueByFolder(_ entries: [(key: String, url: URL)]) -> [(key: String, url: URL)] {

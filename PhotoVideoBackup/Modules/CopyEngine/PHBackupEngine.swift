@@ -128,12 +128,15 @@ actor PHBackupEngine {
         destinations: [BackupTarget],
         session: BackupSession,
         deviceName: String,
-        fileLimit: Int? = nil
+        fileLimit: Int? = nil,
+        settings: RunSettings? = nil
     ) -> AsyncStream<CopyProgress> {
 
         guard !destinations.isEmpty else {
             return AsyncStream { $0.finish() }
         }
+        // Folder structure and naming for this run: the profile's, or the global settings.
+        let runSettings = settings ?? RunSettings.global()
 
         // Use sum of estimated sizes; actual sizes are updated per-file after export.
         let estimatedTotal = items.reduce(Int64(0)) { $0 + $1.fileSize }
@@ -190,8 +193,9 @@ actor PHBackupEngine {
                     // written, so the duplicate check below can look it up by that name.
                     let assetDate  = item.creationDate ?? item.modificationDate
                     let targetName = NamingProfile.fileName(
-                        original: item.fileName, captureDate: assetDate, device: deviceName)
-                    let baseRel = FolderOrganization.current.relativePath(
+                        original: item.fileName, captureDate: assetDate, device: deviceName,
+                        enabled: runSettings.namingEnabled, pattern: runSettings.namingPattern)
+                    let baseRel = runSettings.organization.relativePath(
                         deviceName: deviceName, date: assetDate, fileName: targetName)
                     let primaryDest = destinations.first?.absolutePath(forRelative: baseRel) ?? ""
 
@@ -253,7 +257,7 @@ actor PHBackupEngine {
                         await resolveCoverage(
                             targets: destinations, relativePath: baseRel,
                             size: size, sha256: sha,
-                            adoptUnknown: NamingProfile.isEnabled,
+                            adoptUnknown: runSettings.namingEnabled,
                             ledger: { path in await MainActor.run { IndexStore.shared.sourceHashes(writtenAt: path) } })
                     }
                     var coverage = await coverageFor(precomputedSHA256, actualSize)

@@ -86,18 +86,18 @@ class ScenarioTestCase: XCTestCase {
     // MARK: - Backup DSL
 
     // Single-destination convenience — delegates to the multi-destination variant.
-    func backup(from sd: SimulatedSDCard, to ssd: SimulatedSSD) async {
-        await backup(from: sd, to: [ssd])
+    func backup(from sd: SimulatedSDCard, to ssd: SimulatedSSD, settings: RunSettings? = nil) async {
+        await backup(from: sd, to: [ssd], settings: settings)
     }
 
     // Multi-destination variant — runs the real scanner + engine against 1..N SSDs.
-    func backup(from sd: SimulatedSDCard, to destinations: [SimulatedSSD]) async {
+    func backup(from sd: SimulatedSDCard, to destinations: [SimulatedSSD], settings: RunSettings? = nil) async {
         guard let root = sd.rootURL else {
             XCTFail("SimulatedSDCard has no rootURL — directory creation failed")
             return
         }
 
-        let scanner = MediaScanner()
+        let scanner = MediaScanner(extraExtensions: settings?.extraExtensions)
         let files: [MediaFile]
         do {
             files = try await scanner.scan(root: root, deviceType: sd.deviceType)
@@ -113,14 +113,15 @@ class ScenarioTestCase: XCTestCase {
         )
         try? IndexStore.shared.insert(session)
 
-        let limit  = UserDefaults.standard.integer(forKey: "backupFileLimit")
+        let limit  = settings.map { $0.fileLimit ?? 0 } ?? UserDefaults.standard.integer(forKey: "backupFileLimit")
         let engine = FileCopyEngine()
         let stream = await engine.run(
             files:        files,
             sourceDevice: sd.displayName,
             destinations: destinations.map { LocalFileTarget(root: $0.rootURL, displayName: $0.rootURL.lastPathComponent) },
             session:      session,
-            fileLimit:    limit > 0 ? limit : nil
+            fileLimit:    limit > 0 ? limit : nil,
+            settings:     settings
         )
         for await _ in stream { }
 

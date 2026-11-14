@@ -10,6 +10,7 @@ struct BackupsView: View {
     @State private var renaming: BackupProfile?
     @State private var renameText = ""
     @State private var deleting: BackupProfile?
+    @State private var editing: BackupProfile?
     @State private var connections: [UUID: DashboardViewModel.ProfileConnection] = [:]
 
     var body: some View {
@@ -24,6 +25,7 @@ struct BackupsView: View {
                                     isRunning: viewModel.isRunning,
                                     onRun: { Task { await viewModel.runProfile(profile) } },
                                     onRename: { renameText = profile.name; renaming = profile },
+                                    onSettings: { editing = profile },
                                     onDelete: { deleting = profile })
                     }
                 }
@@ -52,6 +54,9 @@ struct BackupsView: View {
             }
         }
         .sheet(isPresented: $showNew, onDismiss: refreshConnections) { NewBackupFlow() }
+        .sheet(item: $editing, onDismiss: refreshConnections) { profile in
+            NavigationStack { ProfileDetailView(profile: profile) }
+        }
         .alert("Rename backup", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
             TextField("Name", text: $renameText)
             Button("Save") {
@@ -129,6 +134,7 @@ private struct ProfileCard: View {
     let isRunning: Bool
     let onRun: () -> Void
     let onRename: () -> Void
+    let onSettings: () -> Void
     let onDelete: () -> Void
 
     private var destinations: String { connection?.destinationNames.joined(separator: ", ") ?? "" }
@@ -155,11 +161,13 @@ private struct ProfileCard: View {
         }
         .padding(.vertical, 4)
         .contextMenu {
+            Button("Settings", systemImage: "gearshape", action: onSettings)
             Button("Rename", systemImage: "pencil", action: onRename)
             Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
         }
         .swipeActions(edge: .trailing) {
             Button("Delete", role: .destructive, action: onDelete)
+            Button("Settings", action: onSettings).tint(.gray)
             Button("Rename", action: onRename).tint(.blue)
         }
     }

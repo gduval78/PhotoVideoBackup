@@ -7,16 +7,11 @@ import UniformTypeIdentifiers
 struct BackupBrowserView: View {
     @Environment(BackupBrowserViewModel.self) private var browser
 
-    private var nasBrowseTitle: String {
-        let name = DestinationManager.shared.loadNASConfig()?.displayName ?? ""
-        return name.isEmpty ? "NAS" : name
-    }
-
     var body: some View {
         let _ = browser.folderListVersion
-        let nasConfigured = DestinationManager.shared.isNASConfigured()
+        let nasEntries = browser.nasEntries
         Group {
-            if browser.destinations.isEmpty && !nasConfigured {
+            if browser.destinations.isEmpty && nasEntries.isEmpty {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
                     title: "No destination available",
@@ -43,12 +38,14 @@ struct BackupBrowserView: View {
                         }
                     }
 
-                    if nasConfigured {
-                        Section("NAS") {
+                    // One section per distinct NAS: the global one and each backup's own.
+                    ForEach(nasEntries, id: \.config) { entry in
+                        Section(entry.title) {
                             NavigationLink {
-                                NASBrowserRootView(title: nasBrowseTitle)
+                                NASBrowserRootView(title: entry.title, config: entry.config,
+                                                   passwordAccount: entry.passwordAccount)
                             } label: {
-                                Label(nasBrowseTitle, systemImage: "externaldrive.connected.to.line.below")
+                                Label(entry.config.label, systemImage: "externaldrive.connected.to.line.below")
                             }
                         }
                     }

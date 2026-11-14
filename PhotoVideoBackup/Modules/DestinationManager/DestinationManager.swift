@@ -170,6 +170,9 @@ final class DestinationManager {
         static let passwordAccount = "nas.primary"
     }
 
+    /// The Keychain account of the global (Advanced settings) NAS password.
+    var legacyNASPasswordAccount: String { NASKeys.passwordAccount }
+
     func loadNASConfig() -> NASConfig? {
         guard let data = UserDefaults.standard.data(forKey: NASKeys.config),
               let cfg  = try? JSONDecoder().decode(NASConfig.self, from: data) else { return nil }
