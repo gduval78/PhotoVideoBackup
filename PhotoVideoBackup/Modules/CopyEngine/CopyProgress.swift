@@ -13,6 +13,9 @@ struct EngineResult: Sendable {
     var wasCancelled: Bool = false
     /// The run stopped because device storage stayed below the safety reserve (see `PHBackupEngine`).
     var wasLowSpace: Bool = false
+    /// Destinations that failed a write while their volume was still reachable (full, I/O error) on a
+    /// run that otherwise went on — not a disconnection.
+    var destinationErrorCount: Int = 0
 }
 
 // MARK: - CopyPhase

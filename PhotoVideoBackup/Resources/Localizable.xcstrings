@@ -19415,6 +19415,110 @@
           }
         }
       }
+    },
+    "Partial backup — a destination is full or reported an error, so some files are missing there. Free up space and run again to continue." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial backup — a destination is full or reported an error, so some files are missing there. Free up space and run again to continue."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde partielle — une destination est pleine ou a signalé une erreur, certains fichiers y manquent. Libérez de l'espace et relancez pour continuer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilweises Backup — ein Ziel ist voll oder meldete einen Fehler, daher fehlen dort einige Dateien. Geben Sie Speicher frei und führen Sie das Backup erneut aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia parcial — un destino está lleno o informó de un error, por lo que faltan algunos archivos en él. Libere espacio y ejecute de nuevo para continuar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parziale — una destinazione è piena o ha segnalato un errore, quindi alcuni file vi mancano. Libera spazio ed esegui di nuovo per continuare."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cópia parcial — um destino está cheio ou comunicou um erro, pelo que faltam alguns ficheiros nele. Liberte espaço e execute novamente para continuar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分备份 — 某个目标位置已满或报告了错误，因此该位置缺少部分文件。请释放空间后再次运行以继续。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частичная копия — одно из мест назначения заполнено или сообщило об ошибке, поэтому в нём не хватает части файлов. Освободите место и запустите снова, чтобы продолжить."
+          }
+        }
+      }
+    },
+    "%lld copied — a destination is full or reported an error. Check the Report · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copied — a destination is full or reported an error. Check the Report · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copié(s) — une destination est pleine ou a signalé une erreur. Consultez le rapport · %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kopiert — ein Ziel ist voll oder meldete einen Fehler. Siehe Bericht · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — un destino está lleno o informó de un error. Consulte el informe · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiati — una destinazione è piena o ha segnalato un errore. Consulta il report · %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — um destino está cheio ou comunicou um erro. Consulte o relatório · %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制 %lld 个 — 某个目标位置已满或报告了错误。请查看报告 · %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано: %lld — одно из мест назначения заполнено или сообщило об ошибке. См. отчёт · %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

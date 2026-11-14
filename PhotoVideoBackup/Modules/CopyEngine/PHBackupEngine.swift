@@ -84,6 +84,7 @@ actor PHBackupEngine {
     private var _cancelRequested = false
     private var _wasCancelled = false
     private var _wasLowSpace = false
+    private var _destinationErrorCount = 0
 
     /// Cooperative cancellation: the run loop stops at the next file boundary.
     func requestCancel() { _cancelRequested = true }
@@ -93,7 +94,7 @@ actor PHBackupEngine {
                      failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
                      wasLimited: _wasLimited, verifiedCount: _verifiedCount,
                      disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled,
-                     wasLowSpace: _wasLowSpace)
+                     wasLowSpace: _wasLowSpace, destinationErrorCount: _destinationErrorCount)
     }
 
     // MARK: - Public API
@@ -119,7 +120,7 @@ actor PHBackupEngine {
                 _copiedCount = 0; _skippedCount = 0; _failedCount = 0
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
-                _wasLowSpace = false
+                _wasLowSpace = false; _destinationErrorCount = 0
 
                 // The index kept with the backup: learn what other devices (or a lost history)
                 // already put there before looking anything up.
@@ -346,7 +347,13 @@ actor PHBackupEngine {
                             actualSize        = result.totalBytes
                             precomputedSHA256 = result.sourceSHA256
 
-                            let disconnectedPaths = Set(result.disconnected.map(\.path))
+                            if !result.failed.isEmpty {
+                                _destinationErrorCount += result.failed.count
+                                for url in result.failed {
+                                    DiagnosticLog.write("[COPY_ERROR] destination failed, others carried on: \(url.lastPathComponent)")
+                                }
+                            }
+                            let disconnectedPaths = Set((result.disconnected + result.failed).map(\.path))
                             if !result.disconnected.isEmpty {
                                 _disconnectedCount += result.disconnected.count
                                 disconnectedThisFile = true
@@ -668,6 +675,8 @@ actor PHBackupEngine {
         let sourceSHA256: String
         let totalBytes: Int64
         let disconnected: [URL]
+        /// Destinations that failed while their volume was reachable (full, I/O error).
+        var failed: [URL] = []
     }
 
     private func streamCopy(
@@ -818,7 +827,7 @@ actor PHBackupEngine {
         private var _dropped: [URL] = []
         /// Errors from destinations whose volume is still reachable (disk full, I/O error) — as
         /// opposed to a volume that vanished. Kept so the engine can report the real cause.
-        private var _failures: [Error] = []
+        private var _failures: [(dest: URL, error: Error)] = []
         private var _bytes: Int64 = 0
 
         init(active: [(handle: FileHandle, dest: URL)]) { self.active = active }
@@ -852,7 +861,7 @@ actor PHBackupEngine {
                     try? pair.handle.close()
                     _dropped.append(pair.dest)
                     let reachable = isReachable(pair.dest)
-                    if reachable { _failures.append(error) }
+                    if reachable { _failures.append((pair.dest, error)) }
                     let tag = reachable ? "COPY_ERROR" : "DISC_ERROR"
                     DiagnosticLog.write("[\(tag)] destination dropped mid-write: \(pair.dest.lastPathComponent) — \(error.localizedDescription)")
                 }
@@ -863,7 +872,7 @@ actor PHBackupEngine {
 
         /// Closes every handle and returns the accumulated outcome. `dropped` are the destinations
         /// that fell out mid-write (unplugged or errored); the survivors are recorded as written.
-        func finish() -> (sha256: String, bytes: Int64, dropped: [URL], failures: [Error]) {
+        func finish() -> (sha256: String, bytes: Int64, dropped: [URL], failures: [(dest: URL, error: Error)]) {
             lock.lock()
             defer { lock.unlock() }
             for pair in active { try? pair.handle.close() }
@@ -937,13 +946,16 @@ actor PHBackupEngine {
             // Every destination is lost. If any of them failed while its volume was still there
             // (disk full, I/O error) the cause is that error — not a disconnection.
             if let failure = outcome.failures.first {
-                throw failure
+                throw failure.error
             }
             throw CopyError.allDestinationsDisconnected
         }
+        // Lost with the volume still reachable (full, I/O error) is not a disconnection.
+        let failedPaths = Set(outcome.failures.map(\.dest.path))
         return StreamResult(sourceSHA256: outcome.sha256,
                             totalBytes: outcome.bytes,
-                            disconnected: allDisconnected)
+                            disconnected: allDisconnected.filter { !failedPaths.contains($0.path) },
+                            failed: allDisconnected.filter { failedPaths.contains($0.path) })
     }
 
     /// Read-only pass over an asset's data: SHA-256 and true byte count, nothing written anywhere.

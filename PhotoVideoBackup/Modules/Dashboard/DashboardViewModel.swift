@@ -198,6 +198,8 @@ final class DashboardViewModel {
                 content.body = String(localized: "\(banner.copiedCount) copied — destination disconnected. Reconnect and run again · \(banner.sourceName)")
             case .cancelled:
                 content.body = String(localized: "\(banner.copiedCount) copied — stopped. Run again to continue · \(banner.sourceName)")
+            case .destinationError:
+                content.body = String(localized: "\(banner.copiedCount) copied — a destination is full or reported an error. Check the Report · \(banner.sourceName)")
             case .lowSpace:
                 content.body = String(localized: "\(banner.copiedCount) copied — iPhone storage is low, backup paused. Free up space and run again · \(banner.sourceName)")
             case .fileLimit, .none:
@@ -692,10 +694,12 @@ final class DashboardViewModel {
     /// was a disconnection at file 149 being reported as "file limit reached". Callers pass this only
     /// for a `.partial` outcome; for a completed/failed run the reason is `.none`.
     nonisolated static func partialReason(wasCancelled: Bool, disconnectedCount: Int, wasLimited: Bool,
-                                          wasLowSpace: Bool = false) -> PartialReason {
+                                          wasLowSpace: Bool = false,
+                                          destinationErrorCount: Int = 0) -> PartialReason {
         if wasCancelled            { return .cancelled }
         if wasLowSpace             { return .lowSpace }
         if disconnectedCount > 0   { return .disconnected }
+        if destinationErrorCount > 0 { return .destinationError }
         if wasLimited              { return .fileLimit }
         return .none
     }
@@ -753,7 +757,7 @@ final class DashboardViewModel {
         let sessionStatus = Self.sessionStatus(
             copied: result.copiedCount, skipped: result.skippedCount, failed: result.failedCount,
             interrupted: result.wasLimited || result.disconnectedCount > 0
-                || result.wasCancelled || result.wasLowSpace)
+                || result.wasCancelled || result.wasLowSpace || result.destinationErrorCount > 0)
 
         // Which of the three partial causes actually fired. Only meaningful for a `.partial`
         // session; the notification and Report must say the right thing (a disconnection is not
@@ -762,7 +766,8 @@ final class DashboardViewModel {
             ? Self.partialReason(wasCancelled: result.wasCancelled,
                                  disconnectedCount: result.disconnectedCount,
                                  wasLimited: result.wasLimited,
-                                 wasLowSpace: result.wasLowSpace)
+                                 wasLowSpace: result.wasLowSpace,
+                                 destinationErrorCount: result.destinationErrorCount)
             : .none
 
         try? IndexStore.shared.complete(session, status: sessionStatus, partialReason: partialReason)

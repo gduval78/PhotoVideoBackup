@@ -78,6 +78,25 @@ final class PartialReasonTests: XCTestCase {
         XCTAssertEqual(VM.sessionStatus(copied: 7, skipped: 0, failed: 0, interrupted: true), .partial)
     }
 
+    // SCENARIO: A destination that failed while reachable is not reported as a disconnection
+    // One of several destinations is full (iCloud Drive) while the others carry on. The run is partial,
+    // and the reason must say a destination failed — not "destination disconnected". A real
+    // disconnection and a user stop still take precedence.
+    func test_destinationError_isNotDisconnection() {
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 0, wasLimited: false,
+                                             destinationErrorCount: 1),
+            .destinationError)
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 1, wasLimited: false,
+                                             destinationErrorCount: 1),
+            .disconnected)
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 0, wasLimited: true,
+                                             destinationErrorCount: 1),
+            .destinationError)
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.
