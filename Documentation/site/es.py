@@ -47,7 +47,7 @@ GUIDE = [
     ("setup", "Define el nombre del dispositivo y el destino", [
         ("ol", ["Abre la pestaña <b>Ajustes</b>. En la sección <b>Dispositivo</b>, escribe un <b>nombre de carpeta</b> — por ejemplo <i>iPhone de Ana</i> o <i>Pixel 8</i>. Será el nombre de la carpeta en la unidad, de modo que dos móviles que copian en la misma unidad quedan separados. Una copia no empieza hasta que haya un nombre.", "Conecta tu unidad.", "En <b>Destinos</b>, toca <b>Elegir…</b> y selecciona la unidad, o una carpeta de ella, en el explorador de archivos del sistema. En Android también puedes elegir una carpeta del almacenamiento del móvil.", "El nombre de la unidad aparece en Ajustes y en la pestaña Copia, con su espacio libre. Solo lo haces una vez: la aplicación reconoce la unidad la próxima vez."]),
         ("fig", "settings_configured", "Ajustes: nombre del dispositivo y primer destino."),
-        ("note", "Un destino también puede ser una carpeta de <b>iCloud Drive</b> (iPhone) — la aplicación libera la copia local cuando iCloud confirma la subida, para que el móvil no se llene."),
+        ("note", "Un destino también puede ser una carpeta de <b>iCloud Drive</b> (iPhone) — la aplicación libera la copia local cuando iCloud confirma la subida, para que el móvil no se llene. Si aun así el iPhone está casi lleno (menos de unos 2 GB libres), la copia <b>se pausa sola</b> y continúa cuando vuelve a haber espacio; si no mejora tras unos minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copia tus fotos y vídeos", [
         ("p", "Abre la pestaña <b>Copia</b>. Arriba ves tus destinos con su espacio libre. En <b>Fuentes</b>, la fila <b>Biblioteca de Fotos</b> muestra el nombre de tu dispositivo. Toca su botón <b>Copia</b>."),
@@ -91,7 +91,7 @@ GUIDE = [
     ("history", "Historial e informes", [
         ("p", "La pestaña <b>Historial</b> lista cada copia: origen, destinos, estructura de carpetas, número de archivos y un color — verde si todo fue bien, naranja para <b>Parcial</b>, rojo si hubo fallos."),
         ("fig", "history_list", "Historial: una sesión terminada."),
-        ("p", "<b>Parcial</b> significa que la copia se detuvo antes de terminar, por una de tres razones que el informe indica: tocaste <b>Detener</b>, se alcanzó el <b>límite de archivos</b> o un <b>destino se desconectó</b>. Reconecta la unidad y vuelve a lanzar — continúa donde se quedó."),
+        ("p", "<b>Parcial</b> significa que la copia se detuvo antes de terminar, por una de cuatro razones que el informe indica: tocaste <b>Detener</b>, se alcanzó el <b>límite de archivos</b>, un <b>destino se desconectó</b> o el <b>almacenamiento del iPhone se agotó</b> (tus archivos están a salvo — libera espacio). Reconecta la unidad o libera espacio y vuelve a lanzar — continúa donde se quedó."),
         ("p", "Toca una sesión para ver su informe: resumen, estado SHA-256 y listas de archivos copiados, omitidos y fallidos — con el motivo de cada fallo. Con dos destinos, el informe muestra cada unidad por separado."),
         ("fig", "report_summary", "Un informe de sesión."),
         ("p", "<b>Eliminar archivos fuente…</b> libera espacio en la tarjeta o en la biblioteca cuando estás conforme con la copia. Solo ofrece los archivos copiados <i>y</i> verificados, y para confirmar debes escribir un código de cuatro cifras. Tu copia no se toca. En iPhone y Android, el sistema pide una confirmación más para las fotos."),

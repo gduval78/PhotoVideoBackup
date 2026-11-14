@@ -47,7 +47,7 @@ GUIDE = [
     ("setup", "Defina o nome do dispositivo e o destino", [
         ("ol", ["Abra o separador <b>Definições</b>. Na secção <b>Dispositivo</b>, escreva um <b>nome da pasta</b> — por exemplo <i>iPhone da Ana</i> ou <i>Pixel 8</i>. Passa a ser o nome da pasta na unidade, de modo que dois telemóveis que copiam para a mesma unidade ficam separados. Uma cópia não arranca enquanto não houver um nome.", "Ligue a sua unidade.", "Em <b>Destinos</b>, toque em <b>Escolher…</b> e selecione a unidade, ou uma pasta dela, no explorador de ficheiros do sistema. No Android pode também escolher uma pasta do armazenamento do telemóvel.", "O nome da unidade aparece nas Definições e no separador Backup, com o espaço livre. Só o faz uma vez: da próxima vez a aplicação reconhece a unidade."]),
         ("fig", "settings_configured", "Definições: nome do dispositivo e primeiro destino."),
-        ("note", "Um destino também pode ser uma pasta do <b>iCloud Drive</b> (iPhone) — a aplicação liberta a cópia local quando o iCloud confirma o envio, para que o telemóvel não encha."),
+        ("note", "Um destino também pode ser uma pasta do <b>iCloud Drive</b> (iPhone) — a aplicação liberta a cópia local quando o iCloud confirma o envio, para que o telemóvel não encha. Se mesmo assim o iPhone estiver quase cheio (menos de cerca de 2 GB livres), a cópia <b>pausa sozinha</b> e continua quando voltar a haver espaço; se nada melhorar ao fim de alguns minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copie as suas fotos e vídeos", [
         ("p", "Abra o separador <b>Backup</b>. Em cima vê os seus destinos com o espaço livre. Em <b>Fontes</b>, a linha <b>Biblioteca de Fotos</b> mostra o nome do seu dispositivo. Toque no botão <b>Backup</b> dessa linha."),
@@ -91,7 +91,7 @@ GUIDE = [
     ("history", "Histórico e relatórios", [
         ("p", "O separador <b>Histórico</b> lista cada cópia: origem, destinos, estrutura de pastas, número de ficheiros e uma cor — verde para sucesso, laranja para <b>Parcial</b>, vermelho se houve falhas."),
         ("fig", "history_list", "Histórico: uma sessão concluída."),
-        ("p", "<b>Parcial</b> significa que a cópia parou antes do fim, por uma de três razões que o relatório indica: tocou em <b>Parar</b>, o <b>limite de ficheiros</b> foi atingido ou um <b>destino foi desligado</b>. Volte a ligar a unidade e execute de novo — continua onde parou."),
+        ("p", "<b>Parcial</b> significa que a cópia parou antes do fim, por uma de quatro razões que o relatório indica: tocou em <b>Parar</b>, o <b>limite de ficheiros</b> foi atingido, um <b>destino foi desligado</b> ou o <b>armazenamento do iPhone ficou quase cheio</b> (os seus ficheiros estão seguros — liberte espaço). Volte a ligar a unidade ou liberte espaço e execute de novo — continua onde parou."),
         ("p", "Toque numa sessão para ver o relatório: resumo, estado SHA-256 e listas de ficheiros copiados, ignorados e falhados — com o motivo de cada falha. Com dois destinos, o relatório mostra cada unidade em separado."),
         ("fig", "report_summary", "Um relatório de sessão."),
         ("p", "<b>Eliminar ficheiros fonte…</b> liberta espaço no cartão ou na biblioteca quando estiver satisfeito com a cópia. Só oferece os ficheiros copiados <i>e</i> verificados, e para confirmar tem de escrever um código de quatro dígitos. A sua cópia não é tocada. No iPhone e no Android, o sistema pede mais uma confirmação para as fotos."),

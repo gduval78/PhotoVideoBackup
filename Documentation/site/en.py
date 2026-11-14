@@ -47,7 +47,7 @@ GUIDE = [
     ("setup", "Set up your device name and destination", [
         ("ol", ["Open the <b>Settings</b> tab. In the <b>Device</b> section, type a <b>folder name</b> — for example <i>Anna’s iPhone</i> or <i>Pixel 8</i>. It becomes the folder name on the drive, so two phones saving to the same drive stay separate. A backup does not start until a name is set.", "Plug in your drive.", "Under <b>Destinations</b>, tap <b>Choose…</b> and pick the drive, or a folder on it, in the system file browser. On Android you can also pick a folder in the phone’s own storage.", "The drive name appears in Settings and on the Backup tab, with its free space. You only do this once: the app recognises the drive the next time."]),
         ("fig", "settings_configured", "Settings: device name and the first destination."),
-        ("note", "A destination can also be a folder in <b>iCloud Drive</b> (iPhone) — the app releases the local copy once iCloud confirms the upload, so the phone does not fill up."),
+        ("note", "A destination can also be a folder in <b>iCloud Drive</b> (iPhone) — the app releases the local copy once iCloud confirms the upload, so the phone does not fill up. If the iPhone is nearly full anyway (less than about 2 GB free), the backup <b>pauses by itself</b> and resumes once space is back; if nothing improves after a few minutes, it stops as <b>Partial</b>."),
     ]),
     ("photos", "Back up your photos and videos", [
         ("p", "Open the <b>Backup</b> tab. At the top you see your destinations, with their free space. In <b>Sources</b>, the <b>Photos Library</b> row shows your device name. Tap its <b>Backup</b> button."),
@@ -91,7 +91,7 @@ GUIDE = [
     ("history", "History and reports", [
         ("p", "The <b>History</b> tab lists every backup: source, destinations, folder structure, number of files, and a colour — green for success, orange for <b>Partial</b>, red for failures."),
         ("fig", "history_list", "History: one completed session."),
-        ("p", "<b>Partial</b> means the backup stopped early, for one of three reasons that the report states: you tapped <b>Stop</b>, the <b>file limit</b> was reached, or a <b>destination disconnected</b>. Reconnect the drive and run again — it resumes where it stopped."),
+        ("p", "<b>Partial</b> means the backup stopped early, for one of four reasons that the report states: you tapped <b>Stop</b>, the <b>file limit</b> was reached, a <b>destination disconnected</b>, or the <b>iPhone storage ran low</b> (your files are safe — free up some space). Reconnect the drive or free up space, then run again — it resumes where it stopped."),
         ("p", "Tap a session for its report: summary, SHA-256 status, and the lists of copied, skipped and failed files — with the reason of each failure. With two destinations the report shows each drive separately."),
         ("fig", "report_summary", "A session report."),
         ("p", "<b>Delete Source Files…</b> frees space on the card or in the library once you are satisfied with the backup. It only offers files that were copied <i>and</i> verified, and you must type a four-digit code to confirm. Your backup is not touched. On iPhone and Android the system asks for one more confirmation for photos."),

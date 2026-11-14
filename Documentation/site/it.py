@@ -47,7 +47,7 @@ GUIDE = [
     ("setup", "Imposta il nome del dispositivo e la destinazione", [
         ("ol", ["Apri la scheda <b>Impostazioni</b>. Nella sezione <b>Dispositivo</b>, scrivi un <b>nome cartella</b> — per esempio <i>iPhone di Anna</i> o <i>Pixel 8</i>. Diventa il nome della cartella sull'unità, così due telefoni che salvano sulla stessa unità restano separati. Un backup non parte finché non c'è un nome.", "Collega la tua unità.", "In <b>Destinazioni</b>, tocca <b>Scegli…</b> e seleziona l'unità, o una cartella al suo interno, nel gestore file del sistema. Su Android puoi anche scegliere una cartella nella memoria del telefono.", "Il nome dell'unità appare in Impostazioni e nella scheda Backup, con lo spazio libero. Lo fai una volta sola: la prossima volta l'app riconosce l'unità."]),
         ("fig", "settings_configured", "Impostazioni: nome del dispositivo e prima destinazione."),
-        ("note", "Una destinazione può anche essere una cartella di <b>iCloud Drive</b> (iPhone) — l'app libera la copia locale quando iCloud conferma il caricamento, così il telefono non si riempie."),
+        ("note", "Una destinazione può anche essere una cartella di <b>iCloud Drive</b> (iPhone) — l'app libera la copia locale quando iCloud conferma il caricamento, così il telefono non si riempie. Se l'iPhone è comunque quasi pieno (meno di circa 2 GB liberi), il backup <b>si mette in pausa da solo</b> e riprende appena torna spazio; se dopo alcuni minuti nulla migliora, si ferma come <b>Parziale</b>."),
     ]),
     ("photos", "Copia le tue foto e i tuoi video", [
         ("p", "Apri la scheda <b>Backup</b>. In alto vedi le destinazioni con lo spazio libero. In <b>Sorgenti</b>, la riga <b>Libreria Foto</b> mostra il nome del tuo dispositivo. Tocca il suo pulsante <b>Backup</b>."),
@@ -91,7 +91,7 @@ GUIDE = [
     ("history", "Cronologia e report", [
         ("p", "La scheda <b>Cronologia</b> elenca ogni backup: sorgente, destinazioni, struttura delle cartelle, numero di file e un colore — verde se è andato bene, arancione per <b>Parziale</b>, rosso in caso di errori."),
         ("fig", "history_list", "Cronologia: una sessione completata."),
-        ("p", "<b>Parziale</b> significa che il backup si è fermato prima della fine, per uno di tre motivi indicati dal report: hai toccato <b>Interrompi</b>, è stato raggiunto il <b>limite di file</b> o una <b>destinazione si è scollegata</b>. Ricollega l'unità e rilancia — riprende da dove si era fermato."),
+        ("p", "<b>Parziale</b> significa che il backup si è fermato prima della fine, per uno di quattro motivi indicati dal report: hai toccato <b>Interrompi</b>, è stato raggiunto il <b>limite di file</b>, una <b>destinazione si è scollegata</b> o la <b>memoria dell'iPhone si è quasi esaurita</b> (i tuoi file sono al sicuro — libera spazio). Ricollega l'unità o libera spazio e rilancia — riprende da dove si era fermato."),
         ("p", "Tocca una sessione per il suo report: riepilogo, stato SHA-256 ed elenchi dei file copiati, ignorati e falliti — con il motivo di ogni errore. Con due destinazioni il report mostra ogni unità separatamente."),
         ("fig", "report_summary", "Il report di una sessione."),
         ("p", "<b>Elimina file sorgente…</b> libera spazio sulla scheda o nella libreria quando sei soddisfatto del backup. Propone solo i file copiati <i>e</i> verificati, e per confermare devi digitare un codice di quattro cifre. Il tuo backup non viene toccato. Su iPhone e Android il sistema chiede un'ulteriore conferma per le foto."),
