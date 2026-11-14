@@ -492,13 +492,23 @@ actor PHBackupEngine {
 
                     // Nothing was written to any destination.
                     if writtenTargets.isEmpty {
-                        let note = disconnectedThisFile
+                        // A full device is not a disconnection: say so, and stop the run — every
+                        // following file would fail the same way (reported as "storage is low").
+                        let outOfSpace = hardCopyError.map(Self.isOutOfSpace) ?? false
+                        let note = outOfSpace
+                            ? String(localized: "Not enough free space on this device to copy this file.")
+                            : disconnectedThisFile
                             ? String(localized: "All destination drives were disconnected. The backup was stopped.")
                             : (hardCopyError?.localizedDescription ?? String(localized: "Copy failed."))
                         print("[PHBackupEngine] ❌ Copy failed: \(item.fileName) — \(note)")
                         await record(item: item, actualSize: actualSize, session: session, deviceName: deviceName,
                                      sha256: "", status: .failed, verified: false, destPaths: [], note: note)
                         if disconnectedThisFile { break }
+                        if outOfSpace {
+                            _wasLowSpace = true
+                            DiagnosticLog.write("[SPACE_PAUSE] device full while writing \(item.fileName) — session ends partial")
+                            break
+                        }
                         overallDone += actualSize
                         continuation.yield(CopyProgress(
                             fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -749,6 +759,18 @@ actor PHBackupEngine {
                             disconnected: disconnected)
     }
 
+    // MARK: - Out-of-space detection
+
+    /// True when `error` (or the error it wraps) means the volume is full.
+    nonisolated static func isOutOfSpace(_ error: Error) -> Bool {
+        if case CopyError.writeFailed(_, let underlying) = error { return isOutOfSpace(underlying) }
+        let ns = error as NSError
+        if ns.domain == NSCocoaErrorDomain && ns.code == NSFileWriteOutOfSpaceError { return true }
+        if ns.domain == NSPOSIXErrorDomain && ns.code == Int(ENOSPC) { return true }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError { return isOutOfSpace(underlying) }
+        return false
+    }
+
     // MARK: - Streamed export (no staging copy)
 
     /// Opens a write handle for each destination, **independently**. A destination whose file cannot
@@ -794,6 +816,9 @@ actor PHBackupEngine {
         private var hasher = SHA256()
         private var active: [(handle: FileHandle, dest: URL)]
         private var _dropped: [URL] = []
+        /// Errors from destinations whose volume is still reachable (disk full, I/O error) — as
+        /// opposed to a volume that vanished. Kept so the engine can report the real cause.
+        private var _failures: [Error] = []
         private var _bytes: Int64 = 0
 
         init(active: [(handle: FileHandle, dest: URL)]) { self.active = active }
@@ -826,7 +851,9 @@ actor PHBackupEngine {
                 } catch {
                     try? pair.handle.close()
                     _dropped.append(pair.dest)
-                    let tag = isReachable(pair.dest) ? "COPY_ERROR" : "DISC_ERROR"
+                    let reachable = isReachable(pair.dest)
+                    if reachable { _failures.append(error) }
+                    let tag = reachable ? "COPY_ERROR" : "DISC_ERROR"
                     DiagnosticLog.write("[\(tag)] destination dropped mid-write: \(pair.dest.lastPathComponent) — \(error.localizedDescription)")
                 }
             }
@@ -836,13 +863,13 @@ actor PHBackupEngine {
 
         /// Closes every handle and returns the accumulated outcome. `dropped` are the destinations
         /// that fell out mid-write (unplugged or errored); the survivors are recorded as written.
-        func finish() -> (sha256: String, bytes: Int64, dropped: [URL]) {
+        func finish() -> (sha256: String, bytes: Int64, dropped: [URL], failures: [Error]) {
             lock.lock()
             defer { lock.unlock() }
             for pair in active { try? pair.handle.close() }
             active = []
             let digest = hasher.finalize().map { String(format: "%02x", $0) }.joined()
-            return (digest, _bytes, _dropped)
+            return (digest, _bytes, _dropped, _failures)
         }
     }
 
@@ -907,6 +934,11 @@ actor PHBackupEngine {
             try? FileManager.default.removeItem(at: dest)
         }
         if allDisconnected.count == destinations.count {
+            // Every destination is lost. If any of them failed while its volume was still there
+            // (disk full, I/O error) the cause is that error — not a disconnection.
+            if let failure = outcome.failures.first {
+                throw failure
+            }
             throw CopyError.allDestinationsDisconnected
         }
         return StreamResult(sourceSHA256: outcome.sha256,

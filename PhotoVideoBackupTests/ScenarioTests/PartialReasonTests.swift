@@ -46,6 +46,24 @@ final class PartialReasonTests: XCTestCase {
             .cancelled)
     }
 
+    // SCENARIO: A full disk is recognised as such, however the error is wrapped
+    // The field report: a full iPhone surfaced as "destination disconnected". The engine now tells a
+    // full volume (Cocoa out-of-space, POSIX ENOSPC, or either one wrapped in a CopyError.writeFailed
+    // or an underlying error) from any other write error, so it can say "not enough space" and stop.
+    func test_outOfSpace_isRecognised_andOtherErrorsAreNot() {
+        let cocoa = NSError(domain: NSCocoaErrorDomain, code: NSFileWriteOutOfSpaceError)
+        let posix = NSError(domain: NSPOSIXErrorDomain, code: Int(ENOSPC))
+        let wrapped = NSError(domain: NSCocoaErrorDomain, code: NSFileWriteUnknownError,
+                              userInfo: [NSUnderlyingErrorKey: posix])
+        let url = URL(fileURLWithPath: "/tmp/x")
+        XCTAssertTrue(PHBackupEngine.isOutOfSpace(cocoa))
+        XCTAssertTrue(PHBackupEngine.isOutOfSpace(posix))
+        XCTAssertTrue(PHBackupEngine.isOutOfSpace(wrapped))
+        XCTAssertTrue(PHBackupEngine.isOutOfSpace(CopyError.writeFailed(url, underlying: cocoa)))
+        XCTAssertFalse(PHBackupEngine.isOutOfSpace(NSError(domain: NSPOSIXErrorDomain, code: Int(EIO))))
+        XCTAssertFalse(PHBackupEngine.isOutOfSpace(CopyError.allDestinationsDisconnected))
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.
