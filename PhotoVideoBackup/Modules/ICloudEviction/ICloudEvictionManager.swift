@@ -44,6 +44,12 @@ enum ICloudEvictionManager {
         var uploading = 0
         var evictedCount = 0
         var reclaimedBytes: Int64 = 0
+        /// Of `uploading`: files iOS is actively sending right now (the rest are still queued).
+        var activelyUploading = 0
+        /// Files for which iOS reports an upload error (quota exceeded, network, …).
+        var uploadErrors = 0
+        /// The first upload error seen, `domain/code: description`, to name the real cause.
+        var firstUploadError: String? = nil
     }
 
     // MARK: - Queries
@@ -118,6 +124,17 @@ enum ICloudEvictionManager {
                 result.reclaimedBytes += bytes
             } else if !isFullyUploaded(url) {
                 result.uploading += 1
+                if let u = try? URL(fileURLWithPath: url.path).resourceValues(
+                    forKeys: [.ubiquitousItemIsUploadingKey, .ubiquitousItemUploadingErrorKey]) {
+                    if u.ubiquitousItemIsUploading == true { result.activelyUploading += 1 }
+                    if let err = u.ubiquitousItemUploadingError {
+                        result.uploadErrors += 1
+                        if result.firstUploadError == nil {
+                            let ns = err as NSError
+                            result.firstUploadError = "\(ns.domain)/\(ns.code): \(ns.localizedDescription)"
+                        }
+                    }
+                }
             }
         }
         return result

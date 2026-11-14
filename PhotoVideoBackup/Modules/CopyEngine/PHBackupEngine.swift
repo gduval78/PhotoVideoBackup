@@ -146,7 +146,7 @@ actor PHBackupEngine {
                 // are unknown to this run's pending list: release the ones iCloud already holds now.
                 for root in ubiquitousRoots {
                     let swept = ICloudEvictionManager.sweep(root: URL(fileURLWithPath: root))
-                    DiagnosticLog.write("[ICLOUD_SWEEP] start: materialised=\(swept.materialised) uploading=\(swept.uploading) released=\(swept.evictedCount) (\(swept.reclaimedBytes / 1_048_576)MB)")
+                    DiagnosticLog.write("[ICLOUD_SWEEP] start: materialised=\(swept.materialised) uploading=\(swept.uploading) active=\(swept.activelyUploading) errors=\(swept.uploadErrors) released=\(swept.evictedCount) (\(swept.reclaimedBytes / 1_048_576)MB)\(swept.firstUploadError.map { " firstError=\($0)" } ?? "")")
                 }
 
                 for (index, item) in items.enumerated() {
@@ -295,14 +295,17 @@ actor PHBackupEngine {
                             // write one line saying what iCloud is doing — the pause used to be silent.
                             if Date().timeIntervalSince(lastSweep) >= Self.spaceReportInterval {
                                 lastSweep = Date()
-                                var materialised = 0, uploading = 0, released = 0
+                                var materialised = 0, uploading = 0, released = 0, active = 0, errors = 0
+                                var firstError: String? = nil
                                 for root in ubiquitousRoots {
                                     let swept = ICloudEvictionManager.sweep(root: URL(fileURLWithPath: root))
                                     materialised += swept.materialised; uploading += swept.uploading
+                                    active += swept.activelyUploading; errors += swept.uploadErrors
+                                    firstError = firstError ?? swept.firstUploadError
                                     released += swept.evictedCount
                                 }
                                 uploadsInFlight = uploading
-                                DiagnosticLog.write("[SPACE_PAUSE] waiting: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB pending=\(pendingEviction.count) materialised=\(materialised) uploading=\(uploading) released=\(released)")
+                                DiagnosticLog.write("[SPACE_PAUSE] waiting: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB pending=\(pendingEviction.count) materialised=\(materialised) uploading=\(uploading) active=\(active) errors=\(errors) released=\(released)\(firstError.map { " firstError=\($0)" } ?? "")")
                             }
                             let now = DiskSpacePreflight.availableDeviceBytes() ?? Int64.max
                             if now >= requiredFree { recovered = true; break }
