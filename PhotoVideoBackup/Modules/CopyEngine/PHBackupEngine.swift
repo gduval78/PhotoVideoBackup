@@ -54,7 +54,7 @@ actor PHBackupEngine {
     /// Below this much free space, the run stops writing new files into an iCloud Drive destination
     /// and waits for pending uploads so it can evict what is already safely in the cloud. Above it,
     /// eviction is opportunistic and never blocks.
-    static let lowSpaceWatermark: Int64 = 2 * 1024 * 1024 * 1024   // 2 GB
+    static let lowSpaceWatermark: Int64 = 1 * 1024 * 1024 * 1024   // 1 GB
 
     // MARK: - Storage reserve (automatic pause)
 
@@ -71,6 +71,8 @@ actor PHBackupEngine {
     static let spaceNoPendingTimeout: TimeInterval = 30
     static let spaceProgressStep: Int64 = 50 * 1024 * 1024
     static let spacePollInterval: UInt64 = 10_000_000_000
+    /// How often the pause sweeps the iCloud folder and logs what iCloud is doing.
+    static let spaceReportInterval: TimeInterval = 60
 
     // MARK: - Engine result (read after stream completes)
 
@@ -139,6 +141,13 @@ actor PHBackupEngine {
                         .filter { ICloudEvictionManager.isUbiquitous($0) }
                         .map(\.path)
                 )
+
+                // Copies an earlier run left on the device (Stop, crash, uploads that finished later)
+                // are unknown to this run's pending list: release the ones iCloud already holds now.
+                for root in ubiquitousRoots {
+                    let swept = ICloudEvictionManager.sweep(root: URL(fileURLWithPath: root))
+                    DiagnosticLog.write("[ICLOUD_SWEEP] start: materialised=\(swept.materialised) uploading=\(swept.uploading) released=\(swept.evictedCount) (\(swept.reclaimedBytes / 1_048_576)MB)")
+                }
 
                 for (index, item) in items.enumerated() {
                     // Cooperative cancellation (user tapped Stop) — stop at file boundary.
@@ -273,15 +282,32 @@ actor PHBackupEngine {
                         var best = available
                         var lastGain = Date()
                         var recovered = false
+                        // Uploads iCloud is still working on in the folder (from this or an earlier
+                        // run). While there are some, space can still come back, so be patient.
+                        var uploadsInFlight = 0
+                        var lastSweep = Date.distantPast
                         while !_cancelRequested {
                             if !pendingEviction.isEmpty {
                                 let pass = ICloudEvictionManager.evictReady(pendingEviction)
                                 pendingEviction = pass.stillPending
                             }
+                            // Once a minute: sweep the destination (frees what earlier runs left) and
+                            // write one line saying what iCloud is doing — the pause used to be silent.
+                            if Date().timeIntervalSince(lastSweep) >= Self.spaceReportInterval {
+                                lastSweep = Date()
+                                var materialised = 0, uploading = 0, released = 0
+                                for root in ubiquitousRoots {
+                                    let swept = ICloudEvictionManager.sweep(root: URL(fileURLWithPath: root))
+                                    materialised += swept.materialised; uploading += swept.uploading
+                                    released += swept.evictedCount
+                                }
+                                uploadsInFlight = uploading
+                                DiagnosticLog.write("[SPACE_PAUSE] waiting: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB pending=\(pendingEviction.count) materialised=\(materialised) uploading=\(uploading) released=\(released)")
+                            }
                             let now = DiskSpacePreflight.availableDeviceBytes() ?? Int64.max
                             if now >= requiredFree { recovered = true; break }
                             if now > best + Self.spaceProgressStep { best = now; lastGain = Date() }
-                            let patience = pendingEviction.isEmpty ? Self.spaceNoPendingTimeout : Self.spacePauseTimeout
+                            let patience = (pendingEviction.isEmpty && uploadsInFlight == 0) ? Self.spaceNoPendingTimeout : Self.spacePauseTimeout
                             if Date().timeIntervalSince(lastGain) > patience { break }
                             continuation.yield(CopyProgress(
                                 fileIndex: index, totalFiles: items.count, fileName: item.fileName,

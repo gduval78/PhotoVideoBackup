@@ -36,6 +36,16 @@ enum ICloudEvictionManager {
         var stalled = false
     }
 
+    /// What a sweep of an iCloud destination folder found.
+    struct SweepResult: Sendable, Equatable {
+        /// Files whose bytes are still on the device.
+        var materialised = 0
+        /// Of those, files iCloud has not finished uploading (kept — they are the only copy).
+        var uploading = 0
+        var evictedCount = 0
+        var reclaimedBytes: Int64 = 0
+    }
+
     // MARK: - Queries
 
     /// True when the URL lives in iCloud Drive (or any file provider that syncs).
@@ -82,6 +92,35 @@ enum ICloudEvictionManager {
             return false
         }
         return true
+    }
+
+    /// Walks an iCloud Drive destination folder and releases every file that still occupies device
+    /// storage although iCloud already holds it — the same upload gate as `evictIfUploaded`.
+    ///
+    /// The run's pending list only knows what *this* run wrote. Copies left by an earlier run (a
+    /// Stop, a crash, a stalled upload that later completed) were invisible to it, so a re-run could
+    /// neither free them nor tell that uploads were still in flight. Files iCloud has not finished
+    /// uploading are counted in `uploading` and never touched. A non-iCloud folder yields an empty
+    /// result: nothing there is ubiquitous.
+    static func sweep(root: URL) -> SweepResult {
+        var result = SweepResult()
+        let keys: [URLResourceKey] = [.isRegularFileKey, .ubiquitousItemDownloadingStatusKey, .fileSizeKey]
+        guard let walker = FileManager.default.enumerator(
+            at: root, includingPropertiesForKeys: keys, options: [.skipsHiddenFiles]) else { return result }
+        for case let url as URL in walker {
+            guard let v = try? url.resourceValues(forKeys: Set(keys)), v.isRegularFile == true,
+                  let status = v.ubiquitousItemDownloadingStatus, status != .notDownloaded
+            else { continue }
+            result.materialised += 1
+            let bytes = Int64(v.fileSize ?? 0)
+            if evictIfUploaded(PendingFile(url: url, bytes: bytes)) {
+                result.evictedCount += 1
+                result.reclaimedBytes += bytes
+            } else if !isFullyUploaded(url) {
+                result.uploading += 1
+            }
+        }
+        return result
     }
 
     /// Single non-blocking pass: evicts everything already uploaded, leaves the rest pending.

@@ -109,4 +109,20 @@ final class ICloudEvictionTests: XCTestCase {
         // Bounded: it gave up near the timeout, not after the production 120 s.
         XCTAssertLessThan(Date().timeIntervalSince(started), 5.0)
     }
+
+    // SCENARIO: Sweeping a folder that is not in iCloud touches nothing
+    // The sweep is only allowed to release files iCloud holds. In a plain folder (no file is
+    // ubiquitous) it must report nothing and leave every file exactly as it was.
+    func test_sweep_onNonICloudFolder_isANoOp() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("sweep-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let file = dir.appendingPathComponent("a.dng")
+        try Data(repeating: 0xAB, count: 4096).write(to: file)
+
+        let result = ICloudEvictionManager.sweep(root: dir)
+
+        XCTAssertEqual(result, ICloudEvictionManager.SweepResult())
+        XCTAssertEqual(try Data(contentsOf: file).count, 4096)
+    }
 }
