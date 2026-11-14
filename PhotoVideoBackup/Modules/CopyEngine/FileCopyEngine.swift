@@ -407,6 +407,10 @@ actor FileCopyEngine {
         } catch {
             srcStream.close()
             for pair in active { try? pair.handle.close() }
+            // A failed copy must not leave a truncated file under the final name: the next run would
+            // find the name taken by unknown content and store the real file as `name-1`. The name was
+            // free when this copy started, so nothing of the user's is removed.
+            for pair in active { try? FileManager.default.removeItem(at: pair.dest) }
             throw error
         }
 

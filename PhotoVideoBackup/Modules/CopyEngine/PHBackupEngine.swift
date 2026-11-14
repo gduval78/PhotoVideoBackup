@@ -842,6 +842,12 @@ actor PHBackupEngine {
         // "disconnected" to the engine: the file is not delivered there, the session is partial, and
         // a re-run picks it up — the same treatment whether a volume vanished or a folder filled up.
         let allDisconnected = setupDisconnected + outcome.dropped
+        // A destination dropped mid-write (disk full, volume gone) holds a truncated file. Leaving it
+        // would make the next run find the name taken by unknown content and store the real file as
+        // `name-1`. Best effort: on an unplugged volume the removal simply fails.
+        for dest in outcome.dropped {
+            try? FileManager.default.removeItem(at: dest)
+        }
         if allDisconnected.count == destinations.count {
             throw CopyError.allDestinationsDisconnected
         }

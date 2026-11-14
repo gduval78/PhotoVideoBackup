@@ -3,7 +3,7 @@
 Curated notes for the support agent. **Keep this file up to date at every store delivery** (see the "Documentation maintenance" checklist in CLAUDE.md): add each new feature, limit or known issue, with the version it appeared in.
 
 ## Versions
-- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.6.0.
+- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.6.1.
 - Android: 2.6.0 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
@@ -25,6 +25,8 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - **Android: sources/destinations written by Android do not keep the original modification date** (the system file API cannot set it).
 - **iPhone almost full**: backups stream straight to the destination; a NAS-only backup needs room for one file at a time.
 - **iCloud Drive destination (iPhone only)**: local copies are released once iCloud confirms the upload.
+- **iCloud Drive destination: iPhone fills up during a big backup (known limit)**: iOS uploads on its own schedule, so copies pile up locally; the app releases them as iCloud confirms, but free space can also fall because of Photos' iCloud download cache (Optimize iPhone Storage — hypothesis). Advise: charger + Wi-Fi, let iCloud finish uploading, run again; for large libraries prefer an external USB-C SSD. The log may then say "destination disconnected" although the real cause is full storage (wording not yet fixed). The run is partial, nothing is lost; `.pvb-index.json` failing to write on a full volume is harmless (rewritten next run).
+- **A file appears as `NAME-1.ext` next to a smaller `NAME.ext` (before 2.6.1)**: an earlier copy was interrupted (disk full) and left a truncated file. Fixed in 2.6.1; with 2.6.0, delete the truncated original in the destination, then run again.
 
 ## Not supported / limits
 - LUT grading only handles `.mp4` and `.mov`; per-video selection (never "grade all").
