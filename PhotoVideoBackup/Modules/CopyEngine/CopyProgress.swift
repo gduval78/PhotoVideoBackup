@@ -16,6 +16,8 @@ struct EngineResult: Sendable {
     /// Destinations that failed a write while their volume was still reachable (full, I/O error) on a
     /// run that otherwise went on — not a disconnection.
     var destinationErrorCount: Int = 0
+    /// The run stopped because iOS reports the iCloud account is out of space.
+    var wasICloudFull: Bool = false
 }
 
 // MARK: - CopyPhase

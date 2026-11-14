@@ -232,6 +232,8 @@ struct ReportView: View {
             return "Partial backup — destination disconnected. Reconnect and run again to continue."
         case .cancelled:
             return "Partial backup — stopped. Run again to continue."
+        case .iCloudFull:
+            return "Partial backup — your iCloud storage is full, so iCloud refuses new files. Your originals are safe. Free up iCloud space or choose another destination (an external drive or a NAS)."
         case .destinationError:
             return "Partial backup — a destination is full or reported an error, so some files are missing there. Free up space and run again to continue."
         case .lowSpace:

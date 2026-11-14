@@ -87,6 +87,7 @@ actor PHBackupEngine {
     private var _wasCancelled = false
     private var _wasLowSpace = false
     private var _destinationErrorCount = 0
+    private var _wasICloudFull = false
     // Read-speed breadcrumbs (diagnostic only). The Photos read has `isNetworkAccessAllowed = true`,
     // so an original that lives only in iCloud Photos is downloaded silently; a read far slower
     // than local storage is the only visible trace. See `noteRead`.
@@ -116,7 +117,8 @@ actor PHBackupEngine {
                      failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
                      wasLimited: _wasLimited, verifiedCount: _verifiedCount,
                      disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled,
-                     wasLowSpace: _wasLowSpace, destinationErrorCount: _destinationErrorCount)
+                     wasLowSpace: _wasLowSpace, destinationErrorCount: _destinationErrorCount,
+                     wasICloudFull: _wasICloudFull)
     }
 
     // MARK: - Public API
@@ -143,7 +145,7 @@ actor PHBackupEngine {
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
                 _wasLowSpace = false; _destinationErrorCount = 0
-                _localReads = 0; _slowReads = 0
+                _localReads = 0; _slowReads = 0; _wasICloudFull = false
 
                 // The index kept with the backup: learn what other devices (or a lost history)
                 // already put there before looking anything up.
@@ -310,6 +312,7 @@ actor PHBackupEngine {
                         // run). While there are some, space can still come back, so be patient.
                         var uploadsInFlight = 0
                         var lastSweep = Date.distantPast
+                        var iCloudFull = false
                         while !_cancelRequested {
                             if !pendingEviction.isEmpty {
                                 let pass = ICloudEvictionManager.evictReady(pendingEviction)
@@ -319,17 +322,21 @@ actor PHBackupEngine {
                             // write one line saying what iCloud is doing — the pause used to be silent.
                             if Date().timeIntervalSince(lastSweep) >= Self.spaceReportInterval {
                                 lastSweep = Date()
-                                var materialised = 0, uploading = 0, released = 0, active = 0, errors = 0
+                                var materialised = 0, uploading = 0, released = 0, active = 0, errors = 0, quota = 0
                                 var firstError: String? = nil
                                 for root in ubiquitousRoots {
                                     let swept = ICloudEvictionManager.sweep(root: URL(fileURLWithPath: root))
                                     materialised += swept.materialised; uploading += swept.uploading
                                     active += swept.activelyUploading; errors += swept.uploadErrors
+                                    quota += swept.quotaErrors
                                     firstError = firstError ?? swept.firstUploadError
                                     released += swept.evictedCount
                                 }
                                 uploadsInFlight = uploading
                                 DiagnosticLog.write("[SPACE_PAUSE] waiting: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB pending=\(pendingEviction.count) materialised=\(materialised) uploading=\(uploading) active=\(active) errors=\(errors) released=\(released)\(firstError.map { " firstError=\($0)" } ?? "")")
+                                // iOS says the iCloud account is out of space: nothing will free the
+                                // device, so do not wait — stop with a message that names the cause.
+                                if quota > 0 { iCloudFull = true; break }
                             }
                             let now = DiskSpacePreflight.availableDeviceBytes() ?? Int64.max
                             if now >= requiredFree { recovered = true; break }
@@ -345,6 +352,11 @@ actor PHBackupEngine {
                             try? await Task.sleep(nanoseconds: Self.spacePollInterval)
                         }
                         if _cancelRequested { _wasCancelled = true; break }
+                        if iCloudFull {
+                            _wasICloudFull = true
+                            DiagnosticLog.write("[SPACE_PAUSE] iCloud storage is full (iOS upload error -1003) — session ends partial")
+                            break
+                        }
                         if !recovered {
                             _wasLowSpace = true
                             DiagnosticLog.write("[SPACE_PAUSE] gave up: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB — session ends partial")

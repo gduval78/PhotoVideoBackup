@@ -21,6 +21,7 @@ enum PartialReason: String, Codable, CaseIterable, Sendable {
     case disconnected
     case cancelled
     case destinationError   // a destination failed while reachable (full, I/O error); the others carried on
+    case iCloudFull   // iOS refuses uploads: the iCloud account has no room left
     case lowSpace   // device storage stayed below the safety reserve — the run paused, then stopped
 }
 

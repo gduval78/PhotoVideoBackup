@@ -48,11 +48,24 @@ enum ICloudEvictionManager {
         var activelyUploading = 0
         /// Files for which iOS reports an upload error (quota exceeded, network, …).
         var uploadErrors = 0
+        /// Of `uploadErrors`: files iOS refuses to upload because the iCloud account is out of space.
+        var quotaErrors = 0
         /// The first upload error seen, `domain/code: description`, to name the real cause.
         var firstUploadError: String? = nil
     }
 
     // MARK: - Queries
+
+    /// True when iOS reports that the iCloud account has no room left (`NSFileProviderError`
+    /// `.insufficientQuota`, code -1003). Matched on the raw domain and code so this needs no
+    /// FileProvider import. Waiting cannot fix it — only freeing iCloud space can — so the backup
+    /// stops instead of pausing for ever.
+    static func isQuotaError(_ error: Error) -> Bool {
+        let ns = error as NSError
+        if ns.domain == "NSFileProviderErrorDomain" && ns.code == -1003 { return true }
+        if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? NSError { return isQuotaError(underlying) }
+        return false
+    }
 
     /// True when the URL lives in iCloud Drive (or any file provider that syncs).
     static func isUbiquitous(_ url: URL) -> Bool {
@@ -129,6 +142,7 @@ enum ICloudEvictionManager {
                     if u.ubiquitousItemIsUploading == true { result.activelyUploading += 1 }
                     if let err = u.ubiquitousItemUploadingError {
                         result.uploadErrors += 1
+                        if isQuotaError(err) { result.quotaErrors += 1 }
                         if result.firstUploadError == nil {
                             let ns = err as NSError
                             result.firstUploadError = "\(ns.domain)/\(ns.code): \(ns.localizedDescription)"

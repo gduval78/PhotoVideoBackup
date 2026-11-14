@@ -97,6 +97,27 @@ final class PartialReasonTests: XCTestCase {
             .destinationError)
     }
 
+    // SCENARIO: A full iCloud account is recognised and reported as such
+    // iOS reports it as NSFileProviderErrorDomain -1003 ("quota insufficient"). Waiting cannot fix it,
+    // so the run stops, and the reason must say iCloud is full — not "iPhone storage is low". A user
+    // Stop still wins.
+    func test_iCloudFull_isRecognised_andClassified() {
+        XCTAssertTrue(ICloudEvictionManager.isQuotaError(NSError(domain: "NSFileProviderErrorDomain", code: -1003)))
+        XCTAssertTrue(ICloudEvictionManager.isQuotaError(
+            NSError(domain: NSCocoaErrorDomain, code: 1, userInfo: [NSUnderlyingErrorKey:
+                NSError(domain: "NSFileProviderErrorDomain", code: -1003)])))
+        // -1004 is "cannot connect to the server": a network problem, not a full account.
+        XCTAssertFalse(ICloudEvictionManager.isQuotaError(NSError(domain: "NSFileProviderErrorDomain", code: -1004)))
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 0, wasLimited: false,
+                                             wasLowSpace: true, wasICloudFull: true),
+            .iCloudFull)
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: true, disconnectedCount: 0, wasLimited: false,
+                                             wasLowSpace: false, wasICloudFull: true),
+            .cancelled)
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.

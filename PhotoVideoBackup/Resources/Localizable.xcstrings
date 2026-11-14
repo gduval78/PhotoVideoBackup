@@ -19987,6 +19987,110 @@
           }
         }
       }
+    },
+    "Partial backup — your iCloud storage is full, so iCloud refuses new files. Your originals are safe. Free up iCloud space or choose another destination (an external drive or a NAS)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial backup — your iCloud storage is full, so iCloud refuses new files. Your originals are safe. Free up iCloud space or choose another destination (an external drive or a NAS)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde partielle — votre stockage iCloud est plein, iCloud refuse donc de nouveaux fichiers. Vos originaux sont en sécurité. Libérez de l'espace iCloud ou choisissez une autre destination (disque externe ou NAS)."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilweises Backup — Ihr iCloud-Speicher ist voll, daher lehnt iCloud neue Dateien ab. Ihre Originale sind sicher. Geben Sie iCloud-Speicher frei oder wählen Sie ein anderes Ziel (externes Laufwerk oder NAS)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia parcial — su almacenamiento de iCloud está lleno, por lo que iCloud rechaza archivos nuevos. Sus originales están a salvo. Libere espacio en iCloud o elija otro destino (unidad externa o NAS)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parziale — lo spazio iCloud è esaurito, quindi iCloud rifiuta nuovi file. Gli originali sono al sicuro. Libera spazio su iCloud o scegli un'altra destinazione (disco esterno o NAS)."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cópia parcial — o armazenamento do iCloud está cheio, pelo que o iCloud recusa novos ficheiros. Os seus originais estão seguros. Liberte espaço no iCloud ou escolha outro destino (disco externo ou NAS)."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分备份 — 您的 iCloud 存储空间已满，iCloud 拒绝接收新文件。您的原始文件是安全的。请释放 iCloud 空间或选择其他目标位置（外置驱动器或 NAS）。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частичная копия — хранилище iCloud заполнено, поэтому iCloud отклоняет новые файлы. Ваши оригиналы в безопасности. Освободите место в iCloud или выберите другое место назначения (внешний диск или NAS)."
+          }
+        }
+      }
+    },
+    "%lld copied — your iCloud storage is full, backup stopped. Free up iCloud space or choose another destination · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copied — your iCloud storage is full, backup stopped. Free up iCloud space or choose another destination · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copié(s) — votre stockage iCloud est plein, sauvegarde arrêtée. Libérez de l'espace iCloud ou choisissez une autre destination · %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kopiert — Ihr iCloud-Speicher ist voll, Backup gestoppt. iCloud-Speicher freigeben oder anderes Ziel wählen · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — su almacenamiento de iCloud está lleno, copia detenida. Libere espacio en iCloud o elija otro destino · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiati — lo spazio iCloud è esaurito, backup interrotto. Libera spazio su iCloud o scegli un'altra destinazione · %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — o armazenamento do iCloud está cheio, cópia parada. Liberte espaço no iCloud ou escolha outro destino · %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制 %lld 个 — 您的 iCloud 存储空间已满，备份已停止。请释放 iCloud 空间或选择其他目标位置 · %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано: %lld — хранилище iCloud заполнено, копирование остановлено. Освободите место в iCloud или выберите другое место назначения · %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
