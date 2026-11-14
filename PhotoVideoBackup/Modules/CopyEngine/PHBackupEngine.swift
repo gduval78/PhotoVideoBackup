@@ -56,6 +56,22 @@ actor PHBackupEngine {
     /// eviction is opportunistic and never blocks.
     static let lowSpaceWatermark: Int64 = 2 * 1024 * 1024 * 1024   // 2 GB
 
+    // MARK: - Storage reserve (automatic pause)
+
+    /// The run never starts a copy while the device has less than `lowSpaceWatermark` free (plus the
+    /// file itself when the copy lands on the device volume or is staged there). It pauses instead,
+    /// letting iCloud finish uploads and iOS purge caches, and resumes by itself once space is back.
+    /// If space stops improving the run ends as partial with a plain explanation — never with a
+    /// half-written file and a misleading "disconnected" error.
+    ///
+    /// No progress for this long (free space not up by `spaceProgressStep`) ends the pause.
+    static let spacePauseTimeout: TimeInterval = 10 * 60
+    /// With nothing left to evict, nothing of ours can free space: only iOS purging caches can, so
+    /// give it a short grace period instead of the full timeout.
+    static let spaceNoPendingTimeout: TimeInterval = 30
+    static let spaceProgressStep: Int64 = 50 * 1024 * 1024
+    static let spacePollInterval: UInt64 = 10_000_000_000
+
     // MARK: - Engine result (read after stream completes)
 
     private var _copiedCount = 0
@@ -67,6 +83,7 @@ actor PHBackupEngine {
     private var _disconnectedCount = 0
     private var _cancelRequested = false
     private var _wasCancelled = false
+    private var _wasLowSpace = false
 
     /// Cooperative cancellation: the run loop stops at the next file boundary.
     func requestCancel() { _cancelRequested = true }
@@ -75,7 +92,8 @@ actor PHBackupEngine {
         EngineResult(copiedCount: _copiedCount, skippedCount: _skippedCount,
                      failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
                      wasLimited: _wasLimited, verifiedCount: _verifiedCount,
-                     disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled)
+                     disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled,
+                     wasLowSpace: _wasLowSpace)
     }
 
     // MARK: - Public API
@@ -101,6 +119,7 @@ actor PHBackupEngine {
                 _copiedCount = 0; _skippedCount = 0; _failedCount = 0
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
+                _wasLowSpace = false
 
                 // The index kept with the backup: learn what other devices (or a lost history)
                 // already put there before looking anything up.
@@ -240,6 +259,45 @@ actor PHBackupEngine {
                         break
                     }
                     toCopyCount += 1
+
+                    // ── Storage reserve: pause rather than fill the phone ────
+                    // Only for files that really are about to be written (a run with nothing to copy
+                    // is never held up). A copy that lands on the device volume — an iCloud Drive
+                    // folder, or the staging copy of a NAS-only run — also needs the file's own size.
+                    let writesToDevice = missingTargets.compactMap { $0 as? LocalFileTarget }.isEmpty
+                        || missingTargets.contains { ($0 as? LocalFileTarget).map { ubiquitousRoots.contains($0.root.path) } ?? false }
+                    let requiredFree = Self.lowSpaceWatermark + (writesToDevice ? actualSize : 0)
+                    if let available = DiskSpacePreflight.availableDeviceBytes(), available < requiredFree {
+                        DiagnosticLog.write("[SPACE_PAUSE] paused before \(item.fileName): free=\(available / 1_048_576)MB required=\(requiredFree / 1_048_576)MB pending=\(pendingEviction.count) \(DiagnosticLog.memoryTag)")
+                        var best = available
+                        var lastGain = Date()
+                        var recovered = false
+                        while !_cancelRequested {
+                            if !pendingEviction.isEmpty {
+                                let pass = ICloudEvictionManager.evictReady(pendingEviction)
+                                pendingEviction = pass.stillPending
+                            }
+                            let now = DiskSpacePreflight.availableDeviceBytes() ?? Int64.max
+                            if now >= requiredFree { recovered = true; break }
+                            if now > best + Self.spaceProgressStep { best = now; lastGain = Date() }
+                            let patience = pendingEviction.isEmpty ? Self.spaceNoPendingTimeout : Self.spacePauseTimeout
+                            if Date().timeIntervalSince(lastGain) > patience { break }
+                            continuation.yield(CopyProgress(
+                                fileIndex: index, totalFiles: items.count, fileName: item.fileName,
+                                fileBytesDone: 0, fileBytesTotal: actualSize,
+                                currentDestination: primaryDest,
+                                overallBytesDone: overallDone, overallBytesTotal: estimatedTotal,
+                                phase: .waitingForSpace))
+                            try? await Task.sleep(nanoseconds: Self.spacePollInterval)
+                        }
+                        if _cancelRequested { _wasCancelled = true; break }
+                        if !recovered {
+                            _wasLowSpace = true
+                            DiagnosticLog.write("[SPACE_PAUSE] gave up: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB required=\(requiredFree / 1_048_576)MB — session ends partial")
+                            break
+                        }
+                        DiagnosticLog.write("[SPACE_PAUSE] resumed: free=\((DiskSpacePreflight.availableDeviceBytes() ?? -1) / 1_048_576)MB")
+                    }
 
                     // The content is genuinely new here. A file already holding the expected name is
                     // therefore a DIFFERENT file (a same-content one was caught above): take a free

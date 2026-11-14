@@ -31,6 +31,21 @@ final class PartialReasonTests: XCTestCase {
         XCTAssertEqual(reason, .cancelled)
     }
 
+    // SCENARIO: A run that paused on low device storage is reported as low space
+    // The user must read "storage is low, your files are safe" — never "destination disconnected" or
+    // "file limit reached". A user Stop during the pause still wins (they asked to stop).
+    func test_lowSpace_isLowSpace_andCancelStillWins() {
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 0, wasLimited: false, wasLowSpace: true),
+            .lowSpace)
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: false, disconnectedCount: 1, wasLimited: true, wasLowSpace: true),
+            .lowSpace)
+        XCTAssertEqual(
+            DashboardViewModel.partialReason(wasCancelled: true, disconnectedCount: 0, wasLimited: false, wasLowSpace: true),
+            .cancelled)
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.

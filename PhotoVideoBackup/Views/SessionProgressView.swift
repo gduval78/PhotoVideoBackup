@@ -142,6 +142,7 @@ struct SessionProgressView: View {
             }
             return String(localized: "Copying…", locale: locale)
         case .verifying:  return String(localized: "Verifying…", locale: locale)
+        case .waitingForSpace: return String(localized: "Paused — waiting for storage to free up…", locale: locale)
         case .done:       return String(localized: "Done", locale: locale)
         case .skipped:    return String(localized: "Already present", locale: locale)
         case .failed(let msg): return String(localized: "Failed: \(msg)", locale: locale)
@@ -155,6 +156,7 @@ struct SessionProgressView: View {
         case .exporting:  Image(systemName: "arrow.up.doc").foregroundStyle(.blue)
         case .copying:    Image(systemName: "arrow.down.doc").foregroundStyle(.green)
         case .verifying:  Image(systemName: "checkmark.shield").foregroundStyle(.orange)
+        case .waitingForSpace: Image(systemName: "pause.circle.fill").foregroundStyle(.orange)
         case .done:       Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
         case .skipped:    Image(systemName: "minus.circle").foregroundStyle(.gray)
         case .failed:     Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
@@ -167,6 +169,7 @@ struct SessionProgressView: View {
         case .exporting: return .blue
         case .copying:   return .green
         case .verifying: return .orange
+        case .waitingForSpace: return .orange
         case .done:      return .green
         case .skipped:   return .gray
         case .failed:    return .red

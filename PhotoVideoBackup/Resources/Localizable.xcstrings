@@ -19259,6 +19259,162 @@
           }
         }
       }
+    },
+    "Paused — waiting for storage to free up…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused — waiting for storage to free up…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pause — en attente de libération d'espace…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausiert — warte auf freien Speicher…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pausa — esperando a que se libere espacio…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In pausa — in attesa di spazio libero…"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em pausa — a aguardar que seja libertado espaço…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂停 — 正在等待释放存储空间…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пауза — ожидание освобождения памяти…"
+          }
+        }
+      }
+    },
+    "Partial backup — iPhone storage is low, so the backup paused. Your files are safe. Free up space and run again to continue." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial backup — iPhone storage is low, so the backup paused. Your files are safe. Free up space and run again to continue."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarde partielle — le stockage de l'iPhone est presque plein, la sauvegarde s'est mise en pause. Vos fichiers sont en sécurité. Libérez de l'espace et relancez pour continuer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilweises Backup — der iPhone-Speicher ist fast voll, daher wurde das Backup pausiert. Ihre Dateien sind sicher. Geben Sie Speicher frei und führen Sie das Backup erneut aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia parcial — el almacenamiento del iPhone está casi lleno, por lo que la copia se pausó. Sus archivos están a salvo. Libere espacio y ejecute de nuevo para continuar."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup parziale — la memoria dell'iPhone è quasi piena, quindi il backup è stato messo in pausa. I tuoi file sono al sicuro. Libera spazio ed esegui di nuovo per continuare."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cópia parcial — o armazenamento do iPhone está quase cheio, pelo que a cópia foi colocada em pausa. Os seus ficheiros estão seguros. Liberte espaço e execute novamente para continuar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分备份 — iPhone 存储空间不足，备份已暂停。您的文件是安全的。请释放空间后再次运行以继续。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частичная копия — память iPhone почти заполнена, поэтому резервное копирование приостановлено. Ваши файлы в безопасности. Освободите место и запустите снова, чтобы продолжить."
+          }
+        }
+      }
+    },
+    "%lld copied — iPhone storage is low, backup paused. Free up space and run again · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copied — iPhone storage is low, backup paused. Free up space and run again · %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copié(s) — stockage de l'iPhone presque plein, sauvegarde en pause. Libérez de l'espace et relancez · %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld kopiert — iPhone-Speicher fast voll, Backup pausiert. Speicher freigeben und erneut starten · %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — almacenamiento del iPhone casi lleno, copia en pausa. Libere espacio y ejecute de nuevo · %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiati — memoria dell'iPhone quasi piena, backup in pausa. Libera spazio ed esegui di nuovo · %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld copiados — armazenamento do iPhone quase cheio, cópia em pausa. Liberte espaço e execute novamente · %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制 %lld 个 — iPhone 存储空间不足，备份已暂停。请释放空间后再次运行 · %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано: %lld — память iPhone почти заполнена, копирование приостановлено. Освободите место и запустите снова · %@"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

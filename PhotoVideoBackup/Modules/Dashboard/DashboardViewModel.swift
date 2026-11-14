@@ -198,6 +198,8 @@ final class DashboardViewModel {
                 content.body = String(localized: "\(banner.copiedCount) copied — destination disconnected. Reconnect and run again · \(banner.sourceName)")
             case .cancelled:
                 content.body = String(localized: "\(banner.copiedCount) copied — stopped. Run again to continue · \(banner.sourceName)")
+            case .lowSpace:
+                content.body = String(localized: "\(banner.copiedCount) copied — iPhone storage is low, backup paused. Free up space and run again · \(banner.sourceName)")
             case .fileLimit, .none:
                 content.body = String(localized: "\(banner.copiedCount) copied — file limit reached · \(banner.sourceName)")
             }
@@ -677,8 +679,10 @@ final class DashboardViewModel {
     /// a standalone function so it can be unit-tested (`PartialReasonTests`) — the field bug it guards
     /// was a disconnection at file 149 being reported as "file limit reached". Callers pass this only
     /// for a `.partial` outcome; for a completed/failed run the reason is `.none`.
-    nonisolated static func partialReason(wasCancelled: Bool, disconnectedCount: Int, wasLimited: Bool) -> PartialReason {
+    nonisolated static func partialReason(wasCancelled: Bool, disconnectedCount: Int, wasLimited: Bool,
+                                          wasLowSpace: Bool = false) -> PartialReason {
         if wasCancelled            { return .cancelled }
+        if wasLowSpace             { return .lowSpace }
         if disconnectedCount > 0   { return .disconnected }
         if wasLimited              { return .fileLimit }
         return .none
@@ -735,7 +739,7 @@ final class DashboardViewModel {
             refreshDestinationStatuses()
         }
         let sessionStatus: SessionStatus
-        if result.wasLimited || result.disconnectedCount > 0 || result.wasCancelled {
+        if result.wasLimited || result.disconnectedCount > 0 || result.wasCancelled || result.wasLowSpace {
             sessionStatus = result.copiedCount == 0 && result.failedCount > 0 ? .failed : .partial
         } else if result.copiedCount == 0 && result.failedCount > 0 {
             sessionStatus = .failed
@@ -749,7 +753,8 @@ final class DashboardViewModel {
         let partialReason = sessionStatus == .partial
             ? Self.partialReason(wasCancelled: result.wasCancelled,
                                  disconnectedCount: result.disconnectedCount,
-                                 wasLimited: result.wasLimited)
+                                 wasLimited: result.wasLimited,
+                                 wasLowSpace: result.wasLowSpace)
             : .none
 
         try? IndexStore.shared.complete(session, status: sessionStatus, partialReason: partialReason)

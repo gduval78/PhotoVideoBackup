@@ -11,6 +11,8 @@ struct EngineResult: Sendable {
     let verifiedCount: Int
     let disconnectedCount: Int
     var wasCancelled: Bool = false
+    /// The run stopped because device storage stayed below the safety reserve (see `PHBackupEngine`).
+    var wasLowSpace: Bool = false
 }
 
 // MARK: - CopyPhase
@@ -20,6 +22,7 @@ enum CopyPhase: Sendable, Equatable {
     case exporting      // exporting PHAsset to temp file
     case copying        // streaming bytes to destination
     case verifying
+    case waitingForSpace  // paused: device storage below the safety reserve, waiting for it to free up
     case done
     case skipped
     case failed(String)

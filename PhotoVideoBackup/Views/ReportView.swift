@@ -150,6 +150,8 @@ struct ReportView: View {
             return "Partial backup — destination disconnected. Reconnect and run again to continue."
         case .cancelled:
             return "Partial backup — stopped. Run again to continue."
+        case .lowSpace:
+            return "Partial backup — iPhone storage is low, so the backup paused. Your files are safe. Free up space and run again to continue."
         case .fileLimit, .none:
             return "Partial backup — file limit reached. Run again to continue."
         }

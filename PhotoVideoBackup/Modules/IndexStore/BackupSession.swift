@@ -20,6 +20,7 @@ enum PartialReason: String, Codable, CaseIterable, Sendable {
     case fileLimit
     case disconnected
     case cancelled
+    case lowSpace   // device storage stayed below the safety reserve — the run paused, then stopped
 }
 
 // MARK: - BackupSession
