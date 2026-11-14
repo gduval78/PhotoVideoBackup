@@ -142,4 +142,40 @@ class ScannerTests {
     @Test fun customExtensionParsing() {
         assertEquals(setOf("gpx", "log"), MediaScanner.parseCustomExtensions(" GPX, log ,, "))
     }
+
+    // SCENARIO: "Failed" only when nothing at all is backed up
+    // A re-run that skips 409 files (already backed up) and fails on 1 must not read as a failed
+    // backup. FAILED needs no copied AND no skipped file; otherwise COMPLETED, or PARTIAL if interrupted.
+    @Test fun sessionStatus_failedOnlyWhenNothingIsBackedUp() {
+        fun r(copied: Int, skipped: Int, failed: Int, limited: Boolean = false, cancelled: Boolean = false) =
+            EngineResult(copied, skipped, failed, 0L, limited, 0, 0, cancelled)
+        assertEquals(SessionStatus.COMPLETED, CopyEngine.sessionStatus(r(0, 409, 1)))
+        assertEquals(SessionStatus.PARTIAL, CopyEngine.sessionStatus(r(0, 409, 1, cancelled = true)))
+        assertEquals(SessionStatus.COMPLETED, CopyEngine.sessionStatus(r(3, 0, 2)))
+        assertEquals(SessionStatus.FAILED, CopyEngine.sessionStatus(r(0, 0, 5)))
+        assertEquals(SessionStatus.FAILED, CopyEngine.sessionStatus(r(0, 0, 5, limited = true)))
+        assertEquals(SessionStatus.COMPLETED, CopyEngine.sessionStatus(r(0, 0, 0)))
+        assertEquals(SessionStatus.PARTIAL, CopyEngine.sessionStatus(r(7, 0, 0, limited = true)))
+    }
+
+    // SCENARIO: A cloud destination is recognised from its SAF URI, a disk never is
+    @Test fun cloudDestinations_providerOf() {
+        assertEquals(CloudProvider.GOOGLE_DRIVE, CloudDestinations.providerOf("content://com.google.android.apps.docs.storage/tree/acc%3D1%3Bdoc%3Dencoded%3D1"))
+        assertEquals(CloudProvider.GOOGLE_DRIVE, CloudDestinations.providerOf("content://com.google.android.apps.docs.storage.legacy/tree/x"))
+        assertEquals(CloudProvider.ONEDRIVE, CloudDestinations.providerOf("content://com.microsoft.skydrive.content.StorageAccessProvider/tree/x"))
+        assertEquals(CloudProvider.GOOGLE_DRIVE, CloudDestinations.providerOf("content://user@com.google.android.apps.docs.storage/tree/x"))
+        assertEquals(null, CloudDestinations.providerOf("content://com.android.externalstorage.documents/tree/primary%3ABackup"))
+        assertEquals(null, CloudDestinations.providerOf("file:///sdcard/Backup"))
+        assertEquals(CloudProvider.GOOGLE_DRIVE, CloudDestinations.firstCloud(listOf("content://com.android.externalstorage.documents/tree/a", "content://com.google.android.apps.docs.storage/tree/b")))
+    }
+
+    // SCENARIO: The cloud warning only shows with a cloud destination and little free space
+    @Test fun cloudDestinations_shouldWarn() {
+        val gb = 1024L * 1024 * 1024
+        assertTrue(CloudDestinations.shouldWarn(CloudProvider.GOOGLE_DRIVE, 1 * gb))
+        assertTrue(CloudDestinations.shouldWarn(CloudProvider.ONEDRIVE, 9 * gb))
+        assertFalse(CloudDestinations.shouldWarn(CloudProvider.GOOGLE_DRIVE, 50 * gb))
+        assertFalse(CloudDestinations.shouldWarn(null, 1 * gb))
+        assertFalse(CloudDestinations.shouldWarn(CloudProvider.GOOGLE_DRIVE, null))
+    }
 }

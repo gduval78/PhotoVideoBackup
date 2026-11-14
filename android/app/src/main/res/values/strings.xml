@@ -14,6 +14,7 @@
     <string name="assign_lut">Assign LUT…</string>
     <string name="available_luts">Available LUTs</string>
     <string name="back">Back</string>
+    <string name="back_up_anyway">Back up anyway</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup Complete</string>
     <string name="backup_error">Backup Error</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Session records are removed. Files on your SSD are not affected.</string>
     <string name="clear_history_title">Clear all backup history?</string>
     <string name="close">Close</string>
+    <string name="cloud_warning_message">Files go through the %1$s app, which uploads them when it decides to and shares its storage quota with your other data. Your phone has only %2$s free, so a large library can take many hours, and the backup may stop if the phone or your cloud storage is full. An external drive or a NAS is safer and much faster.</string>
+    <string name="cloud_warning_title">%1$s can be slow</string>
     <string name="code">Code</string>
     <string name="completed">Completed</string>
     <string name="connect_ssd_hint">Connect your SSD and configure a destination in Settings.</string>

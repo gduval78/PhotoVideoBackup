@@ -14,6 +14,7 @@
     <string name="assign_lut">分配 LUT…</string>
     <string name="available_luts">可用的 LUT</string>
     <string name="back">返回</string>
+    <string name="back_up_anyway">仍然备份</string>
     <string name="backup">备份</string>
     <string name="backup_complete">备份完成</string>
     <string name="backup_error">备份错误</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">会话记录已删除。SSD 上的文件不受影响。</string>
     <string name="clear_history_title">清除所有备份历史记录？</string>
     <string name="close">关闭</string>
+    <string name="cloud_warning_message">文件会经由 %1$s 应用，由它自行决定何时上传，并与您的其他数据共用存储配额。您的手机仅剩 %2$s 可用空间，因此较大的资料库可能需要数小时，且当手机或云存储已满时备份可能会停止。外置驱动器或 NAS 更安全，速度也快得多。</string>
+    <string name="cloud_warning_title">%1$s 可能较慢</string>
     <string name="code">代码</string>
     <string name="completed">已完成</string>
     <string name="connect_ssd_hint">请连接 SSD 并在设置中配置目标位置。</string>

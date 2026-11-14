@@ -14,6 +14,7 @@
     <string name="assign_lut">Atribuir LUT…</string>
     <string name="available_luts">LUTs disponíveis</string>
     <string name="back">Voltar</string>
+    <string name="back_up_anyway">Copiar mesmo assim</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup concluído</string>
     <string name="backup_error">Erro de backup</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Os registos de sessão são removidos. Os ficheiros no seu SSD não são afetados.</string>
     <string name="clear_history_title">Limpar todo o histórico de backup?</string>
     <string name="close">Fechar</string>
+    <string name="cloud_warning_message">Os ficheiros passam pela aplicação %1$s, que os envia quando decidir e partilha a quota com os seus outros dados. O telemóvel só tem %2$s livres, por isso uma biblioteca grande pode demorar muitas horas e a cópia pode parar se o telemóvel ou o armazenamento na nuvem estiver cheio. Um disco externo ou um NAS é mais seguro e muito mais rápido.</string>
+    <string name="cloud_warning_title">O %1$s pode ser lento</string>
     <string name="code">Código</string>
     <string name="completed">Concluído</string>
     <string name="connect_ssd_hint">Conecte o seu SSD e configure um destino nas definições.</string>

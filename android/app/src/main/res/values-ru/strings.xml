@@ -14,6 +14,7 @@
     <string name="assign_lut">Назначить LUT…</string>
     <string name="available_luts">Доступные LUT</string>
     <string name="back">Назад</string>
+    <string name="back_up_anyway">Всё равно копировать</string>
     <string name="backup">Резервная копия</string>
     <string name="backup_complete">Резервное копирование завершено</string>
     <string name="backup_error">Ошибка резервного копирования</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Записи сеанса удалены. Файлы на SSD не затронуты.</string>
     <string name="clear_history_title">Очистить всю историю резервного копирования?</string>
     <string name="close">Закрыть</string>
+    <string name="cloud_warning_message">Файлы проходят через приложение %1$s, которое загружает их, когда сочтёт нужным, и делит квоту с вашими другими данными. На телефоне свободно только %2$s, поэтому большая медиатека может копироваться много часов, а копирование может остановиться, если память телефона или облачное хранилище заполнены. Внешний диск или NAS надёжнее и намного быстрее.</string>
+    <string name="cloud_warning_title">%1$s может быть медленным</string>
     <string name="code">Код</string>
     <string name="completed">Завершено</string>
     <string name="connect_ssd_hint">Подключите SSD и настройте назначение в Настройках.</string>

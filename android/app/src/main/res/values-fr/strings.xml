@@ -14,6 +14,7 @@
     <string name="assign_lut">Assigner un LUT…</string>
     <string name="available_luts">LUT disponibles</string>
     <string name="back">Retour</string>
+    <string name="back_up_anyway">Sauvegarder quand même</string>
     <string name="backup">Sauvegarde</string>
     <string name="backup_complete">Sauvegarde terminée</string>
     <string name="backup_error">Erreur de sauvegarde</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Les enregistrements de session sont supprimés. Les fichiers sur votre SSD ne sont pas affectés.</string>
     <string name="clear_history_title">Effacer tout l\'historique de sauvegarde ?</string>
     <string name="close">Fermer</string>
+    <string name="cloud_warning_message">Les fichiers passent par l\'application %1$s, qui les envoie quand elle le décide et partage son quota avec vos autres données. Votre téléphone n\'a que %2$s de libre : une grosse photothèque peut prendre de nombreuses heures, et la sauvegarde peut s\'arrêter si le téléphone ou votre stockage en ligne est plein. Un disque externe ou un NAS est plus sûr et bien plus rapide.</string>
+    <string name="cloud_warning_title">%1$s peut être lent</string>
     <string name="code">Code</string>
     <string name="completed">Terminée</string>
     <string name="connect_ssd_hint">Connectez votre SSD et configurez une destination dans Réglages.</string>

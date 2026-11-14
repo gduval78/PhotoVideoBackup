@@ -14,6 +14,7 @@
     <string name="assign_lut">Asignar LUT…</string>
     <string name="available_luts">LUTs disponibles</string>
     <string name="back">Atrás</string>
+    <string name="back_up_anyway">Copiar de todos modos</string>
     <string name="backup">Copia</string>
     <string name="backup_complete">Copia de seguridad completa</string>
     <string name="backup_error">Error de copia de seguridad</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Los registros de sesión se eliminan. Los archivos de su SSD no se ven afectados.</string>
     <string name="clear_history_title">¿Borrar todo el historial de copias?</string>
     <string name="close">Cerrar</string>
+    <string name="cloud_warning_message">Los archivos pasan por la aplicación %1$s, que los sube cuando decide y comparte su cuota con sus demás datos. Su teléfono solo tiene %2$s libres, así que una biblioteca grande puede tardar muchas horas y la copia puede detenerse si el teléfono o su almacenamiento en la nube está lleno. Una unidad externa o un NAS es más seguro y mucho más rápido.</string>
+    <string name="cloud_warning_title">%1$s puede ser lento</string>
     <string name="code">Código</string>
     <string name="completed">Completada</string>
     <string name="connect_ssd_hint">Conecte su SSD y configure un destino en Ajustes.</string>

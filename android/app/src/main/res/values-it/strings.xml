@@ -14,6 +14,7 @@
     <string name="assign_lut">Assegna LUT…</string>
     <string name="available_luts">LUT disponibili</string>
     <string name="back">Indietro</string>
+    <string name="back_up_anyway">Esegui comunque il backup</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup completato</string>
     <string name="backup_error">Errore di backup</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">I record di sessione vengono rimossi. I file sul tuo SSD non vengono modificati.</string>
     <string name="clear_history_title">Cancellare tutta la cronologia di backup?</string>
     <string name="close">Chiudi</string>
+    <string name="cloud_warning_message">I file passano dall\'app %1$s, che li carica quando decide e condivide la quota con gli altri tuoi dati. Il telefono ha solo %2$s liberi, quindi una libreria grande può richiedere molte ore e il backup può fermarsi se il telefono o lo spazio cloud è pieno. Un disco esterno o un NAS è più sicuro e molto più veloce.</string>
+    <string name="cloud_warning_title">%1$s può essere lento</string>
     <string name="code">Codice</string>
     <string name="completed">Completato</string>
     <string name="connect_ssd_hint">Collega il tuo SSD e configura una destinazione nelle impostazioni.</string>

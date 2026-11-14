@@ -29,7 +29,11 @@ import androidx.compose.material.icons.filled.SdCard
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Cloud
+import android.os.Environment
+import android.os.StatFs
 import androidx.compose.material3.AlertDialog
+import gduvalsc.pvb.core.CloudDestinations
+import gduvalsc.pvb.core.CloudProvider
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -131,7 +135,16 @@ fun DashboardScreen(onGoSettings: () -> Unit, onPaywall: () -> Unit) {
         }
     }
 
-    fun startGallery() {
+    // Cloud destination (Google Drive, OneDrive, Dropbox) on a nearly full phone: confirm first.
+    var cloudWarning by remember { mutableStateOf<Triple<CloudProvider, Long, () -> Unit>?>(null) }
+    fun guarded(action: () -> Unit) {
+        val provider = CloudDestinations.firstCloud(Prefs.destinations.map { it.uri })
+        val free = runCatching { StatFs(Environment.getDataDirectory().path).availableBytes }.getOrNull()
+        if (provider != null && free != null && CloudDestinations.shouldWarn(provider, free)) cloudWarning = Triple(provider, free, action)
+        else action()
+    }
+
+    fun startGallery() = guarded {
         if (Build.VERSION.SDK_INT >= 33 && Prefs.onboardingDone) notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         if (Gallery.canRead(context)) BackupController.start(context, SourceRequest.Gallery)
         else galleryPermission.launch(Gallery.permissions())
@@ -192,7 +205,7 @@ fun DashboardScreen(onGoSettings: () -> Unit, onPaywall: () -> Unit) {
                     onRemove = { Prefs.sources = Prefs.sources.filter { it.id != s.source.id }; AppState.refreshAsync(context, scope) },
                     removeEnabled = !running,
                     onBackup = {
-                        if (Pro.isPro) {
+                        if (Pro.isPro) guarded {
                             if (Build.VERSION.SDK_INT >= 33) notifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                             BackupController.start(context, SourceRequest.External(s.source.id))
                         } else onPaywall()
@@ -240,6 +253,16 @@ fun DashboardScreen(onGoSettings: () -> Unit, onPaywall: () -> Unit) {
                 }) { Text(stringResource(R.string.add)) }
             },
             dismissButton = { TextButton(onClick = { pendingSource = null }) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
+
+    cloudWarning?.let { (provider, free, action) ->
+        AlertDialog(
+            onDismissRequest = { cloudWarning = null },
+            title = { Text(stringResource(R.string.cloud_warning_title, provider.displayName)) },
+            text = { Text(stringResource(R.string.cloud_warning_message, provider.displayName, bytes(context, free))) },
+            confirmButton = { TextButton(onClick = { cloudWarning = null; action() }) { Text(stringResource(R.string.back_up_anyway)) } },
+            dismissButton = { TextButton(onClick = { cloudWarning = null }) { Text(stringResource(R.string.cancel)) } },
         )
     }
 

@@ -4,7 +4,7 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 
 ## Versions
 - iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.6.1.
-- Android: 2.6.0 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
+- Android: 2.6.1 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
 ## Pro
@@ -30,6 +30,8 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - **Partial "a destination is full or reported an error" (2.6.1)**: with several destinations, one of them (e.g. iCloud Drive) was full or failed while the others carried on; the files missing there are listed as failed for that destination in the Report. Free space there and run again — what is already backed up is skipped.
 - **iCloud Drive: is my backup really in iCloud? (2.6.1)**: open the session Report — the "iCloud Drive" section shows, read live from iOS, how many files are in iCloud (space freed / still on the iPhone), uploading, waiting, or in error (with iOS's message, e.g. "cannot connect to the server" = the phone cannot reach iCloud: check Wi-Fi/VPN/Low Data Mode, let it cool and charge). Tap *Refresh iCloud status*. A file only counts as safe in iCloud once it shows as uploaded; iOS decides when.
 - **"Your iCloud storage is full" (2.6.1)**: iOS refuses uploads (`-1003`, "quota insufficient") — the iCloud account has no room left; a whole photo library of DNG files rarely fits next to iCloud Photos and device backups. The backup stops as Partial; free iCloud space (Settings → name → iCloud → Manage Storage) or back up to an external drive or a NAS instead. Originals are untouched. Error `-1004` ("cannot connect to the server") is a network problem instead.
+- **Android: Google Drive / OneDrive / Dropbox as a destination (2.6.1)**: allowed, but slow and indirect — the cloud app uploads on its own schedule, shares its quota with the user's other data (Google Drive's 15 GB is shared with Gmail and Google Photos) and may keep files on the phone meanwhile. With under 10 GB free the app warns before starting. For a large library recommend an external drive or a NAS. Google Photos cannot be a destination; the gallery source only sees files that are on the phone (originals removed by Google Photos "Free up space" are not backed up).
+- **Android: a re-run that skipped files and failed one showed "failed" (before 2.6.1)**: fixed — a session is only "failed" when nothing at all is backed up.
 - **A file appears as `NAME-1.ext` next to a smaller `NAME.ext` (before 2.6.1)**: an earlier copy was interrupted (disk full) and left a truncated file. Fixed in 2.6.1; with 2.6.0, delete the truncated original in the destination, then run again.
 
 ## Not supported / limits

@@ -363,12 +363,18 @@ class CopyEngine(private val index: IndexStore) {
         const val BATCH_FLUSH_INTERVAL = 500
         const val DISCONNECTED_NOTE = "All destination drives were disconnected. The backup was stopped."
 
-        /** Session status from an engine result (same rules as the iOS dashboard). */
-        fun sessionStatus(r: EngineResult): SessionStatus = when {
-            r.wasLimited || r.disconnectedCount > 0 || r.wasCancelled ->
-                if (r.copiedCount == 0 && r.failedCount > 0) SessionStatus.FAILED else SessionStatus.PARTIAL
-            r.copiedCount == 0 && r.failedCount > 0 -> SessionStatus.FAILED
-            else -> SessionStatus.COMPLETED
+        /**
+         * Session status from an engine result (same rules as the iOS dashboard).
+         *
+         * FAILED means nothing at all is backed up by this run: no file copied **and none already
+         * present** (skipped). A re-run that skips 409 files and fails on 1 is not a failed backup — it
+         * is COMPLETED (with errors, listed in the report), or PARTIAL when something interrupted it.
+         */
+        fun sessionStatus(r: EngineResult): SessionStatus {
+            val nothingBackedUp = r.copiedCount == 0 && r.skippedCount == 0 && r.failedCount > 0
+            if (nothingBackedUp) return SessionStatus.FAILED
+            val interrupted = r.wasLimited || r.disconnectedCount > 0 || r.wasCancelled
+            return if (interrupted) SessionStatus.PARTIAL else SessionStatus.COMPLETED
         }
     }
 }

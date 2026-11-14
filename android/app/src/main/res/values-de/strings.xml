@@ -14,6 +14,7 @@
     <string name="assign_lut">LUT zuweisen…</string>
     <string name="available_luts">Verfügbare LUTs</string>
     <string name="back">Zurück</string>
+    <string name="back_up_anyway">Trotzdem sichern</string>
     <string name="backup">Backup</string>
     <string name="backup_complete">Backup abgeschlossen</string>
     <string name="backup_error">Backup-Fehler</string>
@@ -33,6 +34,8 @@
     <string name="clear_history_message">Sitzungsaufzeichnungen werden entfernt. Dateien auf Ihrer SSD sind nicht betroffen.</string>
     <string name="clear_history_title">Gesamten Backup-Verlauf löschen?</string>
     <string name="close">Schließen</string>
+    <string name="cloud_warning_message">Die Dateien laufen über die App %1$s, die sie hochlädt, wann sie will, und ihr Speicherkontingent mit Ihren anderen Daten teilt. Ihr Telefon hat nur noch %2$s frei, daher kann eine große Mediathek viele Stunden dauern, und das Backup kann stoppen, wenn das Telefon oder Ihr Cloud-Speicher voll ist. Ein externes Laufwerk oder ein NAS ist sicherer und viel schneller.</string>
+    <string name="cloud_warning_title">%1$s kann langsam sein</string>
     <string name="code">Code</string>
     <string name="completed">Abgeschlossen</string>
     <string name="connect_ssd_hint">Verbinden Sie Ihre SSD und konfigurieren Sie ein Ziel in Einstellungen.</string>
