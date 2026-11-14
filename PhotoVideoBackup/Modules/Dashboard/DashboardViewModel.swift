@@ -34,6 +34,7 @@ final class DashboardViewModel {
     var iCloudWarningFreeBytes: Int64? = nil
     /// The profile run waiting behind that confirmation (nil for the Advanced-screen button).
     private var pendingRun: ProfileRun? = nil
+    private var pendingSource: ExternalSource? = nil
     private(set) var completionBanner: CompletionBanner?
     private(set) var estimatedSecondsRemaining: Double?
     private(set) var shouldRequestReview: Bool = false
@@ -519,7 +520,7 @@ final class DashboardViewModel {
                 backupError = String(localized: "This source is no longer available.")
                 return
             }
-            await startBackup(from: source, run: run)
+            await requestExternalBackup(from: source, run: run)
         }
     }
 
@@ -555,16 +556,40 @@ final class DashboardViewModel {
         await startBackup(run: run)
     }
 
+    /// Same entry point for a camera card / drive: the iCloud Drive warning applies whenever the
+    /// destination is an iCloud folder, whatever the source.
+    func requestExternalBackup(from source: ExternalSource, run: ProfileRun? = nil) async {
+        guard !isRunning else { return }
+        let urls = run?.localURLs ?? DestinationManager.shared.resolvedDestinations()
+        let accessed = urls.filter { $0.startAccessingSecurityScopedResource() }
+        let hasICloud = urls.contains { ICloudEvictionManager.isUbiquitous($0) }
+        accessed.forEach { $0.stopAccessingSecurityScopedResource() }
+        let free = DiskSpacePreflight.availableDeviceBytes()
+        if Self.shouldWarnAboutICloud(hasICloudDestination: hasICloud, freeBytes: free), let free {
+            iCloudWarningFreeBytes = free
+            pendingRun = run
+            pendingSource = source
+            return
+        }
+        await startBackup(from: source, run: run)
+    }
+
     /// The user confirmed the iCloud warning: start the backup that was waiting.
     func confirmICloudWarning() {
         let run = pendingRun
+        let source = pendingSource
         pendingRun = nil
+        pendingSource = nil
         iCloudWarningFreeBytes = nil
-        Task { await startBackup(run: run) }
+        Task {
+            if let source { await startBackup(from: source, run: run) }
+            else { await startBackup(run: run) }
+        }
     }
 
     func cancelICloudWarning() {
         pendingRun = nil
+        pendingSource = nil
         iCloudWarningFreeBytes = nil
     }
 

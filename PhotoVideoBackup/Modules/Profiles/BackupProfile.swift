@@ -35,11 +35,9 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     case custom
 
     /// The templates shown in the "New backup" list. `custom` is only ever created by migration.
-    /// `driveToICloud` is held back: it runs on `FileCopyEngine`, which has none of the iCloud
-    /// protection `PHBackupEngine` has (release of uploaded copies, pause under a space reserve,
-    /// quota detection) — on a nearly full iPhone it would reproduce the field case of 2.6.0.
-    /// Offer it once that protection is ported.
-    static var selectable: [ProfileTemplate] { allCases.filter { $0 != .custom && $0 != .driveToICloud } }
+    /// `driveToICloud` runs on `FileCopyEngine`, which carries the iCloud protection (`ICloudRunGuard`:
+    /// release of uploaded copies, pause under a space reserve, quota detection) since 2.7.0.
+    static var selectable: [ProfileTemplate] { allCases.filter { $0 != .custom } }
 
     var titleKey: LocalizedStringKey {
         switch self {

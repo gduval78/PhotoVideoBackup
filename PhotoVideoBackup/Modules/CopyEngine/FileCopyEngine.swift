@@ -23,6 +23,8 @@ actor FileCopyEngine {
     private var _disconnectedCount = 0
     private var _cancelRequested = false
     private var _wasCancelled = false
+    private var _wasLowSpace = false
+    private var _wasICloudFull = false
 
     /// Cooperative cancellation: the run loop stops at the next file boundary.
     func requestCancel() { _cancelRequested = true }
@@ -31,7 +33,8 @@ actor FileCopyEngine {
         EngineResult(copiedCount: _copiedCount, skippedCount: _skippedCount,
                      failedCount: _failedCount, totalBytesCopied: _totalBytesCopied,
                      wasLimited: _wasLimited, verifiedCount: _verifiedCount,
-                     disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled)
+                     disconnectedCount: _disconnectedCount, wasCancelled: _wasCancelled,
+                     wasLowSpace: _wasLowSpace, wasICloudFull: _wasICloudFull)
     }
 
     // MARK: - Public API
@@ -56,6 +59,7 @@ actor FileCopyEngine {
                 _copiedCount = 0; _skippedCount = 0; _failedCount = 0
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
+                _wasLowSpace = false; _wasICloudFull = false
 
                 // The index kept with the backup: learn what other devices (or a lost history)
                 // already put there before looking anything up.
@@ -63,6 +67,11 @@ actor FileCopyEngine {
 
                 var overallDone: Int64 = 0
                 var toCopyCount = 0
+
+                // iCloud Drive destination: keep the iPhone from filling up with copies iCloud has
+                // not uploaded yet (release, pause under a reserve, stop on a full account).
+                var iCloud = ICloudRunGuard(destinations: destinations)
+                iCloud.sweepAtStart()
 
                 for (index, file) in files.enumerated() {
                     // Cooperative cancellation (user tapped Stop) — stop at file boundary.
@@ -181,6 +190,31 @@ actor FileCopyEngine {
                     // a free name rather than overwrite it.
                     let rel = await uniqueRelativePath(baseRel, targets: missingTargets)
 
+                    // ── Storage reserve: pause rather than fill the phone ────
+                    // Only a copy that lands in an iCloud Drive folder uses device space.
+                    let localTargetsToWrite = missingTargets.compactMap { $0 as? LocalFileTarget }
+                    if iCloud.isActive, iCloud.landsOnDevice(localTargetsToWrite) {
+                        let gate = await iCloud.waitForSpace(
+                            required: ICloudRunGuard.requiredFree(fileBytes: file.size, landsOnDevice: true),
+                            fileName: fileName,
+                            isCancelled: { self._cancelRequested },
+                            reportPause: {
+                                continuation.yield(CopyProgress(
+                                    fileIndex: index, totalFiles: files.count, fileName: fileName,
+                                    fileBytesDone: 0, fileBytesTotal: file.size,
+                                    currentDestination: primaryDest,
+                                    overallBytesDone: overallDone, overallBytesTotal: overallTotal,
+                                    phase: .waitingForSpace))
+                            })
+                        switch gate {
+                        case .proceed:   break
+                        case .cancelled: _wasCancelled = true
+                        case .lowSpace:  _wasLowSpace = true
+                        case .iCloudFull: _wasICloudFull = true
+                        }
+                        if gate != .proceed { break }
+                    }
+
                     // ── Announce copy start ──────────────────────────────────
                     continuation.yield(CopyProgress(
                         fileIndex: index, totalFiles: files.count,
@@ -270,6 +304,13 @@ actor FileCopyEngine {
                                      sha256: "", status: .failed, verified: false, destPaths: [], captureDate: captureDate, note: note)
                         // A full disconnection stops the whole backup; a hard per-file error skips the file.
                         if disconnectedThisFile { break }
+                        // A full device on an iCloud destination is not a per-file problem: every
+                        // following file would fail the same way.
+                        if iCloud.isActive, let err = hardCopyError, PHBackupEngine.isOutOfSpace(err) {
+                            _wasLowSpace = true
+                            DiagnosticLog.write("[SPACE_PAUSE] device full while writing \(fileName) — session ends partial")
+                            break
+                        }
                         overallDone += file.size
                         continuation.yield(CopyProgress(
                             fileIndex: index, totalFiles: files.count, fileName: fileName,
@@ -315,8 +356,17 @@ actor FileCopyEngine {
                         overallBytesDone: overallDone, overallBytesTotal: overallTotal,
                         phase: allOK ? .done : .failed("SHA-256 verification failed")
                     ))
+
+                    // Release the iCloud copies iCloud already holds (after verification, which
+                    // re-reads the destination — reading an evicted file would pull it back down).
+                    if iCloud.isActive {
+                        iCloud.queue(writtenTargets.compactMap { ($0 as? LocalFileTarget)?.destinationURL(forRelative: rel) },
+                                     bytes: file.size)
+                        await iCloud.releaseAfterFile()
+                    }
                 }
 
+                iCloud.finalPass()
                 await MainActor.run { IndexStore.shared.save() }
                 await DestinationIndex.flush(targets: destinations)
                 print("[FileCopyEngine] Session complete.")

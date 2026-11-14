@@ -20,7 +20,7 @@ Goal (Andreas's wish, support 2026-11): *the user decides what to back up and wh
 | 5 | External drive → iCloud Drive | external source | iCloud Drive folder | yes |
 | 6 | Photo library → external drive + NAS (double copy) | Photos | one folder + NAS | yes |
 
-Template 5 is the second step of "free the iPhone": run 1, check the report, delete the originals (existing *Delete Source Files…*), then run 5. **It is built into the model but not offered yet**: it runs on `FileCopyEngine`, which lacks the iCloud protection of the Photos engine (release of uploaded copies, pause under a reserve, quota detection). Port that first, then add it to `ProfileTemplate.selectable`.
+Template 5 is the second step of "free the iPhone": run 1, check the report, delete the originals (existing *Delete Source Files…*), then run 5. It runs on `FileCopyEngine`, which got the iCloud protection of the Photos engine (`ICloudRunGuard`: release of uploaded copies, pause under a reserve, quota detection) before being offered.
 
 ## Model (`Modules/Profiles/BackupProfile.swift`)
 

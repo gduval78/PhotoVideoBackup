@@ -179,7 +179,7 @@ struct DashboardView: View {
                     },
                     onRemove: { viewModel.removeExternalSource(id: source.id) }
                 ) {
-                    Task { await viewModel.startBackup(from: source) }
+                    Task { await viewModel.requestExternalBackup(from: source) }
                 }
             }
 

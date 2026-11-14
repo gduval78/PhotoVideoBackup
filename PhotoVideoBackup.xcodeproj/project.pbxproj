@@ -91,6 +91,8 @@
 		5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C270F33EBA437E84E8B98C0 /* BackupsView.swift */; };
 		5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */; };
 		5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */; };
+		5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */; };
+		5C27E859A32F96B349CE84F0 /* ICloudRunGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -205,6 +207,8 @@
 		5C270F33EBA437E84E8B98C0 /* BackupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsView.swift; sourceTree = "<group>"; };
 		5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBackupFlow.swift; sourceTree = "<group>"; };
 		5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAlerts.swift; sourceTree = "<group>"; };
+		5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudRunGuard.swift; sourceTree = "<group>"; };
+		5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudRunGuardTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -429,6 +433,7 @@
 		CC000000000000000000AA00 /* ScenarioTests */ = {
 			isa = PBXGroup;
 			children = (
+				5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */,
 				5C27D0062DD66837497AA6D8 /* ProfileTests.swift */,
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
@@ -477,6 +482,7 @@
 		5C1C10D0000000000000FE00 /* ICloudEviction */ = {
 			isa = PBXGroup;
 			children = (
+				5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */,
 				5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */,
 			);
 			path = ICloudEviction;
@@ -632,6 +638,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */,
 				5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */,
 				5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */,
 				5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */,
@@ -690,6 +697,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C27E859A32F96B349CE84F0 /* ICloudRunGuardTests.swift in Sources */,
 				5C27D78EB74D785341B2A05F /* ProfileTests.swift in Sources */,
 				CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */,
 				CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */,

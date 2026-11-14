@@ -86,10 +86,9 @@ final class ProfileTests: XCTestCase {
     // Free: photo library → one folder (drive or iCloud). Everything else — a NAS, a camera card, a
     // second copy — is Pro, as everywhere else in the app.
     func test_templates_shapeAndProGates() {
-        // Five are offered; drive → iCloud waits for the iCloud protection in FileCopyEngine.
-        XCTAssertEqual(ProfileTemplate.selectable.count, 5)
+        XCTAssertEqual(ProfileTemplate.selectable.count, 6)
         XCTAssertFalse(ProfileTemplate.selectable.contains(.custom))
-        XCTAssertFalse(ProfileTemplate.selectable.contains(.driveToICloud))
+        XCTAssertTrue(ProfileTemplate.selectable.contains(.driveToICloud))
         XCTAssertFalse(ProfileTemplate.photosToDrive.requiresPro)
         XCTAssertFalse(ProfileTemplate.photosToICloud.requiresPro)
         XCTAssertTrue(ProfileTemplate.photosToNAS.requiresPro)
