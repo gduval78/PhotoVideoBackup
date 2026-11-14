@@ -87,6 +87,26 @@ actor PHBackupEngine {
     private var _wasCancelled = false
     private var _wasLowSpace = false
     private var _destinationErrorCount = 0
+    // Read-speed breadcrumbs (diagnostic only). The Photos read has `isNetworkAccessAllowed = true`,
+    // so an original that lives only in iCloud Photos is downloaded silently; a read far slower
+    // than local storage is the only visible trace. See `noteRead`.
+    private var _localReads = 0
+    private var _slowReads = 0
+    /// Below this a read of a non-trivial file is taken for a download (a local read of a DNG runs at
+    /// 100 MB/s and more).
+    static let slowReadBytesPerSecond: Double = 20 * 1024 * 1024
+    static let slowReadMinBytes: Int64 = 4 * 1024 * 1024
+
+    private func noteRead(name: String, bytes: Int64, seconds: Double) {
+        guard bytes >= Self.slowReadMinBytes, seconds > 0 else { return }
+        let rate = Double(bytes) / seconds
+        if rate < Self.slowReadBytesPerSecond {
+            _slowReads += 1
+            DiagnosticLog.write("[ASSET_SLOW] \(name) size=\(bytes / 1_048_576)MB time=\(String(format: "%.1f", seconds))s rate=\(String(format: "%.1f", rate / 1_048_576))MB/s — likely downloaded from iCloud Photos")
+        } else {
+            _localReads += 1
+        }
+    }
 
     /// Cooperative cancellation: the run loop stops at the next file boundary.
     func requestCancel() { _cancelRequested = true }
@@ -123,6 +143,7 @@ actor PHBackupEngine {
                 _totalBytesCopied = 0; _wasLimited = false; _verifiedCount = 0
                 _disconnectedCount = 0; _cancelRequested = false; _wasCancelled = false
                 _wasLowSpace = false; _destinationErrorCount = 0
+                _localReads = 0; _slowReads = 0
 
                 // The index kept with the backup: learn what other devices (or a lost history)
                 // already put there before looking anything up.
@@ -160,7 +181,7 @@ actor PHBackupEngine {
                     }
                     // Diagnostic checkpoint every 50 files
                     if index > 0 && index % 50 == 0 {
-                        DiagnosticLog.write("[PROGRESS] \(index)/\(items.count) copied=\(_copiedCount) skipped=\(_skippedCount) failed=\(_failedCount) \(DiagnosticLog.memoryTag) current=\"\(item.fileName)\"")
+                        DiagnosticLog.write("[PROGRESS] \(index)/\(items.count) copied=\(_copiedCount) skipped=\(_skippedCount) failed=\(_failedCount) reads(fast/slow)=\(_localReads)/\(_slowReads) \(DiagnosticLog.memoryTag) current=\"\(item.fileName)\"")
                     }
 
                     // Naming profile (Settings): the asset gets its final name as it is first
@@ -191,6 +212,7 @@ actor PHBackupEngine {
 
                     func hashAssetForReal() async -> Bool {
                         do {
+                            let readStart = Date()
                             let hashed = try await hashAsset(item: item) { bytesHashed in
                                 continuation.yield(CopyProgress(
                                     fileIndex: index, totalFiles: items.count, fileName: item.fileName,
@@ -202,6 +224,8 @@ actor PHBackupEngine {
                             actualSize = hashed.bytes
                             precomputedSHA256 = hashed.sha256
                             hashedForReal = true
+                            noteRead(name: item.fileName, bytes: hashed.bytes,
+                                     seconds: Date().timeIntervalSince(readStart))
                             return true
                         } catch {
                             print("[PHBackupEngine] ❌ Hash pass failed: \(item.fileName) — \(error)")
