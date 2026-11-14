@@ -187,3 +187,93 @@ enum ICloudEvictionManager {
         return result
     }
 }
+
+// MARK: - Sync status of backed-up files (shown in the Report)
+
+/// Where one file written to an iCloud Drive destination stands, as iOS reports it — the same
+/// states the Files app shows. Read live: they change after the backup ends, so the Report asks
+/// again each time it opens instead of storing them.
+enum ICloudFileState: Equatable, Sendable {
+    /// Uploaded and the local copy released: only a placeholder is left on the iPhone.
+    case cloudOnly
+    /// Uploaded, local copy still there (it will be released when space is needed).
+    case uploadedOnDevice
+    /// iOS is sending it right now.
+    case uploading
+    /// Not sent yet, not being sent either.
+    case queued
+    /// iOS reports an upload error (network, quota…). The message is iOS's own.
+    case error(String)
+    /// Not found at the destination any more.
+    case missing
+}
+
+struct ICloudSyncSummary: Equatable, Sendable {
+    var cloudOnly = 0
+    var uploadedOnDevice = 0
+    var uploading = 0
+    var queued = 0
+    var errors = 0
+    var missing = 0
+    var firstError: String? = nil
+
+    var total: Int { cloudOnly + uploadedOnDevice + uploading + queued + errors + missing }
+    /// Files iCloud holds, whatever the local copy does.
+    var inICloud: Int { cloudOnly + uploadedOnDevice }
+    /// Nothing left to wait for.
+    var isSettled: Bool { uploading == 0 && queued == 0 && errors == 0 }
+
+    mutating func add(_ state: ICloudFileState) {
+        switch state {
+        case .cloudOnly:        cloudOnly += 1
+        case .uploadedOnDevice: uploadedOnDevice += 1
+        case .uploading:        uploading += 1
+        case .queued:           queued += 1
+        case .missing:          missing += 1
+        case .error(let message):
+            errors += 1
+            if firstError == nil { firstError = message }
+        }
+    }
+}
+
+enum ICloudSyncStatus {
+
+    /// Pure mapping from what iOS reports to a state — kept separate from the file system reads so it
+    /// is unit-testable. An upload error wins over everything: the file is not safely in iCloud.
+    static func classify(isUploaded: Bool, isUploading: Bool, uploadError: String?,
+                         isEvicted: Bool) -> ICloudFileState {
+        if let uploadError { return .error(uploadError) }
+        if isUploading { return .uploading }
+        if isUploaded { return isEvicted ? .cloudOnly : .uploadedOnDevice }
+        return .queued
+    }
+
+    /// Reads the state of one file. Resource values come from a freshly built `URL`: a `URL` caches
+    /// them, which would make a later refresh return the first answer forever.
+    static func state(of path: String) -> ICloudFileState {
+        let url = URL(fileURLWithPath: path)
+        // Asking for the ubiquitous keys of a path that does not exist does not throw — it just returns
+        // empty values, which would read as "queued". Check the file is there first (an evicted
+        // placeholder still is).
+        guard (try? url.checkResourceIsReachable()) == true else { return .missing }
+        guard let v = try? url.resourceValues(forKeys: [
+            .ubiquitousItemIsUploadedKey, .ubiquitousItemIsUploadingKey,
+            .ubiquitousItemUploadingErrorKey, .ubiquitousItemDownloadingStatusKey])
+        else { return .missing }
+        let error = v.ubiquitousItemUploadingError.map { err -> String in
+            let ns = err as NSError
+            return "\(ns.localizedDescription) (\(ns.domain) \(ns.code))"
+        }
+        return classify(isUploaded: v.ubiquitousItemIsUploaded ?? false,
+                        isUploading: v.ubiquitousItemIsUploading ?? false,
+                        uploadError: error,
+                        isEvicted: v.ubiquitousItemDownloadingStatus == .notDownloaded)
+    }
+
+    static func summarize(paths: [String]) -> ICloudSyncSummary {
+        var summary = ICloudSyncSummary()
+        for path in paths { summary.add(state(of: path)) }
+        return summary
+    }
+}

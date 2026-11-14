@@ -125,4 +125,35 @@ final class ICloudEvictionTests: XCTestCase {
         XCTAssertEqual(result, ICloudEvictionManager.SweepResult())
         XCTAssertEqual(try Data(contentsOf: file).count, 4096)
     }
+
+    // SCENARIO: What iOS reports about a file is mapped to the state the Report shows
+    // Uploaded + released = cloud only; uploaded + still local = releasable; uploading and queued are
+    // told apart; an upload error always wins (the file is not safely in iCloud), even if iOS also
+    // says "uploaded".
+    func test_syncStatus_classification() {
+        typealias S = ICloudSyncStatus
+        XCTAssertEqual(S.classify(isUploaded: true,  isUploading: false, uploadError: nil, isEvicted: true),  .cloudOnly)
+        XCTAssertEqual(S.classify(isUploaded: true,  isUploading: false, uploadError: nil, isEvicted: false), .uploadedOnDevice)
+        XCTAssertEqual(S.classify(isUploaded: false, isUploading: true,  uploadError: nil, isEvicted: false), .uploading)
+        XCTAssertEqual(S.classify(isUploaded: false, isUploading: false, uploadError: nil, isEvicted: false), .queued)
+        XCTAssertEqual(S.classify(isUploaded: true,  isUploading: false, uploadError: "no network", isEvicted: false), .error("no network"))
+    }
+
+    // SCENARIO: The summary counts every state, keeps the first error and knows when nothing is left to wait for
+    func test_syncSummary_countsAndSettles() {
+        var s = ICloudSyncSummary()
+        s.add(.cloudOnly); s.add(.uploadedOnDevice)
+        XCTAssertTrue(s.isSettled)
+        XCTAssertEqual(s.inICloud, 2)
+        s.add(.uploading); s.add(.queued); s.add(.error("first")); s.add(.error("second")); s.add(.missing)
+        XCTAssertEqual(s.total, 7)
+        XCTAssertEqual(s.errors, 2)
+        XCTAssertEqual(s.firstError, "first")
+        XCTAssertFalse(s.isSettled)
+    }
+
+    // SCENARIO: A path that does not exist is reported as missing, never as uploaded
+    func test_syncStatus_missingFile() {
+        XCTAssertEqual(ICloudSyncStatus.state(of: "/nonexistent/\(UUID().uuidString).dng"), .missing)
+    }
 }

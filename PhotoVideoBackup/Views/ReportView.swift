@@ -8,16 +8,21 @@ struct ReportView: View {
     @State private var showDeleteSheet = false
     @State private var deletionResult: DeletionResult? = nil
     @State private var showDeletionAlert = false
+    @State private var iCloudSummary: ICloudSyncSummary? = nil
+    @State private var iCloudChecking = false
+    @State private var hasICloudDestination = false
 
     var body: some View {
         List {
             headerSection
             summarySection
+            iCloudSection
             filesSection
             deleteSection
         }
         .navigationTitle("Report")
         .navigationBarTitleDisplayMode(.inline)
+        .task { await refreshICloudStatus() }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if let url = reportHTMLURL {
@@ -127,6 +132,83 @@ struct ReportView: View {
                 .padding(.vertical, 4)
             }
         }
+    }
+
+    // MARK: - iCloud Drive status
+
+    /// Where the files copied to an iCloud Drive destination stand *now*, as iOS reports it. iCloud
+    /// uploads on its own schedule after the backup ends, so this is read live each time the Report
+    /// opens (and on demand) rather than stored with the session.
+    @ViewBuilder
+    private var iCloudSection: some View {
+        if hasICloudDestination {
+            Section {
+                if let s = iCloudSummary {
+                    iCloudRow("In iCloud — space freed on this iPhone", s.cloudOnly, "icloud.fill", .green)
+                    iCloudRow("In iCloud — still on this iPhone", s.uploadedOnDevice, "checkmark.icloud.fill", .green)
+                    iCloudRow("Uploading to iCloud", s.uploading, "icloud.and.arrow.up.fill", .blue)
+                    iCloudRow("Waiting to upload", s.queued, "clock.fill", .orange)
+                    iCloudRow("Upload error", s.errors, "exclamationmark.icloud.fill", .red)
+                    iCloudRow("Not found at the destination", s.missing, "questionmark.folder.fill", .red)
+                    if let message = s.firstError {
+                        Text(verbatim: message).font(.caption).foregroundStyle(.red)
+                    }
+                }
+                Button {
+                    Task { await refreshICloudStatus() }
+                } label: {
+                    if iCloudChecking {
+                        HStack { ProgressView(); Text("Checking iCloud status…") }
+                    } else {
+                        Label("Refresh iCloud status", systemImage: "arrow.clockwise")
+                    }
+                }
+                .disabled(iCloudChecking)
+            } header: {
+                Text("iCloud Drive")
+            } footer: {
+                Text("Status read from iOS just now. A file is only safely in iCloud once it shows as uploaded; iOS decides when to upload, so this can take a while after the backup ends.")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func iCloudRow(_ label: LocalizedStringKey, _ count: Int, _ icon: String, _ color: Color) -> some View {
+        if count > 0 {
+            LabeledContent {
+                Text("\(count)").foregroundStyle(.secondary)
+            } label: {
+                Label { Text(label) } icon: { Image(systemName: icon).foregroundStyle(color) }
+            }
+        }
+    }
+
+    private func refreshICloudStatus() async {
+        guard !iCloudChecking else { return }
+        // The destination roots this session wrote to that live in iCloud Drive.
+        let destinations = session.destinations
+        let roots = DestinationManager.shared.resolvedDestinations().filter { root in
+            ICloudEvictionManager.isUbiquitous(root)
+                && destinations.contains { isPath($0, underRoot: root.path) || isPath(root.path, underRoot: $0) }
+        }
+        guard !roots.isEmpty else { return }
+        hasICloudDestination = true
+        iCloudChecking = true
+        let accessed = roots.filter { $0.startAccessingSecurityScopedResource() }
+        defer { for url in accessed { url.stopAccessingSecurityScopedResource() } }
+
+        // Files written this session (older records: every recorded path), inside an iCloud root.
+        let rootPaths = roots.map(\.path)
+        var paths: [String] = []
+        for file in copiedFiles {
+            let written = file.copiedPaths.isEmpty ? file.destinationPaths : file.copiedPaths
+            paths += written.filter { p in rootPaths.contains { isPath(p, underRoot: $0) } }
+        }
+        let summary = await Task.detached(priority: .userInitiated) {
+            ICloudSyncStatus.summarize(paths: paths)
+        }.value
+        iCloudSummary = summary
+        iCloudChecking = false
     }
 
     private func statCell(value: Int, label: LocalizedStringKey, color: Color) -> some View {
