@@ -118,6 +118,20 @@ final class PartialReasonTests: XCTestCase {
             .cancelled)
     }
 
+    // SCENARIO: The iCloud Drive warning only shows when there is something to warn about
+    // Before a Photos backup: an iCloud destination AND little free space on the iPhone. An external
+    // drive / NAS (no iCloud destination), plenty of free space, or an unreadable free space never
+    // interrupt the user.
+    func test_iCloudWarning_onlyOnICloudWithLittleSpace() {
+        typealias VM = DashboardViewModel
+        let gb: Int64 = 1024 * 1024 * 1024
+        XCTAssertTrue(VM.shouldWarnAboutICloud(hasICloudDestination: true, freeBytes: 1 * gb))
+        XCTAssertTrue(VM.shouldWarnAboutICloud(hasICloudDestination: true, freeBytes: 9 * gb))
+        XCTAssertFalse(VM.shouldWarnAboutICloud(hasICloudDestination: true, freeBytes: 50 * gb))
+        XCTAssertFalse(VM.shouldWarnAboutICloud(hasICloudDestination: false, freeBytes: 1 * gb))
+        XCTAssertFalse(VM.shouldWarnAboutICloud(hasICloudDestination: true, freeBytes: nil))
+    }
+
     // SCENARIO: Precedence — cancel wins over disconnection, disconnection wins over file limit
     // If several flags are set at once (e.g. a destination dropped AND the limit was hit on the
     // same run), the most user-meaningful cause must be reported.

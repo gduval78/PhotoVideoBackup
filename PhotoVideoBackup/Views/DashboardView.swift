@@ -54,6 +54,20 @@ struct DashboardView: View {
             requestReview()
             viewModel.clearReviewRequest()
         }
+        .alert("iCloud Drive can be slow", isPresented: Binding(
+            get: { viewModel.iCloudWarningFreeBytes != nil },
+            set: { if !$0 { viewModel.iCloudWarningFreeBytes = nil } }
+        )) {
+            Button("Back up anyway") {
+                viewModel.iCloudWarningFreeBytes = nil
+                Task { await viewModel.startBackup() }
+            }
+            Button("Cancel", role: .cancel) { viewModel.iCloudWarningFreeBytes = nil }
+        } message: {
+            let free = (viewModel.iCloudWarningFreeBytes ?? 0)
+                .formatted(.byteCount(style: .file).locale(languageManager.currentLocale))
+            Text("Files are first written on this iPhone, then iOS uploads them to iCloud when it decides to. Your iPhone has only \(free) free, so a large library can take many hours, and the backup may stop if the iPhone or your iCloud storage is full. An external drive or a NAS is safer and much faster.")
+        }
         .alert("Backup Error", isPresented: .constant(viewModel.backupError != nil)) {
             Button("OK") { viewModel.backupError = nil }
         } message: {
@@ -151,7 +165,7 @@ struct DashboardView: View {
                 isRunning: viewModel.isRunning,
                 destinationsEmpty: !viewModel.hasConnectedDestination
             ) {
-                Task { await viewModel.startBackup() }
+                Task { await viewModel.requestPhotosBackup() }
             }
 
             // User-added external sources (SD cards, USB drives)

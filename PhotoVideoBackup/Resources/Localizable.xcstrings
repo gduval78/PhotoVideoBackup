@@ -20091,6 +20091,162 @@
           }
         }
       }
+    },
+    "iCloud Drive can be slow" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive can be slow"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive peut être lent"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive kann langsam sein"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive puede ser lento"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive può essere lento"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O iCloud Drive pode ser lento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive 可能较慢"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive может быть медленным"
+          }
+        }
+      }
+    },
+    "Back up anyway" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back up anyway"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegarder quand même"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trotzdem sichern"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar de todos modos"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esegui comunque il backup"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar mesmo assim"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仍然备份"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё равно копировать"
+          }
+        }
+      }
+    },
+    "Files are first written on this iPhone, then iOS uploads them to iCloud when it decides to. Your iPhone has only %@ free, so a large library can take many hours, and the backup may stop if the iPhone or your iCloud storage is full. An external drive or a NAS is safer and much faster." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files are first written on this iPhone, then iOS uploads them to iCloud when it decides to. Your iPhone has only %@ free, so a large library can take many hours, and the backup may stop if the iPhone or your iCloud storage is full. An external drive or a NAS is safer and much faster."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les fichiers sont d'abord écrits sur cet iPhone, puis iOS les envoie vers iCloud quand il le décide. Votre iPhone n'a que %@ de libre : une grosse photothèque peut prendre de nombreuses heures, et la sauvegarde peut s'arrêter si l'iPhone ou votre stockage iCloud est plein. Un disque externe ou un NAS est plus sûr et bien plus rapide."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Dateien werden zuerst auf diesem iPhone gespeichert, dann lädt iOS sie nach iCloud hoch, wann es will. Ihr iPhone hat nur noch %@ frei, daher kann eine große Mediathek viele Stunden dauern, und das Backup kann stoppen, wenn der iPhone- oder iCloud-Speicher voll ist. Ein externes Laufwerk oder ein NAS ist sicherer und viel schneller."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los archivos se escriben primero en este iPhone y luego iOS los sube a iCloud cuando decide hacerlo. Su iPhone solo tiene %@ libres, así que una biblioteca grande puede tardar muchas horas y la copia puede detenerse si el iPhone o su almacenamiento de iCloud está lleno. Una unidad externa o un NAS es más seguro y mucho más rápido."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I file vengono prima scritti su questo iPhone, poi iOS li carica su iCloud quando decide di farlo. Il tuo iPhone ha solo %@ liberi, quindi una libreria grande può richiedere molte ore e il backup può fermarsi se la memoria dell'iPhone o di iCloud è piena. Un disco esterno o un NAS è più sicuro e molto più veloce."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os ficheiros são primeiro escritos neste iPhone e depois o iOS envia-os para o iCloud quando decidir. O seu iPhone só tem %@ livres, por isso uma biblioteca grande pode demorar muitas horas e a cópia pode parar se o iPhone ou o armazenamento do iCloud estiver cheio. Um disco externo ou um NAS é mais seguro e muito mais rápido."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件会先写入此 iPhone，再由 iOS 自行决定何时上传到 iCloud。您的 iPhone 仅剩 %@ 可用空间，因此较大的资料库可能需要数小时，且当 iPhone 或 iCloud 存储空间已满时备份可能会停止。外置驱动器或 NAS 更安全，速度也快得多。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы сначала записываются на этот iPhone, а затем iOS загружает их в iCloud, когда сочтёт нужным. На вашем iPhone свободно только %@, поэтому большая медиатека может копироваться много часов, а копирование может остановиться, если память iPhone или хранилище iCloud заполнены. Внешний диск или NAS надёжнее и намного быстрее."
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

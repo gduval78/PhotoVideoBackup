@@ -29,6 +29,9 @@ final class DashboardViewModel {
     private(set) var lastCompletedSession: BackupSession?
     private(set) var completedSessionID: UUID?
     var backupError: String?
+    /// Set when a Photos backup to iCloud Drive is about to start on a nearly full iPhone: the view
+    /// asks for a confirmation first. Holds the free space shown in the message.
+    var iCloudWarningFreeBytes: Int64? = nil
     private(set) var completionBanner: CompletionBanner?
     private(set) var estimatedSecondsRemaining: Double?
     private(set) var shouldRequestReview: Bool = false
@@ -453,6 +456,37 @@ final class DashboardViewModel {
         sessions = []
         lastCompletedSession = nil
         completedSessionID   = nil
+    }
+
+    // MARK: - iCloud Drive warning
+
+    /// Below this much free space a Photos backup to iCloud Drive is warned about first.
+    nonisolated static let iCloudWarningThreshold: Int64 = 10 * 1024 * 1024 * 1024   // 10 GB
+
+    /// Pure decision, unit-tested. iCloud Drive is a slow, indirect destination: every file is
+    /// written on the iPhone first and iOS uploads it when it chooses, so with little free space (or
+    /// an almost full iCloud account) the backup crawls or stops. Warn only when there is something
+    /// to warn about: an iCloud destination and a free space that could not absorb the pending
+    /// copies. An unreadable free space never warns.
+    nonisolated static func shouldWarnAboutICloud(hasICloudDestination: Bool, freeBytes: Int64?) -> Bool {
+        guard hasICloudDestination, let freeBytes else { return false }
+        return freeBytes < iCloudWarningThreshold
+    }
+
+    /// Entry point of the Photos backup button: asks for a confirmation when the destination is
+    /// iCloud Drive on a nearly full iPhone, otherwise starts straight away.
+    func requestPhotosBackup() async {
+        guard !isRunning else { return }
+        let urls = DestinationManager.shared.resolvedDestinations()
+        let accessed = urls.filter { $0.startAccessingSecurityScopedResource() }
+        let hasICloud = urls.contains { ICloudEvictionManager.isUbiquitous($0) }
+        accessed.forEach { $0.stopAccessingSecurityScopedResource() }
+        let free = DiskSpacePreflight.availableDeviceBytes()
+        if Self.shouldWarnAboutICloud(hasICloudDestination: hasICloud, freeBytes: free), let free {
+            iCloudWarningFreeBytes = free
+            return
+        }
+        await startBackup()
     }
 
     // MARK: - Start Backup: Photos Library
