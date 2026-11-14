@@ -150,4 +150,17 @@ final class ProfileTests: XCTestCase {
         // Without a global NAS, a profile's own still shows.
         XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: nil, globalAccount: "g", profiles: [p2]).count, 1)
     }
+
+    // SCENARIO: The free version has one backup; Pro has as many as it wants
+    // A second backup is refused to a free user; and a user who loses Pro keeps the first backup
+    // working while the others are locked (never deleted).
+    func test_freeTier_oneBackup() {
+        XCTAssertEqual(ProfileStore.freeProfileLimit, 1)
+        XCTAssertTrue(ProfileStore.canAdd(count: 0, isPremium: false))
+        XCTAssertFalse(ProfileStore.canAdd(count: 1, isPremium: false))
+        XCTAssertTrue(ProfileStore.canAdd(count: 7, isPremium: true))
+        XCTAssertTrue(ProfileStore.isAllowed(index: 0, isPremium: false))
+        XCTAssertFalse(ProfileStore.isAllowed(index: 1, isPremium: false))
+        XCTAssertTrue(ProfileStore.isAllowed(index: 5, isPremium: true))
+    }
 }

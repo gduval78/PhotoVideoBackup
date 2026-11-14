@@ -204,6 +204,23 @@ final class ProfileStore {
 
     private(set) var profiles: [BackupProfile] = []
 
+    // MARK: Free tier
+
+    /// The free version has one backup; any number of backups is Pro.
+    nonisolated static let freeProfileLimit = 1
+
+    /// Whether the user may create another backup.
+    nonisolated static func canAdd(count: Int, isPremium: Bool) -> Bool {
+        isPremium || count < freeProfileLimit
+    }
+
+    /// Whether the backup at this position may run. Pro runs them all; the free version runs the first
+    /// one (the oldest) — so a user who loses Pro (a refund) keeps a working backup and the others
+    /// show as locked instead of disappearing.
+    nonisolated static func isAllowed(index: Int, isPremium: Bool) -> Bool {
+        isPremium || index < freeProfileLimit
+    }
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {

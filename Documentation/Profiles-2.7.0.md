@@ -40,6 +40,10 @@ Template 5 is the second step of "free the iPhone": run 1, check the report, del
 - **New backup flow**: choose a template → (external source: pick one) → choose the folder(s) / confirm the NAS → name (pre-filled) → done.
 - Plain wording: no SHA-256, no bookmarks, no "slot" in this flow.
 
+## Free and Pro
+
+Free: **one** backup (photo library → one folder). Pro (one-time purchase): any number of backups, a second destination, a NAS, camera/USB sources, LUT grading. The first backup always runs; if Pro is lost the others stay, locked. Enforced when creating, when adding a destination and when running.
+
 ## Out of scope (later)
 
 Per-profile organisation/naming, scheduling, a guided two-step "free the iPhone" assistant, iCloud-aware engine for external sources (needed before template 5 is safe on a nearly full iPhone), Android.

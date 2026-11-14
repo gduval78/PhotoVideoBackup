@@ -530,6 +530,12 @@ final class DashboardViewModel {
     /// only the destinations come from the profile instead of the two global slots.
     func runProfile(_ profile: BackupProfile) async {
         guard !isRunning else { return }
+        // Free: the first backup only (see ProfileStore.isAllowed) — enforced here too, not only in the UI.
+        let index = ProfileStore.shared.profiles.firstIndex { $0.id == profile.id } ?? 0
+        guard ProfileStore.isAllowed(index: index, isPremium: StoreManager.shared.isPremium) else {
+            backupError = String(localized: "This backup needs the Pro upgrade.")
+            return
+        }
         let dm = DestinationManager.shared
         let urls = profile.folderKeys.compactMap { dm.resolveBookmark(forKey: $0) }
         guard urls.count == profile.folderKeys.count else {

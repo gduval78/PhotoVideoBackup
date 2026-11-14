@@ -66,6 +66,14 @@ struct PaywallView: View {
             )
             Divider().padding(.leading, 50)
             featureRow(
+                icon: "square.stack.3d.up.fill",
+                color: .orange,
+                title: "Several Backups",
+                subtitle: "Create as many backups as you need, each with its own drives, NAS and settings",
+                isFree: false
+            )
+            Divider().padding(.leading, 50)
+            featureRow(
                 icon: "plus.circle.fill",
                 color: .green,
                 title: "Add External Sources",
@@ -84,7 +92,7 @@ struct PaywallView: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 
-    private func featureRow(icon: String, color: Color, title: String, subtitle: String, isFree: Bool) -> some View {
+    private func featureRow(icon: String, color: Color, title: LocalizedStringKey, subtitle: LocalizedStringKey, isFree: Bool) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
                 .foregroundStyle(color)

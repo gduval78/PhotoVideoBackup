@@ -5,6 +5,8 @@ import SwiftUI
 struct BackupsView: View {
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(LanguageManager.self)    private var languageManager
+    @Environment(StoreManager.self)       private var store
+    @State private var showPaywall = false
     @State private var profileStore = ProfileStore.shared
     @State private var showNew = false
     @State private var renaming: BackupProfile?
@@ -21,8 +23,10 @@ struct BackupsView: View {
         List {
             if !profileStore.profiles.isEmpty {
                 Section {
-                    ForEach(profileStore.profiles) { profile in
+                    ForEach(Array(profileStore.profiles.enumerated()), id: \.element.id) { index, profile in
                         ProfileCard(profile: profile,
+                                    locked: !ProfileStore.isAllowed(index: index, isPremium: store.isPremium),
+                                    onUnlock: { showPaywall = true },
                                     sourceName: sourceName(for: profile),
                                     connection: connections[profile.id],
                                     sourceAvailable: sourceAvailable(for: profile),
@@ -53,12 +57,13 @@ struct BackupsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button { showNew = true } label: { Image(systemName: "plus") }
+                Button { newBackup() } label: { Image(systemName: "plus") }
                     .disabled(viewModel.isRunning)
                     .accessibilityLabel(Text("New backup"))
             }
         }
         .sheet(isPresented: $showNew, onDismiss: refreshConnections) { NewBackupFlow() }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
         .sheet(item: $editing, onDismiss: refreshConnections) { profile in
             NavigationStack { ProfileDetailView(profile: profile) }
         }
@@ -101,7 +106,7 @@ struct BackupsView: View {
                 Text("Create your first backup").font(.headline)
                 Text("Choose what to back up and where. Then one tap is all it takes.")
                     .font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                Button { showNew = true } label: {
+                Button { newBackup() } label: {
                     Label("New backup", systemImage: "plus.circle.fill")
                 }
                 .buttonStyle(.borderedProminent)
@@ -112,6 +117,12 @@ struct BackupsView: View {
     }
 
     // MARK: - Helpers
+
+    /// The free version has one backup: a second one opens the upgrade screen instead.
+    private func newBackup() {
+        if ProfileStore.canAdd(count: profileStore.profiles.count, isPremium: store.isPremium) { showNew = true }
+        else { showPaywall = true }
+    }
 
     private func refreshConnections() {
         var map: [UUID: DashboardViewModel.ProfileConnection] = [:]
@@ -180,6 +191,8 @@ struct BackupsView: View {
 private struct ProfileCard: View {
     @Environment(LanguageManager.self) private var languageManager
     let profile: BackupProfile
+    let locked: Bool
+    let onUnlock: () -> Void
     let sourceName: String
     let connection: DashboardViewModel.ProfileConnection?
     let sourceAvailable: Bool
@@ -216,7 +229,11 @@ private struct ProfileCard: View {
                 }
             }
             Spacer()
-            if ready {
+            if locked {
+                Button { onUnlock() } label: { Label("Unlock", systemImage: "lock.fill") }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+            } else if ready {
                 Button("Run", action: onRun)
                     .buttonStyle(.borderedProminent)
                     .controlSize(.small)
