@@ -533,6 +533,18 @@ Keep this section up to date with every release. Use it to write App Store relea
 | 1.3.0   | 11    | 2026-04-21 | Feature | Added onboarding screen (shown once at first launch) with a setup diagram; added About section in Settings showing app version. |
 | 1.2.1   | 10    | 2026-04-20 | Bug fix | Fixed: adding a source via "Add Source" did not persist the bookmark — the source was lost after closing and reopening the app. |
 
+## Backup profiles (2.7.0 — in development, not released)
+
+Spec: `Documentation/Profiles-2.7.0.md`. A **profile** (`Modules/Profiles/BackupProfile.swift`) = name + template + source (`.photos` | `.external(ExternalSource.id)`) + destinations (`.folder(bookmarkKey)` | `.nas`), stored by `ProfileStore` (JSON in UserDefaults `PhotoVideoBackup.profiles`). A profile's own folders use `DestinationManager` keys `PhotoVideoBackup.profile.<uuid>.<n>`; migrated profiles keep the legacy keys (`…bookmark.ssd1/2`), which `ProfileStore.delete` never clears.
+
+- **Running**: `DashboardViewModel.runProfile(_:)` resolves the profile's folders into a `ProfileRun` and calls the existing `requestPhotosBackup(run:)` / `startBackup(from:run:)`; the engines are untouched. Pro gates stay enforced at run time. `connection(of:)` feeds the card's "Not connected".
+- **UI**: first tab **Backups** (`Views/BackupsView.swift`, cards + empty state; progress card and `CompletionBannerSection` are the Advanced dashboard's), **New backup** (`Views/NewBackupFlow.swift`: template → folder / source / NAS → device name if missing → name). The dashboard is the **Advanced** tab (`showAdvancedScreens`, Settings → Interface). Backup error and iCloud warning alerts live once at TabView level (`Views/BackupAlerts.swift`) so a hidden tab never presents them.
+- **Migration** (`ProfileStore.migrateIfNeeded`, from `ContentView.onAppear`): once; an install with a setup gets one profile for the Photos library and one per external source, and keeps the Advanced tab; a fresh install starts empty without it.
+- **Held back**: template `driveToICloud` is not in `selectable` until `FileCopyEngine` gets the iCloud protection of `PHBackupEngine` (eviction, pause, quota detection).
+- **Adding a Swift file**: the project lists files explicitly — register it in `project.pbxproj` (build file, file reference, group, Sources phase), as for any other file.
+- Tests: `ProfileTests` (migration, store, templates, key namespacing). Not covered: the SwiftUI screens (checked in the simulator) and a real backup run from a profile.
+- **Before release**: bump version, changelog row, user guide (8 languages: the Backups tab replaces the dashboard as the entry point), `support/knowledge.md`, screenshots (Backups tab, New backup, Settings → Interface).
+
 ## Regression test system
 
 Target XCTest `PhotoVideoBackupTests` added to the project. **No production code was modified.**

@@ -1,0 +1,113 @@
+import XCTest
+@testable import PhotoVideoBackup
+
+// Backup profiles (2.7.0): the model, its persistence and the migration of a pre-profiles setup.
+@MainActor
+final class ProfileTests: XCTestCase {
+
+    private func isolatedDefaults() -> UserDefaults {
+        let name = "pvb.profile.tests.\(UUID().uuidString)"
+        let d = UserDefaults(suiteName: name)!
+        addTeardownBlock { d.removePersistentDomain(forName: name) }
+        return d
+    }
+
+    // SCENARIO: An upgrade keeps working without reconfiguration
+    // A pre-profiles install had two drives and a NAS plus one camera card. Migration must give the
+    // photo library one profile sending to all of them, and the card one profile, reusing the existing
+    // bookmark keys so nothing has to be chosen again.
+    func test_migration_reproducesTheExistingSetup() {
+        let card = ProfileMigration.LegacySource(id: UUID(), name: "DJI Neo 2")
+        let profiles = ProfileMigration.profiles(
+            configuredFolderKeys: ["k.ssd1", "k.ssd2"], nasConfigured: true,
+            externalSources: [card], photosName: "Photos", nasName: "NAS")
+        XCTAssertEqual(profiles.count, 2)
+        XCTAssertEqual(profiles[0].source, .photos)
+        XCTAssertEqual(profiles[0].destinations, [.folder(bookmarkKey: "k.ssd1"), .folder(bookmarkKey: "k.ssd2"), .nas])
+        XCTAssertEqual(profiles[1].source, .external(card.id))
+        XCTAssertEqual(profiles[1].name, "DJI Neo 2")
+        XCTAssertTrue(profiles.allSatisfy { $0.template == .custom })
+    }
+
+    // SCENARIO: Nothing configured means nothing to migrate
+    // A profile with nowhere to send its files would be a dead card, so none is created.
+    func test_migration_withoutDestination_createsNothing() {
+        let card = ProfileMigration.LegacySource(id: UUID(), name: "Card")
+        XCTAssertTrue(ProfileMigration.profiles(configuredFolderKeys: [], nasConfigured: false,
+                                                externalSources: [card], photosName: "P", nasName: "N").isEmpty)
+    }
+
+    // SCENARIO: Profiles survive a restart, can be renamed and deleted
+    func test_store_persistsRenamesAndDeletes() {
+        let defaults = isolatedDefaults()
+        let store = ProfileStore(defaults: defaults)
+        let p = BackupProfile(name: "Photos → drive", template: .photosToDrive, source: .photos,
+                              destinations: [.folder(bookmarkKey: "k.a")])
+        store.add(p)
+        XCTAssertEqual(ProfileStore(defaults: defaults).profiles, [p])          // reloaded from disk
+
+        store.rename(p.id, to: "  Holiday SSD ")
+        XCTAssertEqual(store.profiles.first?.name, "Holiday SSD")
+        store.rename(p.id, to: "   ")                                           // blank is refused
+        XCTAssertEqual(store.profiles.first?.name, "Holiday SSD")
+
+        store.delete(p.id)
+        XCTAssertTrue(store.profiles.isEmpty)
+        XCTAssertTrue(ProfileStore(defaults: defaults).profiles.isEmpty)
+    }
+
+    // SCENARIO: Migration runs once, and an upgrade keeps the Advanced screens
+    func test_migrateIfNeeded_isIdempotent_andFlagsUpgrades() {
+        let defaults = isolatedDefaults()
+        let store = ProfileStore(defaults: defaults)
+        let upgraded = store.migrateIfNeeded(configuredFolderKeys: ["k.ssd1"], nasConfigured: false,
+                                             externalSources: [], photosName: "Photos", nasName: "NAS")
+        XCTAssertTrue(upgraded)
+        XCTAssertEqual(store.profiles.count, 1)
+        XCTAssertTrue(defaults.bool(forKey: "showAdvancedScreens"))
+
+        let again = store.migrateIfNeeded(configuredFolderKeys: ["k.ssd1", "k.ssd2"], nasConfigured: true,
+                                          externalSources: [], photosName: "Photos", nasName: "NAS")
+        XCTAssertFalse(again)
+        XCTAssertEqual(store.profiles.count, 1)                                 // not migrated a second time
+    }
+
+    // SCENARIO: A fresh install starts empty and without the Advanced screens
+    func test_migrateIfNeeded_freshInstall() {
+        let defaults = isolatedDefaults()
+        let store = ProfileStore(defaults: defaults)
+        XCTAssertFalse(store.migrateIfNeeded(configuredFolderKeys: [], nasConfigured: false,
+                                             externalSources: [], photosName: "P", nasName: "N"))
+        XCTAssertTrue(store.profiles.isEmpty)
+        XCTAssertFalse(defaults.bool(forKey: "showAdvancedScreens"))
+    }
+
+    // SCENARIO: Each template asks for the right things and the Pro gates match the app
+    // Free: photo library → one folder (drive or iCloud). Everything else — a NAS, a camera card, a
+    // second copy — is Pro, as everywhere else in the app.
+    func test_templates_shapeAndProGates() {
+        // Five are offered; drive → iCloud waits for the iCloud protection in FileCopyEngine.
+        XCTAssertEqual(ProfileTemplate.selectable.count, 5)
+        XCTAssertFalse(ProfileTemplate.selectable.contains(.custom))
+        XCTAssertFalse(ProfileTemplate.selectable.contains(.driveToICloud))
+        XCTAssertFalse(ProfileTemplate.photosToDrive.requiresPro)
+        XCTAssertFalse(ProfileTemplate.photosToICloud.requiresPro)
+        XCTAssertTrue(ProfileTemplate.photosToNAS.requiresPro)
+        XCTAssertTrue(ProfileTemplate.cameraToDrive.requiresPro)
+        XCTAssertTrue(ProfileTemplate.photosToDriveAndNAS.requiresPro)
+        XCTAssertEqual(ProfileTemplate.photosToNAS.folderCount, 0)
+        XCTAssertEqual(ProfileTemplate.photosToDriveAndNAS.folderCount, 1)
+        XCTAssertTrue(ProfileTemplate.photosToDriveAndNAS.includesNAS)
+        XCTAssertTrue(ProfileTemplate.cameraToDrive.usesExternalSource)
+        XCTAssertFalse(ProfileTemplate.photosToDrive.usesExternalSource)
+    }
+
+    // SCENARIO: A profile's own folder keys never collide with the global slots
+    func test_folderKeys_areNamespaced() {
+        let id = UUID()
+        let key = BackupProfile.folderKey(profileID: id, index: 0)
+        XCTAssertTrue(key.hasPrefix("PhotoVideoBackup.profile."))
+        XCTAssertNotEqual(key, DestinationManager.shared.key(for: 0))
+        XCTAssertNotEqual(key, BackupProfile.folderKey(profileID: id, index: 1))
+    }
+}

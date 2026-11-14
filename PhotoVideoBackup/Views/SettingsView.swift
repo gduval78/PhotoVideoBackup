@@ -13,6 +13,7 @@ struct SettingsView: View {
     @State private var ssd2Folder: String = ""
     @State private var nasLabel:   String = ""   // empty = NAS not configured
     @State private var showPicker: Bool = false
+    @AppStorage("showAdvancedScreens") private var showAdvancedScreens = false
     @State private var pickerIndex: Int = 0
     @State private var showPaywall: Bool = false
     /// Which text field has the keyboard. One state for every field of this screen, so the keyboard's
@@ -91,6 +92,14 @@ struct SettingsView: View {
                         }
                     }
                 }
+            }
+
+            Section {
+                Toggle("Show Advanced screens", isOn: $showAdvancedScreens)
+            } header: {
+                Text("Interface")
+            } footer: {
+                Text("The Advanced screens show every source, destination and detail. Most people only need the Backups tab.")
             }
 
             Section("Language") {

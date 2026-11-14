@@ -85,6 +85,12 @@
 		F1BD6D0CD5E22517EEFB9342 /* PHMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4918B830276FA0B8442E881 /* PHMediaItem.swift */; };
 		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
 		FF00AB0000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00AB0000000000000000002 /* OnboardingView.swift */; };
+		5C27E16736412B254C5EAFC2 /* BackupProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27D5E3BEF589314AEF865C /* BackupProfile.swift */; };
+		5C27D78EB74D785341B2A05F /* ProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27D0062DD66837497AA6D8 /* ProfileTests.swift */; };
+		5C276C33AC6EB13B4263B9F6 /* CompletionBannerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2730249C3567714F8C821D /* CompletionBannerSection.swift */; };
+		5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C270F33EBA437E84E8B98C0 /* BackupsView.swift */; };
+		5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */; };
+		5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -193,6 +199,12 @@
 		F132AD972A4ABA4B9CA93519 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
 		FF00AB0000000000000000002 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		5C27D5E3BEF589314AEF865C /* BackupProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProfile.swift; sourceTree = "<group>"; };
+		5C27D0062DD66837497AA6D8 /* ProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTests.swift; sourceTree = "<group>"; };
+		5C2730249C3567714F8C821D /* CompletionBannerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionBannerSection.swift; sourceTree = "<group>"; };
+		5C270F33EBA437E84E8B98C0 /* BackupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsView.swift; sourceTree = "<group>"; };
+		5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBackupFlow.swift; sourceTree = "<group>"; };
+		5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAlerts.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -371,6 +383,10 @@
 		C5E8BC5D6D0EDF80B30E1830 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */,
+				5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */,
+				5C270F33EBA437E84E8B98C0 /* BackupsView.swift */,
+				5C2730249C3567714F8C821D /* CompletionBannerSection.swift */,
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
 				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
@@ -413,6 +429,7 @@
 		CC000000000000000000AA00 /* ScenarioTests */ = {
 			isa = PBXGroup;
 			children = (
+				5C27D0062DD66837497AA6D8 /* ProfileTests.swift */,
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
 				CC0000000000000000101400 /* ReportSummaryTests.swift */,
@@ -434,6 +451,7 @@
 		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				5C275BF50CF6967347D48D72 /* Profiles */,
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
 				5C1C10D0000000000000FD00 /* DiskSpace */,
 				5C1C10D0000000000000FE00 /* ICloudEviction */,
@@ -503,6 +521,14 @@
 				F001REN000000000000000202 /* RenamePattern.swift */,
 			);
 			path = RenameEngine;
+			sourceTree = "<group>";
+		};
+		5C275BF50CF6967347D48D72 /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				5C27D5E3BEF589314AEF865C /* BackupProfile.swift */,
+			);
+			path = Profiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -606,6 +632,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */,
+				5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */,
+				5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */,
+				5C276C33AC6EB13B4263B9F6 /* CompletionBannerSection.swift in Sources */,
+				5C27E16736412B254C5EAFC2 /* BackupProfile.swift in Sources */,
 				AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */,
 				CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */,
 				3603A7623094313F11545323 /* BackupSession.swift in Sources */,
@@ -659,6 +690,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C27D78EB74D785341B2A05F /* ProfileTests.swift in Sources */,
 				CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */,
 				CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */,
 				CC0000000000000000200300 /* SimulatedSSD.swift in Sources */,

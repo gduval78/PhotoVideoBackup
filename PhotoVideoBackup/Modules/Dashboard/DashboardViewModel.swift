@@ -32,6 +32,8 @@ final class DashboardViewModel {
     /// Set when a Photos backup to iCloud Drive is about to start on a nearly full iPhone: the view
     /// asks for a confirmation first. Holds the free space shown in the message.
     var iCloudWarningFreeBytes: Int64? = nil
+    /// The profile run waiting behind that confirmation (nil for the Advanced-screen button).
+    private var pendingRun: ProfileRun? = nil
     private(set) var completionBanner: CompletionBanner?
     private(set) var estimatedSecondsRemaining: Double?
     private(set) var shouldRequestReview: Bool = false
@@ -113,9 +115,9 @@ final class DashboardViewModel {
 
     /// Full backup target set: local volumes plus the NAS (SMB) when configured, enabled,
     /// reachable, and the user is Pro. Connecting to the NAS happens here, once per backup.
-    private func resolvedTargets(localURLs: [URL]) async -> [BackupTarget] {
+    private func resolvedTargets(localURLs: [URL], includeNAS: Bool = true) async -> [BackupTarget] {
         var targets = localTargets(localURLs)
-        if StoreManager.shared.isPremium, let nas = await DestinationManager.shared.makeSMBTarget() {
+        if includeNAS, StoreManager.shared.isPremium, let nas = await DestinationManager.shared.makeSMBTarget() {
             targets.append(nas)
         }
         return targets
@@ -458,6 +460,69 @@ final class DashboardViewModel {
         completedSessionID   = nil
     }
 
+    // MARK: - Profiles
+
+    /// What a profile hands to the engines: its resolved local folders, and whether the NAS is part of it.
+    struct ProfileRun {
+        let name: String
+        let localURLs: [URL]
+        let includeNAS: Bool
+    }
+
+    /// Connection state of a profile's destinations, for its card: every folder reachable (and the
+    /// NAS configured when the profile uses it).
+    struct ProfileConnection: Equatable {
+        var isConnected: Bool
+        /// Human-readable destinations, e.g. "TravelSSD / Backup", "NAS".
+        var destinationNames: [String]
+    }
+
+    func connection(of profile: BackupProfile) -> ProfileConnection {
+        let dm = DestinationManager.shared
+        var names: [String] = []
+        var connected = true
+        for key in profile.folderKeys {
+            let saved = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
+            let folder = dm.folderName(forKey: key)
+            guard let url = dm.resolveBookmark(forKey: key) else {
+                connected = false
+                names.append(saved.isEmpty ? folder : saved)
+                continue
+            }
+            let status = destinationStatus(for: url, folderPath: folder, savedName: saved)
+            if !status.isConnected { connected = false }
+            names.append(status.displayName.isEmpty ? url.lastPathComponent : status.displayName)
+        }
+        if profile.usesNAS {
+            if let cfg = dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
+            else { connected = false; names.append(String(localized: "NAS")) }
+        }
+        return ProfileConnection(isConnected: connected, destinationNames: names)
+    }
+
+    /// Runs a profile with the existing engines: same scan, same copy, same dedup, same reports —
+    /// only the destinations come from the profile instead of the two global slots.
+    func runProfile(_ profile: BackupProfile) async {
+        guard !isRunning else { return }
+        let dm = DestinationManager.shared
+        let urls = profile.folderKeys.compactMap { dm.resolveBookmark(forKey: $0) }
+        guard urls.count == profile.folderKeys.count else {
+            backupError = String(localized: "A destination of this backup is not connected.")
+            return
+        }
+        let run = ProfileRun(name: profile.name, localURLs: urls, includeNAS: profile.usesNAS)
+        switch profile.source {
+        case .photos:
+            await requestPhotosBackup(run: run)
+        case .external(let id):
+            guard let source = externalSources.first(where: { $0.id == id }) else {
+                backupError = String(localized: "This source is no longer available.")
+                return
+            }
+            await startBackup(from: source, run: run)
+        }
+    }
+
     // MARK: - iCloud Drive warning
 
     /// Below this much free space a Photos backup to iCloud Drive is warned about first.
@@ -475,23 +540,37 @@ final class DashboardViewModel {
 
     /// Entry point of the Photos backup button: asks for a confirmation when the destination is
     /// iCloud Drive on a nearly full iPhone, otherwise starts straight away.
-    func requestPhotosBackup() async {
+    func requestPhotosBackup(run: ProfileRun? = nil) async {
         guard !isRunning else { return }
-        let urls = DestinationManager.shared.resolvedDestinations()
+        let urls = run?.localURLs ?? DestinationManager.shared.resolvedDestinations()
         let accessed = urls.filter { $0.startAccessingSecurityScopedResource() }
         let hasICloud = urls.contains { ICloudEvictionManager.isUbiquitous($0) }
         accessed.forEach { $0.stopAccessingSecurityScopedResource() }
         let free = DiskSpacePreflight.availableDeviceBytes()
         if Self.shouldWarnAboutICloud(hasICloudDestination: hasICloud, freeBytes: free), let free {
             iCloudWarningFreeBytes = free
+            pendingRun = run
             return
         }
-        await startBackup()
+        await startBackup(run: run)
+    }
+
+    /// The user confirmed the iCloud warning: start the backup that was waiting.
+    func confirmICloudWarning() {
+        let run = pendingRun
+        pendingRun = nil
+        iCloudWarningFreeBytes = nil
+        Task { await startBackup(run: run) }
+    }
+
+    func cancelICloudWarning() {
+        pendingRun = nil
+        iCloudWarningFreeBytes = nil
     }
 
     // MARK: - Start Backup: Photos Library
 
-    func startBackup() async {
+    func startBackup(run: ProfileRun? = nil) async {
         guard !isRunning else { return }
 
         // Fail-fast (D): a missing device name is a synchronous precondition — check it BEFORE
@@ -505,7 +584,7 @@ final class DashboardViewModel {
         // Acknowledge the tap immediately: the progress card appears now, before any await.
         beginRun(phase: .preparing)
 
-        var destinations = DestinationManager.shared.resolvedDestinations()
+        var destinations = run?.localURLs ?? DestinationManager.shared.resolvedDestinations()
 
         // Enforce premium gate at runtime: limit to 1 local destination for free users
         if destinations.count > 1 && !StoreManager.shared.isPremium {
@@ -527,7 +606,7 @@ final class DashboardViewModel {
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
 
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
-        let targets = await resolvedTargets(localURLs: accessed)
+        let targets = await resolvedTargets(localURLs: accessed, includeNAS: run?.includeNAS ?? true)
         guard !targets.isEmpty else {
             abortRun(String(localized: "No backup destination is configured or connected."))
             return
@@ -536,7 +615,7 @@ final class DashboardViewModel {
         currentDestinationNames = targets.map(\.displayName)
 
         backupPhase = .scanning(found: 0)
-        DiagnosticLog.write("[SCAN_START] source=Photos")
+        DiagnosticLog.write("[SCAN_START] source=Photos\(run.map { " profile=\"\($0.name)\"" } ?? "")")
         let scanner = PHLibraryScanner()
         let items: [PHMediaItem]
         do {
@@ -601,7 +680,7 @@ final class DashboardViewModel {
 
     // MARK: - Start Backup: External Source (SD card, USB drive…)
 
-    func startBackup(from source: ExternalSource) async {
+    func startBackup(from source: ExternalSource, run: ProfileRun? = nil) async {
         guard !isRunning else { return }
 
         guard let sourceURL = source.rootURL else {
@@ -618,7 +697,7 @@ final class DashboardViewModel {
         // Acknowledge the tap immediately: the progress card appears now, before any await.
         beginRun(phase: .preparing)
 
-        var destinations = DestinationManager.shared.resolvedDestinations()
+        var destinations = run?.localURLs ?? DestinationManager.shared.resolvedDestinations()
 
         // Enforce premium gate at runtime: limit to 1 local destination for free users (safety net)
         if destinations.count > 1 && !StoreManager.shared.isPremium {
@@ -640,7 +719,7 @@ final class DashboardViewModel {
         defer { accessed.forEach { $0.stopAccessingSecurityScopedResource() } }
 
         // Build the target set: local volumes + the NAS (Pro) if configured and reachable.
-        let targets = await resolvedTargets(localURLs: accessed)
+        let targets = await resolvedTargets(localURLs: accessed, includeNAS: run?.includeNAS ?? true)
         guard !targets.isEmpty else {
             abortRun(String(localized: "No backup destination is configured or connected."))
             return
@@ -649,7 +728,7 @@ final class DashboardViewModel {
         currentDestinationNames = targets.map(\.displayName)
 
         backupPhase = .scanning(found: 0)
-        DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)")
+        DiagnosticLog.write("[SCAN_START] source=\"\(source.displayName)\" type=\(source.deviceType.rawValue)\(run.map { " profile=\"\($0.name)\"" } ?? "")")
         let scanner = MediaScanner()
         let files: [MediaFile]
         do {

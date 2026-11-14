@@ -22,7 +22,7 @@ struct DashboardView: View {
             sourcesSection
 
             if !viewModel.isRunning, let banner = viewModel.completionBanner {
-                completionBannerSection(banner)
+                CompletionBannerSection(banner: banner)
             }
         }
         // Pin the in-progress card to the bottom so it is always visible — no scrolling to find
@@ -53,25 +53,6 @@ struct DashboardView: View {
             guard requested else { return }
             requestReview()
             viewModel.clearReviewRequest()
-        }
-        .alert("iCloud Drive can be slow", isPresented: Binding(
-            get: { viewModel.iCloudWarningFreeBytes != nil },
-            set: { if !$0 { viewModel.iCloudWarningFreeBytes = nil } }
-        )) {
-            Button("Back up anyway") {
-                viewModel.iCloudWarningFreeBytes = nil
-                Task { await viewModel.startBackup() }
-            }
-            Button("Cancel", role: .cancel) { viewModel.iCloudWarningFreeBytes = nil }
-        } message: {
-            let free = (viewModel.iCloudWarningFreeBytes ?? 0)
-                .formatted(.byteCount(style: .file).locale(languageManager.currentLocale))
-            Text("Files are first written on this iPhone, then iOS uploads them to iCloud when it decides to. Your iPhone has only \(free) free, so a large library can take many hours, and the backup may stop if the iPhone or your iCloud storage is full. An external drive or a NAS is safer and much faster.")
-        }
-        .alert("Backup Error", isPresented: .constant(viewModel.backupError != nil)) {
-            Button("OK") { viewModel.backupError = nil }
-        } message: {
-            Text(viewModel.backupError ?? "")
         }
         .fileImporter(
             isPresented: $showSourcePicker,
@@ -235,64 +216,6 @@ struct DashboardView: View {
                 }
             }
             .disabled(viewModel.isRunning)
-        }
-    }
-
-    // MARK: - Completion Banner
-
-    @ViewBuilder
-    private func completionBannerSection(_ banner: DashboardViewModel.CompletionBanner) -> some View {
-        Section {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    switch banner.status {
-                    case .completed:
-                        Label("Backup Complete", systemImage: "checkmark.circle.fill")
-                            .font(.headline).foregroundStyle(.green)
-                    case .partial:
-                        Label("Partial Backup", systemImage: "exclamationmark.arrow.circlepath")
-                            .font(.headline).foregroundStyle(.orange)
-                    case .failed:
-                        Label("Backup Failed", systemImage: "xmark.circle.fill")
-                            .font(.headline).foregroundStyle(.red)
-                    case .running:
-                        EmptyView()
-                    }
-                    Spacer()
-                    Button {
-                        viewModel.dismissCompletionBanner()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                Text(banner.sourceName)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Divider()
-
-                HStack(spacing: 20) {
-                    statLabel("\(banner.copiedCount) copied",  icon: "doc.fill",    color: .green)
-                    statLabel("\(banner.skippedCount) skipped", icon: "minus.circle", color: .orange)
-                    statLabel("\(banner.failedCount) failed",
-                              icon: "xmark.circle",
-                              color: banner.failedCount > 0 ? Color.red : Color.secondary)
-                }
-                .font(.subheadline)
-
-                if banner.verifiedCount > 0 {
-                    Label("\(banner.verifiedCount) verified by SHA-256", systemImage: "checkmark.shield.fill")
-                        .font(.caption)
-                        .foregroundStyle(.teal)
-                }
-
-                Text(banner.totalBytesCopied.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))
-                     + " — " + String(format: "%.1f s", banner.durationSeconds))
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            .padding(.vertical, 4)
         }
     }
 
