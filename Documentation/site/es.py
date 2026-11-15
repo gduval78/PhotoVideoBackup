@@ -29,6 +29,7 @@ GUIDE = [
             ["Copiar a un NAS por Wi-Fi", "—", "✓"],
             ["Gradar vídeos LOG con una LUT (exportación H.265)", "—", "✓"],
         ]),
+        ("note", "En iPhone, una instalación gratuita incluye <b>una</b> copia de seguridad. Si creas más y luego pierdes Pro (por ejemplo, tras un reembolso), no se eliminan: permanecen en la lista, bloqueadas, hasta que vuelvas a actualizar. Tu primera copia sigue funcionando mientras solo use funciones gratuitas (la fototeca, un disco o una carpeta). Una copia que tenga un NAS o un segundo destino necesita Pro para ejecutarse. ¿Ya compraste Pro en otro dispositivo? Abre <b>Ajustes → Pro → Restaurar compras</b>."),
         ("fig", "paywall", "La pantalla de actualización. Ábrela cuando quieras desde la pestaña Ajustes."),
     ]),
     ("need", "Lo que necesitas", [

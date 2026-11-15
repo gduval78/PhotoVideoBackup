@@ -29,6 +29,7 @@ GUIDE = [
             ["Copiare su un NAS via Wi-Fi", "—", "✓"],
             ["Applicare una LUT a video LOG (esportazione H.265)", "—", "✓"],
         ]),
+        ("note", "Su iPhone, un'installazione gratuita include <b>un</b> backup. Se ne crei altri e poi perdi Pro (ad esempio dopo un rimborso), non vengono eliminati: restano nell'elenco, bloccati, finché non passi di nuovo a Pro. Il tuo primo backup continua a funzionare finché usa solo funzioni gratuite (la libreria foto, un disco o una cartella). Un backup con un NAS o una seconda destinazione richiede Pro per essere eseguito. Hai già acquistato Pro su un altro dispositivo? Apri <b>Impostazioni → Pro → Ripristina acquisti</b>."),
         ("fig", "paywall", "La schermata di aggiornamento. Aprila quando vuoi dalla scheda Impostazioni."),
     ]),
     ("need", "Che cosa ti serve", [

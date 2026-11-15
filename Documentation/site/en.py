@@ -29,6 +29,7 @@ GUIDE = [
             ["Back up to a NAS over Wi-Fi", "—", "✓"],
             ["Grade LOG videos with a LUT (H.265 export)", "—", "✓"],
         ]),
+        ("note", "On iPhone, a free install keeps <b>one</b> backup. If you create more and later lose Pro (for example after a refund), they are not deleted: they stay in the list, locked, until you upgrade again. Your first backup keeps working as long as it only uses free features (the photo library, one drive or folder). A backup that has a NAS or a second destination needs Pro to run. Already bought Pro on another device? Open <b>Settings → Pro → Restore Purchases</b>."),
         ("fig", "paywall", "The upgrade screen. Open it from the Settings tab whenever you like."),
     ]),
     ("need", "What you need", [

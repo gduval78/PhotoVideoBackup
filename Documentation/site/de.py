@@ -29,6 +29,7 @@ GUIDE = [
             ["Per WLAN auf ein NAS sichern", "—", "✓"],
             ["LOG-Videos mit einer LUT graden (H.265-Export)", "—", "✓"],
         ]),
+        ("note", "Auf dem iPhone enthält die kostenlose Installation <b>eine</b> Sicherung. Wenn Sie weitere anlegen und später Pro verlieren (zum Beispiel nach einer Erstattung), werden sie nicht gelöscht: Sie bleiben gesperrt in der Liste, bis Sie wieder auf Pro upgraden. Ihre erste Sicherung läuft weiter, solange sie nur kostenlose Funktionen nutzt (die Fotomediathek, ein Laufwerk oder ein Ordner). Eine Sicherung mit NAS oder einem zweiten Ziel benötigt Pro zum Ausführen. Pro bereits auf einem anderen Gerät gekauft? Öffnen Sie <b>Einstellungen → Pro → Käufe wiederherstellen</b>."),
         ("fig", "paywall", "Der Upgrade-Bildschirm. Sie öffnen ihn jederzeit im Tab „Einstellungen“."),
     ]),
     ("need", "Was Sie brauchen", [

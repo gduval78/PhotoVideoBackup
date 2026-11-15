@@ -29,6 +29,7 @@ GUIDE = [
             ["Sauvegarder vers un NAS en Wi-Fi", "—", "✓"],
             ["Étalonner des vidéos LOG avec une LUT (export H.265)", "—", "✓"],
         ]),
+        ("note", "Sur iPhone, une installation gratuite permet <b>une</b> sauvegarde. Si vous en créez d'autres puis perdez Pro (par exemple après un remboursement), elles ne sont pas supprimées : elles restent dans la liste, verrouillées, jusqu'à ce que vous repassiez à Pro. Votre première sauvegarde continue de fonctionner tant qu'elle n'utilise que des fonctions gratuites (la photothèque, un disque ou un dossier). Une sauvegarde qui comporte un NAS ou une deuxième destination nécessite Pro pour s'exécuter. Vous avez déjà acheté Pro sur un autre appareil ? Ouvrez <b>Réglages → Pro → Restaurer les achats</b>."),
         ("fig", "paywall", "L'écran de mise à niveau. Ouvrez-le quand vous voulez depuis l'onglet Réglages."),
     ]),
     ("need", "Ce qu'il vous faut", [
