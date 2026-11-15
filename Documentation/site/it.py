@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>La mia scheda appare come «Documents».</b> Alcune fotocamere usano una cartella generica. Scrivi un nome significativo quando aggiungi la sorgente."),
         ("p", "<b>Posso fare il backup con il telefono quasi pieno?</b> Sì. I file vengono trasmessi in streaming alla destinazione, quindi si trattengono solo pochi megabyte alla volta. Solo un backup su un NAS <i>da solo</i> richiede spazio per un file alla volta. Un file che davvero non ci sta viene segnalato come fallito e il resto prosegue."),
         ("p", "<b>I miei dati vengono inviati da qualche parte?</b> No. Tutto avviene tra il telefono e la tua unità o il tuo NAS. L'app non ha server né account. L'unico traffico di rete è verso il NAS che configuri tu e il download, da parte del sistema, delle tue foto iCloud / Google."),
-        ("p", "<b>Quali lingue?</b> Inglese, francese, tedesco, spagnolo, italiano, portoghese, cinese semplificato e russo. L'app segue la lingua del telefono; puoi forzarne una in <b>Impostazioni → Lingua</b>, senza riavviare."),
+        ("p", "<b>Quali lingue?</b> Inglese, francese, tedesco, spagnolo, italiano, portoghese, cinese semplificato, russo, giapponese, coreano, hindi e arabo. L'app segue la lingua del telefono; puoi forzarne una in <b>Impostazioni → Lingua</b>, senza riavviare."),
     ]),
 ]
 

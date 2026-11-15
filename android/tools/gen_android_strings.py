@@ -19,7 +19,8 @@ KOTLIN = ROOT / "android/app/src/main/kotlin"
 
 # iOS xcstrings language -> Android resource folder
 LANGS = {"en": "values", "fr": "values-fr", "de": "values-de", "es": "values-es",
-         "it": "values-it", "pt": "values-pt", "zh-Hans": "values-zh-rCN", "ru": "values-ru"}
+         "it": "values-it", "pt": "values-pt", "zh-Hans": "values-zh-rCN", "ru": "values-ru",
+         "ja": "values-ja", "ko": "values-ko", "hi": "values-hi", "ar": "values-ar"}
 
 # Android name -> iOS key (English literal)
 REUSED = {
@@ -209,6 +210,10 @@ EXTRA.update({
     "destinations_footer": _t("A backup can copy to several destinations at once. Choosing another folder is for a replaced drive or an access that no longer works — files already copied stay where they are.", "Une sauvegarde peut copier vers plusieurs destinations à la fois. Choisir un autre dossier sert à remplacer un disque ou un accès qui ne fonctionne plus — les fichiers déjà copiés restent où ils sont.", "Eine Sicherung kann gleichzeitig auf mehrere Ziele kopieren. „Anderen Ordner wählen“ dient dazu, ein ersetztes Laufwerk oder einen nicht mehr funktionierenden Zugriff zu ersetzen – bereits kopierte Dateien bleiben, wo sie sind.", "Una copia puede copiar a varios destinos a la vez. Elegir otra carpeta sirve para un disco sustituido o un acceso que ya no funciona: los archivos ya copiados se quedan donde están.", "Un backup può copiare su più destinazioni contemporaneamente. Scegliere un'altra cartella serve per un disco sostituito o un accesso che non funziona più: i file già copiati restano dove sono.", "Uma cópia pode copiar para vários destinos em simultâneo. Escolher outra pasta serve para um disco substituído ou um acesso que já não funciona — os ficheiros já copiados ficam onde estão.", "一个备份可以同时复制到多个目的地。“选择其他文件夹”用于更换的硬盘或已失效的访问权限——已复制的文件会保留在原处。", "Одна копия может копироваться сразу в несколько мест назначения. «Выбрать другую папку» нужно для заменённого диска или доступа, который больше не работает — уже скопированные файлы остаются на месте."),
     "settings_defaults_footer": _t("These are the defaults for new backups. Each backup then has its own settings: Backups tab, ⋮ menu of a backup, Settings.", "Ce sont les valeurs par défaut des nouvelles sauvegardes. Chaque sauvegarde a ensuite ses propres réglages : onglet Sauvegardes, menu ⋮ d'une sauvegarde, Réglages.", "Dies sind die Standardwerte für neue Sicherungen. Jede Sicherung hat danach eigene Einstellungen: Tab „Sicherungen“, Menü ⋮ einer Sicherung, Einstellungen.", "Estos son los valores predeterminados de las copias nuevas. Cada copia tiene después sus propios ajustes: pestaña Copias, menú ⋮ de una copia, Ajustes.", "Questi sono i valori predefiniti per i nuovi backup. Ogni backup ha poi le proprie impostazioni: scheda Backup, menu ⋮ di un backup, Impostazioni.", "Estes são os valores predefinidos das novas cópias. Cada cópia tem depois as suas próprias definições: separador Cópias, menu ⋮ de uma cópia, Definições.", "这些是新备份的默认设置。之后每个备份都有自己的设置：“备份”标签页 → 备份的 ⋮ 菜单 → 设置。", "Это значения по умолчанию для новых копий. У каждой копии затем свои настройки: вкладка «Копии», меню ⋮ копии, «Настройки»."),
 })
+
+import extra_langs
+extra_langs.merge(EXTRA, LANGS)
+
 
 def to_android(text: str) -> str:
     """iOS format specifiers -> Android (positional), then XML/Android escaping."""

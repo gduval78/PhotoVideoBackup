@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - LanguageManager
 
@@ -17,6 +18,10 @@ final class LanguageManager {
         ("pt",      "Português"),
         ("zh-Hans", "中文"),
         ("ru",      "Русский"),
+        ("ja",      "日本語"),
+        ("ko",      "한국어"),
+        ("hi",      "हिन्दी"),
+        ("ar",      "العربية"),
     ]
 
     var selectedCode: String {
@@ -29,6 +34,13 @@ final class LanguageManager {
     // Used by SwiftUI's .environment(\.locale, ...) so Text(LocalizedStringKey) picks the right .lproj.
     var currentLocale: Locale {
         selectedCode.isEmpty ? .autoupdatingCurrent : Locale(identifier: selectedCode)
+    }
+
+    /// Right-to-left languages (Arabic) mirror the whole layout. SwiftUI derives the layout direction from the
+    /// system language, not from the `\.locale` environment, so the root sets it explicitly from this.
+    var layoutDirection: LayoutDirection {
+        let id = selectedCode.isEmpty ? (Locale.preferredLanguages.first ?? "en") : selectedCode
+        return Locale.Language(identifier: id).characterDirection == .rightToLeft ? .rightToLeft : .leftToRight
     }
 
     // Accessed from LanguageBundle on any thread; written only from the main thread.

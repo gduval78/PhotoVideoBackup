@@ -119,6 +119,10 @@ struct SettingsView: View {
                     Text("Português").tag("pt")
                     Text("中文").tag("zh-Hans")
                     Text("Русский").tag("ru")
+                    Text("日本語").tag("ja")
+                    Text("한국어").tag("ko")
+                    Text("हिन्दी").tag("hi")
+                    Text("العربية").tag("ar")
                 }
             }
 

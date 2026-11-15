@@ -13,9 +13,10 @@ import html, importlib.util, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("ru", "Русский")]
+LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("ru", "Русский"), ("ja", "日本語"), ("ko", "한국어"), ("hi", "हिन्दी"), ("ar", "العربية")]
 UPDATED = "2026-11-15"
 BRAND = "PhotoVideoBackup"
+RTL = {"ar"}   # right-to-left languages: <html dir="rtl">; the stylesheet uses logical (start/end) properties
 
 
 def load(code: str):
@@ -50,9 +51,10 @@ def block(b) -> str:
 
 def page(code: str, mod, title: str, body: str, other: str) -> str:
     u = mod.UI
+    rtl = ' dir="rtl"' if code in RTL else ""
     langs = " · ".join(f'<a href="../{c}/{other}" hreflang="{c}"{" aria-current=page" if c == code else ""}>{n}</a>' for c, n in LANGS)
     return f"""<!DOCTYPE html>
-<html lang="{code}">
+<html lang="{code}"{rtl}>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
@@ -92,7 +94,7 @@ def build_privacy(code, mod, email):
 
 REDIRECT = """<script>
 (function () {{
-  var have = {{"en":1,"fr":1,"de":1,"es":1,"it":1,"pt":1,"zh":"zh-Hans","ru":1}};
+  var have = {{"en":1,"fr":1,"de":1,"es":1,"it":1,"pt":1,"zh":"zh-Hans","ru":1,"ja":1,"ko":1,"hi":1,"ar":1}};
   var l = (navigator.language || "en").slice(0, 2).toLowerCase();
   if (have[l] && !location.hash && !/chooser/.test(location.search)) location.replace((typeof have[l] === "string" ? have[l] : l) + "/{page}");
 }})();

@@ -10,6 +10,30 @@
             "state" : "new",
             "value" : "PhotoVideoBackup"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
         }
       }
     },
@@ -20,6 +44,30 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "PhotoVideoBackup"
           }
         }
@@ -75,6 +123,30 @@
             "state" : "translated",
             "value" : "PhotoVideoBackup 通过本地网络连接到您的 NAS，以备份照片和视频。"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup は、ローカルネットワーク上の NAS に接続して写真とビデオをバックアップします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup은 로컬 네트워크의 NAS에 연결하여 사진과 비디오를 백업합니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup आपकी फ़ोटो और वीडियो का बैकअप लेने के लिए लोकल नेटवर्क पर आपके NAS से कनेक्ट होता है।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتصل PhotoVideoBackup بجهاز NAS على الشبكة المحلية لنسخ صورك ومقاطع الفيديو احتياطيًا."
+          }
         }
       }
     },
@@ -127,6 +199,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PhotoVideoBackup 读取您的照片图库，将照片和视频备份到通过 USB-C 连接的 SSD。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup は写真ライブラリを読み取り、写真とビデオを USB-C 接続の SSD にバックアップします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup은 사진 보관함을 읽어 사진과 비디오를 USB-C로 연결된 SSD에 백업합니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup आपकी फ़ोटो लाइब्रेरी पढ़ता है ताकि फ़ोटो और वीडियो का बैकअप USB-C से जुड़े SSD पर लिया जा सके।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يقرأ PhotoVideoBackup مكتبة صورك لنسخ الصور ومقاطع الفيديو احتياطيًا إلى قرص SSD متصل عبر USB-C."
           }
         }
       }

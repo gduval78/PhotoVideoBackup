@@ -611,6 +611,10 @@
 				pt,
 				"zh-Hans",
 				ru,
+				ja,
+				ko,
+				hi,
+				ar,
 			);
 			mainGroup = 1941F9D38658786F0142987B;
 			minimizedProjectReferenceProxies = 1;

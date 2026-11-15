@@ -146,6 +146,7 @@ fun SettingsScreen(
 val LANGUAGES = listOf(
     "en" to "English", "fr" to "Français", "de" to "Deutsch", "es" to "Español",
     "it" to "Italiano", "pt" to "Português", "zh-CN" to "中文", "ru" to "Русский",
+    "ja" to "日本語", "ko" to "한국어", "hi" to "हिन्दी", "ar" to "العربية",
 )
 
 @Composable
@@ -165,7 +166,7 @@ fun <T> ChoiceDialog(title: String, options: List<Pair<T, String>>, selected: T,
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 for ((value, label) in options) {
                     Row(Modifier.fillMaxWidth().clickable { onSelect(value) }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = value == selected, onClick = { onSelect(value) })
