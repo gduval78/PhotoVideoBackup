@@ -16,14 +16,20 @@ class BrowseSource(
 
 const val NAS_ROOT_KEY = "nas"
 
-/** Opens the destination identified by [key]: a destination folder's tree URI, or [NAS_ROOT_KEY]. */
+/** The Browse key of the NAS of a backup (each distinct NAS is listed once, under the first backup that carries it). */
+fun nasKey(profileId: String) = "$NAS_ROOT_KEY:$profileId"
+
+fun isNasKey(key: String) = key == NAS_ROOT_KEY || key.startsWith("$NAS_ROOT_KEY:")
+
+/** Opens the destination identified by [key]: a destination folder's tree URI, or a NAS key ([nasKey]). */
 suspend fun openBrowseSource(context: Context, key: String): BrowseSource = withContext(Dispatchers.IO) {
-    if (key == NAS_ROOT_KEY) {
-        val nas = Prefs.nas ?: error("NAS not configured")
-        val target = SmbTarget.connect(nas, SecretStore.get(context, SecretStore.NAS_PASSWORD).orEmpty())
+    if (isNasKey(key)) {
+        val profile = ProfileStore.find(key.removePrefix("$NAS_ROOT_KEY:")) ?: ProfileStore.profiles.firstOrNull { it.usesNas }
+        val nas = profile?.nas ?: error("NAS not configured")
+        val target = SmbTarget.connect(nas, SecretStore.get(context, profile.nasSecretName).orEmpty())
         BrowseSource(nas.label, target, remote = true) { target.close() }
     } else {
-        val d = Prefs.destinations.first { it.uri == key }
+        val d = ProfileStore.profiles.flatMap { it.folders }.first { it.uri == key }
         BrowseSource(d.name, SafTarget(context, Uri.parse(key), d.name), remote = false)
     }
 }

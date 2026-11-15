@@ -25,6 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import gduvalsc.photovideobackup.Prefs
+import gduvalsc.photovideobackup.Pro
+import gduvalsc.pvb.core.ProfileRules
 import gduvalsc.photovideobackup.R
 
 private enum class Tab { BACKUP, BROWSE, HISTORY, SETTINGS }
@@ -34,7 +36,8 @@ private sealed interface Page {
     data object Paywall : Page
     data object Naming : Page
     data object Extensions : Page
-    data object Nas : Page
+    data object NewBackup : Page
+    data class ProfileSettings(val profileId: String) : Page
     data object Diagnostic : Page
     data object Welcome : Page
     data class Report(val sessionId: String) : Page
@@ -56,7 +59,8 @@ fun AppRoot() {
                     Page.Paywall -> PaywallScreen { page = null }
                     Page.Naming -> NamingScreen { page = null }
                     Page.Extensions -> ExtensionsScreen { page = null }
-                    Page.Nas -> NasScreen { page = null }
+                    Page.NewBackup -> NewBackupScreen(onClose = { page = null }, onPaywall = { page = Page.Paywall })
+                    is Page.ProfileSettings -> ProfileSettingsScreen(p.profileId, onClose = { page = null }, onPaywall = { page = Page.Paywall })
                     Page.Diagnostic -> DiagnosticScreen { page = null }
                     is Page.Report -> ReportScreen(p.sessionId) { page = null }
                 }
@@ -65,7 +69,7 @@ fun AppRoot() {
             Scaffold(
                 bottomBar = {
                     NavigationBar {
-                        NavigationBarItem(tab == Tab.BACKUP, { tab = Tab.BACKUP }, { Icon(Icons.Default.Storage, null) }, label = { Text(stringResource(R.string.backup)) })
+                        NavigationBarItem(tab == Tab.BACKUP, { tab = Tab.BACKUP }, { Icon(Icons.Default.Storage, null) }, label = { Text(stringResource(R.string.tab_backups)) })
                         NavigationBarItem(tab == Tab.BROWSE, { tab = Tab.BROWSE }, { Icon(Icons.Default.FolderOpen, null) }, label = { Text(stringResource(R.string.tab_browse)) })
                         NavigationBarItem(tab == Tab.HISTORY, { tab = Tab.HISTORY }, { Icon(Icons.Default.History, null) }, label = { Text(stringResource(R.string.history)) })
                         NavigationBarItem(tab == Tab.SETTINGS, { tab = Tab.SETTINGS }, { Icon(Icons.Default.Settings, null) }, label = { Text(stringResource(R.string.settings)) })
@@ -74,12 +78,16 @@ fun AppRoot() {
             ) { inner: PaddingValues ->
                 Box(Modifier.padding(inner).statusBarsPadding()) {
                     when (tab) {
-                        Tab.BACKUP -> DashboardScreen(onGoSettings = { tab = Tab.SETTINGS }, onPaywall = { page = Page.Paywall })
+                        Tab.BACKUP -> BackupsScreen(
+                            onPaywall = { page = Page.Paywall },
+                            onNewBackup = { page = if (ProfileRules.canAdd(Prefs.profiles.size, Pro.isPro)) Page.NewBackup else Page.Paywall },
+                            onProfileSettings = { page = Page.ProfileSettings(it) },
+                        )
                         Tab.BROWSE -> BrowseScreen(onPaywall = { page = Page.Paywall })
                         Tab.HISTORY -> HistoryScreen(onOpen = { page = Page.Report(it) })
                         Tab.SETTINGS -> SettingsScreen(
                             onPaywall = { page = Page.Paywall }, onNaming = { page = Page.Naming },
-                            onExtensions = { page = Page.Extensions }, onNas = { page = Page.Nas },
+                            onExtensions = { page = Page.Extensions },
                             onDiagnostic = { page = Page.Diagnostic }, onWelcome = { page = Page.Welcome },
                         )
                     }

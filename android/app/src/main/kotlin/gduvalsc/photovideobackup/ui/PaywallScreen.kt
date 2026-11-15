@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.SdCard
 import androidx.compose.material.icons.filled.Star
@@ -55,9 +57,11 @@ fun PaywallScreen(onClose: () -> Unit) {
             Text(stringResource(R.string.one_time_purchase), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(8.dp))
             FeatureRow(Icons.Default.PhotoLibrary, stringResource(R.string.feature_gallery), free = true)
+            FeatureRow(Icons.Default.Layers, stringResource(R.string.feature_several_backups), free = false)
             FeatureRow(Icons.Default.SdCard, stringResource(R.string.feature_sources), free = false)
             FeatureRow(Icons.Default.ContentCopy, stringResource(R.string.feature_second_destination), free = false)
             FeatureRow(Icons.Default.Cloud, stringResource(R.string.feature_nas), free = false)
+            FeatureRow(Icons.Default.Palette, stringResource(R.string.feature_lut), free = false)
             Spacer(Modifier.height(12.dp))
 
             when {

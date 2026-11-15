@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import gduvalsc.pvb.core.BackupProfile
 import gduvalsc.pvb.core.BackupSession
 import gduvalsc.pvb.core.BackupTarget
 import gduvalsc.pvb.core.CopyEngine
@@ -13,10 +14,10 @@ import gduvalsc.pvb.core.CopyPhase
 import gduvalsc.pvb.core.CopyProgress
 import gduvalsc.pvb.core.Diag
 import gduvalsc.pvb.core.EngineResult
-import gduvalsc.pvb.core.EngineSettings
 import gduvalsc.pvb.core.MediaFile
 import gduvalsc.pvb.core.MediaScanner
 import gduvalsc.pvb.core.PartialReason
+import gduvalsc.pvb.core.ProfileRules
 import gduvalsc.pvb.core.SessionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +30,8 @@ import java.net.Socket
 /** A user-visible message: a string resource and its arguments, resolved where it is shown. */
 class Msg(@StringRes val res: Int, val args: List<Any> = emptyList())
 
-sealed interface SourceRequest {
-    data object Gallery : SourceRequest
-    data class External(val sourceId: String) : SourceRequest
-}
+/** What to run: one of the user's backups (profiles). */
+data class SourceRequest(val profileId: String)
 
 enum class BackupPhase { PREPARING, SCANNING, COPYING }
 
@@ -92,12 +91,7 @@ object BackupController {
     fun start(context: Context, request: SourceRequest) {
         if (_state.value.isRunning) return
         _state.value = BackupUiState(isRunning = true, phase = BackupPhase.PREPARING, startedAtMs = System.currentTimeMillis())
-        val intent = Intent(context, BackupService::class.java).apply {
-            when (request) {
-                SourceRequest.Gallery -> putExtra(BackupService.EXTRA_SOURCE, "gallery")
-                is SourceRequest.External -> putExtra(BackupService.EXTRA_SOURCE, request.sourceId)
-            }
-        }
+        val intent = Intent(context, BackupService::class.java).putExtra(BackupService.EXTRA_PROFILE, request.profileId)
         ContextCompat.startForegroundService(context, intent)
     }
 
@@ -114,25 +108,27 @@ object BackupController {
         BackupUiState(true, BackupPhase.SCANNING, found, null, it.startedAtMs, it.isCancelling, it.usesNas, it.sourceName, null, null)
     }
 
-    /** The destinations to write to now: reachable local folders, plus the NAS when Pro and configured. */
-    private suspend fun buildTargets(context: Context): List<BackupTarget> {
+    /**
+     * The destinations to write to now: the backup's folders (all must be reachable) plus its own NAS when
+     * Pro. Null when a folder cannot be reached — the backup then refuses to start rather than copy to
+     * only part of its destinations.
+     */
+    private suspend fun buildTargets(context: Context, profile: BackupProfile): List<BackupTarget>? {
         val targets = ArrayList<BackupTarget>()
-        val stored = Prefs.destinations.let { if (Pro.isPro) it else it.take(1) }   // free: one destination
-        for (d in stored) {
+        for (d in profile.folders) {
             val uri = Uri.parse(d.uri)
-            if (!Saf.hasGrant(context, uri, write = true)) { Diag.write("[SCOPE_WARN] no grant for ${d.name}"); continue }
+            if (!Saf.hasGrant(context, uri, write = true)) { Diag.write("[SCOPE_WARN] no grant for ${d.name}"); return null }
             val t = SafTarget(context, uri, d.name)
-            if (t.isReachable()) {
-                targets += t
-                // On the phone's own storage the gallery would index every backed-up copy: hide them.
-                if (d.uri.contains("primary%3A") || d.uri.contains("primary:")) runCatching {
-                    if (t.existingSize(".nomedia") == null) t.writeSmallFile(ByteArray(0), ".nomedia")
-                }
-            } else Diag.write("[DISC_ERROR] ${d.name} is not reachable")
+            if (!t.isReachable()) { Diag.write("[DISC_ERROR] ${d.name} is not reachable"); return null }
+            targets += t
+            // On the phone's own storage the gallery would index every backed-up copy: hide them.
+            if (d.uri.contains("primary%3A") || d.uri.contains("primary:")) runCatching {
+                if (t.existingSize(".nomedia") == null) t.writeSmallFile(ByteArray(0), ".nomedia")
+            }
         }
-        val nas = Prefs.nas
-        if (Pro.isPro && nas != null && nas.enabled && nas.isComplete) {
-            val pw = SecretStore.get(context, SecretStore.NAS_PASSWORD).orEmpty()
+        val nas = profile.nas
+        if (Pro.isPro && profile.usesNas && nas != null && nas.isComplete) {
+            val pw = SecretStore.get(context, profile.nasSecretName).orEmpty()
             runCatching { SmbTarget.connect(nas, pw) }
                 .onSuccess { targets += it }
                 .onFailure { Diag.write("[NAS_ERROR] ${it.message}") }
@@ -140,8 +136,8 @@ object BackupController {
         return targets
     }
 
-    /** Destination folders on the phone's own storage, as MediaStore relative-path prefixes ("Backup/"). */
-    private fun excludedGalleryPaths(): List<String> = Prefs.destinations.mapNotNull {
+    /** Destination folders of every backup on the phone's own storage, as MediaStore relative-path prefixes ("Backup/"). */
+    private fun excludedGalleryPaths(): List<String> = Prefs.profiles.flatMap { it.folders }.mapNotNull {
         runCatching {
             val docId = DocumentsContract.getTreeDocumentId(Uri.parse(it.uri))
             if (docId.substringBefore(':') != "primary") null
@@ -154,23 +150,27 @@ object BackupController {
         val ctx = LocaleContext.wrap(context)
         var targets: List<BackupTarget> = emptyList()
         try {
+            val profile = ProfileStore.find(request.profileId) ?: return@withContext abort(Msg(R.string.err_unexpected, listOf("backup not found")))
             val deviceName = Prefs.deviceFolderName
             if (deviceName.isEmpty()) return@withContext abort(Msg(R.string.err_device_name))
 
+            // Free: the first backup only; a NAS, a second destination or a card is Pro. Refused with a message,
+            // never trimmed in silence into a backup the user thinks is doubled.
+            val pro = Pro.isPro
+            if (!ProfileRules.isAllowed(ProfileStore.indexOf(profile.id), pro) || (!pro && ProfileRules.needsProToRun(profile)))
+                return@withContext abort(Msg(R.string.err_profile_pro))
+            if (profile.usesNas && (profile.nas == null || !profile.nas!!.isComplete)) return@withContext abort(Msg(R.string.err_nas_not_set_up))
+
             // The source first: cheap preconditions fail before any network connection.
-            val source: StoredSource? = (request as? SourceRequest.External)?.let { r ->
-                Prefs.sources.firstOrNull { it.id == r.sourceId }
-            }
-            if (request is SourceRequest.External) {
-                if (!Pro.isPro) return@withContext abort(Msg(R.string.err_external_pro))
+            val source: StoredSource? = profile.source.sourceId?.let { id -> Prefs.sources.firstOrNull { it.id == id } }
+            if (!profile.source.isGallery) {
                 if (source == null) return@withContext abort(Msg(R.string.err_source_unavailable))
                 val uri = Uri.parse(source.uri)
                 if (!Saf.hasGrant(ctx, uri, write = false) || !Saf.isReachable(ctx, uri))
                     return@withContext abort(Msg(R.string.err_source_not_connected, listOf(source.name)))
-            }
-            if (request is SourceRequest.Gallery && !Gallery.canRead(ctx)) return@withContext abort(Msg(R.string.err_gallery_permission))
+            } else if (!Gallery.canRead(ctx)) return@withContext abort(Msg(R.string.err_gallery_permission))
 
-            targets = buildTargets(ctx)
+            targets = buildTargets(ctx, profile) ?: return@withContext abort(Msg(R.string.err_destination_not_connected))
             if (targets.isEmpty()) return@withContext abort(Msg(R.string.err_no_destination))
             val sourceLabel = source?.name ?: deviceName
             _state.update {
@@ -192,7 +192,7 @@ object BackupController {
                     val scanner = MediaScanner<SafNode>(
                         children = { Saf.children(ctx, it) },
                         makeFile = { n, d -> Saf.mediaFile(ctx, n, d) },
-                        customExtensions = MediaScanner.parseCustomExtensions(Prefs.customExtensions),
+                        customExtensions = MediaScanner.parseCustomExtensions(profile.settings.customExtensions),
                         onProgress = ::setScan,
                     )
                     files = scanner.scan(root, type)
@@ -208,11 +208,7 @@ object BackupController {
                 )
             }
 
-            val settings = EngineSettings(
-                folderOrganization = Prefs.folderOrganization,
-                naming = Prefs.namingProfile,
-                fileLimit = Prefs.backupFileLimit.takeIf { it > 0 },
-            )
+            val settings = profile.settings.engine
             val session = BackupSession(
                 sources = listOf(source?.uri ?: "gallery://local"),
                 destinations = targets.map { it.rootIdentifier },
