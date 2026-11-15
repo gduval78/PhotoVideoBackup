@@ -22,7 +22,7 @@ GUIDE = [
         ("p", "PhotoVideoBackup is free to download. One <b>Pro</b> purchase — paid once, <b>no subscription</b> — unlocks the advanced features:"),
         ("table", ["Feature", "Free", "Pro"], [
             ["Back up the photo library to one drive or folder", "✓", "✓"],
-            ["Several backups, each with its own drives, NAS and settings (iPhone)", "—", "✓"],
+            ["Several backups, each with its own drives, NAS and settings", "—", "✓"],
             ["Browse and preview backups (LUT preview included)", "✓", "✓"],
             ["Back up camera cards and USB drives (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Mirror to a second drive", "—", "✓"],
@@ -48,20 +48,20 @@ GUIDE = [
         ("note", "The app only reads your photos in order to copy them. It never modifies, shares or uploads them anywhere."),
     ]),
     ("setup", "Set up your device name and destination", [
-        ("ol", ["Open the <b>Settings</b> tab. In the <b>Device</b> section, type a <b>folder name</b> — for example <i>Anna’s iPhone</i> or <i>Pixel 8</i>. It becomes the folder name on the drive, so two phones saving to the same drive stay separate. A backup does not start until a name is set.", "Plug in your drive.", "<b>iPhone / iPad</b>: open the <b>Backups</b> tab, tap <b>New backup</b> (or <b>+</b>), choose <i>Photo library → external drive</i>, then tap <b>Choose…</b> and pick the drive, or a folder on it, in the system file browser. <b>Android</b>: under <b>Destinations</b>, tap <b>Choose…</b> and pick the drive or a folder (also in the phone’s own storage).", "The drive name appears on the backup’s card (iPhone) or on the Backup tab (Android), with its free space. You only do this once: the app recognises the drive the next time."]),
+        ("ol", ["Open the <b>Settings</b> tab. In the <b>Device</b> section, type a <b>folder name</b> — for example <i>Anna’s iPhone</i> or <i>Pixel 8</i>. It becomes the folder name on the drive, so two phones saving to the same drive stay separate. A backup does not start until a name is set.", "Plug in your drive.", "<b>iPhone / iPad</b>: open the <b>Backups</b> tab, tap <b>New backup</b> (or <b>+</b>), choose <i>Photo library → external drive</i>, then tap <b>Choose…</b> and pick the drive, or a folder on it, in the system file browser. <b>Android</b>: the same on the <b>Backups</b> tab — <b>New backup</b> (or <b>+</b>), <i>Gallery → external drive</i>, <b>Choose…</b> — and pick the drive or a folder (also in the phone’s own storage).", "The drive name appears on the backup’s card, with its free space. You only do this once: the app recognises the drive the next time."]),
         ("fig", "backups_new", "New backup: choose a starting point."),
         ("fig", "backups_create", "New backup: pick the drive, a folder name for this phone, and a name for the backup."),
         ("note", "A destination can also be a folder in <b>iCloud Drive</b> (iPhone) — the app releases the local copy once iCloud confirms the upload, so the phone does not fill up. If the iPhone is nearly full anyway (less than about 1 GB free), the backup <b>pauses by itself</b> and resumes once space is back; if nothing improves after a few minutes, it stops as <b>Partial</b>."),
     ]),
     ("photos", "Back up your photos and videos", [
-        ("p", "<b>iPhone / iPad</b>: open the <b>Backups</b> tab. Each backup is a card with its name, where it copies from and to, and the free space of its drive. Tap <b>Run</b>. With Pro you can create several backups — for example one to a drive and one to a NAS — each with its own settings: long-press a card, then <b>Settings</b>. <b>Android</b>: open the <b>Backup</b> tab. At the top you see your destinations, with their free space. In <b>Sources</b>, the <b>Photos Library</b> row shows your device name. Tap its <b>Backup</b> button."),
+        ("p", "Open the <b>Backups</b> tab. Each backup is a card with its name, where it copies from and to, and the free space of its drive. Tap <b>Run</b>. With Pro you can create several backups — for example one to a drive and one to a NAS — each with its own settings: long-press the card (iPhone) or tap its <b>⋮</b> menu (Android), then <b>Settings</b>."),
         ("fig", "backups_tab", "The Backups tab: one card per backup, with its free space and a Run button."),
         ("fig", "profile_settings", "A backup’s own settings (long-press its card): destinations, folder structure, file limit, naming."),
         ("p", "The app scans the library, then copies. The <b>first backup is the longest</b>; the next ones only copy what is new, and are much faster."),
         ("ul", ["Photos stored only in iCloud / Google Photos are downloaded first — that takes a connection and some time.", "The app copies each file straight to the destination, so it works even when the phone is almost full.", "You can leave the app: a notification tells you when the backup ends."]),
     ]),
     ("sd", "Back up a camera card (Pro)", [
-        ("ol", ["Plug the card reader into the phone and insert the card (use a hub if the SSD must stay plugged in too).", "<b>iPhone / iPad</b>: on the <b>Backups</b> tab, tap <b>+</b> and choose <i>Camera or SD card → external drive</i>, then <b>Add a source…</b> and pick the card in the file browser. <b>Android</b>: on the Backup tab, tap <b>Add Source (SD Card, USB Drive…)</b>, find the card in the file browser and confirm.", "Choose the destination and give it a name — <i>Blackmagic</i>, <i>Trip to Japan</i>… The device type is recognised by itself.", "Tap <b>Run</b> (iPhone / iPad) or <b>Backup</b> on the source row (Android)."]),
+        ("ol", ["Plug the card reader into the phone and insert the card (use a hub if the SSD must stay plugged in too).", "<b>iPhone / iPad</b>: on the <b>Backups</b> tab, tap <b>+</b> and choose <i>Camera or SD card → external drive</i>, then <b>Add a source…</b> and pick the card in the file browser. <b>Android</b>: the same on the <b>Backups</b> tab: <b>+</b>, <i>Camera or SD card → external drive</i>, <b>Add a source…</b>, then find the card in the file browser and confirm.", "Choose the destination and give it a name — <i>Blackmagic</i>, <i>Trip to Japan</i>… The device type is recognised by itself.", "Tap <b>Run</b>."]),
         ("table", ["Recognised device", "What is backed up"], [
             ["DJI Mini 3 Pro", "Photos, videos, DNG and the telemetry (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Videos, photos, DNG, audio and the telemetry (.srt)"],
@@ -69,8 +69,8 @@ GUIDE = [
             ["GoPro HERO", "Videos and photos; the proxy (.lrv) and thumbnail (.thm) files are skipped"],
             ["Anything else", "Common photo, video and RAW formats"],
         ]),
-        ("note", "A card ejected and put back needs one tap on <b>Reconnect</b> (on the backup’s card on iPhone, on the source row on Android): the system gives the app a new access each time the card is mounted. The name and type of the source are kept."),
-        ("p", "To remove a source: on iPhone, delete the backup that uses it (the card is forgotten too if no other backup uses it); on Android, use the remove button of the row. This deletes no file."),
+        ("note", "A card ejected and put back needs one tap on <b>Reconnect</b> on the backup’s card: the system gives the app a new access each time the card is mounted. The name and type of the source are kept."),
+        ("p", "To remove a source, delete the backup that uses it (the card is forgotten too if no other backup uses it). This deletes no file."),
     ]),
     ("progress", "While the backup runs", [
         ("p", "A <b>Backup in Progress</b> panel appears the moment you tap Backup. First <b>Preparing…</b> (connecting to your destinations), then <b>Analyzing source…</b> with a live count of files found — on a large library this can take a moment, it is not stuck."),
@@ -132,13 +132,13 @@ GUIDE = [
         ("ul", ["Grading is per video, never “everything” — a folder often mixes LOG and ordinary clips, and a LOG LUT would ruin the ordinary ones.", "Already-graded files are skipped, so it is safe to run again. Cancel at any time: finished files are kept.", "Grading is demanding: keep the app open and the drive connected. The phone may get warm.", "On a NAS the clips are downloaded, graded on the phone and uploaded to a <b>Device (Graded)</b> folder on the NAS — slower, and it uses data."]),
     ]),
     ("mirror", "Two destinations at once (Pro)", [
-        ("p", "Add a second destination — on iPhone, long-press the backup’s card, then <b>Settings</b> and <b>Add a destination</b>; on Android, in Settings. Every file is copied to both at the same time — two drives, or a drive and a NAS. The backup is not twice as long. If one destination fails or disappears, <b>the other carries on</b>, and the report says which one is missing what."),
+        ("p", "Add a second destination — long-press the backup’s card (iPhone) or tap its <b>⋮</b> menu (Android), then <b>Settings</b> and <b>Add a destination</b>. Every file is copied to both at the same time — two drives, or a drive and a NAS. The backup is not twice as long. If one destination fails or disappears, <b>the other carries on</b>, and the report says which one is missing what."),
         ("note", "If only one of the two drives is plugged in when you start, the app still copies to it and marks the session as incomplete for the other."),
     ]),
     ("nas", "Back up to a NAS over Wi-Fi (Pro)", [
         ("p", "Instead of — or in addition to — a drive, you can back up straight to a <b>NAS</b> (Synology, QNAP, TrueNAS, any device that speaks SMB) over the network. No cable, no cloud, and each file is verified by SHA-256."),
-        ("ol", ["On the NAS, enable <b>SMB file sharing</b> and give a user read and write access to a shared folder.", "In the app: on iPhone, create a backup with the <i>Photo library → NAS</i> template (or add a NAS to an existing backup from its <b>Settings</b>); on Android, <b>Settings → Destinations → NAS (SMB)</b>.", "Fill in the <b>host</b> (e.g. <code>192.168.1.20</code>), the <b>share</b> (e.g. <code>photo</code>), an optional <b>folder</b>, and your <b>user name</b> and <b>password</b>. The password is stored in the iOS Keychain or the Android Keystore.", "Tap <b>Test connection</b>: <i>“Connected — N item(s) found.”</i> Then <b>Create</b> (iPhone) or <b>Save</b> (Android)."]),
-        ("p", "The NAS now appears on the backup’s card (iPhone) or on the Backup tab (Android), with its free space. On iPhone each backup has its own NAS, so you can use several. You can back up <b>away from home</b> if the NAS is reachable — the simplest secure way is a VPN such as <b>Tailscale</b>: install it on the NAS and on the phone, then use the NAS’s <code>100.x.x.x</code> address as host."),
+        ("ol", ["On the NAS, enable <b>SMB file sharing</b> and give a user read and write access to a shared folder.", "In the app: create a backup with the <i>Photo library → NAS</i> template (<i>Gallery → NAS</i> on Android), or add a NAS to an existing backup from its <b>Settings</b>.", "Fill in the <b>host</b> (e.g. <code>192.168.1.20</code>), the <b>share</b> (e.g. <code>photo</code>), an optional <b>folder</b>, and your <b>user name</b> and <b>password</b>. The password is stored in the iOS Keychain or the Android Keystore.", "Tap <b>Test connection</b>: <i>“Connected — N item(s) found.”</i> Then <b>Create</b> (or <b>Save</b> in a backup’s settings)."]),
+        ("p", "The NAS now appears on the backup’s card, with its free space. Each backup has its own NAS, so you can use several. You can back up <b>away from home</b> if the NAS is reachable — the simplest secure way is a VPN such as <b>Tailscale</b>: install it on the NAS and on the phone, then use the NAS’s <code>100.x.x.x</code> address as host."),
         ("note", "Over mobile data, an orange banner warns you that large videos can use a lot of data; <b>Stop</b> halts the backup (it is marked Partial)."),
     ]),
     ("android", "Android and iPhone: what differs", [
@@ -151,7 +151,7 @@ GUIDE = [
             ["Mac", "Runs on Apple-silicon Macs (“Designed for iPad”)", "—"],
         ]),
         ("note", "On Android, a destination inside the phone’s own storage is hidden from the gallery (a <code>.nomedia</code> file) so the backup is not backed up again."),
-        ("fig", "android_backup", "Android: the Backup tab."),
+        ("fig", "android_backup", "Android: the Backups tab."),
         ("fig", "android_settings", "Android: Settings."),
     ]),
     ("faq", "Frequently asked questions", [

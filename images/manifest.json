@@ -64,12 +64,12 @@
     "note": "shows the old dashboard (Destinations/Sources) around the progress card; the card itself is unchanged — retake on a long backup, it cannot be captured in the simulator (10 photos copy in 0.3 s)"
   },
   "android_backup": {
-    "version": "2.6.1",
-    "note": "Android Backup tab"
+    "version": "2.7.0",
+    "note": "Android Backups tab with a backup card and the completion banner"
   },
   "android_settings": {
-    "version": "2.6.1",
-    "note": "Android Settings"
+    "version": "2.7.0",
+    "note": "Android Settings: defaults for new backups, Pro section (emulator, 2026-11-15)"
   },
   "android_viewer": {
     "version": "2.6.1",

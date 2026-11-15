@@ -22,7 +22,7 @@ GUIDE = [
         ("p", "O PhotoVideoBackup é gratuito. Uma compra <b>Pro</b> — paga uma só vez, <b>sem subscrição</b> — desbloqueia as funções avançadas:"),
         ("table", ["Função", "Grátis", "Pro"], [
             ["Copiar a biblioteca de fotos para uma unidade ou pasta", "✓", "✓"],
-            ["Várias cópias, cada uma com os seus discos, NAS e definições (iPhone)", "—", "✓"],
+            ["Várias cópias, cada uma com os seus discos, NAS e definições", "—", "✓"],
             ["Explorar e pré-visualizar as cópias (pré-visualização de LUT incluída)", "✓", "✓"],
             ["Copiar cartões de câmaras e unidades USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Espelho numa segunda unidade", "—", "✓"],
@@ -48,20 +48,20 @@ GUIDE = [
         ("note", "A aplicação só lê as suas fotos para as copiar. Não as modifica, não as partilha nem as envia para lado nenhum."),
     ]),
     ("setup", "Defina o nome do dispositivo e o destino", [
-        ("ol", ["Abra o separador <b>Definições</b>. Na secção <b>Dispositivo</b>, escreva um <b>nome da pasta</b> — por exemplo <i>iPhone da Ana</i> ou <i>Pixel 8</i>. Passa a ser o nome da pasta na unidade, de modo que dois telemóveis que copiam para a mesma unidade ficam separados. Uma cópia não arranca enquanto não houver um nome.", "Ligue a sua unidade.", "<b>iPhone / iPad</b>: abra o separador <b>Cópias</b>, toque em <b>Nova cópia</b> (ou <b>+</b>), escolha <i>Biblioteca de fotos → disco externo</i>, toque em <b>Escolher…</b> e selecione a unidade, ou uma pasta dela, no explorador de ficheiros do sistema. <b>Android</b>: em <b>Destinos</b>, toque em <b>Escolher…</b> e selecione a unidade ou uma pasta (também no armazenamento do telemóvel).", "O nome da unidade aparece no cartão da cópia (iPhone) ou no separador Backup (Android), com o espaço livre. Só o faz uma vez: da próxima vez a aplicação reconhece a unidade."]),
+        ("ol", ["Abra o separador <b>Definições</b>. Na secção <b>Dispositivo</b>, escreva um <b>nome da pasta</b> — por exemplo <i>iPhone da Ana</i> ou <i>Pixel 8</i>. Passa a ser o nome da pasta na unidade, de modo que dois telemóveis que copiam para a mesma unidade ficam separados. Uma cópia não arranca enquanto não houver um nome.", "Ligue a sua unidade.", "<b>iPhone / iPad</b>: abra o separador <b>Cópias</b>, toque em <b>Nova cópia</b> (ou <b>+</b>), escolha <i>Biblioteca de fotos → disco externo</i>, toque em <b>Escolher…</b> e selecione a unidade, ou uma pasta dela, no explorador de ficheiros do sistema. <b>Android</b>: o mesmo no separador <b>Cópias</b> — <b>Nova cópia</b> (ou <b>+</b>), <i>Galeria → disco externo</i>, <b>Escolher…</b> — e escolha o disco ou uma pasta (também no armazenamento do telefone).", "O nome do disco aparece no cartão da cópia, com o seu espaço livre. Só o faz uma vez: da próxima vez a app reconhece o disco."]),
         ("fig", "backups_new", "Nova cópia: escolha um ponto de partida."),
         ("fig", "backups_create", "Nova cópia: escolha o disco, um nome de pasta para este telefone e um nome para a cópia."),
         ("note", "Um destino também pode ser uma pasta do <b>iCloud Drive</b> (iPhone) — a aplicação liberta a cópia local quando o iCloud confirma o envio, para que o telemóvel não encha. Se mesmo assim o iPhone estiver quase cheio (menos de cerca de 1 GB livres), a cópia <b>pausa sozinha</b> e continua quando voltar a haver espaço; se nada melhorar ao fim de alguns minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copie as suas fotos e vídeos", [
-        ("p", "<b>iPhone / iPad</b>: abra o separador <b>Cópias</b>. Cada cópia é um cartão com o seu nome, a origem e o destino, e o espaço livre do seu disco. Toque em <b>Iniciar</b>. Com Pro pode criar várias cópias — por exemplo uma para um disco e outra para um NAS — cada uma com as suas definições: toque longo num cartão e depois em <b>Definições</b>. <b>Android</b>: abra o separador <b>Backup</b>. Em cima vê os seus destinos com o espaço livre. Em <b>Origens</b>, a linha <b>Biblioteca de fotos</b> mostra o nome do seu dispositivo. Toque no botão <b>Backup</b>."),
+        ("p", "Abra o separador <b>Cópias</b>. Cada cópia é um cartão com o seu nome, de onde copia e para onde, e o espaço livre do seu disco. Toque em <b>Iniciar</b>. Com o Pro pode criar várias cópias — por exemplo uma para um disco e outra para um NAS — cada uma com as suas definições: toque longo no cartão (iPhone) ou no seu menu <b>⋮</b> (Android), e depois em <b>Definições</b>."),
         ("fig", "backups_tab", "O separador Cópias: um cartão por cópia, com o espaço livre e um botão Executar."),
         ("fig", "profile_settings", "As definições próprias de uma cópia (prima longamente o cartão): destinos, estrutura de pastas, limite de ficheiros, nomes."),
         ("p", "A aplicação analisa a biblioteca e depois copia. A <b>primeira cópia é a mais demorada</b>; as seguintes só copiam o que é novo e são muito mais rápidas."),
         ("ul", ["As fotos guardadas apenas no iCloud / Google Fotos são primeiro transferidas — é preciso ligação e algum tempo.", "A aplicação copia cada ficheiro diretamente para o destino, por isso funciona mesmo com o telemóvel quase cheio.", "Pode sair da aplicação: uma notificação avisa quando a cópia termina."]),
     ]),
     ("sd", "Copie um cartão de câmara (Pro)", [
-        ("ol", ["Ligue o leitor de cartões ao telemóvel e introduza o cartão (use um hub se o SSD também tiver de ficar ligado).", "<b>iPhone / iPad</b>: no separador <b>Cópias</b>, toque em <b>+</b> e escolha <i>Câmara ou cartão SD → disco externo</i>, depois em <b>Adicionar uma origem…</b> e selecione o cartão no explorador de ficheiros. <b>Android</b>: no separador Backup, toque em <b>Adicionar origem (cartão SD, unidade USB…)</b>, encontre o cartão no explorador de ficheiros e confirme.", "Escolha o destino e dê-lhe um nome — <i>Blackmagic</i>, <i>Viagem ao Japão</i>… O tipo de dispositivo é reconhecido automaticamente.", "Toque em <b>Iniciar</b> (iPhone / iPad) ou em <b>Backup</b> na linha da origem (Android)."]),
+        ("ol", ["Ligue o leitor de cartões ao telemóvel e introduza o cartão (use um hub se o SSD também tiver de ficar ligado).", "<b>iPhone / iPad</b>: no separador <b>Cópias</b>, toque em <b>+</b> e escolha <i>Câmara ou cartão SD → disco externo</i>, depois em <b>Adicionar uma origem…</b> e selecione o cartão no explorador de ficheiros. <b>Android</b>: o mesmo no separador <b>Cópias</b>: <b>+</b>, <i>Câmara ou cartão SD → disco externo</i>, <b>Adicionar uma origem…</b>, e procure o cartão no explorador de ficheiros e confirme.", "Escolha o destino e dê-lhe um nome — <i>Blackmagic</i>, <i>Viagem ao Japão</i>… O tipo de dispositivo é reconhecido automaticamente.", "Toque em <b>Iniciar</b>."]),
         ("table", ["Dispositivo reconhecido", "O que é copiado"], [
             ["DJI Mini 3 Pro", "Fotos, vídeos, DNG e a telemetria (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Vídeos, fotos, DNG, áudio e a telemetria (.srt)"],
@@ -69,8 +69,8 @@ GUIDE = [
             ["GoPro HERO", "Vídeos e fotos; os ficheiros proxy (.lrv) e de miniaturas (.thm) são ignorados"],
             ["Qualquer outro", "Formatos comuns de foto, vídeo e RAW"],
         ]),
-        ("note", "Um cartão ejetado e reintroduzido precisa de um toque em <b>Reconectar</b> (no cartão da cópia no iPhone, na linha da origem no Android): o sistema dá à aplicação um novo acesso sempre que o cartão é montado. O nome e o tipo da origem são mantidos."),
-        ("p", "Para retirar uma origem: no iPhone, elimine a cópia que a usa (o cartão também é esquecido se nenhuma outra cópia o usar); no Android, use o botão de remover da linha. Nenhum ficheiro é eliminado."),
+        ("note", "Um cartão ejetado e voltado a inserir precisa de um toque em <b>Reconectar</b> no cartão da cópia: o sistema dá à app um novo acesso de cada vez que o cartão é montado. O nome e o tipo da origem são mantidos."),
+        ("p", "Para remover uma origem, elimine a cópia que a usa (o cartão também é esquecido se nenhuma outra cópia o usar). Nenhum ficheiro é eliminado."),
     ]),
     ("progress", "Enquanto a cópia decorre", [
         ("p", "Surge um painel <b>Backup em curso</b> assim que toca em Backup. Primeiro <b>Preparando…</b> (ligação aos destinos) e depois <b>A analisar a origem…</b> com um contador em direto dos ficheiros encontrados — numa biblioteca grande pode demorar um pouco, não está bloqueado."),
@@ -132,13 +132,13 @@ GUIDE = [
         ("ul", ["A gradação faz-se vídeo a vídeo, nunca «tudo» — uma pasta mistura muitas vezes clipes LOG e normais, e uma LUT LOG estragaria os normais.", "Os ficheiros já graduados são ignorados, por isso pode repetir sem risco. Cancele quando quiser: os terminados ficam.", "A gradação é exigente: mantenha a aplicação aberta e a unidade ligada. O telemóvel pode aquecer.", "Num NAS, os clipes são transferidos, graduados no telemóvel e enviados para uma pasta <b>Dispositivo (Graded)</b> do NAS — mais lento e gasta dados."]),
     ]),
     ("mirror", "Dois destinos ao mesmo tempo (Pro)", [
-        ("p", "Adicione um segundo destino — no iPhone, toque longo no cartão da cópia, depois em <b>Definições</b> e <b>Adicionar um destino</b>; no Android, nas Definições. Cada ficheiro é copiado para ambos em simultâneo — dois discos, ou um disco e um NAS. A cópia não demora o dobro. Se um destino falhar ou desaparecer, <b>o outro continua</b>, e o relatório indica a qual falta o quê."),
+        ("p", "Adicione um segundo destino — toque longo no cartão da cópia (iPhone) ou no seu menu <b>⋮</b> (Android), e depois em <b>Definições</b> e <b>Adicionar um destino</b>. Cada ficheiro é copiado para ambos ao mesmo tempo — dois discos, ou um disco e um NAS. A cópia não demora o dobro. Se um destino falhar ou desaparecer, <b>o outro continua</b>, e o relatório indica qual falta de quê."),
         ("note", "Se no arranque só uma das duas unidades estiver ligada, a aplicação copia na mesma para ela e marca a sessão como incompleta para a outra."),
     ]),
     ("nas", "Copie para um NAS por Wi-Fi (Pro)", [
         ("p", "Em vez de uma unidade — ou além dela — pode copiar diretamente para um <b>NAS</b> (Synology, QNAP, TrueNAS, qualquer equipamento que fale SMB) através da rede. Sem cabo, sem nuvem, e cada ficheiro é verificado com SHA-256."),
-        ("ol", ["No NAS, ative a <b>partilha de ficheiros SMB</b> e dê a um utilizador acesso de leitura e escrita a uma pasta partilhada.", "Na aplicação: no iPhone, crie uma cópia com o modelo <i>Biblioteca de fotos → NAS</i> (ou adicione um NAS a uma cópia existente nas suas <b>Definições</b>); no Android, <b>Definições → Destinos → NAS (SMB)</b>.", "Preencha o <b>anfitrião</b> (p. ex. <code>192.168.1.20</code>), a <b>partilha</b> (p. ex. <code>photo</code>), uma <b>pasta</b> opcional, e o seu <b>nome de utilizador</b> e <b>palavra-passe</b>. A palavra-passe fica guardada na Keychain do iOS ou no Keystore do Android.", "Toque em <b>Testar ligação</b>: <i>«Ligado — N item(ns) encontrado(s).»</i> Depois <b>Criar</b> (iPhone) ou <b>Salvar</b> (Android)."]),
-        ("p", "O NAS aparece agora no cartão da cópia (iPhone) ou no separador Backup (Android), com o espaço livre. No iPhone cada cópia tem o seu próprio NAS, por isso pode usar vários. Pode copiar <b>fora de casa</b> se o NAS for acessível — o modo mais simples e seguro é uma VPN como o <b>Tailscale</b>: instale-o no NAS e no telemóvel e use o endereço <code>100.x.x.x</code> do NAS como anfitrião."),
+        ("ol", ["No NAS, ative a <b>partilha de ficheiros SMB</b> e dê a um utilizador acesso de leitura e escrita a uma pasta partilhada.", "Na app: crie uma cópia com o modelo <i>Biblioteca de fotos → NAS</i> (<i>Galeria → NAS</i> no Android), ou adicione um NAS a uma cópia existente a partir das suas <b>Definições</b>.", "Preencha o <b>anfitrião</b> (p. ex. <code>192.168.1.20</code>), a <b>partilha</b> (p. ex. <code>photo</code>), uma <b>pasta</b> opcional, e o seu <b>nome de utilizador</b> e <b>palavra-passe</b>. A palavra-passe fica guardada na Keychain do iOS ou no Keystore do Android.", "Toque em <b>Testar ligação</b>: <i>«Ligado — N item(ns) encontrado(s).»</i> Depois em <b>Criar</b> (ou <b>Salvar</b> nas definições de uma cópia)."]),
+        ("p", "O NAS aparece agora no cartão da cópia, com o seu espaço livre. Cada cópia tem o seu próprio NAS, por isso pode usar vários. Pode copiar <b>fora de casa</b> se o NAS estiver acessível — a forma segura mais simples é uma VPN como o <b>Tailscale</b>: instale-o no NAS e no telefone e use o endereço <code>100.x.x.x</code> do NAS como anfitrião."),
         ("note", "Com dados móveis, um aviso laranja alerta que os vídeos grandes podem gastar muitos dados; <b>Parar</b> interrompe a cópia (fica marcada como Parcial)."),
     ]),
     ("android", "Android e iPhone: o que difere", [
@@ -151,7 +151,7 @@ GUIDE = [
             ["Mac", "Funciona em Macs com chip Apple («concebida para iPad»)", "—"],
         ]),
         ("note", "No Android, um destino no armazenamento interno do telemóvel é escondido da galeria (um ficheiro <code>.nomedia</code>) para que a cópia não seja copiada de novo."),
-        ("fig", "android_backup", "Android: o separador Backup."),
+        ("fig", "android_backup", "Android: o separador Cópias."),
         ("fig", "android_settings", "Android: Definições."),
     ]),
     ("faq", "Perguntas frequentes", [
