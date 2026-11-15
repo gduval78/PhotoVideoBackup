@@ -64,27 +64,27 @@
     "note": "shows the old dashboard (Destinations/Sources) around the progress card; the card itself is unchanged — retake on a long backup, it cannot be captured in the simulator (10 photos copy in 0.3 s)"
   },
   "android_backup": {
-    "version": "2.7.0",
-    "note": "Android Backup tab — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android Backup tab"
   },
   "android_settings": {
-    "version": "2.7.0",
-    "note": "Android Settings — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android Settings"
   },
   "android_viewer": {
-    "version": "2.7.0",
-    "note": "Android full-screen viewer — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android full-screen viewer"
   },
   "android_lut": {
-    "version": "2.7.0",
-    "note": "Android LUT Grade section — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android LUT Grade section"
   },
   "android_browse": {
-    "version": "2.7.0",
-    "note": "Android Browse — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android Browse"
   },
   "android_report": {
-    "version": "2.7.0",
-    "note": "Android report — no Android UI change since 2.6.1 (git log of android/ checked 2026-11-15)"
+    "version": "2.6.1",
+    "note": "Android report"
   }
 }
