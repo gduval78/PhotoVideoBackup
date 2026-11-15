@@ -1,0 +1,90 @@
+{
+  "backups_tab": {
+    "version": "2.7.0",
+    "note": "Backups tab, one card per backup"
+  },
+  "backups_new": {
+    "version": "2.7.0",
+    "note": "New backup: template list"
+  },
+  "backups_create": {
+    "version": "2.7.0",
+    "note": "New backup: drive, folder name, backup name"
+  },
+  "profile_settings": {
+    "version": "2.7.0",
+    "note": "A backup's own settings sheet"
+  },
+  "settings_top": {
+    "version": "2.7.0",
+    "note": "Settings tab with the Pro section"
+  },
+  "paywall": {
+    "version": "2.7.0",
+    "note": "Upgrade screen with the 6 rows"
+  },
+  "completion_banner": {
+    "version": "2.7.0",
+    "note": "Completion banner in the Backups tab"
+  },
+  "history_list": {
+    "version": "2.7.0",
+    "note": "History with one session"
+  },
+  "report_summary": {
+    "version": "2.7.0",
+    "note": "Session report (no more 'Incomplete mirror' on a single destination)"
+  },
+  "browse_device_folders": {
+    "version": "2.7.0",
+    "note": "Browse: device folder with date folders"
+  },
+  "browse_media_grid": {
+    "version": "2.7.0",
+    "note": "Browse: media grid of a day"
+  },
+  "report_delete_confirm": {
+    "version": "2.7.0",
+    "note": "Delete Source Files sheet — unchanged screen, reviewed 2026-11-15"
+  },
+  "browse_lut_picker": {
+    "version": "2.7.0",
+    "note": "LUT picker sheet — unchanged screen, reviewed 2026-11-15"
+  },
+  "onboarding_simple": {
+    "version": "2.7.0",
+    "note": "Welcome screen — unchanged in 2.7, reviewed 2026-11-15"
+  },
+  "settings_file_naming": {
+    "version": "2.7.0",
+    "note": "File naming page — content unchanged; its tab bar still says 'Backup' (now 'Backups'), retake when convenient"
+  },
+  "progress_backup": {
+    "version": "2.6.1",
+    "note": "shows the old dashboard (Destinations/Sources) around the progress card; the card itself is unchanged — retake on a long backup, it cannot be captured in the simulator (10 photos copy in 0.3 s)"
+  },
+  "android_backup": {
+    "version": "2.6.1",
+    "note": "Android Backup tab"
+  },
+  "android_settings": {
+    "version": "2.6.1",
+    "note": "Android Settings"
+  },
+  "android_viewer": {
+    "version": "2.6.1",
+    "note": "Android full-screen viewer"
+  },
+  "android_lut": {
+    "version": "2.6.1",
+    "note": "Android LUT Grade section"
+  },
+  "android_browse": {
+    "version": "2.6.1",
+    "note": "Android Browse"
+  },
+  "android_report": {
+    "version": "2.6.1",
+    "note": "Android report"
+  }
+}

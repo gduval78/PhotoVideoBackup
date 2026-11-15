@@ -150,4 +150,16 @@ final class PartialReasonTests: XCTestCase {
             wasCancelled: false, disconnectedCount: 0, wasLimited: false)
         XCTAssertEqual(reason, .none)
     }
+
+    // SCENARIO: A single-destination backup is not an "incomplete mirror"
+    // A profile with one drive (the free tier, the normal case) used to be flagged "Incomplete mirror —
+    // only one SSD was available" in its Report. Only a backup that planned several destinations and
+    // reached fewer (unplugged second drive, NAS not answering) is incomplete.
+    func test_incompleteMirror_onlyWhenPlannedDestinationsWereMissed() {
+        XCTAssertFalse(DashboardViewModel.isIncompleteMirror(reached: 1, expected: 1))
+        XCTAssertFalse(DashboardViewModel.isIncompleteMirror(reached: 2, expected: 2))
+        XCTAssertTrue(DashboardViewModel.isIncompleteMirror(reached: 1, expected: 2))
+        XCTAssertTrue(DashboardViewModel.isIncompleteMirror(reached: 2, expected: 3))
+        XCTAssertFalse(DashboardViewModel.isIncompleteMirror(reached: 0, expected: 1))
+    }
 }

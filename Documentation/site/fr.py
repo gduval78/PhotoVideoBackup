@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "Sur iPhone, une installation gratuite permet <b>une</b> sauvegarde. Si vous en créez d'autres puis perdez Pro (par exemple après un remboursement), elles ne sont pas supprimées : elles restent dans la liste, verrouillées, jusqu'à ce que vous repassiez à Pro. Votre première sauvegarde continue de fonctionner tant qu'elle n'utilise que des fonctions gratuites (la photothèque, un disque ou un dossier). Une sauvegarde qui comporte un NAS ou une deuxième destination nécessite Pro pour s'exécuter. Vous avez déjà acheté Pro sur un autre appareil ? Ouvrez <b>Réglages → Pro → Restaurer les achats</b>."),
         ("fig", "paywall", "L'écran de mise à niveau. Ouvrez-le quand vous voulez depuis l'onglet Réglages."),
+        ("fig", "settings_top", "Réglages → Pro : passer à Pro, ou restaurer un achat fait sur un autre appareil."),
     ]),
     ("need", "Ce qu'il vous faut", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Définir le nom de l'appareil et la destination", [
         ("ol", ["Ouvrez l'onglet <b>Réglages</b>. Dans la section <b>Appareil</b>, saisissez un <b>nom de dossier</b> — par exemple <i>iPhone d'Anna</i> ou <i>Pixel 8</i>. C'est le nom du dossier sur le disque : deux téléphones qui sauvegardent sur le même disque restent ainsi séparés. Une sauvegarde ne démarre pas tant qu'aucun nom n'est défini.", "Branchez votre disque.", "<b>iPhone / iPad</b> : ouvrez l'onglet <b>Sauvegardes</b>, touchez <b>Nouvelle sauvegarde</b> (ou <b>+</b>), choisissez <i>Photothèque → disque externe</i>, puis touchez <b>Choisir…</b> et sélectionnez le disque, ou un dossier du disque, dans le navigateur de fichiers du système. <b>Android</b> : sous <b>Destinations</b>, touchez <b>Choisir…</b> et sélectionnez le disque ou un dossier (y compris dans le stockage du téléphone).", "Le nom du disque apparaît sur la carte de la sauvegarde (iPhone) ou dans l'onglet Sauvegarde (Android), avec son espace libre. Vous ne le faites qu'une fois : l'application reconnaît le disque la fois suivante."]),
-        ("fig", "settings_configured", "Réglages : nom de l'appareil et première destination."),
+        ("fig", "backups_new", "Nouvelle sauvegarde : choisissez un point de départ."),
+        ("fig", "backups_create", "Nouvelle sauvegarde : choisissez le disque, un nom de dossier pour ce téléphone et un nom pour la sauvegarde."),
         ("note", "Une destination peut aussi être un dossier d'<b>iCloud Drive</b> (iPhone) — l'application libère la copie locale dès qu'iCloud confirme l'envoi, pour que le téléphone ne se remplisse pas. Si l'iPhone est malgré tout presque plein (moins de 1 Go libres environ), la sauvegarde se <b>met en pause toute seule</b> et reprend dès que de la place revient ; si rien ne s'améliore au bout de quelques minutes, elle s'arrête en <b>Partielle</b>."),
     ]),
     ("photos", "Sauvegarder vos photos et vidéos", [
         ("p", "<b>iPhone / iPad</b> : ouvrez l'onglet <b>Sauvegardes</b>. Chaque sauvegarde est une carte avec son nom, sa source et sa destination, et l'espace libre de son disque. Touchez <b>Lancer</b>. Avec Pro, vous pouvez créer plusieurs sauvegardes — par exemple une vers un disque et une vers un NAS — chacune avec ses propres réglages : appui long sur une carte, puis <b>Réglages</b>. <b>Android</b> : ouvrez l'onglet <b>Sauvegarde</b>. En haut, vous voyez vos destinations avec leur espace libre. Dans <b>Sources</b>, la ligne <b>Photothèque</b> affiche le nom de votre appareil. Touchez son bouton <b>Sauvegarde</b>."),
-        ("fig", "dashboard_ready", "L'onglet Sauvegarde : destination connectée, photothèque prête."),
+        ("fig", "backups_tab", "L'onglet Sauvegardes : une carte par sauvegarde, avec son espace libre et un bouton Lancer."),
+        ("fig", "profile_settings", "Les réglages propres à une sauvegarde (appui long sur sa carte) : destinations, structure des dossiers, limite de fichiers, nommage."),
         ("p", "L'application analyse la photothèque, puis copie. La <b>première sauvegarde est la plus longue</b> ; les suivantes ne copient que les nouveautés et sont bien plus rapides."),
         ("ul", ["Les photos stockées uniquement dans iCloud / Google Photos sont d'abord téléchargées — cela demande une connexion et un peu de temps.", "L'application copie chaque fichier directement vers la destination : cela fonctionne même quand le téléphone est presque plein.", "Vous pouvez quitter l'application : une notification vous prévient à la fin de la sauvegarde."]),
     ]),

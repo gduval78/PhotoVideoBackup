@@ -7,3 +7,7 @@ The user guide and the privacy policy are **generated** in 8 languages (en, fr, 
 - Output (committed, served by GitHub Pages from `main` at `/`): `en/ fr/ de/ es/ it/ pt/ zh-Hans/ ru/`, `assets/style.css`, `index.html` and `privacy-policy.html` (language choosers that redirect on the browser language), `.nojekyll`. Screenshots live in `images/`.
 - Button names in the guide are the app's own translations (`Localizable.xcstrings`).
 - The previous English-only `index.md` is in git history (before commit "Documentation: 8-language guide").
+
+## Keeping the guide in step with the builds
+
+`images/manifest.json` dates each screenshot by the app version it is accurate for; `python3 Documentation/site/check_docs.py` (run by `build_site.py`) checks the version line of every language against the iOS `MARKETING_VERSION` and the Android `appVersion`, that every figure has an image and a manifest entry, and lists the screenshots older than the current version (STALE). See CLAUDE.md, “Documentation”.

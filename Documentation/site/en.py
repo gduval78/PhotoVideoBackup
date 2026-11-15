@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "On iPhone, a free install keeps <b>one</b> backup. If you create more and later lose Pro (for example after a refund), they are not deleted: they stay in the list, locked, until you upgrade again. Your first backup keeps working as long as it only uses free features (the photo library, one drive or folder). A backup that has a NAS or a second destination needs Pro to run. Already bought Pro on another device? Open <b>Settings → Pro → Restore Purchases</b>."),
         ("fig", "paywall", "The upgrade screen. Open it from the Settings tab whenever you like."),
+        ("fig", "settings_top", "Settings → Pro: upgrade, or restore a purchase made on another device."),
     ]),
     ("need", "What you need", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Set up your device name and destination", [
         ("ol", ["Open the <b>Settings</b> tab. In the <b>Device</b> section, type a <b>folder name</b> — for example <i>Anna’s iPhone</i> or <i>Pixel 8</i>. It becomes the folder name on the drive, so two phones saving to the same drive stay separate. A backup does not start until a name is set.", "Plug in your drive.", "<b>iPhone / iPad</b>: open the <b>Backups</b> tab, tap <b>New backup</b> (or <b>+</b>), choose <i>Photo library → external drive</i>, then tap <b>Choose…</b> and pick the drive, or a folder on it, in the system file browser. <b>Android</b>: under <b>Destinations</b>, tap <b>Choose…</b> and pick the drive or a folder (also in the phone’s own storage).", "The drive name appears on the backup’s card (iPhone) or on the Backup tab (Android), with its free space. You only do this once: the app recognises the drive the next time."]),
-        ("fig", "settings_configured", "Settings: device name and the first destination."),
+        ("fig", "backups_new", "New backup: choose a starting point."),
+        ("fig", "backups_create", "New backup: pick the drive, a folder name for this phone, and a name for the backup."),
         ("note", "A destination can also be a folder in <b>iCloud Drive</b> (iPhone) — the app releases the local copy once iCloud confirms the upload, so the phone does not fill up. If the iPhone is nearly full anyway (less than about 1 GB free), the backup <b>pauses by itself</b> and resumes once space is back; if nothing improves after a few minutes, it stops as <b>Partial</b>."),
     ]),
     ("photos", "Back up your photos and videos", [
         ("p", "<b>iPhone / iPad</b>: open the <b>Backups</b> tab. Each backup is a card with its name, where it copies from and to, and the free space of its drive. Tap <b>Run</b>. With Pro you can create several backups — for example one to a drive and one to a NAS — each with its own settings: long-press a card, then <b>Settings</b>. <b>Android</b>: open the <b>Backup</b> tab. At the top you see your destinations, with their free space. In <b>Sources</b>, the <b>Photos Library</b> row shows your device name. Tap its <b>Backup</b> button."),
-        ("fig", "dashboard_ready", "The Backup tab: destination connected, Photos Library ready."),
+        ("fig", "backups_tab", "The Backups tab: one card per backup, with its free space and a Run button."),
+        ("fig", "profile_settings", "A backup’s own settings (long-press its card): destinations, folder structure, file limit, naming."),
         ("p", "The app scans the library, then copies. The <b>first backup is the longest</b>; the next ones only copy what is new, and are much faster."),
         ("ul", ["Photos stored only in iCloud / Google Photos are downloaded first — that takes a connection and some time.", "The app copies each file straight to the destination, so it works even when the phone is almost full.", "You can leave the app: a notification tells you when the backup ends."]),
     ]),

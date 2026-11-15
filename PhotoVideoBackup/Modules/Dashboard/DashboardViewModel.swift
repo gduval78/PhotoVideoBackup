@@ -726,7 +726,7 @@ final class DashboardViewModel {
         let session = BackupSession(
             sources: ["photos-library://local"],
             destinations: targets.map(\.rootIdentifier),
-            incompleteMirror: targets.count < 2,
+            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + ($0.includeNAS ? 1 : 0) } ?? 1),
             sourceDisplayName: rawName,
             folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)
@@ -840,7 +840,7 @@ final class DashboardViewModel {
         let session = BackupSession(
             sources: [sourceURL.path],
             destinations: targets.map(\.rootIdentifier),
-            incompleteMirror: targets.count < 2,
+            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + ($0.includeNAS ? 1 : 0) } ?? 1),
             sourceDisplayName: source.displayName,
             folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)
@@ -887,6 +887,13 @@ final class DashboardViewModel {
     /// a standalone function so it can be unit-tested (`PartialReasonTests`) — the field bug it guards
     /// was a disconnection at file 149 being reported as "file limit reached". Callers pass this only
     /// for a `.partial` outcome; for a completed/failed run the reason is `.none`.
+    /// A mirror is incomplete only when the backup planned more destinations than it could reach (an
+    /// unplugged second drive, a NAS that did not answer). A single-destination backup — the normal case
+    /// of a profile — is not a mirror at all: it used to be flagged "Incomplete mirror" every time.
+    nonisolated static func isIncompleteMirror(reached: Int, expected: Int) -> Bool {
+        expected > 1 && reached < expected
+    }
+
     nonisolated static func partialReason(wasCancelled: Bool, disconnectedCount: Int, wasLimited: Bool,
                                           wasLowSpace: Bool = false,
                                           destinationErrorCount: Int = 0,

@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("ru", "Русский")]
-UPDATED = "2026-10-22"
+UPDATED = "2026-11-15"
 BRAND = "PhotoVideoBackup"
 
 
@@ -135,6 +135,11 @@ def main():
     (ROOT / "privacy-policy.html").write_text(chooser(en, "privacy-policy.html", en.UI["chooser_privacy"]))
     (ROOT / ".nojekyll").write_text("")
     print("site generated ->", ROOT)
+    # Keep the guide in step with the builds: version line, screenshots present and dated (see check_docs.py).
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import check_docs
+    if check_docs.check() != 0:
+        sys.exit("guide check failed — fix the errors above (screenshots/manifest/version line)")
 
 
 main()

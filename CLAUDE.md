@@ -40,6 +40,8 @@ The app language follows the iPhone system language by default. Users can overri
 - GitHub repo: `git@github.com:gduval78/PhotoVideoBackup.git`
 - To publish: edit the `Documentation/site/*.py` files (and `images/`), run `build_site.py`, commit and `git push origin main`.
 - Screenshots are in `images/` at the repo root.
+- **The guide follows the builds.** `images/manifest.json` records, for every screenshot, the app version it is accurate for (`version`) and what it shows (`note`). `python3 Documentation/site/check_docs.py` (run automatically by `build_site.py`) fails when a language's `UI["version_line"]` does not name the current iOS major.minor (`MARKETING_VERSION`), when a figure has no image or no manifest entry, and **warns (STALE)** for a screenshot older than the current major.minor of its platform (`android_*` = Android `appVersion`, the rest = iOS); `--strict` turns STALE into an error. At each version bump: update `version_line`, retake or look again at every STALE screenshot, then bump its manifest `version` — never without having looked at the screen. Add a manifest entry for every new figure.
+- **Taking iPhone screenshots** (2026-11-15, 2.7.0): they are 1206×2622 PNGs in English, taken in the iPhone 17 Pro simulator (`xcrun simctl io <udid> screenshot file.png`, status bar at 9:41, app launched with `-AppleLanguages "(en)"`). The simulator has 10 sample photos, enough for a backup, the report and Browse; a backup that short cannot show the progress card, and the first tap after a tab switch or a sheet dismissal is sometimes swallowed (tap twice). Use plain example names ("Anna's iPhone").
 - `Documentation/UserGuide.md` only explains the generator (the guide itself is `Documentation/site/*.py`).
 - **History note:** docs used to live in a `docs-publish/` submodule pointing at this same repo. That self-referential submodule caused `main` (app) and the docs line to diverge; it was removed in 2.2.1. The pre-removal docs history is preserved on the `origin/docs-backup` branch. Do **not** re-introduce a docs submodule.
 
@@ -478,7 +480,7 @@ Use `AppConstants.supportEmail` everywhere an email address is needed (Settings 
 1. **Update `Documentation/site/en.py`, then the 7 other languages** (`fr de es it pt zh ru` — same sections/blocks, button names taken from `Localizable.xcstrings`), and run `build_site.py` (it fails if a language drifts). Version line is in each file's `UI["version_line"]`. The user cannot do this without reading the code; you can.
 2. **Update the privacy policy** (`PRIVACY` in each language file) if the app starts touching new data or the network.
 3. **Update the Version Changelog** below (already in CLAUDE.md).
-4. **Identify screenshots that need retaking** — you cannot take device screenshots yourself. At the end of the session, list explicitly which screenshots in `images/` (repo root) are now stale and what the new screen should show, so the user knows exactly what to capture. Common candidates:
+4. **Retake the screenshots that changed** — iPhone ones can be taken in the simulator (see above), Android ones need the emulator/device; then update `images/manifest.json`. List what could not be retaken (`check_docs.py` prints it as STALE) and what the screen should show, so the user knows exactly what to capture. Common candidates:
    - Settings screen: any time a new setting is added or a section changes
    - Dashboard/History/Report: any time a new status, badge, or row format changes
    - Browse tab: any time navigation depth or grid layout changes

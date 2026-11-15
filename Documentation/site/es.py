@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "En iPhone, una instalación gratuita incluye <b>una</b> copia de seguridad. Si creas más y luego pierdes Pro (por ejemplo, tras un reembolso), no se eliminan: permanecen en la lista, bloqueadas, hasta que vuelvas a actualizar. Tu primera copia sigue funcionando mientras solo use funciones gratuitas (la fototeca, un disco o una carpeta). Una copia que tenga un NAS o un segundo destino necesita Pro para ejecutarse. ¿Ya compraste Pro en otro dispositivo? Abre <b>Ajustes → Pro → Restaurar compras</b>."),
         ("fig", "paywall", "La pantalla de actualización. Ábrela cuando quieras desde la pestaña Ajustes."),
+        ("fig", "settings_top", "Ajustes → Pro: actualizar a Pro o restaurar una compra hecha en otro dispositivo."),
     ]),
     ("need", "Lo que necesitas", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Define el nombre del dispositivo y el destino", [
         ("ol", ["Abre la pestaña <b>Ajustes</b>. En la sección <b>Dispositivo</b>, escribe un <b>nombre de carpeta</b> — por ejemplo <i>iPhone de Ana</i> o <i>Pixel 8</i>. Será el nombre de la carpeta en la unidad, de modo que dos móviles que copian en la misma unidad quedan separados. Una copia no empieza hasta que haya un nombre.", "Conecta tu unidad.", "<b>iPhone / iPad</b>: abre la pestaña <b>Copias</b>, toca <b>Nueva copia</b> (o <b>+</b>), elige <i>Fototeca → unidad externa</i>, toca <b>Elegir…</b> y selecciona la unidad, o una carpeta de ella, en el explorador de archivos del sistema. <b>Android</b>: en <b>Destinos</b>, toca <b>Elegir…</b> y selecciona la unidad o una carpeta (también en el almacenamiento del móvil).", "El nombre de la unidad aparece en la tarjeta de la copia (iPhone) o en la pestaña Copia (Android), con su espacio libre. Solo lo haces una vez: la aplicación reconoce la unidad la próxima vez."]),
-        ("fig", "settings_configured", "Ajustes: nombre del dispositivo y primer destino."),
+        ("fig", "backups_new", "Nueva copia: elige un punto de partida."),
+        ("fig", "backups_create", "Nueva copia: elige el disco, un nombre de carpeta para este teléfono y un nombre para la copia."),
         ("note", "Un destino también puede ser una carpeta de <b>iCloud Drive</b> (iPhone) — la aplicación libera la copia local cuando iCloud confirma la subida, para que el móvil no se llene. Si aun así el iPhone está casi lleno (menos de unos 1 GB libres), la copia <b>se pausa sola</b> y continúa cuando vuelve a haber espacio; si no mejora tras unos minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copia tus fotos y vídeos", [
         ("p", "<b>iPhone / iPad</b>: abre la pestaña <b>Copias</b>. Cada copia es una tarjeta con su nombre, su origen y su destino, y el espacio libre de su unidad. Toca <b>Iniciar</b>. Con Pro puedes crear varias copias — por ejemplo una a una unidad y otra a un NAS — cada una con sus propios ajustes: pulsación larga en una tarjeta y <b>Ajustes</b>. <b>Android</b>: abre la pestaña <b>Copia</b>. Arriba ves tus destinos con su espacio libre. En <b>Orígenes</b>, la fila <b>Fototeca</b> muestra el nombre de tu dispositivo. Toca su botón <b>Copia</b>."),
-        ("fig", "dashboard_ready", "La pestaña Copia: destino conectado, biblioteca de fotos lista."),
+        ("fig", "backups_tab", "La pestaña Copias: una tarjeta por copia, con su espacio libre y un botón Ejecutar."),
+        ("fig", "profile_settings", "Los ajustes propios de una copia (pulsación larga en su tarjeta): destinos, estructura de carpetas, límite de archivos, nombres."),
         ("p", "La aplicación analiza la biblioteca y después copia. La <b>primera copia es la más larga</b>; las siguientes solo copian lo nuevo y son mucho más rápidas."),
         ("ul", ["Las fotos guardadas solo en iCloud / Google Fotos se descargan primero — hace falta conexión y algo de tiempo.", "La aplicación copia cada archivo directamente al destino, así que funciona incluso con el móvil casi lleno.", "Puedes salir de la aplicación: una notificación te avisa cuando termina la copia."]),
     ]),

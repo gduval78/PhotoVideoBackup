@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "No iPhone, uma instalação gratuita inclui <b>uma</b> cópia de segurança. Se criar mais e depois perder o Pro (por exemplo, após um reembolso), não são eliminadas: ficam na lista, bloqueadas, até voltar a atualizar. A sua primeira cópia continua a funcionar enquanto usar apenas funcionalidades gratuitas (a fototeca, um disco ou uma pasta). Uma cópia com NAS ou um segundo destino precisa do Pro para ser executada. Já comprou o Pro noutro dispositivo? Abra <b>Definições → Pro → Restaurar compras</b>."),
         ("fig", "paywall", "O ecrã de atualização. Abra-o quando quiser a partir do separador Definições."),
+        ("fig", "settings_top", "Definições → Pro: atualizar para Pro ou restaurar uma compra feita noutro dispositivo."),
     ]),
     ("need", "O que precisa", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Defina o nome do dispositivo e o destino", [
         ("ol", ["Abra o separador <b>Definições</b>. Na secção <b>Dispositivo</b>, escreva um <b>nome da pasta</b> — por exemplo <i>iPhone da Ana</i> ou <i>Pixel 8</i>. Passa a ser o nome da pasta na unidade, de modo que dois telemóveis que copiam para a mesma unidade ficam separados. Uma cópia não arranca enquanto não houver um nome.", "Ligue a sua unidade.", "<b>iPhone / iPad</b>: abra o separador <b>Cópias</b>, toque em <b>Nova cópia</b> (ou <b>+</b>), escolha <i>Biblioteca de fotos → disco externo</i>, toque em <b>Escolher…</b> e selecione a unidade, ou uma pasta dela, no explorador de ficheiros do sistema. <b>Android</b>: em <b>Destinos</b>, toque em <b>Escolher…</b> e selecione a unidade ou uma pasta (também no armazenamento do telemóvel).", "O nome da unidade aparece no cartão da cópia (iPhone) ou no separador Backup (Android), com o espaço livre. Só o faz uma vez: da próxima vez a aplicação reconhece a unidade."]),
-        ("fig", "settings_configured", "Definições: nome do dispositivo e primeiro destino."),
+        ("fig", "backups_new", "Nova cópia: escolha um ponto de partida."),
+        ("fig", "backups_create", "Nova cópia: escolha o disco, um nome de pasta para este telefone e um nome para a cópia."),
         ("note", "Um destino também pode ser uma pasta do <b>iCloud Drive</b> (iPhone) — a aplicação liberta a cópia local quando o iCloud confirma o envio, para que o telemóvel não encha. Se mesmo assim o iPhone estiver quase cheio (menos de cerca de 1 GB livres), a cópia <b>pausa sozinha</b> e continua quando voltar a haver espaço; se nada melhorar ao fim de alguns minutos, termina como <b>Parcial</b>."),
     ]),
     ("photos", "Copie as suas fotos e vídeos", [
         ("p", "<b>iPhone / iPad</b>: abra o separador <b>Cópias</b>. Cada cópia é um cartão com o seu nome, a origem e o destino, e o espaço livre do seu disco. Toque em <b>Iniciar</b>. Com Pro pode criar várias cópias — por exemplo uma para um disco e outra para um NAS — cada uma com as suas definições: toque longo num cartão e depois em <b>Definições</b>. <b>Android</b>: abra o separador <b>Backup</b>. Em cima vê os seus destinos com o espaço livre. Em <b>Origens</b>, a linha <b>Biblioteca de fotos</b> mostra o nome do seu dispositivo. Toque no botão <b>Backup</b>."),
-        ("fig", "dashboard_ready", "O separador Backup: destino ligado, biblioteca de fotos pronta."),
+        ("fig", "backups_tab", "O separador Cópias: um cartão por cópia, com o espaço livre e um botão Executar."),
+        ("fig", "profile_settings", "As definições próprias de uma cópia (prima longamente o cartão): destinos, estrutura de pastas, limite de ficheiros, nomes."),
         ("p", "A aplicação analisa a biblioteca e depois copia. A <b>primeira cópia é a mais demorada</b>; as seguintes só copiam o que é novo e são muito mais rápidas."),
         ("ul", ["As fotos guardadas apenas no iCloud / Google Fotos são primeiro transferidas — é preciso ligação e algum tempo.", "A aplicação copia cada ficheiro diretamente para o destino, por isso funciona mesmo com o telemóvel quase cheio.", "Pode sair da aplicação: uma notificação avisa quando a cópia termina."]),
     ]),

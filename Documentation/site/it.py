@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "Su iPhone, un'installazione gratuita include <b>un</b> backup. Se ne crei altri e poi perdi Pro (ad esempio dopo un rimborso), non vengono eliminati: restano nell'elenco, bloccati, finché non passi di nuovo a Pro. Il tuo primo backup continua a funzionare finché usa solo funzioni gratuite (la libreria foto, un disco o una cartella). Un backup con un NAS o una seconda destinazione richiede Pro per essere eseguito. Hai già acquistato Pro su un altro dispositivo? Apri <b>Impostazioni → Pro → Ripristina acquisti</b>."),
         ("fig", "paywall", "La schermata di aggiornamento. Aprila quando vuoi dalla scheda Impostazioni."),
+        ("fig", "settings_top", "Impostazioni → Pro: passa a Pro o ripristina un acquisto fatto su un altro dispositivo."),
     ]),
     ("need", "Che cosa ti serve", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Imposta il nome del dispositivo e la destinazione", [
         ("ol", ["Apri la scheda <b>Impostazioni</b>. Nella sezione <b>Dispositivo</b>, scrivi un <b>nome cartella</b> — per esempio <i>iPhone di Anna</i> o <i>Pixel 8</i>. Diventa il nome della cartella sull'unità, così due telefoni che salvano sulla stessa unità restano separati. Un backup non parte finché non c'è un nome.", "Collega la tua unità.", "<b>iPhone / iPad</b>: apri la scheda <b>Backup</b>, tocca <b>Nuovo backup</b> (o <b>+</b>), scegli <i>Libreria foto → disco esterno</i>, poi tocca <b>Scegli…</b> e seleziona l'unità, o una cartella al suo interno, nel gestore file del sistema. <b>Android</b>: in <b>Destinazioni</b>, tocca <b>Scegli…</b> e seleziona l'unità o una cartella (anche nella memoria del telefono).", "Il nome dell'unità appare sulla scheda del backup (iPhone) o nella scheda Backup (Android), con lo spazio libero. Lo fai una volta sola: la prossima volta l'app riconosce l'unità."]),
-        ("fig", "settings_configured", "Impostazioni: nome del dispositivo e prima destinazione."),
+        ("fig", "backups_new", "Nuovo backup: scegli un punto di partenza."),
+        ("fig", "backups_create", "Nuovo backup: scegli il disco, un nome di cartella per questo telefono e un nome per il backup."),
         ("note", "Una destinazione può anche essere una cartella di <b>iCloud Drive</b> (iPhone) — l'app libera la copia locale quando iCloud conferma il caricamento, così il telefono non si riempie. Se l'iPhone è comunque quasi pieno (meno di circa 1 GB liberi), il backup <b>si mette in pausa da solo</b> e riprende appena torna spazio; se dopo alcuni minuti nulla migliora, si ferma come <b>Parziale</b>."),
     ]),
     ("photos", "Copia le tue foto e i tuoi video", [
         ("p", "<b>iPhone / iPad</b>: apri la scheda <b>Backup</b>. Ogni backup è una carta con il suo nome, l'origine e la destinazione, e lo spazio libero del suo disco. Tocca <b>Avvia</b>. Con Pro puoi creare più backup — per esempio uno su un disco e uno su un NAS — ciascuno con le proprie impostazioni: pressione prolungata su una carta, poi <b>Impostazioni</b>. <b>Android</b>: apri la scheda <b>Backup</b>. In alto vedi le tue destinazioni con lo spazio libero. In <b>Origini</b>, la riga <b>Libreria foto</b> mostra il nome del dispositivo. Tocca il suo pulsante <b>Backup</b>."),
-        ("fig", "dashboard_ready", "La scheda Backup: destinazione collegata, libreria foto pronta."),
+        ("fig", "backups_tab", "La scheda Backup: una scheda per ogni backup, con lo spazio libero e un pulsante Avvia."),
+        ("fig", "profile_settings", "Le impostazioni proprie di un backup (pressione prolungata sulla scheda): destinazioni, struttura delle cartelle, limite di file, denominazione."),
         ("p", "L'app analizza la libreria e poi copia. Il <b>primo backup è il più lungo</b>; i successivi copiano solo il nuovo e sono molto più veloci."),
         ("ul", ["Le foto presenti solo su iCloud / Google Foto vengono prima scaricate — servono una connessione e un po' di tempo.", "L'app copia ogni file direttamente nella destinazione, quindi funziona anche con il telefono quasi pieno.", "Puoi uscire dall'app: una notifica ti avvisa quando il backup finisce."]),
     ]),

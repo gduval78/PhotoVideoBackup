@@ -31,6 +31,7 @@ GUIDE = [
         ]),
         ("note", "Auf dem iPhone enthält die kostenlose Installation <b>eine</b> Sicherung. Wenn Sie weitere anlegen und später Pro verlieren (zum Beispiel nach einer Erstattung), werden sie nicht gelöscht: Sie bleiben gesperrt in der Liste, bis Sie wieder auf Pro upgraden. Ihre erste Sicherung läuft weiter, solange sie nur kostenlose Funktionen nutzt (die Fotomediathek, ein Laufwerk oder ein Ordner). Eine Sicherung mit NAS oder einem zweiten Ziel benötigt Pro zum Ausführen. Pro bereits auf einem anderen Gerät gekauft? Öffnen Sie <b>Einstellungen → Pro → Käufe wiederherstellen</b>."),
         ("fig", "paywall", "Der Upgrade-Bildschirm. Sie öffnen ihn jederzeit im Tab „Einstellungen“."),
+        ("fig", "settings_top", "Einstellungen → Pro: auf Pro upgraden oder einen auf einem anderen Gerät getätigten Kauf wiederherstellen."),
     ]),
     ("need", "Was Sie brauchen", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -48,12 +49,14 @@ GUIDE = [
     ]),
     ("setup", "Gerätenamen und Ziel festlegen", [
         ("ol", ["Öffnen Sie den Tab <b>Einstellungen</b>. Geben Sie im Abschnitt <b>Gerät</b> einen <b>Ordnernamen</b> ein — zum Beispiel <i>Annas iPhone</i> oder <i>Pixel 8</i>. Er wird zum Ordnernamen auf dem Laufwerk, sodass zwei Telefone auf demselben Laufwerk getrennt bleiben. Ohne Namen startet kein Backup.", "Schließen Sie Ihr Laufwerk an.", "<b>iPhone / iPad</b>: Öffnen Sie den Tab <b>Backups</b>, tippen Sie auf <b>Neues Backup</b> (oder <b>+</b>), wählen Sie <i>Fotomediathek → externes Laufwerk</i>, tippen Sie dann auf <b>Auswählen…</b> und wählen Sie das Laufwerk oder einen Ordner darauf im Dateibrowser des Systems. <b>Android</b>: Tippen Sie unter <b>Ziele</b> auf <b>Auswählen…</b> und wählen Sie das Laufwerk oder einen Ordner (auch im Telefonspeicher).", "Der Laufwerksname erscheint auf der Karte des Backups (iPhone) oder im Tab Backup (Android), mit dem freien Speicherplatz. Das tun Sie nur einmal: Beim nächsten Mal erkennt die App das Laufwerk."]),
-        ("fig", "settings_configured", "Einstellungen: Gerätename und erstes Ziel."),
+        ("fig", "backups_new", "Neue Sicherung: Wählen Sie einen Ausgangspunkt."),
+        ("fig", "backups_create", "Neue Sicherung: Laufwerk, Ordnername für dieses Telefon und Name der Sicherung festlegen."),
         ("note", "Ein Ziel kann auch ein Ordner in <b>iCloud Drive</b> sein (iPhone) — die App gibt die lokale Kopie frei, sobald iCloud den Upload bestätigt, damit das Telefon nicht volläuft. Ist das iPhone trotzdem fast voll (weniger als etwa 1 GB frei), <b>pausiert das Backup selbstständig</b> und läuft weiter, sobald wieder Platz da ist; tut sich nach einigen Minuten nichts, endet es als <b>Teilweise</b>."),
     ]),
     ("photos", "Fotos und Videos sichern", [
         ("p", "<b>iPhone / iPad</b>: Öffnen Sie den Tab <b>Backups</b>. Jedes Backup ist eine Karte mit Name, Quelle und Ziel sowie dem freien Speicherplatz des Laufwerks. Tippen Sie auf <b>Starten</b>. Mit Pro können Sie mehrere Backups anlegen — etwa eines auf ein Laufwerk und eines auf ein NAS — jedes mit eigenen Einstellungen: Karte lange drücken, dann <b>Einstellungen</b>. <b>Android</b>: Öffnen Sie den Tab <b>Backup</b>. Oben sehen Sie Ihre Ziele mit freiem Speicherplatz. Unter <b>Quellen</b> zeigt die Zeile <b>Fotomediathek</b> Ihren Gerätenamen. Tippen Sie auf <b>Backup</b>."),
-        ("fig", "dashboard_ready", "Der Tab Backup: Ziel verbunden, Fotomediathek bereit."),
+        ("fig", "backups_tab", "Der Tab „Sicherungen“: eine Karte pro Sicherung, mit freiem Speicherplatz und der Schaltfläche „Starten“."),
+        ("fig", "profile_settings", "Die eigenen Einstellungen einer Sicherung (Karte lange drücken): Ziele, Ordnerstruktur, Dateilimit, Benennung."),
         ("p", "Die App durchsucht die Mediathek und kopiert dann. Das <b>erste Backup dauert am längsten</b>; die folgenden kopieren nur Neues und sind viel schneller."),
         ("ul", ["Fotos, die nur in iCloud / Google Fotos liegen, werden zuerst geladen — das braucht eine Verbindung und etwas Zeit.", "Die App kopiert jede Datei direkt zum Ziel, es funktioniert also auch bei fast vollem Telefon.", "Sie können die App verlassen: Eine Benachrichtigung meldet das Ende des Backups."]),
     ]),
