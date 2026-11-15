@@ -61,7 +61,7 @@ struct PaywallView: View {
                 icon: "photo.on.rectangle.angled",
                 color: .blue,
                 title: "Photos Library Backup",
-                subtitle: "Back up your iPhone photo library to an SSD",
+                subtitle: "Back up your iPhone photo library to one folder: an external drive or iCloud Drive",
                 isFree: true
             )
             Divider().padding(.leading, 50)
@@ -86,6 +86,22 @@ struct PaywallView: View {
                 color: .purple,
                 title: "Second SSD Mirror",
                 subtitle: "Redundant backup to a second SSD simultaneously",
+                isFree: false
+            )
+            Divider().padding(.leading, 50)
+            featureRow(
+                icon: "server.rack",
+                color: .teal,
+                title: "NAS (SMB)",
+                subtitle: "Back up to your NAS over Wi-Fi, or remotely through a VPN",
+                isFree: false
+            )
+            Divider().padding(.leading, 50)
+            featureRow(
+                icon: "camera.filters",
+                color: .pink,
+                title: "LUT Grading",
+                subtitle: "Grade your videos with .cube LUTs and export them in HEVC",
                 isFree: false
             )
         }

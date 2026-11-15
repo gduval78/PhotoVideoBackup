@@ -13,6 +13,7 @@ struct SettingsView: View {
     private enum Field { case deviceName, fileLimit }
     @FocusState private var focusedField: Field?
     @State private var limitText: String = ""   // editing buffer, decoupled from @AppStorage
+    @State private var showPaywall = false
     @AppStorage("deviceName") private var deviceName: String = ""
     @AppStorage("folderOrganization") private var folderOrganizationRaw: String = FolderOrganization.byDate.rawValue
     @AppStorage("backupFileLimit") private var backupFileLimit: Int = 0
@@ -89,6 +90,23 @@ struct SettingsView: View {
                 Text("These are the defaults for new backups. Each backup then has its own settings: Backups tab, long press a backup, Settings.")
             }
 
+            Section("Pro") {
+                if store.isPremium {
+                    Label("Pro unlocked", systemImage: "checkmark.seal.fill")
+                        .foregroundStyle(.green)
+                } else {
+                    Button { showPaywall = true } label: {
+                        Label("Upgrade to Pro", systemImage: "star.circle.fill")
+                    }
+                }
+                Button {
+                    Task { await store.restorePurchases() }
+                } label: {
+                    Label("Restore Purchases", systemImage: "arrow.clockwise")
+                }
+                .disabled(store.isLoading)
+            }
+
             Section("Language") {
                 @Bindable var lm = languageManager
                 Picker("Language", selection: $lm.selectedCode) {
@@ -148,6 +166,7 @@ struct SettingsView: View {
                 Button("Done") { focusedField = nil }
             }
         }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
         .onAppear { loadNames() }
         .onDisappear { commitLimit() }
     }

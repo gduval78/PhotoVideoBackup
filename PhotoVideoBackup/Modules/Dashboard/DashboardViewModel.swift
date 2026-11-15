@@ -536,6 +536,12 @@ final class DashboardViewModel {
             backupError = String(localized: "This backup needs the Pro upgrade.")
             return
         }
+        // A NAS or a second destination is Pro. Refuse with a message rather than silently
+        // dropping the extra destination and running a backup the user thinks is doubled.
+        if !StoreManager.shared.isPremium && (profile.usesNAS || profile.destinations.count > 1) {
+            backupError = String(localized: "This backup needs the Pro upgrade.")
+            return
+        }
         let dm = DestinationManager.shared
         let urls = profile.folderKeys.compactMap { dm.resolveBookmark(forKey: $0) }
         guard urls.count == profile.folderKeys.count else {

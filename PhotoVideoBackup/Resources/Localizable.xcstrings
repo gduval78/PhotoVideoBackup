@@ -3539,60 +3539,6 @@
         }
       }
     },
-    "Back up your iPhone photo library to an SSD" : {
-      "comment" : "Paywall feature subtitle",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone-Fotomediathek auf SSD sichern"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Back up your iPhone photo library to an SSD"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haga copia de su biblioteca de Fotos en un SSD"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sauvegardez votre bibliothèque Photos iPhone sur un SSD"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Salva la libreria foto del tuo iPhone su un SSD"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faça backup da sua biblioteca de fotos do iPhone para um SSD"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Резервное копирование библиотеки фото на SSD"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将 iPhone 照片库备份到 SSD"
-          }
-        }
-      }
-    },
     "Back up your media to an external SSD\nin just a few taps." : {
       "comment" : "Onboarding subtitle",
       "localizations" : {
@@ -23416,6 +23362,276 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Выберите папку, которая не находится внутри другого места назначения этой копии и не содержит его: иначе файлы будут записаны дважды в одном месте."
+          }
+        }
+      }
+    },
+    "Back up your iPhone photo library to one folder: an external drive or iCloud Drive" : {
+      "comment" : "Paywall feature subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back up your iPhone photo library to one folder: an external drive or iCloud Drive"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegardez votre photothèque iPhone dans un dossier : disque externe ou iCloud Drive"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern Sie Ihre iPhone-Fotomediathek in einem Ordner: externes Laufwerk oder iCloud Drive"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia tu fototeca del iPhone en una carpeta: disco externo o iCloud Drive"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva la libreria foto dell'iPhone in una cartella: disco esterno o iCloud Drive"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faça backup da fototeca do iPhone numa pasta: disco externo ou iCloud Drive"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 iPhone 照片库备份到一个文件夹：外置硬盘或 iCloud 云盘"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резервное копирование фототеки iPhone в одну папку: внешний диск или iCloud Drive"
+          }
+        }
+      }
+    },
+    "Back up to your NAS over Wi-Fi, or remotely through a VPN" : {
+      "comment" : "Paywall feature subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back up to your NAS over Wi-Fi, or remotely through a VPN"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegardez vers votre NAS en Wi-Fi, ou à distance via un VPN"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern Sie auf Ihr NAS per WLAN oder aus der Ferne über ein VPN"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia a tu NAS por Wi-Fi o de forma remota mediante una VPN"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva sul tuo NAS via Wi-Fi o da remoto tramite VPN"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faça backup para o seu NAS por Wi-Fi ou remotamente através de uma VPN"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 Wi-Fi 或 VPN 远程备份到您的 NAS"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резервное копирование на NAS по Wi-Fi или удалённо через VPN"
+          }
+        }
+      }
+    },
+    "LUT Grading" : {
+      "comment" : "Paywall feature title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT Grading"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étalonnage LUT"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT-Farbkorrektur"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gradación con LUT"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color grading con LUT"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correção de cor com LUT"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT 调色"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цветокоррекция LUT"
+          }
+        }
+      }
+    },
+    "Grade your videos with .cube LUTs and export them in HEVC" : {
+      "comment" : "Paywall feature subtitle",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade your videos with .cube LUTs and export them in HEVC"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étalonnez vos vidéos avec des LUT .cube et exportez-les en HEVC"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korrigieren Sie Ihre Videos mit .cube-LUTs und exportieren Sie sie in HEVC"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gradúa tus vídeos con LUT .cube y expórtalos en HEVC"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applica LUT .cube ai tuoi video ed esportali in HEVC"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corrija a cor dos seus vídeos com LUTs .cube e exporte em HEVC"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 .cube LUT 为视频调色并导出为 HEVC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Применяйте LUT .cube к видео и экспортируйте в HEVC"
+          }
+        }
+      }
+    },
+    "Pro unlocked" : {
+      "comment" : "Settings: Pro status",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro unlocked"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro débloqué"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro freigeschaltet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro desbloqueado"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro sbloccato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro desbloqueado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已解锁 Pro"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro разблокирован"
           }
         }
       }
