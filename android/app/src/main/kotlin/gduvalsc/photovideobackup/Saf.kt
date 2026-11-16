@@ -10,6 +10,10 @@ import android.os.storage.StorageManager
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
 import gduvalsc.pvb.core.BrowsableTarget
+import gduvalsc.pvb.core.Diag
+import gduvalsc.pvb.core.DocumentRegistry
+import gduvalsc.pvb.core.Remembered
+import gduvalsc.pvb.core.verifyRemembered
 import gduvalsc.pvb.core.TargetEntry
 import gduvalsc.pvb.core.FsNode
 import gduvalsc.pvb.core.MediaFile
@@ -78,6 +82,25 @@ object Saf {
                 if (c.moveToFirst()) node(treeUri, c) else null
             }
         }.getOrNull()
+
+    /**
+     * One document by its id, asked directly (not through the parent's listing). Tells "the provider says
+     * it is gone" from "the provider did not answer": only the first may conclude a deletion.
+     */
+    fun lookupById(context: Context, treeUri: Uri, docId: String): gduvalsc.pvb.core.Remembered<SafNode> = try {
+        val uri = DocumentsContract.buildDocumentUriUsingTree(treeUri, docId)
+        val cursor = context.contentResolver.query(uri, COLUMNS, null, null, null)
+        if (cursor == null) gduvalsc.pvb.core.Remembered.Unknown
+        else cursor.use { c ->
+            if (c.moveToFirst()) gduvalsc.pvb.core.Remembered.Found(node(treeUri, c)) else gduvalsc.pvb.core.Remembered.Gone
+        }
+    } catch (e: FileNotFoundException) {
+        gduvalsc.pvb.core.Remembered.Gone
+    } catch (e: IllegalArgumentException) {
+        gduvalsc.pvb.core.Remembered.Gone
+    } catch (e: Exception) {
+        gduvalsc.pvb.core.Remembered.Unknown
+    }
 
     fun children(context: Context, parent: SafNode): List<SafNode> {
         val uri = DocumentsContract.buildChildDocumentsUriUsingTree(parent.treeUri, parent.docId)
@@ -150,6 +173,7 @@ class SafTarget(
     private val cr = context.contentResolver
     private val rootDocId = DocumentsContract.getTreeDocumentId(treeUri)
     private val listings = HashMap<String, MutableMap<String, SafNode>>()
+    private val registry: DocumentRegistry = SafDocRegistry(context, treeUri)
 
     override val rootIdentifier: String = treeUri.toString()
     override val isRemote: Boolean = false
@@ -163,11 +187,38 @@ class SafTarget(
     /** The node at [components] below the root, or null if any folder on the way is missing. */
     private fun lookup(components: List<String>): SafNode? {
         var cur = rootNode()
-        for (c in components) cur = listing(cur)[c] ?: return null
+        for ((i, c) in components.withIndex()) {
+            cur = listing(cur)[c] ?: recovered(cur, components.take(i + 1)) ?: return null
+        }
         return cur
     }
 
-    private fun createChild(parent: SafNode, name: String, mime: String): SafNode {
+    /**
+     * The document the app remembers at [components] when the parent's listing does not show it. A cloud
+     * provider (Drive…) can list late: a name missing from the listing is then NOT proof of a deletion,
+     * so the remembered document id is asked about directly — still there ⇒ the listing is late; gone ⇒
+     * deleted. Without this, a quick second backup copies the file again (a second file with the same
+     * name, which Drive accepts) and recreates the day folder.
+     */
+    private fun recovered(parent: SafNode, components: List<String>): SafNode? {
+        val rel = components.joinToString("/")
+        val wasRemembered = registry.get(rel) != null
+        val node = verifyRemembered(rel, registry) { id ->
+            when (val a = Saf.lookupById(context, treeUri, id)) {
+                is Remembered.Found -> if (a.doc.name == components.last()) a else Remembered.Gone
+                else -> a
+            }
+        }
+        if (node == null) {
+            if (wasRemembered) Diag.write("[SAF_DOC] $rel: listed as absent, remembered document ${if (registry.get(rel) == null) "is gone (deleted)" else "unanswered"}")
+            return null
+        }
+        Diag.write("[SAF_DOC] $rel: absent from the listing but the provider still has it (late listing)")
+        synchronized(this) { listings[parent.docId]?.put(components.last(), node) }
+        return node
+    }
+
+    private fun createChild(parent: SafNode, name: String, mime: String, rel: String): SafNode {
         val created = DocumentsContract.createDocument(cr, parent.uri, mime, name)
             ?: throw IOException("Cannot create $name")
         val node = Saf.query(context, created, treeUri) ?: throw IOException("Cannot read back $name")
@@ -176,14 +227,20 @@ class SafTarget(
             throw IOException("Name already used: $name")
         }
         synchronized(this) { listings.getOrPut(parent.docId) { HashMap() }[name] = node }
+        registry.put(rel, node.docId)
         return node
     }
 
     private fun ensureDir(components: List<String>): SafNode {
         var cur = rootNode()
-        for (c in components) {
-            cur = listing(cur)[c]?.also { if (!it.isDirectory) throw IOException("$c is not a folder") }
-                ?: createChild(cur, c, Document.MIME_TYPE_DIR)
+        for ((i, c) in components.withIndex()) {
+            val sub = components.take(i + 1)
+            val found = listing(cur)[c] ?: recovered(cur, sub)
+            cur = if (found != null) {
+                if (!found.isDirectory) throw IOException("$c is not a folder")
+                registry.put(sub.joinToString("/"), found.docId)
+                found
+            } else createChild(cur, c, Document.MIME_TYPE_DIR, sub.joinToString("/"))
         }
         return cur
     }
@@ -206,7 +263,7 @@ class SafTarget(
         val parts = rel.split('/')
         val dir = ensureDir(parts.dropLast(1))
         val name = parts.last()
-        val node = listing(dir)[name] ?: createChild(dir, name, "application/octet-stream")
+        val node = listing(dir)[name] ?: recovered(dir, parts) ?: createChild(dir, name, "application/octet-stream", rel)
         return cr.openOutputStream(node.uri, "wt") ?: throw IOException("Cannot open $name for writing")
     }
 
@@ -217,6 +274,7 @@ class SafTarget(
 
     override suspend fun delete(rel: String) {
         val parts = rel.split('/')
+        registry.remove(rel)
         val parent = lookup(parts.dropLast(1)) ?: return
         val node = synchronized(this) { listings[parent.docId]?.remove(parts.last()) } ?: return
         runCatching { DocumentsContract.deleteDocument(cr, node.uri) }
