@@ -20,10 +20,10 @@ android {
         val appVersion = "2.7.0"
         versionName = appVersion
         // 2.7.0: code 20700 was burned by a deleted Play draft (Play never reuses a code); 20701 was the first
-        // 2.7.0 upload, 20702 added the billing diagnostics, 20703 remembers provider document ids (Drive).
-        // Same versionName, a higher code each time.
+        // 2.7.0 upload, 20702 added the billing diagnostics, 20703 remembers provider document ids (Drive),
+        // 20704 reuses a folder that differs only by capitalisation (exFAT). Same versionName, a higher code each time.
         versionCode = appVersion.split(".").let { it[0].toInt() * 10000 + it[1].toInt() * 100 + it[2].toInt() } +
-            (if (appVersion == "2.7.0") 3 else 0)
+            (if (appVersion == "2.7.0") 4 else 0)
         // The 8 languages of the iOS app: only these are packaged (libraries bring dozens of others).
         resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "ru", "ja", "ko", "hi", "ar")
     }
