@@ -13,6 +13,7 @@ import gduvalsc.pvb.core.BrowsableTarget
 import gduvalsc.pvb.core.Diag
 import gduvalsc.pvb.core.DocumentRegistry
 import gduvalsc.pvb.core.Remembered
+import gduvalsc.pvb.core.findIgnoringCase
 import gduvalsc.pvb.core.verifyRemembered
 import gduvalsc.pvb.core.TargetEntry
 import gduvalsc.pvb.core.FsNode
@@ -205,7 +206,9 @@ class SafTarget(
         val wasRemembered = registry.get(rel) != null
         val node = verifyRemembered(rel, registry) { id ->
             when (val a = Saf.lookupById(context, treeUri, id)) {
-                is Remembered.Found -> if (a.doc.name == components.last()) a else Remembered.Gone
+                // A folder reused under another capitalisation keeps its real name: compare folders ignoring case.
+                is Remembered.Found ->
+                    if (a.doc.name.equals(components.last(), ignoreCase = a.doc.isDirectory)) a else Remembered.Gone
                 else -> a
             }
         }
@@ -224,6 +227,19 @@ class SafTarget(
         val node = Saf.query(context, created, treeUri) ?: throw IOException("Cannot read back $name")
         if (node.name != name) {   // the provider renamed it (name already taken): never accept a different name
             runCatching { DocumentsContract.deleteDocument(cr, created) }
+            if (mime == Document.MIME_TYPE_DIR) {
+                // A volume that ignores capitalisation (exFAT, NTFS…) already holds this folder as "lenovo"
+                // when we ask for "Lenovo": it is the same folder, so reuse it. Never done for a file —
+                // that would overwrite a different file.
+                val fresh = runCatching { Saf.children(context, parent) }.getOrNull().orEmpty().associateBy { it.name }
+                val existing = findIgnoringCase(fresh, name) { it.isDirectory }
+                if (existing != null) {
+                    Diag.write("[SAF_DOC] $rel: the volume already has this folder as \"${existing.name}\" — reused")
+                    synchronized(this) { listings.getOrPut(parent.docId) { HashMap() }[name] = existing }
+                    registry.put(rel, existing.docId)
+                    return existing
+                }
+            }
             throw IOException("Name already used: $name")
         }
         synchronized(this) { listings.getOrPut(parent.docId) { HashMap() }[name] = node }

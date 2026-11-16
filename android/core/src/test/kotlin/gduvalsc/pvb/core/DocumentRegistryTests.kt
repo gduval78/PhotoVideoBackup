@@ -96,6 +96,24 @@ class DocumentRegistryTests {
         assertNull(registry.get("a/b.jpg"))
     }
 
+    // SCENARIO: field case — the SSD (exFAT) already holds "lenovo" when the app asks for the folder "Lenovo"
+    @Test fun folderOfAnotherCapitalisation_isTheSameFolder() {
+        val children = mapOf("lenovo" to "dir", "Photos" to "dir")
+        assertEquals("dir", findIgnoringCase(children, "Lenovo") { it == "dir" })
+    }
+
+    // SCENARIO: a FILE of another capitalisation is never taken for the one we want (it would be overwritten)
+    @Test fun fileOfAnotherCapitalisation_isNotReused() {
+        val children = mapOf("IMG_0001.JPG" to "file")
+        assertNull(findIgnoringCase(children, "img_0001.jpg") { it == "dir" })
+    }
+
+    // SCENARIO: an exact name always wins over a capitalisation variant
+    @Test fun exactNameWins() {
+        val children = mapOf("Lenovo" to "exact", "lenovo" to "other")
+        assertEquals("exact", findIgnoringCase(children, "Lenovo"))
+    }
+
     // SCENARIO: nothing remembered ⇒ the provider is never asked
     @Test fun nothingRemembered_neverAsksTheProvider() {
         var asked = false

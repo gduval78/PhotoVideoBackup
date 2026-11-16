@@ -27,6 +27,15 @@ class InMemoryDocumentRegistry : DocumentRegistry {
     val size: Int get() = ids.size
 }
 
+/**
+ * The child called [name], or — on a volume that does not tell "Lenovo" from "lenovo" (exFAT, NTFS, FAT) —
+ * the one that differs only by capitalisation. [accept] narrows what may match (a folder, never a file:
+ * reusing a file of another capitalisation would overwrite it). An exact match always wins.
+ */
+fun <T> findIgnoringCase(children: Map<String, T>, name: String, accept: (T) -> Boolean = { true }): T? =
+    children[name]?.takeIf(accept)
+        ?: children.entries.firstOrNull { it.key.equals(name, ignoreCase = true) && accept(it.value) }?.value
+
 /** What the provider answers about one remembered document. */
 sealed interface Remembered<out T> {
     class Found<T>(val doc: T) : Remembered<T>
