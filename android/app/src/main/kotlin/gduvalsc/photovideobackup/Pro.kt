@@ -79,10 +79,18 @@ object Pro {
                 details = d
                 price = d.oneTimePurchaseOfferDetails?.formattedPrice
                 productLoadFailed = price == null
-            } else productLoadFailed = true
+                if (price == null) Diag.write("[BILLING_ERROR] query ok but no one-time offer price for ${d.productId}")
+            } else {
+                productLoadFailed = true
+                // The reason the paywall shows "Unable to load product info": Play's response code, its message and,
+                // when the product list is empty, the per-product status (e.g. NOT_FOUND).
+                val unfetched = res.unfetchedProductList.joinToString { "${it.productId}:${it.statusCode}" }
+                Diag.write("[BILLING_ERROR] query code=${r.responseCode} msg=${r.debugMessage} found=${res.productDetailsList.size} unfetched=[$unfetched]")
+            }
         }
         c.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build()) { r, list ->
             if (r.responseCode == BillingClient.BillingResponseCode.OK) onPurchases(r, list)
+            else Diag.write("[BILLING_ERROR] purchases code=${r.responseCode} msg=${r.debugMessage}")
         }
     }
 
