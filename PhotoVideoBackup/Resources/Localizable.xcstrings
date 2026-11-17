@@ -5354,7 +5354,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "透過 Wi-Fi 備份到 NAS — 甚至可遠程"
+            "value" : "透過 Wi-Fi 備份到 NAS — 甚至可遠端"
           }
         }
       }
@@ -9422,7 +9422,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除源檔案"
+            "value" : "刪除來源檔案"
           }
         }
       }
@@ -9506,7 +9506,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除源檔案…"
+            "value" : "刪除來源檔案…"
           }
         }
       }
@@ -11499,7 +11499,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每個檔案在首次複製時就獲得最終名稱，不會先以相機名稱儲存再重新命名。之後將根據該名稱識別重複檔案。關閉後保留原始檔名。"
+            "value" : "每個檔案在首次複製時就獲得最終名稱，不會先以相機名稱儲存再重新命名。之後將根據該名稱辨識重複檔案。關閉後保留原始檔名。"
           }
         }
       }
@@ -14382,7 +14382,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為此來源命名以便於識別。"
+            "value" : "為此來源命名以便於辨識。"
           }
         }
       }
@@ -29343,7 +29343,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "部分備份 — 您的 iCloud 儲存空間已滿，iCloud 拒絕接收新檔案。您的原始檔案是安全的。請釋放 iCloud 空間或選擇其他目的地（外置驅動器或 NAS）。"
+            "value" : "部分備份 — 您的 iCloud 儲存空間已滿，iCloud 拒絕接收新檔案。您的原始檔案是安全的。請釋放 iCloud 空間或選擇其他目的地（外接驅動器或 NAS）。"
           }
         }
       }
@@ -29647,7 +29647,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檔案會先寫入此 iPhone，再由 iOS 自行決定何時上傳到 iCloud。您的 iPhone 僅剩 %@ 可用空間，因此較大的資料庫可能需要數小時，且當 iPhone 或 iCloud 儲存空間已滿時備份可能會停止。外置驅動器或 NAS 更安全，速度也快得多。"
+            "value" : "檔案會先寫入此 iPhone，再由 iOS 自行決定何時上傳到 iCloud。您的 iPhone 僅剩 %@ 可用空間，因此較大的資料庫可能需要數小時，且當 iPhone 或 iCloud 儲存空間已滿時備份可能會停止。外接驅動器或 NAS 更安全，速度也快得多。"
           }
         }
       }
@@ -30631,7 +30631,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "照片圖庫 → 外置驅動器"
+            "value" : "照片圖庫 → 外接驅動器"
           }
         }
       }
@@ -30877,7 +30877,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "相機或 SD 卡 → 外置驅動器"
+            "value" : "相機或 SD 卡 → 外接驅動器"
           }
         }
       }
@@ -30959,7 +30959,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外置驅動器 → iCloud Drive"
+            "value" : "外接驅動器 → iCloud Drive"
           }
         }
       }
@@ -31041,7 +31041,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "照片圖庫 → 外置驅動器 + NAS"
+            "value" : "照片圖庫 → 外接驅動器 + NAS"
           }
         }
       }
@@ -34565,7 +34565,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "將 iPhone 照片庫備份到一個資料夾：外置硬碟或 iCloud 雲盤"
+            "value" : "將 iPhone 照片庫備份到一個資料夾：外接硬碟或 iCloud 雲盤"
           }
         }
       }
@@ -34649,7 +34649,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "透過 Wi-Fi 或 VPN 遠程備份到您的 NAS"
+            "value" : "透過 Wi-Fi 或 VPN 遠端備份到您的 NAS"
           }
         }
       }
