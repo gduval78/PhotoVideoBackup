@@ -33,12 +33,18 @@ Ships with S3 as "remote destinations" in 2.8.0 (shared work: HTTP target plumbi
 
 A single `PUT` of a 4 GB video behind a typical Nextcloud fails: PHP `upload_max_filesize` / `post_max_size`, nginx `client_max_body_size`, **Cloudflare's 100 MB request limit** (free/pro plans), proxy read timeouts. Standard WebDAV has **no resumable or chunked upload**.
 
-Plan in two steps:
+**Decision (2026-11-17): Nextcloud chunked upload ships in 2.8.0 together with the plain `PUT`**, not as a later step. Without it a Nextcloud behind Cloudflare, or any proxy with a body limit, fails on every video — the very case that started this spec.
 
-1. **2.8.0 step 1 — plain `PUT`.** Works for photos and short clips and for servers without such limits (Synology WebDAV Server, Hetzner Storage Box, a Nextcloud on LAN/VPN). A failure caused by size (HTTP 413, a connection reset at the proxy limit) is reported as **"the server refused this file size — check its upload limit"** (own string, 12 languages), not as a generic error, and the file is recorded failed so a re-run retries it.
-2. **2.8.0 step 2 — Nextcloud chunked upload** (`remote.php/dav/uploads/<user>/<uuid>/` with `MKCOL`, numbered chunk `PUT`s, then `MOVE` to the final path with `OC-Total-Length`). Detected at *Test connection* from the server's capabilities (`/ocs/v1.php/cloud/capabilities` → `dav.chunking`), a capability, never a `if nextcloud`. Gives resume of an interrupted file (list the chunks already present) and passes proxy body limits. Abort = `DELETE` the upload folder (otherwise orphan chunks use quota). Chunk size 10 MB by default.
-
-Decide the step-1/step-2 split after the tester answers: **file sizes (drone video?) and whether his Nextcloud is behind Cloudflare**.
+- **Plain `PUT`** for every server, and for files below the chunk threshold. A refusal caused by size (HTTP 413, a connection reset at the proxy limit) is reported as **"the server refused this file size — check its upload limit"** (own string, 12 languages), not as a generic error; the file is recorded failed so a re-run retries it.
+- **Nextcloud/ownCloud chunked upload**, chosen by a **capability** found at *Test connection* (`/ocs/v1.php/cloud/capabilities` → `dav.chunking`), never an `if nextcloud`:
+  1. `MKCOL remote.php/dav/uploads/<user>/<uuid>/` (the `<uuid>` is deterministic per destination path + source SHA-256, so an interrupted upload is found again);
+  2. `PUT` numbered chunks (`000001`, `000002`…) of 10 MB (below Cloudflare's 100 MB limit; configurable constant), each streamed from the file at an offset, one chunk in memory at most; `OC-Total-Length` on the final request;
+  3. `MOVE .file` to `remote.php/dav/files/<user>/<final path>` with `OC-Total-Length` and `Destination`; **`If-None-Match: *` is not honoured on `MOVE`** by all versions, so the name is checked with `PROPFIND` just before the `MOVE` (the name chain `name`, `name-1`… still applies; a race is accepted, as for SMB);
+  4. **Resume**: before sending, `PROPFIND` the upload folder, skip chunks already present with the right size, resend the rest;
+  5. **Abort / failure / Stop**: `DELETE` the upload folder (orphan chunks use quota); stale upload folders older than a day found at the next run are deleted too.
+- **Threshold**: chunked when the capability exists **and** the file is above 100 MB (below it a plain `PUT` is faster and simpler). Without the capability (generic WebDAV, Synology, Hetzner) every file uses a plain `PUT`.
+- **Verification** is unchanged: after the `MOVE`, `GET` the final file and hash it (SHA-256 re-download). A `MOVE` that assembles a corrupted file is caught there.
+- **Progress** is cumulative bytes over chunks, so the progress card and the ETA behave as for SMB.
 
 ## Design points
 
@@ -52,7 +58,7 @@ Decide the step-1/step-2 split after the tester answers: **file sizes (drone vid
 8. **Timeouts**: connect 15 s, per-request idle 60 s; no total timeout on `PUT`/`GET` of a file (progress-based).
 9. **Background (iOS)**: `beginBackgroundTask` as today; background `URLSession` is not attempted.
 10. **Pro gate**: WebDAV destination is Pro, enforced where the NAS is (`ProfileDetailView.requirePro` and at run time). Free = one profile with a folder or iCloud, unchanged.
-11. **Report**: verification text "verified by SHA-256" as for SMB. If step 2 ships, nothing changes in the Report.
+11. **Report**: verification text "verified by SHA-256" as for SMB; chunked or not changes nothing in the Report.
 12. **Browse**: WebDAV destinations listed like `nasEntries`; identity = `scheme|host|port|basePath|user`. Thumbnails / viewer by on-demand download, like the NAS. LUT Grade on WebDAV: same download → grade → upload scheme as the NAS, **after** the target works (mirror `NASBrowserView`; remember it is a separate Browse path, not shared code). LUT assignment key `webdav:<id>:<subPath>` to avoid the known NAS key collision.
 
 ## Work list
@@ -62,7 +68,7 @@ iOS
 - `ProfileDestination.webdav(WebDAVConfig)` + `webdavPasswordAccount` (optional field, no migration); `WebDAVConfig` = url, user, basePath, pinned cert fingerprint, capability flags found at test time (chunking, mtime header).
 - Editor `ProfileWebDAVEditor` modelled on `ProfileNASEditor` (+ *Test connection*: PROPFIND, write + read back + delete a small object, report TLS/auth/size-limit hints), New backup templates ("Photo library → WebDAV", "Drive → WebDAV"), Browse section.
 - Engines: treat as remote (staging rule identical to SMB); `DiskSpacePreflight` unchanged.
-- Tests: `FakeWebDAVServer` (in-process `URLProtocol` stub serving PROPFIND/MKCOL/PUT/GET/DELETE over a temp dir, with switches for 412, 413, 401, 429, ignored `If-None-Match`, slow/timeout) → `WebDAVTargetTests`; PROPFIND parser tests with real Nextcloud / Synology / Apache `mod_dav` / nginx-dav response samples (namespaces, encoded hrefs, `Depth` listing including the collection itself); URL encoding tests (spaces, accents, `#`, `%`, `+`); name-chain test on 412; unreachable ⇒ ledger untouched.
+- Tests: `FakeWebDAVServer` (in-process `URLProtocol` stub serving PROPFIND/MKCOL/PUT/GET/DELETE over a temp dir, with switches for 412, 413, 401, 429, ignored `If-None-Match`, slow/timeout) with a chunking mode (`dav/uploads` MKCOL/chunk PUT/MOVE) → `WebDAVTargetTests`; PROPFIND parser tests with real Nextcloud / Synology / Apache `mod_dav` / nginx-dav response samples (namespaces, encoded hrefs, `Depth` listing including the collection itself); URL encoding tests (spaces, accents, `#`, `%`, `+`); name-chain test on 412; chunk tests (chunk sizing and offsets, resume skips present chunks, abort deletes the upload folder, `MOVE` conflict ⇒ next name, threshold and capability gating); unreachable ⇒ ledger untouched.
 - Live integration test `make test-webdav` against a Nextcloud in Docker (`nextcloud` image) and a bare `dav` server (nginx-dav or `bytemark/webdav`), config file gitignored like `nas-test-config.json`; run on the iOS Simulator (same sandbox reason as `test-nas`). **Test behind a reverse proxy with a body-size limit** to reproduce the 413 case, and with a self-signed certificate.
 - Localization (12 languages), user guide (12/8 as the site stands) with a **Nextcloud setup page** (app password, URL, proxy limits, Cloudflare note), privacy policy (network to the user's own server only), `support/knowledge.md`, changelog row, screenshots + `images/manifest.json`.
 
@@ -72,14 +78,14 @@ Android
 ## Risks and unknowns
 
 - **Server variance** (Nextcloud, ownCloud, Synology, Apache, nginx, Hetzner differ on `If-None-Match`, `MKCOL` on existing folders, `Depth: infinity`, percent-encoding, case sensitivity). Mitigation: capability probing at *Test connection*, real-server tests above; only list in the guide the servers actually tested.
-- **Large files** (see above): the main cause of "does not work for me" reports; the 413 message and the guide must make it self-service.
+- **Large files**: the main cause of "does not work for me" reports. Chunking covers Nextcloud/ownCloud; a generic WebDAV server behind a size limit still fails with the 413 message, and the guide must make that self-service. The chunked flow (MKCOL/MOVE, `OC-Total-Length`, `.file`) is documented from knowledge — validate it on a real Nextcloud before listing it in the guide; versions differ (the newer `dav/uploads` v2 vs the legacy one).
 - **Speed**: HTTP per-file overhead (PROPFIND + MKCOL + PUT + GET verify) makes a thousand small photos slower than SMB. Cache created folders and check existence with one `PROPFIND` per file; do not promise SMB-like speed. Measure a 1 GB file and 1000 × 3 MB photos over LAN and Tailscale before writing any claim.
 - **Verification doubles the traffic** over cellular/WAN (re-download), as with SMB. Option, later: skip the re-download when the server returns a matching checksum header and say so in the Report ("verified by server checksum").
 - Browse over WebDAV downloads on demand (no thumbnails for NAS-like targets), same limit as today.
 
 ## Questions for the tester (before building)
 
-1. Typical file sizes (photos only, or drone/360 video of several GB)?
+1. Typical file sizes (photos only, or drone/360 video of several GB)? (Chunked upload is now in scope either way; this sizes the test.)
 2. Nextcloud reverse proxy / Cloudflare in front? Self-signed or Let's Encrypt certificate?
 3. 2FA enabled (app password)? Would he test a TestFlight/Play closed-test build against his instance?
 4. Would he prefer WebDAV to SMB over Tailscale for this server once available, or only when no VPN is possible?
