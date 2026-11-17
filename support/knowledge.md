@@ -3,8 +3,8 @@
 Curated notes for the support agent. **Keep this file up to date at every store delivery** (see the "Documentation maintenance" checklist in CLAUDE.md): add each new feature, limit or known issue, with the version it appeared in.
 
 ## Versions
-- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.7.0 (backup profiles; in TestFlight until released — 2.6.1 is the store version until then).
-- Android: 2.6.1 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
+- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.7.0 (backup profiles, 12 languages).
+- Android: 2.7.0 (backup profiles, 12 languages; same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
 ## Pro
