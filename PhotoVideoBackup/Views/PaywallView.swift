@@ -61,8 +61,16 @@ struct PaywallView: View {
                 icon: "photo.on.rectangle.angled",
                 color: .blue,
                 title: "Photos Library Backup",
-                subtitle: "Back up your iPhone photo library to an SSD",
+                subtitle: "Back up your iPhone photo library to one folder: an external drive or iCloud Drive",
                 isFree: true
+            )
+            Divider().padding(.leading, 50)
+            featureRow(
+                icon: "square.stack.3d.up.fill",
+                color: .orange,
+                title: "Several Backups",
+                subtitle: "Create as many backups as you need, each with its own drives, NAS and settings",
+                isFree: false
             )
             Divider().padding(.leading, 50)
             featureRow(
@@ -80,11 +88,27 @@ struct PaywallView: View {
                 subtitle: "Redundant backup to a second SSD simultaneously",
                 isFree: false
             )
+            Divider().padding(.leading, 50)
+            featureRow(
+                icon: "server.rack",
+                color: .teal,
+                title: "NAS (SMB)",
+                subtitle: "Back up to your NAS over Wi-Fi, or remotely through a VPN",
+                isFree: false
+            )
+            Divider().padding(.leading, 50)
+            featureRow(
+                icon: "camera.filters",
+                color: .pink,
+                title: "LUT Grading",
+                subtitle: "Grade your videos with .cube LUTs and export them in HEVC",
+                isFree: false
+            )
         }
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
 
-    private func featureRow(icon: String, color: Color, title: String, subtitle: String, isFree: Bool) -> some View {
+    private func featureRow(icon: String, color: Color, title: LocalizedStringKey, subtitle: LocalizedStringKey, isFree: Bool) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
                 .foregroundStyle(color)

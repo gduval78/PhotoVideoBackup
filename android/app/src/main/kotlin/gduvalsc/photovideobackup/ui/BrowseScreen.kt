@@ -73,7 +73,9 @@ import gduvalsc.photovideobackup.GradeItem
 import gduvalsc.photovideobackup.GradingController
 import gduvalsc.photovideobackup.GradingJob
 import gduvalsc.photovideobackup.LutStore
-import gduvalsc.photovideobackup.NAS_ROOT_KEY
+import gduvalsc.photovideobackup.ProfileStore
+import gduvalsc.photovideobackup.isNasKey
+import gduvalsc.photovideobackup.nasKey
 import gduvalsc.photovideobackup.openBrowseSource
 import gduvalsc.pvb.core.CubeLut
 import gduvalsc.pvb.core.Grading
@@ -110,7 +112,7 @@ fun BrowseScreen(onPaywall: () -> Unit) {
 
     val key = rootKey
     // A local destination is entered at a device folder (its root is the destination list), the NAS at its root.
-    val minDepth = if (key == NAS_ROOT_KEY) 0 else 1
+    val minDepth = if (key != null && isNasKey(key)) 0 else 1
     BackHandler(enabled = key != null) {
         if (path.size > minDepth) path = path.dropLast(1) else { rootKey = null; path = emptyList() }
     }
@@ -132,12 +134,14 @@ fun BrowseScreen(onPaywall: () -> Unit) {
 @Composable
 private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
     val context = LocalContext.current
-    val dests = AppState.destinations.filter { it.connected && !it.isRemote }
-    val nas = if (Pro.isPro) Prefs.nas?.takeIf { it.enabled && it.isComplete } else null
+    // Browse lists only the destinations of the existing backups, each folder and each NAS once.
+    val backups = Prefs.profiles
+    val dests = backups.flatMap { it.folders }.distinctBy { it.uri }.filter { it.uri in AppState.reachableFolders }
+    val nasBackups = if (Pro.isPro) backups.filter { it.usesNas && it.nas?.isComplete == true }.distinctBy { it.nas!!.identity } else emptyList()
 
     Column(Modifier.fillMaxSize()) {
         Text(stringResource(R.string.browse_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
-        if (dests.isEmpty() && nas == null) {
+        if (dests.isEmpty() && nasBackups.isEmpty()) {
             Column(Modifier.fillMaxSize().padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Default.Storage, null, Modifier.size(56.dp), tint = MaterialTheme.colorScheme.outline)
                 Spacer(Modifier.size(12.dp))
@@ -149,9 +153,9 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
         LazyColumn(Modifier.fillMaxSize()) {
             items(dests.size) { i ->
                 val d = dests[i]
-                val folders by produceState<List<TargetEntry>?>(null, d.key) {
+                val folders by produceState<List<TargetEntry>?>(null, d.uri) {
                     value = withContext(Dispatchers.IO) {
-                        runCatching { Browse.folders(SafTarget(context, Uri.parse(d.key), d.name).list(""), newestFirst = false) }.getOrDefault(emptyList())
+                        runCatching { Browse.folders(SafTarget(context, Uri.parse(d.uri), d.name).list(""), newestFirst = false) }.getOrDefault(emptyList())
                     }
                 }
                 SectionHeader(d.name)
@@ -160,13 +164,14 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
                     list == null -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(24.dp)) }
                     list.isEmpty() -> Text(stringResource(R.string.no_backups_yet), Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                     else -> list.forEach { f ->
-                        Row2(f.name, onClick = { onOpen(d.key, f.name) }, trailing = { Icon(Icons.Default.Folder, null, tint = MaterialTheme.colorScheme.primary) })
+                        Row2(f.name, onClick = { onOpen(d.uri, f.name) }, trailing = { Icon(Icons.Default.Folder, null, tint = MaterialTheme.colorScheme.primary) })
                     }
                 }
             }
-            if (nas != null) {
-                item { SectionHeader(stringResource(R.string.nas)) }
-                item { Row2(nas.displayName.ifBlank { nas.host }, onClick = { onOpen(NAS_ROOT_KEY, null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) }) }
+            items(nasBackups.size) { i ->
+                val nas = nasBackups[i].nas!!
+                if (i == 0) SectionHeader(stringResource(R.string.nas))
+                Row2(nas.displayName.ifBlank { nas.host }, onClick = { onOpen(nasKey(nasBackups[i].id), null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) })
             }
         }
     }
@@ -212,7 +217,7 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
 
             // LUT Grade: a LUT is assigned per device folder (local) or per NAS folder; the section shows at the device
             // folder level (any non-root NAS level), and grading is offered wherever the folder's LUT applies.
-            val isNas = rootKey == NAS_ROOT_KEY
+            val isNas = isNasKey(rootKey)
             val lutKey: String? = when {
                 isNas -> if (path.isNotEmpty() && !Grading.isGradedFolder(path.last())) Grading.nasKey(rel) else null
                 else -> path.firstOrNull()?.takeIf { !Grading.isGradedFolder(it) }

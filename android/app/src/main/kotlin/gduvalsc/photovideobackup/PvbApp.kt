@@ -14,6 +14,7 @@ class PvbApp : Application() {
         BackupController.closeStaleSessions()
         Notifier.createChannels(this)
         Pro.init(this)
+        ProfileStore.migrateIfNeeded(this)
         // Keep the in-app language override in sync (AppCompat persists it across launches itself).
         val wanted = LocaleListCompat.forLanguageTags(Prefs.language)
         if (AppCompatDelegate.getApplicationLocales() != wanted) AppCompatDelegate.setApplicationLocales(wanted)

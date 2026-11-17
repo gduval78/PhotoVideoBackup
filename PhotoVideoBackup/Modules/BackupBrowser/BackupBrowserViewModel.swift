@@ -49,18 +49,77 @@ final class BackupBrowserViewModel {
 
     // MARK: - Security-scoped access
 
+    /// The backup folders Browse shows: those of the existing backups, and only those. With n
+    /// profiles there are potentially n destinations; with none there is nothing to browse. The two
+    /// legacy slots are not listed on their own any more — migration copied them into profiles (which
+    /// reuse the same keys), so deleting every backup really empties Browse.
+    nonisolated static func destinationKeys(profiles: [BackupProfile]) -> [String] {
+        profiles.flatMap(\.folderKeys)
+    }
+
+    /// A NAS the Browse tab can open: the global one (Advanced settings) or a backup's own.
+    struct NASEntry: Equatable {
+        let config: NASConfig
+        /// Keychain account of its password.
+        let passwordAccount: String
+        var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? "NAS" : config.displayName }
+    }
+
+    /// Every distinct NAS of the existing backups: each profile's own, plus the global one only when
+    /// a backup that uses the NAS carries no config of its own (a profile saved by an earlier
+    /// development build). Two entries describing the same server, share, folder and user are one NAS.
+    /// With no backup using a NAS, none is listed.
+    nonisolated static func nasEntries(global: NASConfig?, globalAccount: String,
+                                       profiles: [BackupProfile]) -> [NASEntry] {
+        func identity(_ c: NASConfig) -> String {
+            [c.host.lowercased(), String(c.port), c.share.lowercased(),
+             c.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased(),
+             c.username.lowercased()].joined(separator: "|")
+        }
+        var seen = Set<String>()
+        var result: [NASEntry] = []
+        let needsGlobal = profiles.contains { $0.usesNAS && $0.nas == nil }
+        if needsGlobal, let global, global.isComplete, seen.insert(identity(global)).inserted {
+            result.append(NASEntry(config: global, passwordAccount: globalAccount))
+        }
+        for profile in profiles where profile.usesNAS {
+            guard let cfg = profile.nas, cfg.isComplete, seen.insert(identity(cfg)).inserted else { continue }
+            result.append(NASEntry(config: cfg, passwordAccount: profile.nasPasswordAccount ?? globalAccount))
+        }
+        return result
+    }
+
+    var nasEntries: [NASEntry] {
+        let dm = DestinationManager.shared
+        return Self.nasEntries(global: dm.loadNASConfig(), globalAccount: dm.legacyNASPasswordAccount,
+                               profiles: ProfileStore.shared.profiles)
+    }
+
+    /// Several profiles (or a profile and a legacy slot) can point at the same folder — a migrated
+    /// profile reuses the legacy key. Browse lists a folder once. Compared on the standardized path.
+    nonisolated static func uniqueByFolder(_ entries: [(key: String, url: URL)]) -> [(key: String, url: URL)] {
+        var seen = Set<String>()
+        return entries.filter { seen.insert($0.url.standardizedFileURL.path).inserted }
+    }
+
     func startAccess() {
         loadLUTAssignments()
         let dm = DestinationManager.shared
+        let keys = Self.destinationKeys(profiles: ProfileStore.shared.profiles)
+        // An unplugged drive (bookmark that does not resolve) simply does not appear, as before.
+        let resolved: [(key: String, url: URL)] = keys.compactMap { key in
+            guard dm.isConfigured(forKey: key), let url = dm.resolveBookmark(forKey: key) else { return nil }
+            return (key, url)
+        }
         var entries: [Destination] = []
         var accessed: [URL] = []
-        for index in 0...1 {
-            let key = dm.key(for: index)
-            guard dm.isConfigured(forKey: key),
-                  let url = dm.resolveBookmark(forKey: key) else { continue }
+        for (key, url) in Self.uniqueByFolder(resolved) {
             _ = url.startAccessingSecurityScopedResource()
             accessed.append(url)
-            entries.append(Destination(name: dm.displayName(forKey: key), url: url))
+            // "Volume / Folder" tells two folders of the same drive apart; a profile's folder has
+            // no volume-only name worth showing alone.
+            let label = dm.destinationLabel(for: url)
+            entries.append(Destination(name: label.isEmpty ? dm.displayName(forKey: key) : label, url: url))
         }
         accessedURLs = accessed
         destinations = entries

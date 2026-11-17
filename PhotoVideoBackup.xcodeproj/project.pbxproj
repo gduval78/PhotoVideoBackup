@@ -15,7 +15,6 @@
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
-		5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AF01 /* NASSettingsView.swift */; };
 		5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B001 /* NASBrowserView.swift */; };
 		0C38A6313682FBEE115C0C9C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E239A5D423378D22B03B1D6 /* SettingsView.swift */; };
 		1B005CEE7160380ED87FFC67 /* PHLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FE5C101F7EC2D8FC7E5945 /* PHLibraryScanner.swift */; };
@@ -70,7 +69,6 @@
 		CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1234567890ABCDEF123456 /* BackupBrowserViewModel.swift */; };
 		DAEBD40C15F10838833D31FB /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99679842AE35CEA05BD43B37 /* ReportView.swift */; };
 		DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6127433D81E6C7548DB93070 /* FileCopyEngine.swift */; };
-		EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */; };
 		ECFC897648033A8A9598A2A2 /* SessionReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41D6630CD58A1FB03FB1EB7 /* SessionReport.swift */; };
 		F001ABCDE00000000001AB01 /* FolderOrganization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AB02 /* FolderOrganization.swift */; };
 		F001ABCDE00000000001AC01 /* MacOpenPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001ABCDE00000000001AC02 /* MacOpenPanel.swift */; };
@@ -85,6 +83,19 @@
 		F1BD6D0CD5E22517EEFB9342 /* PHMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4918B830276FA0B8442E881 /* PHMediaItem.swift */; };
 		FE41FE53D77210DA99ACBA28 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449B0791E6606055C1DAEEE /* StoreManager.swift */; };
 		FF00AB0000000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF00AB0000000000000000002 /* OnboardingView.swift */; };
+		5C27E16736412B254C5EAFC2 /* BackupProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27D5E3BEF589314AEF865C /* BackupProfile.swift */; };
+		5C27D78EB74D785341B2A05F /* ProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27D0062DD66837497AA6D8 /* ProfileTests.swift */; };
+		5C276C33AC6EB13B4263B9F6 /* CompletionBannerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2730249C3567714F8C821D /* CompletionBannerSection.swift */; };
+		5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C270F33EBA437E84E8B98C0 /* BackupsView.swift */; };
+		5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */; };
+		5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */; };
+		5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */; };
+		5C27E859A32F96B349CE84F0 /* ICloudRunGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */; };
+		5C27012308894C594FF3A756 /* ProfileSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27A8CD368CB8BE4DDE8CCF /* ProfileSettings.swift */; };
+		5C27DC075C473960452E9C09 /* ProfileSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C272D7BFADFE88348879A32 /* ProfileSettingsTests.swift */; };
+		5C2782BFF2A05F114305AFA2 /* ProfileNASEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */; };
+		5C27E5FFDF65980047559C0D /* ProfileOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */; };
+		5C27270B1687AD974D448B0D /* ProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,12 +136,10 @@
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
-		5B0BF11E000000000000AF01 /* NASSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASSettingsView.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000B001 /* NASBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASBrowserView.swift; sourceTree = "<group>"; };
 		5AFF8DE591BF6877017B539C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6127433D81E6C7548DB93070 /* FileCopyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCopyEngine.swift; sourceTree = "<group>"; };
 		66D758241D912B2FD844B1D8 /* MediaFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFile.swift; sourceTree = "<group>"; };
-		681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		6AB2853380E67D3AF8405DF0 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		6DDE4F1F23E464C829762900 /* ReportBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportBuilder.swift; sourceTree = "<group>"; };
 		6F06456A9F582C56C57FE1DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -193,6 +202,19 @@
 		F132AD972A4ABA4B9CA93519 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 		F4D7F4527848742EC8C4471F /* MediaScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaScanner.swift; sourceTree = "<group>"; };
 		FF00AB0000000000000000002 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		5C27D5E3BEF589314AEF865C /* BackupProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupProfile.swift; sourceTree = "<group>"; };
+		5C27D0062DD66837497AA6D8 /* ProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTests.swift; sourceTree = "<group>"; };
+		5C2730249C3567714F8C821D /* CompletionBannerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionBannerSection.swift; sourceTree = "<group>"; };
+		5C270F33EBA437E84E8B98C0 /* BackupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsView.swift; sourceTree = "<group>"; };
+		5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBackupFlow.swift; sourceTree = "<group>"; };
+		5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAlerts.swift; sourceTree = "<group>"; };
+		5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudRunGuard.swift; sourceTree = "<group>"; };
+		5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudRunGuardTests.swift; sourceTree = "<group>"; };
+		5C27A8CD368CB8BE4DDE8CCF /* ProfileSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettings.swift; sourceTree = "<group>"; };
+		5C272D7BFADFE88348879A32 /* ProfileSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsTests.swift; sourceTree = "<group>"; };
+		5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNASEditor.swift; sourceTree = "<group>"; };
+		5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileOptionsForm.swift; sourceTree = "<group>"; };
+		5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -371,16 +393,21 @@
 		C5E8BC5D6D0EDF80B30E1830 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */,
+				5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */,
+				5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */,
+				5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */,
+				5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */,
+				5C270F33EBA437E84E8B98C0 /* BackupsView.swift */,
+				5C2730249C3567714F8C821D /* CompletionBannerSection.swift */,
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
-				681076C1AD0E519AD5ECA9D5 /* DashboardView.swift */,
 				72B8A76F77BEF69B08979FD8 /* HistoryView.swift */,
 				FF00AB0000000000000000002 /* OnboardingView.swift */,
 				0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */,
 				99679842AE35CEA05BD43B37 /* ReportView.swift */,
 				E7A8C85265DFE75E16485C97 /* SessionProgressView.swift */,
 				4E239A5D423378D22B03B1D6 /* SettingsView.swift */,
-				5B0BF11E000000000000AF01 /* NASSettingsView.swift */,
 				5B0BF11E000000000000B001 /* NASBrowserView.swift */,
 			);
 			path = Views;
@@ -413,6 +440,9 @@
 		CC000000000000000000AA00 /* ScenarioTests */ = {
 			isa = PBXGroup;
 			children = (
+				5C272D7BFADFE88348879A32 /* ProfileSettingsTests.swift */,
+				5C2711E6F480D85E4880B1E1 /* ICloudRunGuardTests.swift */,
+				5C27D0062DD66837497AA6D8 /* ProfileTests.swift */,
 				CC0000000000000000100800 /* BackupFromSDCardTests.swift */,
 				CC0000000000000000100900 /* FolderOrganizationTests.swift */,
 				CC0000000000000000101400 /* ReportSummaryTests.swift */,
@@ -434,6 +464,7 @@
 		DA5E46C57F38A9A5ECA949F1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				5C275BF50CF6967347D48D72 /* Profiles */,
 				EE1234567890ABCDEF123456 /* BackupBrowser */,
 				5C1C10D0000000000000FD00 /* DiskSpace */,
 				5C1C10D0000000000000FE00 /* ICloudEviction */,
@@ -459,6 +490,7 @@
 		5C1C10D0000000000000FE00 /* ICloudEviction */ = {
 			isa = PBXGroup;
 			children = (
+				5C27BA7BD7433D1647B5863D /* ICloudRunGuard.swift */,
 				5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */,
 			);
 			path = ICloudEviction;
@@ -503,6 +535,15 @@
 				F001REN000000000000000202 /* RenamePattern.swift */,
 			);
 			path = RenameEngine;
+			sourceTree = "<group>";
+		};
+		5C275BF50CF6967347D48D72 /* Profiles */ = {
+			isa = PBXGroup;
+			children = (
+				5C27A8CD368CB8BE4DDE8CCF /* ProfileSettings.swift */,
+				5C27D5E3BEF589314AEF865C /* BackupProfile.swift */,
+			);
+			path = Profiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -570,6 +611,10 @@
 				pt,
 				"zh-Hans",
 				ru,
+				ja,
+				ko,
+				hi,
+				ar,
 			);
 			mainGroup = 1941F9D38658786F0142987B;
 			minimizedProjectReferenceProxies = 1;
@@ -606,12 +651,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C27270B1687AD974D448B0D /* ProfileDetailView.swift in Sources */,
+				5C27E5FFDF65980047559C0D /* ProfileOptionsForm.swift in Sources */,
+				5C2782BFF2A05F114305AFA2 /* ProfileNASEditor.swift in Sources */,
+				5C27012308894C594FF3A756 /* ProfileSettings.swift in Sources */,
+				5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */,
+				5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */,
+				5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */,
+				5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */,
+				5C276C33AC6EB13B4263B9F6 /* CompletionBannerSection.swift in Sources */,
+				5C27E16736412B254C5EAFC2 /* BackupProfile.swift in Sources */,
 				AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */,
 				CC1234567890ABCDEF123456 /* BackupBrowserViewModel.swift in Sources */,
 				3603A7623094313F11545323 /* BackupSession.swift in Sources */,
 				01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */,
 				747A459C1D9D7B856F6F9423 /* CopyProgress.swift in Sources */,
-				EBA41581771958CF2F39EEE3 /* DashboardView.swift in Sources */,
 				BFFF864679964C7331AC6CFB /* DashboardViewModel.swift in Sources */,
 				564A2559BFE5AFEF028876EC /* DestinationManager.swift in Sources */,
 				60E221556845F8210B84DF0C /* ExternalSource.swift in Sources */,
@@ -623,7 +677,6 @@
 				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
 				5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */,
 				5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */,
-				5B0BF11E000000000000AF02 /* NASSettingsView.swift in Sources */,
 				5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */,
 				8A91ED4CC7469FB65F4CFAEE /* HistoryView.swift in Sources */,
 				80595690DA37BA49EC92E6DC /* IndexStore.swift in Sources */,
@@ -659,6 +712,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C27DC075C473960452E9C09 /* ProfileSettingsTests.swift in Sources */,
+				5C27E859A32F96B349CE84F0 /* ICloudRunGuardTests.swift in Sources */,
+				5C27D78EB74D785341B2A05F /* ProfileTests.swift in Sources */,
 				CC0000000000000000200100 /* ScenarioTestCase.swift in Sources */,
 				CC0000000000000000200200 /* SimulatedSDCard.swift in Sources */,
 				CC0000000000000000200300 /* SimulatedSSD.swift in Sources */,
@@ -765,7 +821,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 49;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -773,7 +829,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -827,7 +883,7 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = PhotoVideoBackup/Resources/PhotoVideoBackup.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 49;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_TEAM = T7V27KW532;
 				INFOPLIST_FILE = PhotoVideoBackup/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PhotoVideoBackup;
@@ -835,7 +891,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.1;
+				MARKETING_VERSION = 2.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = gduvalsc.PhotoVideoBackupIOS;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;

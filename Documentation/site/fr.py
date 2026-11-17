@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Guide utilisateur",
     "tagline": "Sauvegardez vos photos et vidéos sur un SSD externe, une carte SD ou un NAS — depuis votre iPhone ou votre téléphone Android.",
-    "version_line": "Guide de PhotoVideoBackup 2.6 — iPhone (iOS 16 ou plus récent) et Android (9 ou plus récent)",
+    "version_line": "Guide de PhotoVideoBackup 2.7 — iPhone (iOS 16 ou plus récent) et Android (9 ou plus récent)",
     "toc": "Sommaire",
     "privacy_link": "Politique de confidentialité",
     "contact": "Support",
@@ -22,13 +22,16 @@ GUIDE = [
         ("p", "PhotoVideoBackup se télécharge gratuitement. Un achat <b>Pro</b> — payé une seule fois, <b>sans abonnement</b> — débloque les fonctions avancées :"),
         ("table", ["Fonction", "Gratuit", "Pro"], [
             ["Sauvegarder la photothèque vers un disque ou un dossier", "✓", "✓"],
+            ["Plusieurs sauvegardes, chacune avec ses disques, son NAS et ses réglages", "—", "✓"],
             ["Parcourir et prévisualiser les sauvegardes (aperçu LUT compris)", "✓", "✓"],
             ["Sauvegarder cartes d'appareils et disques USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Copie miroir vers un second disque", "—", "✓"],
             ["Sauvegarder vers un NAS en Wi-Fi", "—", "✓"],
             ["Étalonner des vidéos LOG avec une LUT (export H.265)", "—", "✓"],
         ]),
+        ("note", "Sur iPhone, une installation gratuite permet <b>une</b> sauvegarde. Si vous en créez d'autres puis perdez Pro (par exemple après un remboursement), elles ne sont pas supprimées : elles restent dans la liste, verrouillées, jusqu'à ce que vous repassiez à Pro. Votre première sauvegarde continue de fonctionner tant qu'elle n'utilise que des fonctions gratuites (la photothèque, un disque ou un dossier). Une sauvegarde qui comporte un NAS ou une deuxième destination nécessite Pro pour s'exécuter. Vous avez déjà acheté Pro sur un autre appareil ? Ouvrez <b>Réglages → Pro → Restaurer les achats</b>."),
         ("fig", "paywall", "L'écran de mise à niveau. Ouvrez-le quand vous voulez depuis l'onglet Réglages."),
+        ("fig", "settings_top", "Réglages → Pro : passer à Pro, ou restaurer un achat fait sur un autre appareil."),
     ]),
     ("need", "Ce qu'il vous faut", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -45,18 +48,20 @@ GUIDE = [
         ("note", "L'application lit vos photos uniquement pour les copier. Elle ne les modifie, ne les partage et ne les envoie nulle part."),
     ]),
     ("setup", "Définir le nom de l'appareil et la destination", [
-        ("ol", ["Ouvrez l'onglet <b>Réglages</b>. Dans la section <b>Appareil</b>, saisissez un <b>nom de dossier</b> — par exemple <i>iPhone d'Anna</i> ou <i>Pixel 8</i>. C'est le nom du dossier sur le disque : deux téléphones qui sauvegardent sur le même disque restent ainsi séparés. Une sauvegarde ne démarre pas tant qu'aucun nom n'est défini.", "Branchez votre disque.", "Sous <b>Destinations</b>, touchez <b>Choisir…</b> et sélectionnez le disque, ou un dossier du disque, dans le navigateur de fichiers du système. Sur Android, vous pouvez aussi choisir un dossier dans le stockage du téléphone.", "Le nom du disque apparaît dans les Réglages et dans l'onglet Sauvegarde, avec son espace libre. Vous ne le faites qu'une fois : l'application reconnaît le disque la fois suivante."]),
-        ("fig", "settings_configured", "Réglages : nom de l'appareil et première destination."),
+        ("ol", ["Ouvrez l'onglet <b>Réglages</b>. Dans la section <b>Appareil</b>, saisissez un <b>nom de dossier</b> — par exemple <i>iPhone d'Anna</i> ou <i>Pixel 8</i>. C'est le nom du dossier sur le disque : deux téléphones qui sauvegardent sur le même disque restent ainsi séparés. Une sauvegarde ne démarre pas tant qu'aucun nom n'est défini.", "Branchez votre disque.", "<b>iPhone / iPad</b> : ouvrez l'onglet <b>Sauvegardes</b>, touchez <b>Nouvelle sauvegarde</b> (ou <b>+</b>), choisissez <i>Photothèque → disque externe</i>, puis touchez <b>Choisir…</b> et sélectionnez le disque, ou un dossier du disque, dans le navigateur de fichiers du système. <b>Android</b> : même chose dans l’onglet <b>Sauvegardes</b> — <b>Nouvelle sauvegarde</b> (ou <b>+</b>), <i>Galerie → disque externe</i>, <b>Choisir…</b> — puis choisissez le disque ou un dossier (y compris dans le stockage du téléphone).", "Le nom du disque apparaît sur la carte de la sauvegarde, avec son espace libre. Vous ne le faites qu’une fois : l’app reconnaît le disque la fois suivante."]),
+        ("fig", "backups_new", "Nouvelle sauvegarde : choisissez un point de départ."),
+        ("fig", "backups_create", "Nouvelle sauvegarde : choisissez le disque, un nom de dossier pour ce téléphone et un nom pour la sauvegarde."),
         ("note", "Une destination peut aussi être un dossier d'<b>iCloud Drive</b> (iPhone) — l'application libère la copie locale dès qu'iCloud confirme l'envoi, pour que le téléphone ne se remplisse pas. Si l'iPhone est malgré tout presque plein (moins de 1 Go libres environ), la sauvegarde se <b>met en pause toute seule</b> et reprend dès que de la place revient ; si rien ne s'améliore au bout de quelques minutes, elle s'arrête en <b>Partielle</b>."),
     ]),
     ("photos", "Sauvegarder vos photos et vidéos", [
-        ("p", "Ouvrez l'onglet <b>Sauvegarde</b>. En haut, vous voyez vos destinations avec leur espace libre. Dans <b>Sources</b>, la ligne <b>Bibliothèque Photos</b> affiche le nom de votre appareil. Touchez son bouton <b>Sauvegarde</b>."),
-        ("fig", "dashboard_ready", "L'onglet Sauvegarde : destination connectée, photothèque prête."),
+        ("p", "Ouvrez l’onglet <b>Sauvegardes</b>. Chaque sauvegarde est une carte avec son nom, d’où elle copie et vers où, et l’espace libre de son disque. Touchez <b>Lancer</b>. Avec Pro, vous pouvez créer plusieurs sauvegardes — par exemple une vers un disque et une vers un NAS — chacune avec ses propres réglages : appui long sur la carte (iPhone) ou menu <b>⋮</b> (Android), puis <b>Réglages</b>."),
+        ("fig", "backups_tab", "L'onglet Sauvegardes : une carte par sauvegarde, avec son espace libre et un bouton Lancer."),
+        ("fig", "profile_settings", "Les réglages propres à une sauvegarde (appui long sur sa carte) : destinations, structure des dossiers, limite de fichiers, nommage."),
         ("p", "L'application analyse la photothèque, puis copie. La <b>première sauvegarde est la plus longue</b> ; les suivantes ne copient que les nouveautés et sont bien plus rapides."),
         ("ul", ["Les photos stockées uniquement dans iCloud / Google Photos sont d'abord téléchargées — cela demande une connexion et un peu de temps.", "L'application copie chaque fichier directement vers la destination : cela fonctionne même quand le téléphone est presque plein.", "Vous pouvez quitter l'application : une notification vous prévient à la fin de la sauvegarde."]),
     ]),
     ("sd", "Sauvegarder une carte d'appareil photo (Pro)", [
-        ("ol", ["Branchez le lecteur de cartes au téléphone et insérez la carte (utilisez un hub si le SSD doit rester branché aussi).", "Dans l'onglet Sauvegarde, touchez <b>Ajouter une source (carte SD, clé USB…)</b>, trouvez la carte dans le navigateur de fichiers et validez.", "Donnez un nom à la source — <i>Blackmagic</i>, <i>Voyage au Japon</i>… Le type d'appareil est reconnu automatiquement.", "Touchez <b>Sauvegarde</b> sur la ligne de la source."]),
+        ("ol", ["Branchez le lecteur de cartes au téléphone et insérez la carte (utilisez un hub si le SSD doit rester branché aussi).", "<b>iPhone / iPad</b> : dans l'onglet <b>Sauvegardes</b>, touchez <b>+</b> et choisissez <i>Caméra ou carte SD → disque externe</i>, puis <b>Ajouter une source…</b> et sélectionnez la carte dans le navigateur de fichiers. <b>Android</b> : même chose dans l’onglet <b>Sauvegardes</b> : <b>+</b>, <i>Caméra ou carte SD → disque externe</i>, <b>Ajouter une source…</b>, puis trouvez la carte dans le navigateur de fichiers et confirmez.", "Choisissez la destination et donnez-lui un nom — <i>Blackmagic</i>, <i>Voyage au Japon</i>… Le type d'appareil est reconnu automatiquement.", "Touchez <b>Lancer</b>."]),
         ("table", ["Appareil reconnu", "Ce qui est sauvegardé"], [
             ["DJI Mini 3 Pro", "Photos, vidéos, DNG et la télémétrie (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Vidéos, photos, DNG, audio et la télémétrie (.srt)"],
@@ -64,8 +69,8 @@ GUIDE = [
             ["GoPro HERO", "Vidéos et photos ; les fichiers proxy (.lrv) et miniatures (.thm) sont ignorés"],
             ["Tout le reste", "Formats courants de photo, vidéo et RAW"],
         ]),
-        ("note", "Une carte éjectée puis remise demande un appui sur <b>Reconnecter</b> : le système donne à l'application un nouvel accès à chaque montage de la carte. Le nom et le type de la source sont conservés."),
-        ("p", "Pour retirer une source de la liste, utilisez le <b>–</b> rouge (iPhone) ou le bouton de suppression de la ligne (Android). Aucun fichier n'est supprimé."),
+        ("note", "Une carte éjectée puis remise demande un appui sur <b>Reconnecter</b> sur la carte de la sauvegarde : le système donne à l’app un nouvel accès à chaque montage de la carte. Le nom et le type de la source sont conservés."),
+        ("p", "Pour retirer une source, supprimez la sauvegarde qui l’utilise (la carte est aussi oubliée si aucune autre sauvegarde ne l’utilise). Aucun fichier n’est supprimé."),
     ]),
     ("progress", "Pendant la sauvegarde", [
         ("p", "Un panneau <b>Sauvegarde en cours</b> apparaît dès que vous touchez Sauvegarde. D'abord <b>Préparation…</b> (connexion à vos destinations), puis <b>Analyse de la source…</b> avec un compteur de fichiers trouvés en direct — sur une grande photothèque cela peut prendre un moment, ce n'est pas bloqué."),
@@ -127,13 +132,13 @@ GUIDE = [
         ("ul", ["L'étalonnage se fait vidéo par vidéo, jamais « tout » — un dossier mélange souvent des plans LOG et ordinaires, et une LUT LOG abîmerait ces derniers.", "Les fichiers déjà étalonnés sont ignorés : on peut relancer sans risque. Annulez à tout moment : les fichiers terminés sont conservés.", "L'étalonnage est exigeant : gardez l'application ouverte et le disque connecté. Le téléphone peut chauffer.", "Sur un NAS, les plans sont téléchargés, étalonnés sur le téléphone puis envoyés dans un dossier <b>Appareil (Graded)</b> du NAS — plus lent, et cela consomme des données."]),
     ]),
     ("mirror", "Deux destinations à la fois (Pro)", [
-        ("p", "Dans les Réglages, ajoutez une seconde destination : chaque fichier est copié sur les deux en même temps — deux disques, ou un disque et un NAS. La sauvegarde ne dure pas deux fois plus longtemps. Si une destination tombe ou disparaît, <b>l'autre continue</b>, et le rapport indique ce qui manque à laquelle."),
+        ("p", "Ajoutez une deuxième destination — appui long sur la carte de la sauvegarde (iPhone) ou menu <b>⋮</b> (Android), puis <b>Réglages</b> et <b>Ajouter une destination</b>. Chaque fichier est copié vers les deux en même temps — deux disques, ou un disque et un NAS. La sauvegarde n’est pas deux fois plus longue. Si une destination échoue ou disparaît, <b>l’autre continue</b>, et le rapport indique laquelle manque de quoi."),
         ("note", "Si un seul des deux disques est branché au démarrage, l'application copie quand même vers lui et marque la session comme incomplète pour l'autre."),
     ]),
     ("nas", "Sauvegarder vers un NAS en Wi-Fi (Pro)", [
         ("p", "À la place d'un disque — ou en plus —, vous pouvez sauvegarder directement vers un <b>NAS</b> (Synology, QNAP, TrueNAS, tout appareil parlant SMB) par le réseau. Pas de câble, pas de cloud, et chaque fichier est vérifié par SHA-256."),
-        ("ol", ["Sur le NAS, activez le <b>partage de fichiers SMB</b> et donnez à un utilisateur un accès en lecture et écriture à un dossier partagé.", "Dans l'application : <b>Réglages → Destinations → NAS (SMB)</b>.", "Renseignez l'<b>hôte</b> (par ex. <code>192.168.1.20</code>), le <b>partage</b> (par ex. <code>photo</code>), un <b>dossier</b> facultatif, ainsi que votre <b>nom d'utilisateur</b> et votre <b>mot de passe</b>. Le mot de passe est conservé dans le Trousseau iOS ou le Keystore Android.", "Touchez <b>Tester la connexion</b> : un message vous indique que la connexion est établie et combien d'éléments ont été trouvés. Puis <b>Enregistrer</b>."]),
-        ("p", "Le NAS apparaît maintenant dans l'onglet Sauvegarde avec son espace libre. Vous pouvez sauvegarder <b>hors de chez vous</b> si le NAS est joignable — le plus simple et sûr est un VPN comme <b>Tailscale</b> : installez-le sur le NAS et sur le téléphone, puis utilisez l'adresse <code>100.x.x.x</code> du NAS comme hôte."),
+        ("ol", ["Sur le NAS, activez le <b>partage de fichiers SMB</b> et donnez à un utilisateur un accès en lecture et écriture à un dossier partagé.", "Dans l’app : créez une sauvegarde avec le modèle <i>Photothèque → NAS</i> (<i>Galerie → NAS</i> sur Android), ou ajoutez un NAS à une sauvegarde existante depuis ses <b>Réglages</b>.", "Renseignez l'<b>hôte</b> (par ex. <code>192.168.1.20</code>), le <b>partage</b> (par ex. <code>photo</code>), un <b>dossier</b> facultatif, ainsi que votre <b>nom d'utilisateur</b> et votre <b>mot de passe</b>. Le mot de passe est conservé dans le Trousseau iOS ou le Keystore Android.", "Touchez <b>Tester la connexion</b> : <i>« Connecté — N élément(s) trouvé(s). »</i> Puis <b>Créer</b> (ou <b>Enregistrer</b> dans les réglages d’une sauvegarde)."]),
+        ("p", "Le NAS apparaît maintenant sur la carte de la sauvegarde, avec son espace libre. Chaque sauvegarde a son propre NAS : vous pouvez en utiliser plusieurs. Vous pouvez sauvegarder <b>hors de chez vous</b> si le NAS est joignable — le moyen sûr le plus simple est un VPN comme <b>Tailscale</b> : installez-le sur le NAS et sur le téléphone, puis utilisez l’adresse <code>100.x.x.x</code> du NAS comme hôte."),
         ("note", "En données mobiles, un bandeau orange vous avertit que de grosses vidéos peuvent consommer beaucoup de données ; <b>Arrêter</b> interrompt la sauvegarde (elle est marquée Partielle)."),
     ]),
     ("android", "Android et iPhone : les différences", [
@@ -146,7 +151,7 @@ GUIDE = [
             ["Mac", "Fonctionne sur les Mac Apple silicon (« conçu pour iPad »)", "—"],
         ]),
         ("note", "Sur Android, une destination dans le stockage interne du téléphone est masquée de la galerie (un fichier <code>.nomedia</code>) pour que la sauvegarde ne soit pas sauvegardée à nouveau."),
-        ("fig", "android_backup", "Android : l'onglet Sauvegarde."),
+        ("fig", "android_backup", "Android : l’onglet Sauvegardes."),
         ("fig", "android_settings", "Android : les Réglages."),
     ]),
     ("faq", "Questions fréquentes", [
@@ -159,7 +164,7 @@ GUIDE = [
         ("p", "<b>Ma carte apparaît comme « Documents ».</b> Certains appareils utilisent un dossier générique. Saisissez un nom parlant quand vous ajoutez la source."),
         ("p", "<b>Puis-je sauvegarder quand mon téléphone est presque plein ?</b> Oui. Les fichiers sont envoyés en flux vers la destination : seuls quelques mégaoctets sont retenus à la fois. Seule une sauvegarde vers un NAS <i>seul</i> demande la place d'un fichier à la fois. Un fichier qui ne tient vraiment pas est signalé en échec et le reste continue."),
         ("p", "<b>Mes données sont-elles envoyées quelque part ?</b> Non. Tout se passe entre votre téléphone et votre disque ou NAS. L'application n'a ni serveur ni compte. Le seul trafic réseau va vers le NAS que vous configurez vous-même, et vers le téléchargement par le système de vos propres photos iCloud / Google."),
-        ("p", "<b>Quelles langues ?</b> Anglais, français, allemand, espagnol, italien, portugais, chinois simplifié et russe. L'application suit la langue du téléphone ; vous pouvez en forcer une dans <b>Réglages → Langue</b>, sans redémarrage."),
+        ("p", "<b>Quelles langues ?</b> Anglais, français, allemand, espagnol, italien, portugais, chinois simplifié, russe, japonais, coréen, hindi et arabe. L'application suit la langue du téléphone ; vous pouvez en forcer une dans <b>Réglages → Langue</b>, sans redémarrage."),
     ]),
 ]
 

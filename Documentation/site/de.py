@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Benutzerhandbuch",
     "tagline": "Sichern Sie Ihre Fotos und Videos auf einer externen SSD, einer SD-Karte oder einem NAS — von Ihrem iPhone oder Android-Smartphone.",
-    "version_line": "Handbuch für PhotoVideoBackup 2.6 — iPhone (iOS 16 oder neuer) und Android (9 oder neuer)",
+    "version_line": "Handbuch für PhotoVideoBackup 2.7 — iPhone (iOS 16 oder neuer) und Android (9 oder neuer)",
     "toc": "Inhalt",
     "privacy_link": "Datenschutzerklärung",
     "contact": "Support",
@@ -22,13 +22,16 @@ GUIDE = [
         ("p", "PhotoVideoBackup ist kostenlos. Ein einmaliger <b>Pro</b>-Kauf — <b>ohne Abo</b> — schaltet die erweiterten Funktionen frei:"),
         ("table", ["Funktion", "Kostenlos", "Pro"], [
             ["Fotomediathek auf ein Laufwerk oder einen Ordner sichern", "✓", "✓"],
+            ["Mehrere Backups, jedes mit eigenen Laufwerken, NAS und Einstellungen", "—", "✓"],
             ["Backups durchsuchen und ansehen (inkl. LUT-Vorschau)", "✓", "✓"],
             ["Kamerakarten und USB-Laufwerke sichern (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Spiegelung auf ein zweites Laufwerk", "—", "✓"],
             ["Per WLAN auf ein NAS sichern", "—", "✓"],
             ["LOG-Videos mit einer LUT graden (H.265-Export)", "—", "✓"],
         ]),
+        ("note", "Auf dem iPhone enthält die kostenlose Installation <b>eine</b> Sicherung. Wenn Sie weitere anlegen und später Pro verlieren (zum Beispiel nach einer Erstattung), werden sie nicht gelöscht: Sie bleiben gesperrt in der Liste, bis Sie wieder auf Pro upgraden. Ihre erste Sicherung läuft weiter, solange sie nur kostenlose Funktionen nutzt (die Fotomediathek, ein Laufwerk oder ein Ordner). Eine Sicherung mit NAS oder einem zweiten Ziel benötigt Pro zum Ausführen. Pro bereits auf einem anderen Gerät gekauft? Öffnen Sie <b>Einstellungen → Pro → Käufe wiederherstellen</b>."),
         ("fig", "paywall", "Der Upgrade-Bildschirm. Sie öffnen ihn jederzeit im Tab „Einstellungen“."),
+        ("fig", "settings_top", "Einstellungen → Pro: auf Pro upgraden oder einen auf einem anderen Gerät getätigten Kauf wiederherstellen."),
     ]),
     ("need", "Was Sie brauchen", [
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -45,18 +48,20 @@ GUIDE = [
         ("note", "Die App liest Ihre Fotos nur, um sie zu kopieren. Sie verändert, teilt oder sendet sie nirgendwohin."),
     ]),
     ("setup", "Gerätenamen und Ziel festlegen", [
-        ("ol", ["Öffnen Sie den Tab <b>Einstellungen</b>. Geben Sie im Abschnitt <b>Gerät</b> einen <b>Ordnernamen</b> ein — zum Beispiel <i>Annas iPhone</i> oder <i>Pixel 8</i>. Er wird zum Ordnernamen auf dem Laufwerk, sodass zwei Telefone auf demselben Laufwerk getrennt bleiben. Ohne Namen startet kein Backup.", "Schließen Sie Ihr Laufwerk an.", "Tippen Sie unter <b>Ziele</b> auf <b>Auswählen…</b> und wählen Sie das Laufwerk oder einen Ordner darauf im Dateibrowser des Systems. Unter Android können Sie auch einen Ordner im Telefonspeicher wählen.", "Der Laufwerksname erscheint in den Einstellungen und im Tab Backup, mit dem freien Speicherplatz. Das tun Sie nur einmal: Beim nächsten Mal erkennt die App das Laufwerk wieder."]),
-        ("fig", "settings_configured", "Einstellungen: Gerätename und erstes Ziel."),
+        ("ol", ["Öffnen Sie den Tab <b>Einstellungen</b>. Geben Sie im Abschnitt <b>Gerät</b> einen <b>Ordnernamen</b> ein — zum Beispiel <i>Annas iPhone</i> oder <i>Pixel 8</i>. Er wird zum Ordnernamen auf dem Laufwerk, sodass zwei Telefone auf demselben Laufwerk getrennt bleiben. Ohne Namen startet kein Backup.", "Schließen Sie Ihr Laufwerk an.", "<b>iPhone / iPad</b>: Öffnen Sie den Tab <b>Backups</b>, tippen Sie auf <b>Neues Backup</b> (oder <b>+</b>), wählen Sie <i>Fotomediathek → externes Laufwerk</i>, tippen Sie dann auf <b>Auswählen…</b> und wählen Sie das Laufwerk oder einen Ordner darauf im Dateibrowser des Systems. <b>Android</b>: genauso im Tab <b>Backups</b> — <b>Neues Backup</b> (oder <b>+</b>), <i>Galerie → externes Laufwerk</i>, <b>Auswählen…</b> — und wählen Sie das Laufwerk oder einen Ordner (auch im Telefonspeicher).", "Der Laufwerksname erscheint auf der Karte der Sicherung, mit dem freien Speicherplatz. Das tun Sie nur einmal: Beim nächsten Mal erkennt die App das Laufwerk."]),
+        ("fig", "backups_new", "Neue Sicherung: Wählen Sie einen Ausgangspunkt."),
+        ("fig", "backups_create", "Neue Sicherung: Laufwerk, Ordnername für dieses Telefon und Name der Sicherung festlegen."),
         ("note", "Ein Ziel kann auch ein Ordner in <b>iCloud Drive</b> sein (iPhone) — die App gibt die lokale Kopie frei, sobald iCloud den Upload bestätigt, damit das Telefon nicht volläuft. Ist das iPhone trotzdem fast voll (weniger als etwa 1 GB frei), <b>pausiert das Backup selbstständig</b> und läuft weiter, sobald wieder Platz da ist; tut sich nach einigen Minuten nichts, endet es als <b>Teilweise</b>."),
     ]),
     ("photos", "Fotos und Videos sichern", [
-        ("p", "Öffnen Sie den Tab <b>Backup</b>. Oben sehen Sie Ihre Ziele mit dem freien Speicherplatz. Unter <b>Quellen</b> zeigt die Zeile <b>Fotomediathek</b> Ihren Gerätenamen. Tippen Sie auf <b>Backup</b>."),
-        ("fig", "dashboard_ready", "Der Tab Backup: Ziel verbunden, Fotomediathek bereit."),
+        ("p", "Öffnen Sie den Tab <b>Backups</b>. Jede Sicherung ist eine Karte mit Namen, Quelle und Ziel sowie dem freien Speicherplatz ihres Laufwerks. Tippen Sie auf <b>Starten</b>. Mit Pro können Sie mehrere Sicherungen anlegen — zum Beispiel eine auf ein Laufwerk und eine auf ein NAS — jede mit eigenen Einstellungen: Karte lange drücken (iPhone) oder ihr Menü <b>⋮</b> öffnen (Android), dann <b>Einstellungen</b>."),
+        ("fig", "backups_tab", "Der Tab „Sicherungen“: eine Karte pro Sicherung, mit freiem Speicherplatz und der Schaltfläche „Starten“."),
+        ("fig", "profile_settings", "Die eigenen Einstellungen einer Sicherung (Karte lange drücken): Ziele, Ordnerstruktur, Dateilimit, Benennung."),
         ("p", "Die App durchsucht die Mediathek und kopiert dann. Das <b>erste Backup dauert am längsten</b>; die folgenden kopieren nur Neues und sind viel schneller."),
         ("ul", ["Fotos, die nur in iCloud / Google Fotos liegen, werden zuerst geladen — das braucht eine Verbindung und etwas Zeit.", "Die App kopiert jede Datei direkt zum Ziel, es funktioniert also auch bei fast vollem Telefon.", "Sie können die App verlassen: Eine Benachrichtigung meldet das Ende des Backups."]),
     ]),
     ("sd", "Eine Kamerakarte sichern (Pro)", [
-        ("ol", ["Schließen Sie den Kartenleser an und stecken Sie die Karte ein (nutzen Sie einen Hub, wenn die SSD angeschlossen bleiben soll).", "Tippen Sie im Tab Backup auf <b>Quelle hinzufügen (SD-Karte, USB-Laufwerk…)</b>, suchen Sie die Karte im Dateibrowser und bestätigen Sie.", "Geben Sie der Quelle einen Namen — <i>Blackmagic</i>, <i>Japanreise</i>… Der Gerätetyp wird automatisch erkannt.", "Tippen Sie in der Zeile der Quelle auf <b>Backup</b>."]),
+        ("ol", ["Schließen Sie den Kartenleser an und stecken Sie die Karte ein (nutzen Sie einen Hub, wenn die SSD angeschlossen bleiben soll).", "<b>iPhone / iPad</b>: Tippen Sie im Tab <b>Backups</b> auf <b>+</b> und wählen Sie <i>Kamera oder SD-Karte → externes Laufwerk</i>, dann <b>Quelle hinzufügen …</b> und wählen Sie die Karte im Dateibrowser. <b>Android</b>: genauso im Tab <b>Backups</b>: <b>+</b>, <i>Kamera oder SD-Karte → externes Laufwerk</i>, <b>Quelle hinzufügen …</b>, dann die Karte im Dateibrowser suchen und bestätigen.", "Wählen Sie das Ziel und geben Sie einen Namen ein — <i>Blackmagic</i>, <i>Japanreise</i> … Der Gerätetyp wird automatisch erkannt.", "Tippen Sie auf <b>Starten</b>."]),
         ("table", ["Erkanntes Gerät", "Was gesichert wird"], [
             ["DJI Mini 3 Pro", "Fotos, Videos, DNG und die Telemetrie (.srt)"],
             ["DJI 360 / Action (Neo 2…)", "Videos, Fotos, DNG, Audio und die Telemetrie (.srt)"],
@@ -64,8 +69,8 @@ GUIDE = [
             ["GoPro HERO", "Videos und Fotos; Proxy- (.lrv) und Vorschaudateien (.thm) werden übersprungen"],
             ["Alles andere", "Gängige Foto-, Video- und RAW-Formate"],
         ]),
-        ("note", "Eine ausgeworfene und wieder eingesteckte Karte braucht einen Tipp auf <b>Erneut verbinden</b>: Das System gibt der App bei jedem Einbinden der Karte einen neuen Zugriff. Name und Typ der Quelle bleiben erhalten."),
-        ("p", "Um eine Quelle aus der Liste zu entfernen, nutzen Sie das rote <b>–</b> (iPhone) oder die Entfernen-Taste der Zeile (Android). Es wird keine Datei gelöscht."),
+        ("note", "Eine ausgeworfene und wieder eingesteckte Karte braucht einen Tipp auf <b>Erneut verbinden</b> auf der Karte der Sicherung: Das System gibt der App bei jedem Einbinden der Karte einen neuen Zugriff. Name und Typ der Quelle bleiben erhalten."),
+        ("p", "Um eine Quelle zu entfernen, löschen Sie die Sicherung, die sie verwendet (die Karte wird ebenfalls vergessen, wenn keine andere Sicherung sie nutzt). Dabei wird keine Datei gelöscht."),
     ]),
     ("progress", "Während das Backup läuft", [
         ("p", "Ein Feld <b>Backup läuft</b> erscheint, sobald Sie auf Backup tippen. Zuerst <b>Vorbereiten…</b> (Verbindung zu Ihren Zielen), dann <b>Quelle wird analysiert…</b> mit einem Live-Zähler der gefundenen Dateien — bei einer großen Mediathek kann das dauern, es hängt nicht."),
@@ -127,13 +132,13 @@ GUIDE = [
         ("ul", ["Gegradet wird Video für Video, nie „alles“ — ein Ordner mischt oft LOG- und normale Clips, und eine LOG-LUT würde die normalen verderben.", "Bereits gegradete Dateien werden übersprungen, ein erneuter Lauf ist unbedenklich. Abbrechen jederzeit: Fertiges bleibt erhalten.", "Grading ist aufwendig: Lassen Sie die App geöffnet und das Laufwerk verbunden. Das Telefon kann warm werden.", "Bei einem NAS werden die Clips geladen, auf dem Telefon gegradet und in einen Ordner <b>Gerät (Graded)</b> auf dem NAS hochgeladen — langsamer und datenhungrig."]),
     ]),
     ("mirror", "Zwei Ziele gleichzeitig (Pro)", [
-        ("p", "Fügen Sie in den Einstellungen ein zweites Ziel hinzu: Jede Datei wird gleichzeitig auf beide kopiert — zwei Laufwerke oder ein Laufwerk und ein NAS. Das Backup dauert nicht doppelt so lang. Fällt ein Ziel aus oder verschwindet, <b>macht das andere weiter</b>, und der Bericht nennt, was wo fehlt."),
+        ("p", "Fügen Sie ein zweites Ziel hinzu — Karte der Sicherung lange drücken (iPhone) oder ihr Menü <b>⋮</b> öffnen (Android), dann <b>Einstellungen</b> und <b>Ziel hinzufügen</b>. Jede Datei wird gleichzeitig auf beide kopiert — zwei Laufwerke oder ein Laufwerk und ein NAS. Die Sicherung dauert nicht doppelt so lange. Fällt ein Ziel aus oder verschwindet es, <b>läuft das andere weiter</b>, und der Bericht nennt, was wo fehlt."),
         ("note", "Ist beim Start nur eines der beiden Laufwerke angeschlossen, kopiert die App trotzdem darauf und markiert die Sitzung für das andere als unvollständig."),
     ]),
     ("nas", "Per WLAN auf ein NAS sichern (Pro)", [
         ("p", "Statt eines Laufwerks — oder zusätzlich — können Sie direkt auf ein <b>NAS</b> (Synology, QNAP, TrueNAS, jedes SMB-fähige Gerät) über das Netzwerk sichern. Kein Kabel, keine Cloud, und jede Datei wird per SHA-256 geprüft."),
-        ("ol", ["Aktivieren Sie am NAS die <b>SMB-Dateifreigabe</b> und geben Sie einem Benutzer Lese- und Schreibzugriff auf einen freigegebenen Ordner.", "In der App: <b>Einstellungen → Ziele → NAS (SMB)</b>.", "Tragen Sie <b>Host</b> (z. B. <code>192.168.1.20</code>), <b>Freigabe</b> (z. B. <code>photo</code>), einen optionalen <b>Ordner</b> sowie <b>Benutzername</b> und <b>Passwort</b> ein. Das Passwort liegt im iOS-Schlüsselbund bzw. im Android Keystore.", "Tippen Sie auf <b>Verbindung testen</b>: Eine Meldung bestätigt die Verbindung und die Zahl der gefundenen Einträge. Dann <b>Sichern</b>."]),
-        ("p", "Das NAS erscheint jetzt im Tab Backup mit seinem freien Speicherplatz. Sie können auch <b>von unterwegs</b> sichern, wenn das NAS erreichbar ist — am einfachsten und sichersten mit einem VPN wie <b>Tailscale</b>: auf NAS und Telefon installieren und die <code>100.x.x.x</code>-Adresse des NAS als Host verwenden."),
+        ("ol", ["Aktivieren Sie am NAS die <b>SMB-Dateifreigabe</b> und geben Sie einem Benutzer Lese- und Schreibzugriff auf einen freigegebenen Ordner.", "In der App: Legen Sie eine Sicherung mit der Vorlage <i>Fotomediathek → NAS</i> an (<i>Galerie → NAS</i> auf Android) oder fügen Sie einer bestehenden Sicherung in deren <b>Einstellungen</b> ein NAS hinzu.", "Tragen Sie <b>Host</b> (z. B. <code>192.168.1.20</code>), <b>Freigabe</b> (z. B. <code>photo</code>), einen optionalen <b>Ordner</b> sowie <b>Benutzername</b> und <b>Passwort</b> ein. Das Passwort liegt im iOS-Schlüsselbund bzw. im Android Keystore.", "Tippen Sie auf <b>Verbindung testen</b>: <i>„Verbunden — N Objekt(e) gefunden.“</i> Dann <b>Erstellen</b> (oder <b>Sichern</b> in den Einstellungen einer Sicherung)."]),
+        ("p", "Das NAS erscheint nun auf der Karte der Sicherung, mit dem freien Speicherplatz. Jede Sicherung hat ihr eigenes NAS, Sie können also mehrere nutzen. Sie können auch <b>von unterwegs</b> sichern, wenn das NAS erreichbar ist — der einfachste sichere Weg ist ein VPN wie <b>Tailscale</b>: Installieren Sie es auf dem NAS und auf dem Telefon und verwenden Sie dann die <code>100.x.x.x</code>-Adresse des NAS als Host."),
         ("note", "Bei mobilen Daten warnt ein oranger Hinweis, dass große Videos viel Datenvolumen verbrauchen können; <b>Stoppen</b> hält das Backup an (es wird als Teilweise markiert)."),
     ]),
     ("android", "Android und iPhone: die Unterschiede", [
@@ -146,7 +151,7 @@ GUIDE = [
             ["Mac", "Läuft auf Macs mit Apple-Chip („Für iPad entwickelt“)", "—"],
         ]),
         ("note", "Unter Android wird ein Ziel im internen Speicher des Telefons vor der Galerie versteckt (eine Datei <code>.nomedia</code>), damit das Backup nicht erneut gesichert wird."),
-        ("fig", "android_backup", "Android: der Tab Backup."),
+        ("fig", "android_backup", "Android: der Tab „Backups“."),
         ("fig", "android_settings", "Android: Einstellungen."),
     ]),
     ("faq", "Häufige Fragen", [
@@ -159,7 +164,7 @@ GUIDE = [
         ("p", "<b>Meine Karte erscheint als „Documents“.</b> Manche Kameras nutzen einen allgemeinen Ordner. Geben Sie beim Hinzufügen der Quelle einen aussagekräftigen Namen ein."),
         ("p", "<b>Kann ich sichern, wenn mein Telefon fast voll ist?</b> Ja. Dateien werden direkt zum Ziel gestreamt, es werden nur wenige Megabyte gleichzeitig gehalten. Nur ein Backup <i>allein</i> auf ein NAS braucht Platz für jeweils eine Datei. Eine Datei, die wirklich nicht passt, wird als fehlgeschlagen gemeldet, der Rest läuft weiter."),
         ("p", "<b>Werden meine Daten irgendwohin gesendet?</b> Nein. Alles geschieht zwischen Ihrem Telefon und Ihrem Laufwerk oder NAS. Die App hat weder Server noch Konto. Netzwerkverkehr gibt es nur zum NAS, das Sie selbst einrichten, und beim Laden Ihrer eigenen iCloud- / Google-Fotos durch das System."),
-        ("p", "<b>Welche Sprachen?</b> Englisch, Französisch, Deutsch, Spanisch, Italienisch, Portugiesisch, vereinfachtes Chinesisch und Russisch. Die App folgt der Telefonsprache; unter <b>Einstellungen → Sprache</b> können Sie eine erzwingen, ohne Neustart."),
+        ("p", "<b>Welche Sprachen?</b> Englisch, Französisch, Deutsch, Spanisch, Italienisch, Portugiesisch, vereinfachtes Chinesisch, Russisch, Japanisch, Koreanisch, Hindi und Arabisch. Die App folgt der Telefonsprache; unter <b>Einstellungen → Sprache</b> können Sie eine erzwingen, ohne Neustart."),
     ]),
 ]
 

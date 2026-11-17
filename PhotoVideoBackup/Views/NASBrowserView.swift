@@ -7,6 +7,9 @@ import QuickLook
 /// Reached from the Browse tab when a NAS is configured.
 struct NASBrowserRootView: View {
     let title: String
+    /// The NAS to open; nil = the global one (Advanced settings).
+    var config: NASConfig? = nil
+    var passwordAccount: String? = nil
 
     @State private var target: SMBTarget?
     @State private var connecting = true
@@ -41,7 +44,12 @@ struct NASBrowserRootView: View {
     private func connect() async {
         connecting = true
         connectError = nil
-        target = await DestinationManager.shared.makeSMBTarget()
+        if let config {
+            let password = KeychainStore.get(account: passwordAccount ?? DestinationManager.shared.legacyNASPasswordAccount) ?? ""
+            target = await DestinationManager.shared.makeSMBTarget(from: config, password: password)
+        } else {
+            target = await DestinationManager.shared.makeSMBTarget()
+        }
         if target == nil { connectError = String(localized: "The NAS is unreachable — check Wi-Fi/VPN and settings.") }
         connecting = false
     }

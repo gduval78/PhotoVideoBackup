@@ -29,6 +29,7 @@ struct PhotoVideoBackupApp: App {
                 // Sets SwiftUI's locale so Text(LocalizedStringKey) uses the right .lproj.
                 // LanguageBundle (Bundle.main subclass) handles String(localized:) in ViewModels.
                 .environment(\.locale, languageManager.currentLocale)
+                .environment(\.layoutDirection, languageManager.layoutDirection)
                 .environment(viewModel)
                 .environment(storeManager)
                 .environment(browserViewModel)

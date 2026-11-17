@@ -55,7 +55,6 @@ fun SettingsScreen(
     onPaywall: () -> Unit,
     onNaming: () -> Unit,
     onExtensions: () -> Unit,
-    onNas: () -> Unit,
     onDiagnostic: () -> Unit,
     onWelcome: () -> Unit,
 ) {
@@ -64,18 +63,6 @@ fun SettingsScreen(
     var showFolderDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var limitText by remember { mutableStateOf(Prefs.backupFileLimit.let { if (it == 0) "" else it.toString() }) }
-    var pickerSlot by remember { mutableStateOf(0) }
-
-    val destinationPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        if (uri != null) {
-            Saf.persist(context, uri, write = true)
-            val d = StoredDestination(uri.toString(), Saf.label(context, uri), Saf.folderPath(uri))
-            val list = Prefs.destinations.toMutableList()
-            if (pickerSlot < list.size) list[pickerSlot] = d else list += d
-            Prefs.destinations = list
-            AppState.refreshAsync(context, scope)
-        }
-    }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         SectionHeader(stringResource(R.string.device))
@@ -103,28 +90,7 @@ fun SettingsScreen(
         }
         Row2(stringResource(R.string.additional_file_types), Prefs.customExtensions.ifBlank { stringResource(R.string.none) }, onClick = onExtensions)
         Row2(stringResource(R.string.file_naming), if (Prefs.namingEnabled) Prefs.namingPattern else stringResource(R.string.off), onClick = onNaming)
-
-        SectionHeader(stringResource(R.string.destinations))
-        val dests = Prefs.destinations
-        Row2(
-            stringResource(R.string.destination_1), dests.getOrNull(0)?.name ?: stringResource(R.string.not_configured),
-            onClick = { pickerSlot = 0; destinationPicker.launch(null) },
-            trailing = if (dests.isNotEmpty()) ({
-                TextButton(onClick = { Prefs.destinations = dests.drop(1); AppState.refreshAsync(context, scope) }) { Text(stringResource(R.string.clear)) }
-            }) else null,
-        )
-        Row2(
-            stringResource(R.string.destination_2), dests.getOrNull(1)?.name ?: stringResource(R.string.not_configured),
-            locked = !Pro.isPro,
-            onClick = { if (Pro.isPro) { pickerSlot = if (dests.isEmpty()) 0 else 1; destinationPicker.launch(null) } else onPaywall() },
-            trailing = if (dests.size > 1 && Pro.isPro) ({
-                TextButton(onClick = { Prefs.destinations = dests.take(1); AppState.refreshAsync(context, scope) }) { Text(stringResource(R.string.clear)) }
-            }) else null,
-        )
-        Row2(
-            stringResource(R.string.nas_smb), Prefs.nas?.label ?: stringResource(R.string.not_configured),
-            locked = !Pro.isPro, onClick = { if (Pro.isPro) onNas() else onPaywall() },
-        )
+        Text(stringResource(R.string.settings_defaults_footer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
 
         SectionHeader(stringResource(R.string.language))
         Row2(stringResource(R.string.language), languageName(Prefs.language), onClick = { showLanguageDialog = true })
@@ -180,6 +146,7 @@ fun SettingsScreen(
 val LANGUAGES = listOf(
     "en" to "English", "fr" to "Français", "de" to "Deutsch", "es" to "Español",
     "it" to "Italiano", "pt" to "Português", "zh-CN" to "中文", "ru" to "Русский",
+    "ja" to "日本語", "ko" to "한국어", "hi" to "हिन्दी", "ar" to "العربية",
 )
 
 @Composable
@@ -199,7 +166,7 @@ fun <T> ChoiceDialog(title: String, options: List<Pair<T, String>>, selected: T,
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 for ((value, label) in options) {
                     Row(Modifier.fillMaxWidth().clickable { onSelect(value) }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = value == selected, onClick = { onSelect(value) })

@@ -19,7 +19,8 @@ KOTLIN = ROOT / "android/app/src/main/kotlin"
 
 # iOS xcstrings language -> Android resource folder
 LANGS = {"en": "values", "fr": "values-fr", "de": "values-de", "es": "values-es",
-         "it": "values-it", "pt": "values-pt", "zh-Hans": "values-zh-rCN", "ru": "values-ru"}
+         "it": "values-it", "pt": "values-pt", "zh-Hans": "values-zh-rCN", "ru": "values-ru",
+         "ja": "values-ja", "ko": "values-ko", "hi": "values-hi", "ar": "values-ar"}
 
 # Android name -> iOS key (English literal)
 REUSED = {
@@ -117,6 +118,34 @@ REUSED = {
     "available_luts": "Available LUTs", "select_videos_hint": "Select videos in the grid, then tap Grade.",
     "select_log_hint": "Select only your LOG videos to grade.", "lut_on": "LUT ON",
     "nas_grading_note": "Downloading, grading, and uploading to a “(Graded)” copy on the NAS.", "delete": "Delete",
+    # Backups (profiles) — shared with the iOS 2.7.0 catalog
+    "tab_backups": "Backups", "new_backup": "New backup", "run": "Run", "unlock": "Unlock", "rename": "Rename",
+    "create_first_backup": "Create your first backup",
+    "create_first_backup_hint": "Choose what to back up and where. Then one tap is all it takes.",
+    "rename_backup": "Rename backup", "delete_backup_title": "Delete this backup?",
+    "delete_backup_message": "The backup settings are removed. Files already copied are not affected.",
+    "overlap_title": "This folder overlaps another destination",
+    "overlap_message": "Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place.",
+    "choose_starting_point": "Choose a starting point. You pick the drive or folder in the next step.",
+    "tpl_camera_drive": "Camera or SD card → external drive",
+    "tpl_photos_drive_d": "The simplest and fastest. Recommended.", "tpl_photos_nas_d": "Back up over Wi-Fi to your NAS.",
+    "tpl_camera_drive_d": "Copy a camera card or USB drive to your drive.",
+    "tpl_photos_drive_nas_d": "Two copies in one go: a drive and your NAS.",
+    "name_photos_drive": "Photos → drive", "name_photos_nas": "Photos → NAS", "name_camera_drive": "Camera → drive",
+    "name_photos_drive_nas": "Photos → drive + NAS",
+    "source_header": "Source", "no_source_added": "No camera card or drive added yet.", "add_a_source": "Add a source…",
+    "source_footer": "Choose the folder of the card or drive to copy from. For a drive that already holds a backup, choose the device folder inside it.",
+    "not_chosen": "Not chosen",
+    "dest_footer": "Connect your drive, then pick the folder to back up into. You can create a folder in the picker.",
+    "folder_name": "Folder name", "create": "Create",
+    "err_profile_pro": "This backup needs the Pro upgrade.",
+    "err_destination_not_connected": "A destination of this backup is not connected.",
+    "err_nas_not_set_up": "The NAS of this backup is not set up.",
+    "add_a_destination": "Add a destination", "choose_another_folder": "Choose another folder…",
+    "another_folder": "Another folder…", "a_nas": "A NAS",
+    "feature_several_backups": "Create as many backups as you need, each with its own drives, NAS and settings",
+    "feature_lut": "Grade your videos with .cube LUTs and export them in HEVC",
+    "connect_ssd_hint": "Create a backup in the Backups tab and connect its drive.",
 }
 
 # Android-only strings: name -> {lang: text}. Format args use %s / %d (positional when several).
@@ -164,6 +193,27 @@ EXTRA = {
 }
 
 PLACEHOLDER = re.compile(r"%(\d+\$)?(@|lld|ld|d)")
+
+def _t(en, fr, de, es, it, pt, zh, ru): return {"en": en, "fr": fr, "de": de, "es": es, "it": it, "pt": pt, "zh-Hans": zh, "ru": ru}
+
+EXTRA.update({
+    "tpl_photos_drive": _t("Gallery → external drive", "Galerie → disque externe", "Galerie → externes Laufwerk", "Galería → disco externo", "Galleria → disco esterno", "Galeria → disco externo", "相册 → 外置硬盘", "Галерея → внешний диск"),
+    "tpl_photos_nas": _t("Gallery → NAS", "Galerie → NAS", "Galerie → NAS", "Galería → NAS", "Galleria → NAS", "Galeria → NAS", "相册 → NAS", "Галерея → NAS"),
+    "tpl_photos_cloud": _t("Gallery → cloud folder", "Galerie → dossier cloud", "Galerie → Cloud-Ordner", "Galería → carpeta en la nube", "Galleria → cartella cloud", "Galeria → pasta na nuvem", "相册 → 云端文件夹", "Галерея → папка в облаке"),
+    "tpl_drive_cloud": _t("External drive → cloud folder", "Disque externe → dossier cloud", "Externes Laufwerk → Cloud-Ordner", "Disco externo → carpeta en la nube", "Disco esterno → cartella cloud", "Disco externo → pasta na nuvem", "外置硬盘 → 云端文件夹", "Внешний диск → папка в облаке"),
+    "tpl_photos_drive_nas": _t("Gallery → external drive + NAS", "Galerie → disque externe + NAS", "Galerie → externes Laufwerk + NAS", "Galería → disco externo + NAS", "Galleria → disco esterno + NAS", "Galeria → disco externo + NAS", "相册 → 外置硬盘 + NAS", "Галерея → внешний диск + NAS"),
+    "tpl_photos_cloud_d": _t("Google Drive, OneDrive, Dropbox… Slow, and it depends on your cloud space.", "Google Drive, OneDrive, Dropbox… Lent, et dépend de votre espace cloud.", "Google Drive, OneDrive, Dropbox … Langsam und abhängig von Ihrem Cloud-Speicher.", "Google Drive, OneDrive, Dropbox… Lento y depende de tu espacio en la nube.", "Google Drive, OneDrive, Dropbox… Lento e dipende dal tuo spazio cloud.", "Google Drive, OneDrive, Dropbox… Lento e depende do seu espaço na nuvem.", "Google Drive、OneDrive、Dropbox…速度较慢，并取决于您的云存储空间。", "Google Drive, OneDrive, Dropbox… Медленно и зависит от вашего места в облаке."),
+    "tpl_drive_cloud_d": _t("Send a backup you already have to a cloud folder.", "Envoyez une sauvegarde que vous avez déjà vers un dossier cloud.", "Senden Sie eine vorhandene Sicherung in einen Cloud-Ordner.", "Envía una copia que ya tienes a una carpeta en la nube.", "Invia un backup che hai già a una cartella cloud.", "Envie uma cópia que já tem para uma pasta na nuvem.", "将已有的备份发送到云端文件夹。", "Отправьте уже имеющуюся копию в папку в облаке."),
+    "name_photos_cloud": _t("Gallery → cloud folder", "Galerie → dossier cloud", "Galerie → Cloud-Ordner", "Galería → carpeta en la nube", "Galleria → cartella cloud", "Galeria → pasta na nuvem", "相册 → 云端文件夹", "Галерея → папка в облаке"),
+    "name_drive_cloud": _t("Drive → cloud folder", "Disque → dossier cloud", "Laufwerk → Cloud-Ordner", "Disco → carpeta en la nube", "Disco → cartella cloud", "Disco → pasta na nuvem", "硬盘 → 云端文件夹", "Диск → папка в облаке"),
+    "dest_footer_cloud": _t("Pick a folder of your cloud storage (Google Drive, OneDrive, Dropbox…) in the picker. A cloud folder is slow and depends on your cloud space.", "Choisissez un dossier de votre stockage cloud (Google Drive, OneDrive, Dropbox…) dans le sélecteur. Un dossier cloud est lent et dépend de votre espace cloud.", "Wählen Sie in der Auswahl einen Ordner Ihres Cloud-Speichers (Google Drive, OneDrive, Dropbox …). Ein Cloud-Ordner ist langsam und hängt von Ihrem Cloud-Speicher ab.", "Elige en el selector una carpeta de tu almacenamiento en la nube (Google Drive, OneDrive, Dropbox…). Una carpeta en la nube es lenta y depende de tu espacio en la nube.", "Scegli nel selettore una cartella del tuo archivio cloud (Google Drive, OneDrive, Dropbox…). Una cartella cloud è lenta e dipende dal tuo spazio cloud.", "Escolha no seletor uma pasta do seu armazenamento na nuvem (Google Drive, OneDrive, Dropbox…). Uma pasta na nuvem é lenta e depende do seu espaço na nuvem.", "在选择器中选取云存储（Google Drive、OneDrive、Dropbox…）中的文件夹。云端文件夹速度较慢，并取决于您的云存储空间。", "Выберите в окне выбора папку вашего облачного хранилища (Google Drive, OneDrive, Dropbox…). Папка в облаке работает медленно и зависит от вашего места в облаке."),
+    "destinations_footer": _t("A backup can copy to several destinations at once. Choosing another folder is for a replaced drive or an access that no longer works — files already copied stay where they are.", "Une sauvegarde peut copier vers plusieurs destinations à la fois. Choisir un autre dossier sert à remplacer un disque ou un accès qui ne fonctionne plus — les fichiers déjà copiés restent où ils sont.", "Eine Sicherung kann gleichzeitig auf mehrere Ziele kopieren. „Anderen Ordner wählen“ dient dazu, ein ersetztes Laufwerk oder einen nicht mehr funktionierenden Zugriff zu ersetzen – bereits kopierte Dateien bleiben, wo sie sind.", "Una copia puede copiar a varios destinos a la vez. Elegir otra carpeta sirve para un disco sustituido o un acceso que ya no funciona: los archivos ya copiados se quedan donde están.", "Un backup può copiare su più destinazioni contemporaneamente. Scegliere un'altra cartella serve per un disco sostituito o un accesso che non funziona più: i file già copiati restano dove sono.", "Uma cópia pode copiar para vários destinos em simultâneo. Escolher outra pasta serve para um disco substituído ou um acesso que já não funciona — os ficheiros já copiados ficam onde estão.", "一个备份可以同时复制到多个目的地。“选择其他文件夹”用于更换的硬盘或已失效的访问权限——已复制的文件会保留在原处。", "Одна копия может копироваться сразу в несколько мест назначения. «Выбрать другую папку» нужно для заменённого диска или доступа, который больше не работает — уже скопированные файлы остаются на месте."),
+    "settings_defaults_footer": _t("These are the defaults for new backups. Each backup then has its own settings: Backups tab, ⋮ menu of a backup, Settings.", "Ce sont les valeurs par défaut des nouvelles sauvegardes. Chaque sauvegarde a ensuite ses propres réglages : onglet Sauvegardes, menu ⋮ d'une sauvegarde, Réglages.", "Dies sind die Standardwerte für neue Sicherungen. Jede Sicherung hat danach eigene Einstellungen: Tab „Sicherungen“, Menü ⋮ einer Sicherung, Einstellungen.", "Estos son los valores predeterminados de las copias nuevas. Cada copia tiene después sus propios ajustes: pestaña Copias, menú ⋮ de una copia, Ajustes.", "Questi sono i valori predefiniti per i nuovi backup. Ogni backup ha poi le proprie impostazioni: scheda Backup, menu ⋮ di un backup, Impostazioni.", "Estes são os valores predefinidos das novas cópias. Cada cópia tem depois as suas próprias definições: separador Cópias, menu ⋮ de uma cópia, Definições.", "这些是新备份的默认设置。之后每个备份都有自己的设置：“备份”标签页 → 备份的 ⋮ 菜单 → 设置。", "Это значения по умолчанию для новых копий. У каждой копии затем свои настройки: вкладка «Копии», меню ⋮ копии, «Настройки»."),
+})
+
+import extra_langs
+extra_langs.merge(EXTRA, LANGS)
+
 
 def to_android(text: str) -> str:
     """iOS format specifiers -> Android (positional), then XML/Android escaping."""

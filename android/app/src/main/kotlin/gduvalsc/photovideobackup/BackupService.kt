@@ -44,8 +44,7 @@ class BackupService : Service() {
         )
         acquireLocks()
 
-        val sourceId = intent?.getStringExtra(EXTRA_SOURCE) ?: "gallery"
-        val request = if (sourceId == "gallery") SourceRequest.Gallery else SourceRequest.External(sourceId)
+        val request = SourceRequest(intent?.getStringExtra(EXTRA_PROFILE).orEmpty())
 
         // Mirror the progress into the notification, at most once a second.
         val notifier = scope.launch {
@@ -104,7 +103,7 @@ class BackupService : Service() {
     }
 
     companion object {
-        const val EXTRA_SOURCE = "source"
+        const val EXTRA_PROFILE = "profile"
         const val ACTION_STOP = "gduvalsc.photovideobackup.STOP"
     }
 }

@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import gduvalsc.pvb.core.BackupProfile
 import gduvalsc.pvb.core.DeviceType
 import gduvalsc.pvb.core.FolderOrganization
 import gduvalsc.pvb.core.NamingProfile
@@ -16,35 +17,12 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
-/** A backup destination folder the user picked (a SAF tree). */
-@Serializable
-data class StoredDestination(val uri: String, val name: String, val path: String = "")
+typealias StoredDestination = gduvalsc.pvb.core.StoredDestination
+typealias NasConfig = gduvalsc.pvb.core.NasConfig
 
 /** A source folder the user picked (SD card, USB drive…). */
 @Serializable
 data class StoredSource(val id: String = UUID.randomUUID().toString(), val uri: String, val name: String, val deviceType: String = DeviceType.GENERIC.raw)
-
-/** A saved SMB/NAS destination. The password lives in [SecretStore], never here. */
-@Serializable
-data class NasConfig(
-    val host: String = "",
-    val port: Int = 445,
-    val share: String = "",
-    val basePath: String = "",
-    val username: String = "",
-    val displayName: String = "",
-    val enabled: Boolean = true,
-) {
-    val isComplete: Boolean get() = host.isNotBlank() && share.isNotBlank() && username.isNotBlank()
-
-    /** Label for History / Report: "DisplayName / share/basePath" (falls back to the host). */
-    val label: String
-        get() {
-            val name = displayName.ifBlank { host }
-            val base = basePath.trim('/')
-            return "$name / ${if (base.isEmpty()) share else "$share/$base"}"
-        }
-}
 
 /**
  * Every user setting, in one SharedPreferences file. Keys and values match the iOS app's UserDefaults
@@ -54,7 +32,7 @@ data class NasConfig(
  */
 object Prefs {
     private lateinit var sp: SharedPreferences
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private val STRING_MAP = MapSerializer(String.serializer(), String.serializer())
     private var revision by mutableIntStateOf(0)
 
@@ -118,6 +96,15 @@ object Prefs {
     var sources: List<StoredSource>
         get() = read { decode(ListSerializer(StoredSource.serializer()), sp.getString("sources", null)) }
         set(v) = write { putString("sources", json.encodeToString(ListSerializer(StoredSource.serializer()), v)) }
+
+    /** The user's backups (profiles). The legacy `destinations` / `nas` / settings keys are only read once, by the migration. */
+    var profiles: List<BackupProfile>
+        get() = read { decode(ListSerializer(BackupProfile.serializer()), sp.getString("profiles", null)) }
+        set(v) = write { putString("profiles", json.encodeToString(ListSerializer(BackupProfile.serializer()), v)) }
+
+    var profilesMigrated: Boolean
+        get() = read { sp.getBoolean("profilesMigrated", false) }
+        set(v) = write { putBoolean("profilesMigrated", v) }
 
     var nas: NasConfig?
         get() = read { sp.getString("nas", null)?.let { runCatching { json.decodeFromString(NasConfig.serializer(), it) }.getOrNull() } }

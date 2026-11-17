@@ -7,20 +7,15 @@ import UniformTypeIdentifiers
 struct BackupBrowserView: View {
     @Environment(BackupBrowserViewModel.self) private var browser
 
-    private var nasBrowseTitle: String {
-        let name = DestinationManager.shared.loadNASConfig()?.displayName ?? ""
-        return name.isEmpty ? "NAS" : name
-    }
-
     var body: some View {
         let _ = browser.folderListVersion
-        let nasConfigured = DestinationManager.shared.isNASConfigured()
+        let nasEntries = browser.nasEntries
         Group {
-            if browser.destinations.isEmpty && !nasConfigured {
+            if browser.destinations.isEmpty && nasEntries.isEmpty {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
-                    title: "No SSD Connected",
-                    message: "Connect your SSD and configure a destination in Settings."
+                    title: "No destination available",
+                    message: "Create a backup in the Backups tab and connect its drive."
                 )
             } else {
                 List {
@@ -28,7 +23,7 @@ struct BackupBrowserView: View {
                         let folders = browser.deviceFolders(in: dest.url)
                         Section(dest.name) {
                             if folders.isEmpty {
-                                Text("No backups yet on this SSD.")
+                                Text("No backups here yet.")
                                     .foregroundStyle(.secondary)
                                     .font(.subheadline)
                             } else {
@@ -43,12 +38,14 @@ struct BackupBrowserView: View {
                         }
                     }
 
-                    if nasConfigured {
-                        Section("NAS") {
+                    // One section per distinct NAS: the global one and each backup's own.
+                    ForEach(nasEntries, id: \.config) { entry in
+                        Section(entry.title) {
                             NavigationLink {
-                                NASBrowserRootView(title: nasBrowseTitle)
+                                NASBrowserRootView(title: entry.title, config: entry.config,
+                                                   passwordAccount: entry.passwordAccount)
                             } label: {
-                                Label(nasBrowseTitle, systemImage: "externaldrive.connected.to.line.below")
+                                Label(entry.config.label, systemImage: "externaldrive.connected.to.line.below")
                             }
                         }
                     }
@@ -761,7 +758,7 @@ struct MediaDetailView: View {
 
 // MARK: - Shared empty state helper
 
-private func emptyState(icon: String, title: String, message: String?) -> some View {
+private func emptyState(icon: String, title: LocalizedStringKey, message: LocalizedStringKey?) -> some View {
     VStack(spacing: 12) {
         Image(systemName: icon)
             .font(.largeTitle)

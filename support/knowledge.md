@@ -3,7 +3,7 @@
 Curated notes for the support agent. **Keep this file up to date at every store delivery** (see the "Documentation maintenance" checklist in CLAUDE.md): add each new feature, limit or known issue, with the version it appeared in.
 
 ## Versions
-- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.6.1.
+- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.7.0 (backup profiles; in TestFlight until released — 2.6.1 is the store version until then).
 - Android: 2.6.1 (same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
@@ -11,6 +11,14 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - One-time purchase, no subscription. Free: back up the photo library to one destination, browse and preview backups (LUT preview included). Pro: SD/USB camera sources, second destination (mirror), NAS, LUT grading to H.265.
 - Restore: on the upgrade screen (Settings → Upgrade to Pro), tap **Restore Purchases**, signed in with the same Apple ID (iOS) or Google account (Android).
 - Refunds and charges are handled by Apple / Google, not by us.
+
+## Backup profiles (iPhone / iPad, 2.7.0)
+- Each backup is a **profile**: a card on the **Backups** tab with its own source, destination(s), NAS and settings (folder structure, file naming, max files, extra file types). Tap **Run**; long-press a card → **Settings** to edit, rename or delete. **New backup** (+) offers templates: photo library → external drive / NAS / iCloud Drive; camera or SD card → external drive; external drive → iCloud Drive; photo library → drive + NAS.
+- **Free = one backup** (photo library → one folder). **Several backups, a second destination, a NAS, camera/USB sources and LUT grading are Pro.** If Pro is lost the first backup keeps working and the others show *Unlock* — nothing is deleted.
+- **The Advanced tab no longer exists.** An existing setup is turned into profiles automatically at the first launch of 2.7.0; nothing to reconfigure. Settings → Backup now holds the *defaults for new backups*.
+- A card shows **Reconnect** when its source (card/drive) or a destination folder cannot be reached: tap it and pick the folder again. Replacing a drive: Settings of the backup → *Choose another folder…*. Several destinations: Settings of the backup → *Add a destination* (Pro).
+- Each backup can use **its own NAS**; Browse lists every NAS and every profile folder.
+- Android does not have profiles yet (same screens as before).
 
 ## Common situations
 - **"Not connected" source or destination after ejecting and reinserting a card or drive**: tap **Reconnect** (the system gives the app a new access each time a volume is mounted). Name and type are kept.
