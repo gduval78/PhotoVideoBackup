@@ -184,6 +184,7 @@ PRIVACY = {
         ]),
         ("Contact with support", [
             ("p", "If you write to support, we receive what you send — your address and your message — and use it only to answer you."),
+            ("p", "To prepare a reply, an AI assistant drafts it from your message (and from the log, if you attached it). The text is processed by AI service providers solely for that purpose, and a person reviews every reply before it is sent."),
         ]),
     ],
 }

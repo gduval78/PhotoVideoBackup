@@ -85,7 +85,7 @@ struct HistoryView: View {
 
 // MARK: - DiagnosticLogView
 
-private struct DiagnosticLogView: View {
+struct DiagnosticLogView: View {
     @State private var content: String = ""
 
     var body: some View {

@@ -160,6 +160,11 @@ struct SettingsView: View {
                 } label: {
                     Label("Contact Support", systemImage: "envelope.badge")
                 }
+                NavigationLink {
+                    DiagnosticLogView()
+                } label: {
+                    Label("Diagnostic Log", systemImage: "doc.text")
+                }
             }
 
         }

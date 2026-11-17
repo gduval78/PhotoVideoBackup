@@ -14,7 +14,8 @@ What it checks (build_site.py runs it after generating the site):
    older than the current major.minor of its platform ("android_*" = Android, everything else = iOS) is
    STALE: a WARNING (an ERROR with --strict). Retake it, or — if the screen did not change — bump its
    "version" after looking at it. Never bump a version without having looked at the screen.
-4. ORPHANS — images/*.png used by no guide are listed (information only).
+4. SNAPSHOT — v/<major.minor>/ of the current iOS version exists with its screenshots (the apps link to it).
+5. ORPHANS — images/*.png used by no guide are listed (information only).
 
 Exit code 1 on any ERROR (or STALE with --strict).
 """
@@ -80,6 +81,15 @@ def check(strict=False):
         p = platform(name)
         if minor(entry["version"]) < minor(current[p]):
             stale.append(f"'{name}' is accurate for {p} {entry['version']}, the app is {current[p]} — {entry.get('note', '')}".rstrip(" —"))
+
+    # 3b. version snapshot: the apps link to v/<major.minor>/, so it must exist and be complete
+    snap = ROOT / "v" / ".".join(map(str, minor(current["ios"])))
+    if not (snap / "index.html").exists():
+        errors.append(f"{snap.relative_to(ROOT)}/ is missing — run build_site.py (the apps link to it)")
+    else:
+        for name in dict.fromkeys(figs):
+            if not (snap / "images" / f"{name}.png").exists():
+                errors.append(f"{snap.relative_to(ROOT)}/images/{name}.png is missing from the snapshot")
 
     # 4. orphans
     used = set(figs)

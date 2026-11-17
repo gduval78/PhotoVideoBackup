@@ -184,6 +184,7 @@ PRIVACY = {
         ]),
         ("Contatto con l'assistenza", [
             ("p", "Se scrivi all'assistenza, riceviamo ciò che invii — il tuo indirizzo e il tuo messaggio — e lo usiamo solo per risponderti."),
+            ("p", "Per preparare la risposta, un assistente di IA ne scrive una bozza a partire dal tuo messaggio (e dal registro, se lo hai allegato). Il testo è elaborato da fornitori di IA esclusivamente a questo scopo e una persona rivede ogni risposta prima dell'invio."),
         ]),
     ],
 }

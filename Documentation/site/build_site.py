@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Builds the static site (user guide + privacy policy) in 8 languages, at the repository root (GitHub Pages serves main at /).
 
-  python3 Documentation/site/build_site.py [--only en,fr]
+  python3 Documentation/site/build_site.py [--only en,fr] [--snapshot [X.Y]] [--freeze]
+
+Versions: the root is the latest guide; v/<major.minor>/ holds a self-contained copy per app version (the apps link to their own version).
+A plain build refreshes the current version's snapshot unless frozen; `--snapshot X.Y --freeze` freezes it at publication.
 
 Content: Documentation/site/<lang>.py (en, fr, de, es, it, pt, zh, ru); each file defines UI (site labels), GUIDE (sections) and PRIVACY.
 A section = (id, title, [blocks]); block = ("p", html) | ("ul", [html…]) | ("ol", [html…]) | ("note", html) | ("fig", image, caption) | ("table", [headers], [[cells]…]).
@@ -9,13 +12,14 @@ The script REFUSES a language whose structure (sections, number and kind of bloc
 The support address is read from PhotoVideoBackup/App/AppConstants.swift: a single source.
 Generated at the root: en/ fr/ de/ es/ it/ pt/ zh-Hans/ ru/, assets/, index.html, privacy-policy.html. Images are in images/.
 """
-import html, importlib.util, re, sys
+import html, importlib.util, re, shutil, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("ru", "Русский"), ("ja", "日本語"), ("ko", "한국어"), ("hi", "हिन्दी"), ("ar", "العربية")]
-UPDATED = "2026-11-15"
+UPDATED = "2026-11-17"
 BRAND = "PhotoVideoBackup"
+FROZEN = ".frozen"   # marker file in v/<X.Y>/: a published version, never rewritten
 RTL = {"ar"}   # right-to-left languages: <html dir="rtl">; the stylesheet uses logical (start/end) properties
 
 
@@ -111,9 +115,9 @@ def chooser(en, page_name, heading):
 """
 
 
-def main():
-    only = None
-    if "--only" in sys.argv: only = sys.argv[sys.argv.index("--only") + 1].split(",")
+def generate(base: Path, only=None):
+    """Writes the whole site (language folders, chooser pages, assets, images) under `base`.
+    All links are relative, so the same tree works at the root and inside v/<major.minor>/."""
     email = support_email()
     en = load("en")
     ref_g = shape(en.GUIDE)
@@ -130,18 +134,72 @@ def main():
                 if be[0] == "fig" and be[1] != b[1]: sys.exit(f"{code}: different image in {sid}")
                 if be[0] in ("ul", "ol") and len(be[1]) != len(b[1]): sys.exit(f"{code}: {sid}: list length differs")
                 if be[0] == "table" and (len(be[2]) != len(b[2]) or len(be[1]) != len(b[1])): sys.exit(f"{code}: {sid}: table shape differs")
-        out = ROOT / code; out.mkdir(parents=True, exist_ok=True)
+        out = base / code; out.mkdir(parents=True, exist_ok=True)
         (out / "index.html").write_text(build_guide(code, mod, email))
         (out / "privacy-policy.html").write_text(build_privacy(code, mod, email))
-    (ROOT / "index.html").write_text(chooser(en, "index.html", en.UI["chooser_tagline"]))
-    (ROOT / "privacy-policy.html").write_text(chooser(en, "privacy-policy.html", en.UI["chooser_privacy"]))
-    (ROOT / ".nojekyll").write_text("")
+    (base / "index.html").write_text(chooser(en, "index.html", en.UI["chooser_tagline"]))
+    (base / "privacy-policy.html").write_text(chooser(en, "privacy-policy.html", en.UI["chooser_privacy"]))
+    (base / ".nojekyll").write_text("")
+
+
+def used_images():
+    return sorted({b[1] for _s, _t, bl in load("en").GUIDE for b in bl if b[0] == "fig"})
+
+
+def current_minor() -> str:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import check_docs
+    return ".".join(map(str, check_docs.minor(check_docs.ios_version())))
+
+
+def snapshot(version: str, freeze: bool):
+    """v/<major.minor>/ = a self-contained copy of the guide (its own assets and screenshots).
+    Rebuilt freely while the version is in test; FROZEN (never rewritten) once published."""
+    if not re.fullmatch(r"\d+\.\d+", version): sys.exit(f"snapshot version must be major.minor, got '{version}'")
+    base = ROOT / "v" / version
+    if (base / FROZEN).exists():
+        print(f"v/{version} is frozen (published) — left untouched"); return
+    if base.exists(): shutil.rmtree(base)
+    base.mkdir(parents=True)
+    generate(base)
+    shutil.copytree(ROOT / "assets", base / "assets")
+    (base / "images").mkdir()
+    for name in used_images():
+        shutil.copy2(ROOT / "images" / f"{name}.png", base / "images" / f"{name}.png")
+    if freeze: (base / FROZEN).write_text("published\n")
+    print(f"snapshot -> v/{version}" + (" (frozen)" if freeze else " (draft)"))
+
+
+def versions_page():
+    vs = sorted((p.name for p in (ROOT / "v").glob("*") if p.is_dir()), key=lambda v: tuple(map(int, v.split("."))), reverse=True)
+    items = "".join(f'<li><a href="v/{v}/index.html">{BRAND} {v}</a>{"" if (ROOT / "v" / v / FROZEN).exists() else " (draft)"}</li>' for v in vs)
+    (ROOT / "versions.html").write_text(f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{BRAND} — versions</title>
+<link rel="stylesheet" href="assets/style.css"></head>
+<body><main class="wrap chooser"><h1>{BRAND}</h1><p class="lead">User guide by app version</p><ul class="langlist">{items}</ul><p><a href="index.html">Latest</a></p></main></body></html>
+""")
+
+
+def main():
+    only = None
+    if "--only" in sys.argv: only = sys.argv[sys.argv.index("--only") + 1].split(",")
+    generate(ROOT, only)
+    # Version snapshots: --snapshot [X.Y] (default: the current iOS major.minor), --freeze when the version is published.
+    # A plain build also refreshes the current version's snapshot unless it is already frozen.
+    freeze = "--freeze" in sys.argv
+    if "--snapshot" in sys.argv:
+        i = sys.argv.index("--snapshot")
+        v = sys.argv[i + 1] if i + 1 < len(sys.argv) and not sys.argv[i + 1].startswith("--") else current_minor()
+        snapshot(v, freeze)
+    elif not only:
+        snapshot(current_minor(), False)
+    versions_page()
     print("site generated ->", ROOT)
     # Keep the guide in step with the builds: version line, screenshots present and dated (see check_docs.py).
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import check_docs
     if check_docs.check() != 0:
-        sys.exit("guide check failed — fix the errors above (screenshots/manifest/version line)")
+        sys.exit("guide check failed — fix the errors above (screenshots/manifest/version line/snapshot)")
 
 
 main()

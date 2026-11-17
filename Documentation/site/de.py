@@ -184,6 +184,7 @@ PRIVACY = {
         ]),
         ("Kontakt mit dem Support", [
             ("p", "Wenn Sie dem Support schreiben, erhalten wir, was Sie senden — Ihre Adresse und Ihre Nachricht — und verwenden es nur, um Ihnen zu antworten."),
+            ("p", "Zur Vorbereitung der Antwort erstellt ein KI-Assistent einen Entwurf aus Ihrer Nachricht (und aus dem Protokoll, falls Sie es angehängt haben). Der Text wird von KI-Dienstleistern ausschließlich zu diesem Zweck verarbeitet, und eine Person prüft jede Antwort, bevor sie gesendet wird."),
         ]),
     ],
 }

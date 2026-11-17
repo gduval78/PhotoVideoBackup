@@ -9,7 +9,10 @@ import java.util.Locale
 /** App-wide constants and the support mail composer (same routable subject and meta block as the iOS app). */
 object AppConstants {
     const val SUPPORT_EMAIL = "photovideobackup@icloud.com"
-    const val DOCUMENTATION_URL = "https://gduval78.github.io/PhotoVideoBackup/"
+    /** The guide of THIS build's major.minor (`v/<X.Y>/`), so an older install never opens a newer guide. */
+    val DOCUMENTATION_URL: String get() =
+        "https://gduval78.github.io/PhotoVideoBackup/" +
+            BuildConfig.VERSION_NAME.split(".").let { if (it.size >= 2) "v/${it[0]}.${it[1]}/" else "" }
     const val APP_TAG = "PhotoVideoBackup"
 
     /**

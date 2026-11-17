@@ -2,7 +2,13 @@ import Foundation
 
 enum AppConstants {
     static let supportEmail     = "photovideobackup@icloud.com"
-    static let documentationURL = "https://gduval78.github.io/PhotoVideoBackup/"
+    /// The guide of THIS build's major.minor (`v/<X.Y>/`), so an older install never opens a newer guide.
+    /// The snapshot is created by `Documentation/site/build_site.py` at the first test build of a version.
+    static let documentationURL = "https://gduval78.github.io/PhotoVideoBackup/" + documentationPath
+    static var documentationPath: String {
+        let v = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "").split(separator: ".")
+        return v.count >= 2 ? "v/\(v[0]).\(v[1])/" : ""
+    }
 
     /// Identifier used by the support agent: it routes mail whose subject matches
     /// `[Support:<supportAppName>]` and reads the `SUPPORT-META` block below.

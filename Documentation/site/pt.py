@@ -184,6 +184,7 @@ PRIVACY = {
         ]),
         ("Contacto com o suporte", [
             ("p", "Se escrever ao suporte, recebemos o que enviar — o seu endereço e a sua mensagem — e só o usamos para lhe responder."),
+            ("p", "Para preparar a resposta, um assistente de IA redige um rascunho a partir da sua mensagem (e do registo, se o anexou). O texto é tratado por fornecedores de IA apenas para esse fim, e uma pessoa revê cada resposta antes de a enviar."),
         ]),
     ],
 }
