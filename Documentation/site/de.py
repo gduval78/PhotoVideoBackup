@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>Meine Karte erscheint als „Documents“.</b> Manche Kameras nutzen einen allgemeinen Ordner. Geben Sie beim Hinzufügen der Quelle einen aussagekräftigen Namen ein."),
         ("p", "<b>Kann ich sichern, wenn mein Telefon fast voll ist?</b> Ja. Dateien werden direkt zum Ziel gestreamt, es werden nur wenige Megabyte gleichzeitig gehalten. Nur ein Backup <i>allein</i> auf ein NAS braucht Platz für jeweils eine Datei. Eine Datei, die wirklich nicht passt, wird als fehlgeschlagen gemeldet, der Rest läuft weiter."),
         ("p", "<b>Werden meine Daten irgendwohin gesendet?</b> Nein. Alles geschieht zwischen Ihrem Telefon und Ihrem Laufwerk oder NAS. Die App hat weder Server noch Konto. Netzwerkverkehr gibt es nur zum NAS, das Sie selbst einrichten, und beim Laden Ihrer eigenen iCloud- / Google-Fotos durch das System."),
-        ("p", "<b>Welche Sprachen?</b> Englisch, Französisch, Deutsch, Spanisch, Italienisch, Portugiesisch, vereinfachtes Chinesisch, Russisch, Japanisch, Koreanisch, Hindi und Arabisch. Die App folgt der Telefonsprache; unter <b>Einstellungen → Sprache</b> können Sie eine erzwingen, ohne Neustart."),
+        ("p", "<b>Welche Sprachen?</b> Englisch, Französisch, Deutsch, Spanisch (neutral, für Spanien und Lateinamerika), Italienisch, Portugiesisch (europäisch), vereinfachtes Chinesisch, traditionelles Chinesisch, Russisch, Japanisch, Koreanisch, Hindi und Arabisch. Die App folgt der Telefonsprache; unter <b>Einstellungen → Sprache</b> können Sie eine erzwingen, ohne Neustart."),
     ]),
 ]
 

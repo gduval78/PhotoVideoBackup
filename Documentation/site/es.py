@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>Mi tarjeta aparece como «Documents».</b> Algunas cámaras usan una carpeta genérica. Escribe un nombre descriptivo al añadir la fuente."),
         ("p", "<b>¿Puedo copiar con el móvil casi lleno?</b> Sí. Los archivos se envían en flujo al destino, así que solo se retienen unos pocos megabytes a la vez. Solo una copia a un NAS <i>solo</i> necesita espacio para un archivo cada vez. Un archivo que de verdad no cabe se señala como fallido y el resto continúa."),
         ("p", "<b>¿Se envían mis datos a alguna parte?</b> No. Todo ocurre entre tu móvil y tu unidad o NAS. La aplicación no tiene servidor ni cuenta. El único tráfico de red va al NAS que configuras tú y a la descarga, por parte del sistema, de tus propias fotos de iCloud / Google."),
-        ("p", "<b>¿Qué idiomas?</b> Inglés, francés, alemán, español, italiano, portugués, chino simplificado, ruso, japonés, coreano, hindi y árabe. La aplicación sigue el idioma del móvil; puedes forzar uno en <b>Ajustes → Idioma</b>, sin reiniciar."),
+        ("p", "<b>¿Qué idiomas?</b> Inglés, francés, alemán, español (neutro, para España y Latinoamérica), italiano, portugués (europeo), chino simplificado, chino tradicional, ruso, japonés, coreano, hindi y árabe. La aplicación sigue el idioma del móvil; puedes forzar uno en <b>Ajustes → Idioma</b>, sin reiniciar."),
     ]),
 ]
 

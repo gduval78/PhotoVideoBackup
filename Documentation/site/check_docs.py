@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SITE = Path(__file__).resolve().parent
-LANGS = ["en", "fr", "de", "es", "it", "pt", "zh", "ru", "ja", "ko", "hi", "ar"]
+LANGS = ["en", "fr", "de", "es", "it", "pt", "zh", "zh-Hant", "ru", "ja", "ko", "hi", "ar"]
 
 
 def load(code):

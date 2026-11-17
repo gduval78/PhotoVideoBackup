@@ -610,6 +610,7 @@
 				it,
 				pt,
 				"zh-Hans",
+				"zh-Hant",
 				ru,
 				ja,
 				ko,

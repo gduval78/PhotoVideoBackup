@@ -12,7 +12,10 @@ Légende : 🤖 Claude fait seul · 👤 Gérard seul (compte, argent, soumissio
 - Problème, public, cas d'usage réel de Gérard (ex. : voyage, SSD) ; ce que l'app ne fait **pas**.
 - Plateformes : iOS d'abord ? Android ensuite ? **Règle de parité : x.y.z identique = mêmes fonctions sur les deux** (pas de version « d'alignement » vide).
 - Modèle économique : gratuit / Pro (achat unique ?), ce qui est gratuit, ce qui est Pro, prix. Identifiant produit IAP identique des deux côtés.
-- Langues cibles (par défaut les 12 : en fr de es it pt zh-Hans ru ja ko hi ar ; RTL pour ar). Anglais = langue source dans le code.
+- Langues cibles (par défaut les 13 : en fr de es it pt zh-Hans zh-Hant ru ja ko hi ar ; RTL pour ar). Anglais = langue source dans le code.
+  - **Variantes à fixer dès le cadrage** : `pt` = portugais d'Europe (pt-PT) ou du Brésil (pt-BR) ? `es` = neutre (Espagne + Amérique latine) ? Les fiches des stores suivent (`pt-PT`/`pt-BR`, `es-ES`/`es-MX`). Sur PhotoVideoBackup : `pt` = pt-PT, `es` = neutre ; le Brésil n'a pas de variante propre (candidat prioritaire).
+  - **Chinois traditionnel (Taïwan)** : dérivé du simplifié par `hant_convert.py` + `regen_hant.py` (jamais traduit à la main) ; à faire relire.
+  - **Ajouter une langue** : seulement d'après les statistiques de territoires (App Store Connect → Analytics), par vagues, avec relecture par un natif.
 - Données touchées / réseau → conséquence sur la politique de confidentialité.
 - Appareils minimum (iOS min, Android `minSdk`), cas Mac « Designed for iPad » oui/non.
 
@@ -41,7 +44,7 @@ Pour **chaque** fonction :
 6. 🤖 Mise à jour immédiate de `CLAUDE.md` (décisions, pièges, « pourquoi ») — pas en fin de projet.
 7. 🤝 Test sur appareil réel pour ce que les tests ne couvrent pas (PhotoKit, SAF, bookmarks, NAS réel, iCloud, USB-C). Claude liste explicitement ce qui n'est **pas** validé.
 
-☐ Porte par fonction : build OK, tests verts, 12 langues, `CLAUDE.md` à jour, liste « non validé sur appareil » écrite.
+☐ Porte par fonction : build OK, tests verts, 13 langues, `CLAUDE.md` à jour, liste « non validé sur appareil » écrite.
 
 **Ne jamais** incrémenter la version pendant le développement.
 
@@ -56,7 +59,7 @@ Pour **chaque** fonction :
 - 🤖 `images/manifest.json` : une entrée par capture avec `version` ; `check_docs.py` sans STALE bloquant.
 - 🤝 Captures : iPhone par simulateur (1206×2622, anglais, 9:41, noms d'exemple) = 🤖 ; appareil réel / émulateur Android = 🤝. Claude indique **exactement** ce que la capture doit montrer.
 - 🤖 `support/knowledge.md` : nouvelle fonction, limites, problèmes connus, version.
-- 🤖 Notes de version (App Store 12 langues ; Play 8+ locales ; limites de caractères vérifiées).
+- 🤖 Notes de version (App Store 13 langues ; Play 8+ locales ; limites de caractères vérifiées).
 - 🤖 Traductions des nouvelles langues : signaler « non relues par un natif ».
 
 ☐ Porte : site généré (racine + instantané de la version) et commité, politique de confidentialité en ligne, notes de version prêtes.
@@ -100,7 +103,7 @@ Déclenchée **uniquement** par un signal explicite de Gérard (« passe en prod
 ---
 
 ## Page Réglages — sections « À propos » et « Support » (standard de toute app)
-Chaque app a, en bas de ses Réglages, les mêmes blocs (iOS : `SettingsView` ; Android : `SettingsScreen`), tous localisés dans les 12 langues :
+Chaque app a, en bas de ses Réglages, les mêmes blocs (iOS : `SettingsView` ; Android : `SettingsScreen`), tous localisés dans les 13 langues :
 1. **Pro** (si l'app a un palier Pro) : statut, *Passer à Pro*, *Restaurer les achats*. Obligatoire pour les stores.
 2. **Langue** : sélecteur dans l'app (« Système » par défaut) + prise en charge RTL.
 3. **À propos** : nom, **version et numéro de build** (c'est ce que l'utilisateur nous donne en premier), accès à l'écran de bienvenue.
@@ -136,8 +139,8 @@ Plusieurs versions du guide sont **en ligne en parallèle** ; chaque build ouvre
 - Claude fait le maximum seul ; il signale ce qu'il ne peut pas faire (appareil réel, comptes, prix, soumission).
 - Jamais de secret en clair (keystore, mots de passe NAS, tokens) dans le dépôt, les logs ou les chats.
 - Rien n'est « validé » sans l'avoir vu tourner ; ce qui ne l'est pas est écrit comme tel.
-- Une fonction n'est pas finie tant que : 12 langues, tests, doc, `CLAUDE.md`, `support/knowledge.md` ne sont pas à jour.
+- Une fonction n'est pas finie tant que : 13 langues, tests, doc, `CLAUDE.md`, `support/knowledge.md` ne sont pas à jour.
 - Pas de bump de version, pas de merge sur `main`, pas de tag de release hors signal explicite.
 
 ## Check-list éclair « rien oublié » avant chaque livraison
-☐ Parité iOS/Android · ☐ Tests verts (core + app) · ☐ 12 langues + InfoPlist · ☐ Gating Pro à l'exécution · ☐ Version + build (Debug & Release) · ☐ Changelog · ☐ Réglages (À propos/Support) + agent de support testés de bout en bout · ☐ Guide 12 langues généré · ☐ Instantané `v/x.y/` (régénéré en test, figé en production) et lien in-app sur la bonne version · ☐ Politique de confidentialité · ☐ Captures + manifest · ☐ `support/knowledge.md` + `agent.json` · ☐ Notes de version stores · ☐ Testeur attaché (TestFlight) · ☐ Keystore sauvegardé · ☐ Soumission (👤) · ☐ Tags après mise en ligne · ☐ Mémoire mise à jour
+☐ Parité iOS/Android · ☐ Tests verts (core + app) · ☐ 13 langues + InfoPlist · ☐ Gating Pro à l'exécution · ☐ Version + build (Debug & Release) · ☐ Changelog · ☐ Réglages (À propos/Support) + agent de support testés de bout en bout · ☐ Guide 12 langues généré · ☐ Instantané `v/x.y/` (régénéré en test, figé en production) et lien in-app sur la bonne version · ☐ Politique de confidentialité · ☐ Captures + manifest · ☐ `support/knowledge.md` + `agent.json` · ☐ Notes de version stores · ☐ Testeur attaché (TestFlight) · ☐ Keystore sauvegardé · ☐ Soumission (👤) · ☐ Tags après mise en ligne · ☐ Mémoire mise à jour

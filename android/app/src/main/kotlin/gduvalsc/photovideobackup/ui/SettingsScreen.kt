@@ -145,7 +145,7 @@ fun SettingsScreen(
 /** Language names are written in their own language, whatever the app language is. */
 val LANGUAGES = listOf(
     "en" to "English", "fr" to "Français", "de" to "Deutsch", "es" to "Español",
-    "it" to "Italiano", "pt" to "Português", "zh-CN" to "中文", "ru" to "Русский",
+    "it" to "Italiano", "pt" to "Português", "zh-CN" to "简体中文", "zh-Hant" to "繁體中文", "ru" to "Русский",
     "ja" to "日本語", "ko" to "한국어", "hi" to "हिन्दी", "ar" to "العربية",
 )
 

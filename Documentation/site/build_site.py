@@ -10,13 +10,13 @@ Content: Documentation/site/<lang>.py (en, fr, de, es, it, pt, zh, ru); each fil
 A section = (id, title, [blocks]); block = ("p", html) | ("ul", [html…]) | ("ol", [html…]) | ("note", html) | ("fig", image, caption) | ("table", [headers], [[cells]…]).
 The script REFUSES a language whose structure (sections, number and kind of blocks) differs from English, or that lacks a UI key.
 The support address is read from PhotoVideoBackup/App/AppConstants.swift: a single source.
-Generated at the root: en/ fr/ de/ es/ it/ pt/ zh-Hans/ ru/, assets/, index.html, privacy-policy.html. Images are in images/.
+Generated at the root: en/ fr/ de/ es/ it/ pt/ zh-Hans/ zh-Hant/ ru/ ja/ ko/ hi/ ar/, assets/, index.html, privacy-policy.html. Images are in images/.
 """
 import html, importlib.util, re, shutil, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("ru", "Русский"), ("ja", "日本語"), ("ko", "한국어"), ("hi", "हिन्दी"), ("ar", "العربية")]
+LANGS = [("en", "English"), ("fr", "Français"), ("de", "Deutsch"), ("es", "Español"), ("it", "Italiano"), ("pt", "Português"), ("zh-Hans", "简体中文"), ("zh-Hant", "繁體中文"), ("ru", "Русский"), ("ja", "日本語"), ("ko", "한국어"), ("hi", "हिन्दी"), ("ar", "العربية")]
 UPDATED = "2026-11-17"
 BRAND = "PhotoVideoBackup"
 FROZEN = ".frozen"   # marker file in v/<X.Y>/: a published version, never rewritten
@@ -99,7 +99,9 @@ def build_privacy(code, mod, email):
 REDIRECT = """<script>
 (function () {{
   var have = {{"en":1,"fr":1,"de":1,"es":1,"it":1,"pt":1,"zh":"zh-Hans","ru":1,"ja":1,"ko":1,"hi":1,"ar":1}};
-  var l = (navigator.language || "en").slice(0, 2).toLowerCase();
+  var full = (navigator.language || "en").toLowerCase();
+  var l = /^zh-(tw|hk|mo|hant)/.test(full) ? "zh-hant" : full.slice(0, 2);
+  have["zh-hant"] = "zh-Hant";
   if (have[l] && !location.hash && !/chooser/.test(location.search)) location.replace((typeof have[l] === "string" ? have[l] : l) + "/{page}");
 }})();
 </script>"""

@@ -25,7 +25,7 @@ android {
         versionCode = appVersion.split(".").let { it[0].toInt() * 10000 + it[1].toInt() * 100 + it[2].toInt() } +
             (if (appVersion == "2.7.0") 4 else 0)
         // The 8 languages of the iOS app: only these are packaged (libraries bring dozens of others).
-        resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "ru", "ja", "ko", "hi", "ar")
+        resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "b+zh+Hant", "ru", "ja", "ko", "hi", "ar")
     }
 
     // Release signing: a local keystore (never in the repository) described by keystore.properties.

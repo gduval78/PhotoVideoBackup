@@ -20,7 +20,8 @@ KOTLIN = ROOT / "android/app/src/main/kotlin"
 # iOS xcstrings language -> Android resource folder
 LANGS = {"en": "values", "fr": "values-fr", "de": "values-de", "es": "values-es",
          "it": "values-it", "pt": "values-pt", "zh-Hans": "values-zh-rCN", "ru": "values-ru",
-         "ja": "values-ja", "ko": "values-ko", "hi": "values-hi", "ar": "values-ar"}
+         "ja": "values-ja", "ko": "values-ko", "hi": "values-hi", "ar": "values-ar",
+         "zh-Hant": "values-b+zh+Hant"}
 
 # Android name -> iOS key (English literal)
 REUSED = {
@@ -213,6 +214,14 @@ EXTRA.update({
 
 import extra_langs
 extra_langs.merge(EXTRA, LANGS)
+
+# Traditional Chinese (Taiwan) for the Android-only strings: derived from the Simplified text with the same converter
+# as the iOS catalog (Documentation/site/hant_convert.py: Taiwan vocabulary + ICU; needs macOS + swiftc).
+sys.path.insert(0, str(ROOT / "Documentation/site"))
+import hant_convert
+_names = [n for n in EXTRA if n != "app_name"]
+for _n, _t2 in zip(_names, hant_convert.convert([EXTRA[n]["zh-Hans"] for n in _names])):
+    EXTRA[_n]["zh-Hant"] = _t2
 
 
 def to_android(text: str) -> str:

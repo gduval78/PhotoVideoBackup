@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>My card appears as “Documents”.</b> Some cameras use a generic folder. Type a meaningful name when you add the source."),
         ("p", "<b>Can I back up when my phone is almost full?</b> Yes. Files are streamed to the destination, so only a few megabytes are held at a time. Only a backup to a NAS <i>alone</i> needs room for one file at a time. A file that really cannot fit is reported as failed and the rest continues."),
         ("p", "<b>Is my data sent anywhere?</b> No. Everything happens between your phone and your drive or NAS. The app has no server and no account. The only network traffic is to the NAS you set up yourself, and the download of your own iCloud / Google photos by the system."),
-        ("p", "<b>Which languages?</b> English, French, German, Spanish, Italian, Portuguese, Simplified Chinese, Russian, Japanese, Korean, Hindi and Arabic. The app follows the phone language; you can force one in <b>Settings → Language</b>, with no restart."),
+        ("p", "<b>Which languages?</b> English, French, German, Spanish (neutral, for Spain and Latin America), Italian, Portuguese (European), Simplified Chinese, Traditional Chinese, Russian, Japanese, Korean, Hindi and Arabic. The app follows the phone language; you can force one in <b>Settings → Language</b>, with no restart."),
     ]),
 ]
 

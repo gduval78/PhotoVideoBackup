@@ -147,6 +147,12 @@
             "state" : "translated",
             "value" : "يتصل PhotoVideoBackup بجهاز NAS على الشبكة المحلية لنسخ صورك ومقاطع الفيديو احتياطيًا."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup 透過本地網路連線到您的 NAS，以備份照片和影片。"
+          }
         }
       }
     },
@@ -223,6 +229,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "يقرأ PhotoVideoBackup مكتبة صورك لنسخ الصور ومقاطع الفيديو احتياطيًا إلى قرص SSD متصل عبر USB-C."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup 讀取您的照片圖庫，將照片和影片備份到透過 USB-C 連線的 SSD。"
           }
         }
       }

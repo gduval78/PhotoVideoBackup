@@ -76,6 +76,12 @@
             "state" : "translated",
             "value" : " "
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " "
+          }
         }
       }
     },
@@ -144,6 +150,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "·"
@@ -226,6 +238,12 @@
             "state" : "translated",
             "value" : "“%@” غير متصل. أعد توصيل بطاقة SD وحاول مرة أخرى."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\"未連線。請重新連線 SD 卡後重試。"
+          }
         }
       }
     },
@@ -304,6 +322,12 @@
             "state" : "translated",
             "value" : "%@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
         }
       }
     },
@@ -378,6 +402,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %@"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · %@"
@@ -461,6 +491,12 @@
             "state" : "translated",
             "value" : "%@ · %@ ملف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %@ 個檔案"
+          }
         }
       }
     },
@@ -538,6 +574,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · %lld ملف"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %lld 個檔案"
           }
         }
       }
@@ -617,6 +659,12 @@
             "state" : "translated",
             "value" : "%@ · جميع الصور ومقاطع الفيديو"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · 所有照片和影片"
+          }
         }
       }
     },
@@ -695,6 +743,12 @@
             "state" : "translated",
             "value" : "%@ / %@ ملف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ / %@ 個檔案"
+          }
         }
       }
     },
@@ -769,6 +823,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %%"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ %%"
@@ -851,6 +911,12 @@
             "state" : "translated",
             "value" : "تم حذف %@، وفشل %@."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已刪除，%@ 失敗。"
+          }
         }
       }
     },
@@ -929,6 +995,12 @@
             "state" : "translated",
             "value" : "تم حذف %@ ملف بنجاح."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 個檔案已成功刪除。"
+          }
         }
       }
     },
@@ -1006,6 +1078,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم حذف %@ ملف بنجاح."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 個檔案已成功刪除。"
           }
         }
       }
@@ -1115,6 +1193,12 @@
             "state" : "translated",
             "value" : "سيتم حذف %@ ملف نهائيًا من **%@**."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將從 **%@** 中永久刪除 %@ 個檔案。"
+          }
         }
       }
     },
@@ -1191,6 +1275,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ متاح"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 可用"
           }
         }
       }
@@ -1269,6 +1359,12 @@
             "state" : "translated",
             "value" : "%@ الإجمالي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共 %@"
+          }
         }
       }
     },
@@ -1343,6 +1439,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@/%@ — %@"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@/%@ — %@"
@@ -1425,6 +1527,12 @@
             "state" : "translated",
             "value" : "%lld / %lld ملف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / %lld 個檔案"
+          }
         }
       }
     },
@@ -1502,6 +1610,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم التحقق من %lld / %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / %lld 已驗證"
           }
         }
       }
@@ -1581,6 +1695,12 @@
             "state" : "translated",
             "value" : "تم نسخ %lld"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個"
+          }
         }
       }
     },
@@ -1657,6 +1777,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم نسخ %lld — انقطع اتصال الوجهة. أعد التوصيل وشغّل مرة أخرى · %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — 目的地已斷開。請重新連線後再次執行 · %@"
           }
         }
       }
@@ -1736,6 +1862,12 @@
             "state" : "translated",
             "value" : "تم نسخ %lld — تم بلوغ حد الملفات · %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — 已達檔案上限 · %@"
+          }
         }
       }
     },
@@ -1812,6 +1944,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم نسخ %lld — تم الإيقاف. شغّل مرة أخرى للمتابعة · %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — 已停止。再次執行以繼續 · %@"
           }
         }
       }
@@ -1891,6 +2029,12 @@
             "state" : "translated",
             "value" : "تم نسخ %lld · فشل %lld — %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 · %lld 個失敗 — %@"
+          }
         }
       }
     },
@@ -1968,6 +2112,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم نسخ %lld · تم تخطي %lld — %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 · 已略過 %lld 個 — %@"
           }
         }
       }
@@ -2047,6 +2197,12 @@
             "state" : "translated",
             "value" : "تم حذف %lld، وفشل %lld."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已刪除 %lld 個，%lld 個失敗。"
+          }
         }
       }
     },
@@ -2124,6 +2280,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "فشل %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 個失敗"
           }
         }
       }
@@ -2203,6 +2365,12 @@
             "state" : "translated",
             "value" : "تم حذف %lld ملف بنجاح."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已成功刪除 %lld 個檔案。"
+          }
         }
       }
     },
@@ -2281,6 +2449,12 @@
             "state" : "translated",
             "value" : "تم حذف %lld ملف بنجاح."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已成功刪除 %lld 個檔案。"
+          }
         }
       }
     },
@@ -2357,6 +2531,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم العثور على %lld ملف"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找到 %lld 個檔案"
           }
         }
       }
@@ -2436,6 +2616,12 @@
             "state" : "translated",
             "value" : "%lld ملف في هذا المجلد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此資料夾中有 %lld 個檔案"
+          }
         }
       }
     },
@@ -2513,6 +2699,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "سيتم حذف %lld ملف نهائيًا من **%@**."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將從 **%@** 中永久刪除 %lld 個檔案。"
           }
         }
       }
@@ -2592,6 +2784,12 @@
             "state" : "translated",
             "value" : "تم تخطي %lld"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已略過 %lld 個"
+          }
         }
       }
     },
@@ -2670,6 +2868,12 @@
             "state" : "translated",
             "value" : "تم التحقق من %lld باستخدام SHA-256"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 個已透過 SHA-256 驗證"
+          }
         }
       }
     },
@@ -2746,6 +2950,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "أقل من دقيقة متبقية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩餘不到 1 分鐘"
           }
         }
       }
@@ -2825,6 +3035,12 @@
             "state" : "translated",
             "value" : "~%lld دقيقة متبقية"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩餘約 %lld 分鐘"
+          }
         }
       }
     },
@@ -2903,6 +3119,12 @@
             "state" : "translated",
             "value" : "ملف واحد في هذا المجلد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此資料夾中有 1 個檔案"
+          }
         }
       }
     },
@@ -2979,6 +3201,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "سيتم حذف ملف واحد نهائيًا من **%@**."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將從 **%@** 中永久刪除 1 個檔案。"
           }
         }
       }
@@ -3057,6 +3285,12 @@
             "state" : "translated",
             "value" : "لا يتم الكتابة فوق أي ملف أبدًا: إذا كان الاسم مستخدمًا لملف آخر، يُحفظ الجديد بلاحقة -1 أو -2… ضمّن الثواني أو {original} حتى تحتفظ لقطتان التُقطتا معًا بأسماء مختلفة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案絕不會被覆蓋：如果名稱已被其他檔案使用，新檔案會加上 -1、-2… 後綴。請在模式中包含秒數或 {original}，以便同時拍攝的兩張照片保持不同名稱。"
+          }
         }
       }
     },
@@ -3133,6 +3367,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حول"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關於"
           }
         }
       }
@@ -3212,6 +3452,12 @@
             "state" : "translated",
             "value" : "نشط"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "活躍"
+          }
         }
       }
     },
@@ -3289,6 +3535,12 @@
             "state" : "translated",
             "value" : "إضافة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加"
+          }
         }
       }
     },
@@ -3335,6 +3587,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加目标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加目的地"
           }
         }
       }
@@ -3412,6 +3670,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إضافة امتداد"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加擴展名"
           }
         }
       }
@@ -3491,6 +3755,12 @@
             "state" : "translated",
             "value" : "إضافة مصادر خارجية"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加外部源"
+          }
         }
       }
     },
@@ -3537,6 +3807,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加来源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加來源"
           }
         }
       }
@@ -3614,6 +3890,12 @@
             "state" : "translated",
             "value" : "إضافة مصدر (بطاقة SD، قرص USB…)"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加來源（SD 卡、USB…）"
+          }
         }
       }
     },
@@ -3690,6 +3972,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "أنواع ملفات إضافية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他檔案類型"
           }
         }
       }
@@ -3769,6 +4057,12 @@
             "state" : "translated",
             "value" : "أنواع ملفات إضافية"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他檔案類型"
+          }
         }
       }
     },
@@ -3822,6 +4116,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部 %lld 个已验证"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部 %lld 個已驗證"
           }
         }
       }
@@ -3900,6 +4200,12 @@
             "state" : "translated",
             "value" : "انقطع اتصال جميع أقراص الوجهة. تم إيقاف النسخ الاحتياطي."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有目的地驅動器已斷開連線。備份已停止。"
+          }
         }
       }
     },
@@ -3977,6 +4283,12 @@
             "state" : "translated",
             "value" : "كل الملفات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有檔案"
+          }
         }
       }
     },
@@ -4023,6 +4335,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有文件已备份"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有檔案已備份"
           }
         }
       }
@@ -4100,6 +4418,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "فشلت جميع الملفات — راجع قسم «فشل» أدناه لمعرفة السبب."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有檔案均失敗 — 請查看下方「失敗」部分瞭解原因。"
           }
         }
       }
@@ -4179,6 +4503,12 @@
             "state" : "translated",
             "value" : "جميع الصور ومقاطع الفيديو"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有照片和影片"
+          }
         }
       }
     },
@@ -4225,6 +4555,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请在设置中允许访问以备份您的照片库。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在設定中允許存取以備份您的照片庫。"
           }
         }
       }
@@ -4278,6 +4614,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已在目标位置 — 文件名和大小相同，无需复制。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已在目的地 — 檔名和大小相同，無需複製。"
           }
         }
       }
@@ -4357,6 +4699,12 @@
             "state" : "translated",
             "value" : "موجود مسبقًا"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已存在"
+          }
         }
       }
     },
@@ -4435,6 +4783,12 @@
             "state" : "translated",
             "value" : "يتم تخطي الملفات المنسوخة احتياطيًا مسبقًا"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已備份的檔案將被略過"
+          }
         }
       }
     },
@@ -4511,6 +4865,12 @@
             "state" : "translated",
             "value" : "جارٍ تحليل المصدر…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在分析來源…"
+          }
         }
       }
     },
@@ -4554,6 +4914,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分配 LUT"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "分配 LUT"
@@ -4635,6 +5001,12 @@
             "state" : "translated",
             "value" : "تعيين LUT…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分配 LUT…"
+          }
         }
       }
     },
@@ -4682,6 +5054,12 @@
             "state" : "translated",
             "value" : "自动检测"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動檢測"
+          }
         }
       }
     },
@@ -4725,6 +5103,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可用"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "可用"
@@ -4806,6 +5190,12 @@
             "state" : "translated",
             "value" : "ملفات LUT المتاحة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可用的 LUT"
+          }
         }
       }
     },
@@ -4876,6 +5266,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "رجوع"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回"
           }
         }
       }
@@ -4954,6 +5350,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي عبر Wi-Fi إلى NAS — حتى عن بُعد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 Wi-Fi 備份到 NAS — 甚至可遠程"
+          }
         }
       }
     },
@@ -5030,6 +5432,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انسخ وسائطك احتياطيًا إلى قرص SSD خارجي\nببضع نقرات فقط."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只需輕點幾下，即可將媒體\n備份到外部 SSD。"
           }
         }
       }
@@ -5109,6 +5517,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份"
+          }
         }
       }
     },
@@ -5179,6 +5593,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اكتمل النسخ الاحتياطي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份完成"
           }
         }
       }
@@ -5257,6 +5677,12 @@
             "state" : "translated",
             "value" : "اكتمل النسخ الاحتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份完成"
+          }
         }
       }
     },
@@ -5334,6 +5760,12 @@
             "state" : "translated",
             "value" : "خطأ في النسخ الاحتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份錯誤"
+          }
         }
       }
     },
@@ -5404,6 +5836,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "فشل النسخ الاحتياطي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份失敗"
           }
         }
       }
@@ -5482,6 +5920,12 @@
             "state" : "translated",
             "value" : "فشل النسخ الاحتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份失敗"
+          }
         }
       }
     },
@@ -5558,6 +6002,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انتهى النسخ الاحتياطي مع أخطاء"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份完成但有錯誤"
           }
         }
       }
@@ -5636,6 +6086,12 @@
             "state" : "translated",
             "value" : "النسخ الاحتياطي قيد التنفيذ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份進行中"
+          }
         }
       }
     },
@@ -5706,6 +6162,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份部分完成"
           }
         }
       }
@@ -5785,6 +6247,12 @@
             "state" : "translated",
             "value" : "تقرير النسخ الاحتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份報告"
+          }
         }
       }
     },
@@ -5831,6 +6299,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "备份已停止"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份已停止"
           }
         }
       }
@@ -5910,6 +6384,12 @@
             "state" : "translated",
             "value" : "استعراض"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瀏覽"
+          }
         }
       }
     },
@@ -5987,6 +6467,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "استعراض النسخ الاحتياطية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "瀏覽備份"
           }
         }
       }
@@ -6066,6 +6552,12 @@
             "state" : "translated",
             "value" : "حسب التاريخ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按日期"
+          }
         }
       }
     },
@@ -6143,6 +6635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حسب الشهر"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按月份"
           }
         }
       }
@@ -6222,6 +6720,12 @@
             "state" : "translated",
             "value" : "حسب السنة / الشهر"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按年 / 月"
+          }
         }
       }
     },
@@ -6298,6 +6802,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إلغاء"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消"
           }
         }
       }
@@ -6377,6 +6887,12 @@
             "state" : "translated",
             "value" : "تعذّر إنشاء ملف الوجهة: %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立目的地檔案：%@"
+          }
         }
       }
     },
@@ -6430,6 +6946,12 @@
             "state" : "translated",
             "value" : "无法保存"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法儲存"
+          }
         }
       }
     },
@@ -6476,6 +6998,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择文件夹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇資料夾"
           }
         }
       }
@@ -6555,6 +7083,12 @@
             "state" : "translated",
             "value" : "اختيار…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇…"
+          }
         }
       }
     },
@@ -6625,6 +7159,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مسح"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除"
           }
         }
       }
@@ -6703,6 +7243,12 @@
             "state" : "translated",
             "value" : "مسح كل سجل النسخ الاحتياطي؟"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所有備份歷史記錄？"
+          }
         }
       }
     },
@@ -6780,6 +7326,12 @@
             "state" : "translated",
             "value" : "مسح السجل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除歷史記錄"
+          }
         }
       }
     },
@@ -6856,6 +7408,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إغلاق"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }
@@ -6935,6 +7493,12 @@
             "state" : "translated",
             "value" : "الرمز"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "代碼"
+          }
         }
       }
     },
@@ -7013,6 +7577,12 @@
             "state" : "translated",
             "value" : "اكتمل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
+          }
         }
       }
     },
@@ -7089,6 +7659,12 @@
             "state" : "translated",
             "value" : "ستظهر هنا جلسات النسخ الاحتياطي المكتملة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成的備份會話將顯示在此處。"
+          }
         }
       }
     },
@@ -7135,6 +7711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "确认"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確認"
           }
         }
       }
@@ -7189,6 +7771,12 @@
             "state" : "translated",
             "value" : "请连接 SSD 并在设置中配置目标位置。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請連線 SSD 並在設定中設定目的地。"
+          }
         }
       }
     },
@@ -7241,6 +7829,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "连接您的 USB-C SSD 或 SD 卡，然后点按\"选择…\"以选择目标文件夹。您可以在选择前直接在文件选择器中创建新文件夹。访问权限通过安全书签在启动之间保留。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連線您的 USB-C SSD 或 SD 卡，然後點一下「選擇…」以選擇目的地資料夾。您可以在選擇前直接在檔案選擇器中建立新資料夾。存取權限透過安全書簽在啓動之間保留。"
           }
         }
       }
@@ -7312,6 +7906,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "متصل"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已連線"
           }
         }
       }
@@ -7390,6 +7990,12 @@
             "state" : "translated",
             "value" : "تم الاتصال — تم العثور على %lld عنصر."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已連線 — 找到 %lld 個項目。"
+          }
         }
       }
     },
@@ -7466,6 +8072,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "جارٍ الاتصال بـ NAS…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在連線 NAS…"
           }
         }
       }
@@ -7544,6 +8156,12 @@
             "state" : "translated",
             "value" : "الاتصال بالدعم"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聯繫支援"
+          }
         }
       }
     },
@@ -7590,6 +8208,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "继续"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續"
           }
         }
       }
@@ -7661,6 +8285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم النسخ"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製"
           }
         }
       }
@@ -7740,6 +8370,12 @@
             "state" : "translated",
             "value" : "تم النسخ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製"
+          }
         }
       }
     },
@@ -7817,6 +8453,12 @@
             "state" : "translated",
             "value" : "جارٍ النسخ إلى %@…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在複製到 %@…"
+          }
         }
       }
     },
@@ -7869,6 +8511,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在复制到 SSD…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在複製到 SSD…"
           }
         }
       }
@@ -7940,6 +8588,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "جارٍ النسخ…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在複製…"
           }
         }
       }
@@ -8019,6 +8673,12 @@
             "state" : "translated",
             "value" : "تعذّر الاتصال بـ NAS."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法連線到 NAS。"
+          }
         }
       }
     },
@@ -8094,6 +8754,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تعذّر تحميل معلومات المنتج."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法加載產品資訊。"
           }
         }
       }
@@ -8171,6 +8837,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "بيانات الاعتماد"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "憑證"
           }
         }
       }
@@ -8250,6 +8922,12 @@
             "state" : "translated",
             "value" : "البيانات / المدة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料 / 時長"
+          }
         }
       }
     },
@@ -8320,6 +8998,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "التاريخ"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期"
           }
         }
       }
@@ -8399,6 +9083,12 @@
             "state" : "translated",
             "value" : "حذف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除"
+          }
         }
       }
     },
@@ -8476,6 +9166,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حذف %@ ملف"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除 %@ 個檔案"
           }
         }
       }
@@ -8555,6 +9251,12 @@
             "state" : "translated",
             "value" : "حذف %lld ملف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除 %lld 個檔案"
+          }
         }
       }
     },
@@ -8631,6 +9333,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حذف ملف واحد"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除 1 個檔案"
           }
         }
       }
@@ -8710,6 +9418,12 @@
             "state" : "translated",
             "value" : "حذف ملفات المصدر"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除源檔案"
+          }
         }
       }
     },
@@ -8788,6 +9502,12 @@
             "state" : "translated",
             "value" : "حذف ملفات المصدر…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除源檔案…"
+          }
         }
       }
     },
@@ -8859,6 +9579,12 @@
             "state" : "translated",
             "value" : "جارٍ الحذف…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在刪除…"
+          }
         }
       }
     },
@@ -8905,6 +9631,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除完成"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除完成"
           }
         }
       }
@@ -8984,6 +9716,12 @@
             "state" : "translated",
             "value" : "اكتمل الحذف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除完成"
+          }
         }
       }
     },
@@ -9054,6 +9792,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إلغاء تحديد الكل"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消全選"
           }
         }
       }
@@ -9133,6 +9877,12 @@
             "state" : "translated",
             "value" : "الوجهة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目的地"
+          }
         }
       }
     },
@@ -9179,6 +9929,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "目标不可用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目的地不可用"
           }
         }
       }
@@ -9258,6 +10014,12 @@
             "state" : "translated",
             "value" : "الوجهات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目的地"
+          }
         }
       }
     },
@@ -9336,6 +10098,12 @@
             "state" : "translated",
             "value" : "Deutsch"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deutsch"
+          }
         }
       }
     },
@@ -9406,6 +10174,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الجهاز"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "裝置"
           }
         }
       }
@@ -9484,6 +10258,12 @@
             "state" : "translated",
             "value" : "التشخيص"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "診斷"
+          }
         }
       }
     },
@@ -9560,6 +10340,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "سجل التشخيص"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "診斷記錄"
           }
         }
       }
@@ -9639,6 +10425,12 @@
             "state" : "translated",
             "value" : "نسخ مباشر إلى قرص USB-C SSD"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接複製到 USB-C SSD"
+          }
         }
       }
     },
@@ -9685,6 +10477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "断开连接"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷開連線"
           }
         }
       }
@@ -9763,6 +10561,12 @@
             "state" : "translated",
             "value" : "غير متصل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已斷開連線"
+          }
         }
       }
     },
@@ -9810,6 +10614,12 @@
             "state" : "translated",
             "value" : "DJI 360 / Action"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DJI 360 / Action"
+          }
         }
       }
     },
@@ -9853,6 +10663,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DJI Mini 3 Pro"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "DJI Mini 3 Pro"
@@ -9934,6 +10750,12 @@
             "state" : "translated",
             "value" : "الوثائق"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文檔"
+          }
         }
       }
     },
@@ -10012,6 +10834,12 @@
             "state" : "translated",
             "value" : "تم"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
         }
       }
     },
@@ -10089,6 +10917,12 @@
             "state" : "translated",
             "value" : "جارٍ التنزيل وتصحيح الألوان والرفع إلى نسخة «(Graded)» على NAS."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下載、調色並上傳到 NAS 上的「(Graded)」副本。"
+          }
         }
       }
     },
@@ -10159,6 +10993,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "المدة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時長"
           }
         }
       }
@@ -10238,6 +11078,12 @@
             "state" : "translated",
             "value" : "مثال: Blackmagic، GoPro…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 Blackmagic、GoPro…"
+          }
         }
       }
     },
@@ -10316,6 +11162,12 @@
             "state" : "translated",
             "value" : "مثال: iPhone جيرار"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 Gerard 的 iPhone"
+          }
         }
       }
     },
@@ -10392,6 +11244,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مثال: photo"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 photo"
           }
         }
       }
@@ -10471,6 +11329,12 @@
             "state" : "translated",
             "value" : "مثال: srt, gpx, csv"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 srt、gpx、csv"
+          }
         }
       }
     },
@@ -10547,6 +11411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مثال: Synology NAS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 Synology NAS"
           }
         }
       }
@@ -10625,6 +11495,12 @@
             "state" : "translated",
             "value" : "يحصل كل ملف على اسمه النهائي عند نسخه لأول مرة، فلا يُحفظ أبدًا باسم الكاميرا ثم يُعاد تسميته. وتُعرَف التكرارات بهذا الاسم. أوقف الخيار للإبقاء على أسماء الملفات الأصلية."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每個檔案在首次複製時就獲得最終名稱，不會先以相機名稱儲存再重新命名。之後將根據該名稱識別重複檔案。關閉後保留原始檔名。"
+          }
         }
       }
     },
@@ -10672,6 +11548,12 @@
             "state" : "translated",
             "value" : "编辑"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編輯"
+          }
         }
       }
     },
@@ -10718,6 +11600,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已用时间"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已用時間"
           }
         }
       }
@@ -10795,6 +11683,12 @@
             "state" : "translated",
             "value" : "مجلد فارغ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空資料夾"
+          }
         }
       }
     },
@@ -10841,6 +11735,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "启用通知"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啓用通知"
           }
         }
       }
@@ -10920,6 +11820,12 @@
             "state" : "translated",
             "value" : "English"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "English"
+          }
         }
       }
     },
@@ -10966,6 +11872,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入代码以确认删除："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入代碼以確認刪除："
           }
         }
       }
@@ -11043,6 +11955,12 @@
             "state" : "translated",
             "value" : "أدخل هذا الرمز لتأكيد الحذف:"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入此代碼以確認刪除："
+          }
         }
       }
     },
@@ -11089,6 +12007,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錯誤"
           }
         }
       }
@@ -11168,6 +12092,12 @@
             "state" : "translated",
             "value" : "Español"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Español"
+          }
         }
       }
     },
@@ -11214,6 +12144,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "预计剩余时间"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預計剩餘時間"
           }
         }
       }
@@ -11292,6 +12228,12 @@
             "state" : "translated",
             "value" : "مثال"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例"
+          }
         }
       }
     },
@@ -11338,6 +12280,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯出"
           }
         }
       }
@@ -11416,6 +12364,12 @@
             "state" : "translated",
             "value" : "جارٍ التصدير من الصور…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在從照片匯出…"
+          }
         }
       }
     },
@@ -11462,6 +12416,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "外部来源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部來源"
           }
         }
       }
@@ -11540,6 +12500,12 @@
             "state" : "translated",
             "value" : "النسخ الاحتياطي من مصدر خارجي يتطلب الترقية إلى Pro."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部源備份需要升級至 Pro 版。"
+          }
         }
       }
     },
@@ -11586,6 +12552,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗"
           }
         }
       }
@@ -11665,6 +12637,12 @@
             "state" : "translated",
             "value" : "فشل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗"
+          }
         }
       }
     },
@@ -11743,6 +12721,12 @@
             "state" : "translated",
             "value" : "فشل: %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗：%@"
+          }
         }
       }
     },
@@ -11813,6 +12797,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ملف"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案"
           }
         }
       }
@@ -11891,6 +12881,12 @@
             "state" : "translated",
             "value" : "تسمية الملفات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案命名"
+          }
         }
       }
     },
@@ -11961,6 +12957,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ملفات"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "個檔案"
           }
         }
       }
@@ -12040,6 +13042,12 @@
             "state" : "translated",
             "value" : "الملفات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案"
+          }
         }
       }
     },
@@ -12117,6 +13125,12 @@
             "state" : "translated",
             "value" : "الملفات موجودة مسبقًا في كل وجهة — لا حاجة للنسخ."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案已存在於所有目的地，無需複製。"
+          }
         }
       }
     },
@@ -12163,6 +13177,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已复制文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製檔案"
           }
         }
       }
@@ -12211,6 +13231,12 @@
             "state" : "translated",
             "value" : "个文件已删除"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "個檔案已刪除"
+          }
         }
       }
     },
@@ -12257,6 +13283,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "失败文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗檔案"
           }
         }
       }
@@ -12305,6 +13337,12 @@
             "state" : "translated",
             "value" : "个文件删除失败"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "個檔案刪除失敗"
+          }
         }
       }
     },
@@ -12351,6 +13389,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已跳过文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已略過檔案"
           }
         }
       }
@@ -12429,6 +13473,12 @@
             "state" : "translated",
             "value" : "ستُضمَّن الملفات ذات هذه الامتدادات في كل نسخة احتياطية، لكل أنواع الأجهزة. أدخلها دون النقطة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含這些擴展名的檔案將包含在每次備份中，適用於所有裝置類型。請不要輸入點號。"
+          }
         }
       }
     },
@@ -12472,6 +13522,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在完成…"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在完成…"
@@ -12522,6 +13578,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "平铺"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平鋪"
           }
         }
       }
@@ -12601,6 +13663,12 @@
             "state" : "translated",
             "value" : "مسطّح (بدون مجلدات فرعية)"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扁平（無子資料夾）"
+          }
         }
       }
     },
@@ -12679,6 +13747,12 @@
             "state" : "translated",
             "value" : "المجلد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料夾"
+          }
         }
       }
     },
@@ -12755,6 +13829,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اسم المجلد"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料夾名稱"
           }
         }
       }
@@ -12834,6 +13914,12 @@
             "state" : "translated",
             "value" : "بنية المجلدات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料夾結構"
+          }
         }
       }
     },
@@ -12908,6 +13994,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Français"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Français"
@@ -12990,6 +14082,12 @@
             "state" : "translated",
             "value" : "مجاني"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免費版"
+          }
         }
       }
     },
@@ -13061,6 +14159,12 @@
             "state" : "translated",
             "value" : "عام"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通用"
+          }
         }
       }
     },
@@ -13107,6 +14211,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "获取 Pro"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取得 Pro"
           }
         }
       }
@@ -13185,6 +14295,12 @@
             "state" : "translated",
             "value" : "ابدأ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始使用"
+          }
         }
       }
     },
@@ -13262,6 +14378,12 @@
             "state" : "translated",
             "value" : "أعطِ هذا المصدر اسمًا ليسهل عليك التعرّف عليه."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "為此來源命名以便於識別。"
+          }
         }
       }
     },
@@ -13305,6 +14427,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GoPro HERO"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "GoPro HERO"
@@ -13387,6 +14515,12 @@
             "state" : "translated",
             "value" : "تصحيح الألوان"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "調色"
+          }
         }
       }
     },
@@ -13464,6 +14598,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تصحيح الألوان %@ / %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "調色 %@ / %@"
           }
         }
       }
@@ -13543,6 +14683,12 @@
             "state" : "translated",
             "value" : "تصحيح الألوان %lld / %lld"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "調色 %lld / %lld"
+          }
         }
       }
     },
@@ -13620,6 +14766,12 @@
             "state" : "translated",
             "value" : "اكتمل تصحيح الألوان"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "調色完成"
+          }
         }
       }
     },
@@ -13690,6 +14842,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "جارٍ تصحيح الألوان…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "調色中…"
           }
         }
       }
@@ -13769,6 +14927,12 @@
             "state" : "translated",
             "value" : "السجل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歷史記錄"
+          }
         }
       }
     },
@@ -13846,6 +15010,12 @@
             "state" : "translated",
             "value" : "المضيف / IP"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主機 / IP"
+          }
         }
       }
     },
@@ -13917,6 +15087,12 @@
             "state" : "translated",
             "value" : "iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive"
+          }
         }
       }
     },
@@ -13963,6 +15139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入"
           }
         }
       }
@@ -14041,6 +15223,12 @@
             "state" : "translated",
             "value" : "فشل الاستيراد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入失敗"
+          }
         }
       }
     },
@@ -14087,6 +15275,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入 LUT"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入 LUT"
           }
         }
       }
@@ -14165,6 +15359,12 @@
             "state" : "translated",
             "value" : "استيراد LUT (.cube)…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入 LUT (.cube)…"
+          }
         }
       }
     },
@@ -14242,6 +15442,12 @@
             "state" : "translated",
             "value" : "نسخة مرآة غير مكتملة — كان قرص SSD واحد فقط متاحًا"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鏡像不完整 — 只有一個 SSD 可用"
+          }
         }
       }
     },
@@ -14288,6 +15494,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "信息"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資訊"
           }
         }
       }
@@ -14343,6 +15555,12 @@
             "state" : "translated",
             "value" : "正在初始化…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在初始化…"
+          }
         }
       }
     },
@@ -14386,6 +15604,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insta360 X5"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Insta360 X5"
@@ -14467,6 +15691,12 @@
             "state" : "translated",
             "value" : "المضيف أو المنفذ غير صالح."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主機或端口無效。"
+          }
         }
       }
     },
@@ -14535,6 +15765,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Italiano"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Italiano"
@@ -14617,6 +15853,12 @@
             "state" : "translated",
             "value" : "اللغة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "語言"
+          }
         }
       }
     },
@@ -14695,6 +15937,12 @@
             "state" : "translated",
             "value" : "تصحيح الألوان بـ LUT"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT 調色"
+          }
         }
       }
     },
@@ -14772,6 +16020,12 @@
             "state" : "translated",
             "value" : "LUT مفعّل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT 開啓"
+          }
         }
       }
     },
@@ -14839,6 +16093,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "LUT"
@@ -14920,6 +16180,12 @@
             "state" : "translated",
             "value" : "الحد الأقصى للملفات في الجلسة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次會話最大檔案數"
+          }
         }
       }
     },
@@ -14990,6 +16256,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الاسم"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名稱"
           }
         }
       }
@@ -15067,6 +16339,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الاسم غير مضبوط"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定名稱"
           }
         }
       }
@@ -15146,6 +16424,12 @@
             "state" : "translated",
             "value" : "تسمية هذا المصدر"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命名此來源"
+          }
         }
       }
     },
@@ -15219,6 +16503,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "NAS"
@@ -15301,6 +16591,12 @@
             "state" : "translated",
             "value" : "NAS (SMB)"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS (SMB)"
+          }
         }
       }
     },
@@ -15344,6 +16640,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一步"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下一步"
@@ -15425,6 +16727,12 @@
             "state" : "translated",
             "value" : "لم يتم ضبط وجهة نسخ احتياطي أو أنها غير متصلة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定或未連線備份目的地。"
+          }
         }
       }
     },
@@ -15502,6 +16810,12 @@
             "state" : "translated",
             "value" : "لا يوجد سجل نسخ احتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無備份歷史記錄"
+          }
         }
       }
     },
@@ -15548,6 +16862,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂无备份记录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫無備份記錄"
           }
         }
       }
@@ -15624,6 +16944,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لا توجد نسخ احتياطية على هذا SSD بعد."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此 SSD 上尚無備份。"
           }
         }
       }
@@ -15702,6 +17028,12 @@
             "state" : "translated",
             "value" : "لم يتم ضبط أي وجهة — انتقل إلى الإعدادات."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定目的地 — 請前往設定。"
+          }
         }
       }
     },
@@ -15748,6 +17080,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未配置目标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定目的地"
           }
         }
       }
@@ -15827,6 +17165,12 @@
             "state" : "translated",
             "value" : "لم يتم العثور على ملف قابل للتصدير لـ “%@” — قد يكون عنصرًا سحابيًا فقط أو مشتركًا."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到\"%@\"的可匯出檔案 — 它可能僅存在於雲端或已共用。"
+          }
         }
       }
     },
@@ -15904,6 +17248,12 @@
             "state" : "translated",
             "value" : "لم يتم العثور على ملفات في مكتبة الصور."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片庫中未找到檔案。"
+          }
         }
       }
     },
@@ -15950,6 +17300,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没有文件需要复制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有檔案需要複製"
           }
         }
       }
@@ -16029,6 +17385,12 @@
             "state" : "translated",
             "value" : "لم يتم نسخ أي ملفات — افتح التقرير للتفاصيل · %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未複製任何檔案 — 開啟報告查看詳情 · %@"
+          }
         }
       }
     },
@@ -16072,6 +17434,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未分配 LUT"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "未分配 LUT"
@@ -16122,6 +17490,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未导入 LUT"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未匯入 LUT"
           }
         }
       }
@@ -16198,6 +17572,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لم يتم استيراد أي LUT بعد."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未匯入 LUT。"
           }
         }
       }
@@ -16276,6 +17656,12 @@
             "state" : "translated",
             "value" : "لا توجد ملفات وسائط"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無媒體檔案"
+          }
         }
       }
     },
@@ -16353,6 +17739,12 @@
             "state" : "translated",
             "value" : "لم يتم العثور على ملفات وسائط في %@."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %@ 中未找到媒體檔案。"
+          }
         }
       }
     },
@@ -16399,6 +17791,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未配置来源"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定來源"
           }
         }
       }
@@ -16477,6 +17875,12 @@
             "state" : "translated",
             "value" : "لا يوجد SSD متصل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未連線 SSD"
+          }
         }
       }
     },
@@ -16553,6 +17957,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لا شيء"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無"
           }
         }
       }
@@ -16631,6 +18041,12 @@
             "state" : "translated",
             "value" : "غير مضبوط"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
         }
       }
     },
@@ -16708,6 +18124,12 @@
             "state" : "translated",
             "value" : "غير متصل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未連線"
+          }
         }
       }
     },
@@ -16778,6 +18200,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لا توجد مساحة كافية على هذا الجهاز لنسخ هذا الملف."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此裝置可用空間不足，無法複製此檔案。"
           }
         }
       }
@@ -16850,6 +18278,12 @@
             "state" : "translated",
             "value" : "لا توجد مساحة كافية على هذا الجهاز. تحتاج هذه النسخة الاحتياطية إلى %@ لكن المتاح %@ فقط. حرّر مساحة وحاول مرة أخرى."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此裝置可用空間不足。此次備份需要 %1$@，但僅有 %2$@ 可用。請釋放空間後重試。"
+          }
         }
       }
     },
@@ -16897,6 +18331,12 @@
             "state" : "translated",
             "value" : "通知设置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知設定"
+          }
         }
       }
     },
@@ -16940,6 +18380,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知"
@@ -17021,6 +18467,12 @@
             "state" : "translated",
             "value" : "إيقاف"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
         }
       }
     },
@@ -17097,6 +18549,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حسنًا"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好"
           }
         }
       }
@@ -17175,6 +18633,12 @@
             "state" : "translated",
             "value" : "تشغيل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啓"
+          }
         }
       }
     },
@@ -17251,6 +18715,12 @@
             "state" : "translated",
             "value" : "شراء لمرة واحدة — بدون اشتراك"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一次性購買 — 無需訂閱"
+          }
         }
       }
     },
@@ -17297,6 +18767,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟設定"
           }
         }
       }
@@ -17375,6 +18851,12 @@
             "state" : "translated",
             "value" : "اختياري، مثال: Backups"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可選，例如 Backups"
+          }
         }
       }
     },
@@ -17450,6 +18932,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "التقدم الإجمالي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "總體進度"
           }
         }
       }
@@ -17529,6 +19017,12 @@
             "state" : "translated",
             "value" : "جزئي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分完成"
+          }
         }
       }
     },
@@ -17605,6 +19099,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份"
           }
         }
       }
@@ -17683,6 +19183,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — انقطع اتصال الوجهة. أعد التوصيل وشغّل مرة أخرى للمتابعة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — 目的地已斷開。請重新連線後再次執行以繼續。"
+          }
         }
       }
     },
@@ -17759,6 +19265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — تم بلوغ حد الملفات. شغّل مرة أخرى للمتابعة."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — 已達檔案上限。再次執行以繼續。"
           }
         }
       }
@@ -17837,6 +19349,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — تم الإيقاف. شغّل مرة أخرى للمتابعة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — 已停止。再次執行以繼續。"
+          }
         }
       }
     },
@@ -17908,6 +19426,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "كلمة المرور"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密碼"
           }
         }
       }
@@ -17987,6 +19511,12 @@
             "state" : "translated",
             "value" : "النمط"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模式"
+          }
         }
       }
     },
@@ -18033,6 +19563,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫停"
           }
         }
       }
@@ -18109,6 +19645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "يتم خصم المبلغ من حساب Apple ID عند تأكيد الشراء."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買確認時將從您的 Apple ID 帳戶扣款。"
           }
         }
       }
@@ -18188,6 +19730,12 @@
             "state" : "translated",
             "value" : "يحذف نهائيًا من المصدر الأصلي الملفات البالغ عددها %@ التي نُسخت في هذه الجلسة. لا تتأثر نسختك الاحتياطية."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將從原始來源中永久刪除本次會話中複製的 %@ 個檔案。您的備份不受影響。"
+          }
         }
       }
     },
@@ -18266,6 +19814,12 @@
             "state" : "translated",
             "value" : "يحذف نهائيًا من المصدر الأصلي الملفات البالغ عددها %lld التي نُسخت في هذه الجلسة. لا تتأثر نسختك الاحتياطية."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將從原始來源中永久刪除本次會話中複製的 %lld 個檔案。您的備份不受影響。"
+          }
         }
       }
     },
@@ -18312,6 +19866,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "权限被拒绝"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "權限被拒絕"
           }
         }
       }
@@ -18391,6 +19951,12 @@
             "state" : "translated",
             "value" : "تعذّر تحميل الصورة — ربما حُذفت أو هي مقيّدة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法加載照片 — 它可能已被刪除或受到限制。"
+          }
         }
       }
     },
@@ -18437,6 +20003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要照片访问权限"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要照片存取權限"
           }
         }
       }
@@ -18514,6 +20086,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مكتبة الصور"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫"
           }
         }
       }
@@ -18593,6 +20171,12 @@
             "state" : "translated",
             "value" : "النسخ الاحتياطي لمكتبة الصور"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫備份"
+          }
         }
       }
     },
@@ -18667,6 +20251,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PhotoVideoBackup"
@@ -18749,6 +20339,12 @@
             "state" : "translated",
             "value" : "PhotoVideoBackup Pro"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PhotoVideoBackup Pro"
+          }
         }
       }
     },
@@ -18826,6 +20422,12 @@
             "state" : "translated",
             "value" : "يرجى إدخال المضيف والمشاركة واسم المستخدم."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請填寫主機、共用和使用者名。"
+          }
         }
       }
     },
@@ -18878,6 +20480,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请填写主机、共享和用户名。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請填寫主機、共用和使用者名。"
           }
         }
       }
@@ -18956,6 +20564,12 @@
             "state" : "translated",
             "value" : "يرجى ضبط اسم الجهاز في الإعدادات قبل بدء النسخ الاحتياطي."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始備份前，請在設定中設定裝置名稱。"
+          }
         }
       }
     },
@@ -19033,6 +20647,12 @@
             "state" : "translated",
             "value" : "المنفذ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端口"
+          }
         }
       }
     },
@@ -19101,6 +20721,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Português"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Português"
@@ -19183,6 +20809,12 @@
             "state" : "translated",
             "value" : "جارٍ تجهيز %@ ملف…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在準備 %@ 個檔案…"
+          }
         }
       }
     },
@@ -19261,6 +20893,12 @@
             "state" : "translated",
             "value" : "جارٍ تجهيز %lld ملف…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在準備 %lld 個檔案…"
+          }
         }
       }
     },
@@ -19330,6 +20968,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "جارٍ التجهيز…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在準備…"
           }
         }
       }
@@ -19409,6 +21053,12 @@
             "state" : "translated",
             "value" : "معاينة لقطات LOG وتصحيح ألوانها بـ LUT"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 LUT 預覽和調色 LOG 素材"
+          }
         }
       }
     },
@@ -19476,6 +21126,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pro"
@@ -19556,6 +21212,12 @@
             "state" : "translated",
             "value" : "ميزة Pro"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro 功能"
+          }
         }
       }
     },
@@ -19603,6 +21265,12 @@
             "state" : "translated",
             "value" : "进度"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進度"
+          }
         }
       }
     },
@@ -19649,6 +21317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "购买"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買"
           }
         }
       }
@@ -19727,6 +21401,12 @@
             "state" : "translated",
             "value" : "خطأ في الشراء"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買錯誤"
+          }
         }
       }
     },
@@ -19773,6 +21453,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实时预览"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即時預覽"
           }
         }
       }
@@ -19852,6 +21538,12 @@
             "state" : "translated",
             "value" : "إعادة الاتصال"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新連線"
+          }
         }
       }
     },
@@ -19930,6 +21622,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي مكرر إلى قرص SSD ثانٍ في الوقت نفسه"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同時向第二個 SSD 進行冗余備份"
+          }
         }
       }
     },
@@ -19977,6 +21675,12 @@
             "state" : "translated",
             "value" : "刷新"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新整理"
+          }
         }
       }
     },
@@ -20023,6 +21727,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "剩余"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩餘"
           }
         }
       }
@@ -20102,6 +21812,12 @@
             "state" : "translated",
             "value" : "إزالة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除"
+          }
         }
       }
     },
@@ -20180,6 +21896,12 @@
             "state" : "translated",
             "value" : "إزالة NAS"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除 NAS"
+          }
         }
       }
     },
@@ -20256,6 +21978,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إعادة تسمية الملفات أثناء النسخ الاحتياطي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份時重新命名檔案"
           }
         }
       }
@@ -20335,6 +22063,12 @@
             "state" : "translated",
             "value" : "التقرير"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "報告"
+          }
         }
       }
     },
@@ -20378,6 +22112,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置"
@@ -20458,6 +22198,12 @@
             "state" : "translated",
             "value" : "استعادة المشتريات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢復購買"
+          }
         }
       }
     },
@@ -20504,6 +22250,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "继续"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續"
           }
         }
       }
@@ -20580,6 +22332,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إعادة المحاولة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重試"
           }
         }
       }
@@ -20659,6 +22417,12 @@
             "state" : "translated",
             "value" : "قيد التشغيل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行中"
+          }
         }
       }
     },
@@ -20730,6 +22494,12 @@
             "state" : "translated",
             "value" : "حفظ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存"
+          }
         }
       }
     },
@@ -20782,6 +22552,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保存失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存失敗"
           }
         }
       }
@@ -20836,6 +22612,12 @@
             "state" : "translated",
             "value" : "已保存"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已儲存"
+          }
         }
       }
     },
@@ -20889,6 +22671,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已扫描"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已掃描"
           }
         }
       }
@@ -20967,6 +22755,12 @@
             "state" : "translated",
             "value" : "جارٍ فحص المكتبة…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在掃描圖庫…"
+          }
         }
       }
     },
@@ -21013,6 +22807,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在扫描…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在掃描…"
           }
         }
       }
@@ -21067,6 +22867,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SD 卡（中转）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SD 卡（中轉）"
           }
         }
       }
@@ -21146,6 +22952,12 @@
             "state" : "translated",
             "value" : "بطاقات SD وDJI وInsta360 وGoPro وغيرها"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SD 卡、DJI、Insta360、GoPro 等"
+          }
         }
       }
     },
@@ -21223,6 +23035,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "بطاقات SD وأقراص USB وInsta360 وDJI وغيرها"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SD 卡、USB、Insta360、DJI 等"
           }
         }
       }
@@ -21302,6 +23120,12 @@
             "state" : "translated",
             "value" : "نسخة مرآة على SSD ثانٍ"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第二個 SSD 鏡像"
+          }
         }
       }
     },
@@ -21380,6 +23204,12 @@
             "state" : "translated",
             "value" : "تحديد"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇"
+          }
         }
       }
     },
@@ -21450,6 +23280,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تحديد الكل"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全選"
           }
         }
       }
@@ -21529,6 +23365,12 @@
             "state" : "translated",
             "value" : "اختيار LUT"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇 LUT"
+          }
         }
       }
     },
@@ -21606,6 +23448,12 @@
             "state" : "translated",
             "value" : "اختر فيديوهات LOG فقط لتصحيح ألوانها."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "僅選擇你的 LOG 影片進行調色。"
+          }
         }
       }
     },
@@ -21681,6 +23529,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اختر الفيديوهات في الشبكة ثم اضغط «تصحيح الألوان»."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在網格中選擇影片，然後點一下「調色」。"
           }
         }
       }
@@ -21759,6 +23613,12 @@
             "state" : "translated",
             "value" : "الخادم"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器"
+          }
         }
       }
     },
@@ -21834,6 +23694,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تتم إزالة سجلات الجلسات. لا تتأثر الملفات الموجودة على SSD."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "會話記錄已刪除。SSD 上的檔案不受影響。"
           }
         }
       }
@@ -21913,6 +23779,12 @@
             "state" : "translated",
             "value" : "اضبط اسم الجهاز في الإعدادات."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在設定中設定裝置名稱。"
+          }
         }
       }
     },
@@ -21991,6 +23863,12 @@
             "state" : "translated",
             "value" : "الإعدادات"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
+          }
         }
       }
     },
@@ -22066,6 +23944,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "فشل التحقق عبر SHA-256"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SHA-256 驗證失敗"
           }
         }
       }
@@ -22145,6 +24029,12 @@
             "state" : "translated",
             "value" : "مشاركة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共用"
+          }
         }
       }
     },
@@ -22223,6 +24113,12 @@
             "state" : "translated",
             "value" : "مشاركة (%lld)"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共用 (%lld)"
+          }
         }
       }
     },
@@ -22293,6 +24189,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مشاركة التقرير"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享報告"
           }
         }
       }
@@ -22365,6 +24267,12 @@
             "state" : "translated",
             "value" : "عرض شاشة الترحيب"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示歡迎介面"
+          }
         }
       }
     },
@@ -22408,6 +24316,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大小"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "大小"
@@ -22458,6 +24372,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跳过"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "略過"
           }
         }
       }
@@ -22529,6 +24449,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم التخطي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已略過"
           }
         }
       }
@@ -22608,6 +24534,12 @@
             "state" : "translated",
             "value" : "تم التخطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已略過"
+          }
         }
       }
     },
@@ -22686,6 +24618,12 @@
             "state" : "translated",
             "value" : "المصدر"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "來源"
+          }
         }
       }
     },
@@ -22733,6 +24671,12 @@
             "state" : "translated",
             "value" : "来源未连接"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "來源未連線"
+          }
         }
       }
     },
@@ -22779,6 +24723,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "来源不可用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "來源不可用"
           }
         }
       }
@@ -22858,6 +24808,12 @@
             "state" : "translated",
             "value" : "المصادر"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "來源"
+          }
         }
       }
     },
@@ -22901,6 +24857,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "速度"
@@ -22959,6 +24921,12 @@
             "state" : "translated",
             "value" : "SSD 1（主要）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSD 1（主要）"
+          }
         }
       }
     },
@@ -23013,6 +24981,12 @@
             "state" : "translated",
             "value" : "SSD 2（镜像）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSD 2（鏡像）"
+          }
         }
       }
     },
@@ -23056,6 +25030,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSD 2（次要）"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SSD 2（次要）"
@@ -23107,6 +25087,12 @@
             "state" : "translated",
             "value" : "SSD 3（第三）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSD 3（第三）"
+          }
         }
       }
     },
@@ -23153,6 +25139,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开始备份"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始備份"
           }
         }
       }
@@ -23230,6 +25222,12 @@
             "state" : "translated",
             "value" : "جارٍ بدء النسخ…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在開始複製…"
+          }
         }
       }
     },
@@ -23300,6 +25298,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إيقاف"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
           }
         }
       }
@@ -23378,6 +25382,12 @@
             "state" : "translated",
             "value" : "إيقاف النسخ الاحتياطي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止備份"
+          }
         }
       }
     },
@@ -23455,6 +25465,12 @@
             "state" : "translated",
             "value" : "جارٍ الإيقاف…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在停止…"
+          }
         }
       }
     },
@@ -23501,6 +25517,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "存储空间已满"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存空間已滿"
           }
         }
       }
@@ -23580,6 +25602,12 @@
             "state" : "translated",
             "value" : "ملخص"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摘要"
+          }
         }
       }
     },
@@ -23656,6 +25684,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الدعم"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支援"
           }
         }
       }
@@ -23734,6 +25768,12 @@
             "state" : "translated",
             "value" : "افتراضي النظام"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統語言"
+          }
         }
       }
     },
@@ -23788,6 +25828,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "点击标记以插入，其余内容为字面文本。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選標記以插入，其餘內容為字面文字。"
           }
         }
       }
@@ -23866,6 +25912,12 @@
             "state" : "translated",
             "value" : "اضغط على رمز لإدراجه. أي شيء آخر يُعامل كنص حرفي. {device} هو اسم مجلد الجهاز دون مسافات؛ و{original} هو الاسم الأصلي دون امتداده."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選標記即可插入。其他內容均為普通文字。{device} 為裝置資料夾名稱（不含空格）；{original} 為不含擴展名的原始名稱。"
+          }
         }
       }
     },
@@ -23938,6 +25990,12 @@
             "state" : "translated",
             "value" : "اختبار الاتصال"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "測試連線"
+          }
         }
       }
     },
@@ -23991,6 +26049,12 @@
             "state" : "translated",
             "value" : "已将 NAS“%@”保存为备份目标。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已將 NAS「%@」儲存為備份目的地。"
+          }
         }
       }
     },
@@ -24043,6 +26107,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法保存 NAS 目标。请重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法儲存 NAS 目的地。請重試。"
           }
         }
       }
@@ -24121,6 +26191,12 @@
             "state" : "translated",
             "value" : "تعذّر الوصول إلى NAS — تحقق من Wi-Fi/VPN والإعدادات."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法存取 NAS — 請檢查 Wi-Fi/VPN 和設定。"
+          }
         }
       }
     },
@@ -24174,6 +26250,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "NAS 通过 Wi-Fi 作为附加备份目标。文件直接写入共享并通过 SHA-256 校验。密码存储在钥匙串中。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS 透過 Wi-Fi 作為附加備份目的地。檔案直接寫入共用並透過 SHA-256 驗證。密碼儲存在鑰匙串中。"
           }
         }
       }
@@ -24251,6 +26333,12 @@
             "state" : "translated",
             "value" : "تم حذف هذه الملفات بالفعل."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這些檔案已被刪除。"
+          }
         }
       }
     },
@@ -24327,6 +26415,12 @@
             "state" : "translated",
             "value" : "لا يمكن التراجع عن هذا الإجراء. تأكد من اكتمال نسختك الاحتياطية قبل المتابعة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此操作無法撤銷。請確保備份已完成後再繼續。"
+          }
         }
       }
     },
@@ -24373,6 +26467,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这将从来源永久删除 %lld 个文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這將從來源永久刪除 %lld 個檔案。"
           }
         }
       }
@@ -24421,6 +26521,12 @@
             "state" : "translated",
             "value" : "总计"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "總計"
+          }
         }
       }
     },
@@ -24468,6 +26574,12 @@
             "state" : "translated",
             "value" : "类型"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "類型"
+          }
         }
       }
     },
@@ -24511,6 +26623,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不可用"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "不可用"
@@ -24561,6 +26679,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知錯誤"
           }
         }
       }
@@ -24640,6 +26764,12 @@
             "state" : "translated",
             "value" : "غير محدود"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無限制"
+          }
         }
       }
     },
@@ -24718,6 +26848,12 @@
             "state" : "translated",
             "value" : "فتح القفل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解鎖"
+          }
         }
       }
     },
@@ -24794,6 +26930,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الترقية مقابل %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以 %@ 升級"
           }
         }
       }
@@ -24873,6 +27015,12 @@
             "state" : "translated",
             "value" : "الترقية إلى Pro"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "升級至 Pro"
+          }
         }
       }
     },
@@ -24951,6 +27099,12 @@
             "state" : "translated",
             "value" : "USB-C\nموزّع"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "USB-C\n集線器"
+          }
         }
       }
     },
@@ -25027,6 +27181,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "استخدام هذا NAS للنسخ الاحتياطي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將此 NAS 用於備份"
           }
         }
       }
@@ -25105,6 +27265,12 @@
             "state" : "translated",
             "value" : "اسم المستخدم"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用者名"
+          }
         }
       }
     },
@@ -25151,6 +27317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已通过 SHA-256 验证"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已透過 SHA-256 驗證"
           }
         }
       }
@@ -25229,6 +27401,12 @@
             "state" : "translated",
             "value" : "جارٍ التحقق…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在驗證…"
+          }
         }
       }
     },
@@ -25299,6 +27477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الإصدار"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本"
           }
         }
       }
@@ -25378,6 +27562,12 @@
             "state" : "translated",
             "value" : "الإصدار %@ (%@)"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本 %@ (%@)"
+          }
         }
       }
     },
@@ -25421,6 +27611,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "警告"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "警告"
@@ -25471,6 +27667,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "欢迎"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歡迎"
           }
         }
       }
@@ -25544,6 +27746,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi / VPN"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wi-Fi / VPN"
@@ -25626,6 +27834,12 @@
             "state" : "translated",
             "value" : "خطأ كتابة على %@: %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "寫入 %@ 時出錯：%@"
+          }
         }
       }
     },
@@ -25704,6 +27918,12 @@
             "state" : "translated",
             "value" : "يبدو أنك تستخدم بيانات الجوال. قد يستهلك النسخ الاحتياطي إلى NAS باقة بياناتك — اضغط إيقاف لإيقافه."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您似乎正在使用行動數據。備份到 NAS 可能會消耗您的流量 — 點一下「停止」以中止。"
+          }
         }
       }
     },
@@ -25776,6 +27996,12 @@
             "state" : "translated",
             "value" : "Русский"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Русский"
+          }
         }
       }
     },
@@ -25844,6 +28070,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中文"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "中文"
@@ -25925,6 +28157,12 @@
             "state" : "translated",
             "value" : "تُسمّى الملفات تلقائيًا أثناء نسخها احتياطيًا"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份時自動命名檔案"
+          }
         }
       }
     },
@@ -26000,6 +28238,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "متوقف مؤقتًا — بانتظار تحرير المساحة…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暫停 — 正在等待釋放儲存空間…"
           }
         }
       }
@@ -26077,6 +28321,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — مساحة iPhone منخفضة فتوقّف النسخ مؤقتًا. ملفاتك آمنة. حرّر مساحة وشغّل مرة أخرى للمتابعة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — iPhone 儲存空間不足，備份已暫停。您的檔案是安全的。請釋放空間後再次執行以繼續。"
+          }
         }
       }
     },
@@ -26128,6 +28378,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скопировано: %lld — память iPhone почти заполнена, копирование приостановлено. Освободите место и запустите снова · %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — iPhone 儲存空間不足，備份已暫停。請釋放空間後再次執行 · %@"
           }
         }
       }
@@ -26205,6 +28461,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — وجهة ممتلئة أو أبلغت عن خطأ، لذا تنقص بعض الملفات هناك. حرّر مساحة وشغّل مرة أخرى للمتابعة."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — 某個目的地已滿或報告了錯誤，因此該位置缺少部分檔案。請釋放空間後再次執行以繼續。"
+          }
         }
       }
     },
@@ -26256,6 +28518,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скопировано: %lld — одно из мест назначения заполнено или сообщило об ошибке. См. отчёт · %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — 某個目的地已滿或報告了錯誤。請查看報告 · %@"
           }
         }
       }
@@ -26333,6 +28601,12 @@
             "state" : "translated",
             "value" : "في iCloud — تم تحرير المساحة على هذا iPhone"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已在 iCloud 中 — 已釋放此 iPhone 上的空間"
+          }
         }
       }
     },
@@ -26408,6 +28682,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "في iCloud — لا يزال على هذا iPhone"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已在 iCloud 中 — 仍在此 iPhone 上"
           }
         }
       }
@@ -26485,6 +28765,12 @@
             "state" : "translated",
             "value" : "جارٍ الرفع إلى iCloud"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在上傳到 iCloud"
+          }
         }
       }
     },
@@ -26560,6 +28846,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "بانتظار الرفع"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待上傳"
           }
         }
       }
@@ -26637,6 +28929,12 @@
             "state" : "translated",
             "value" : "خطأ في الرفع"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上傳錯誤"
+          }
         }
       }
     },
@@ -26712,6 +29010,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "غير موجود في الوجهة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在目的地未找到"
           }
         }
       }
@@ -26789,6 +29093,12 @@
             "state" : "translated",
             "value" : "تحديث حالة iCloud"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新整理 iCloud 狀態"
+          }
         }
       }
     },
@@ -26864,6 +29174,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "جارٍ التحقق من حالة iCloud…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在檢查 iCloud 狀態…"
           }
         }
       }
@@ -26941,6 +29257,12 @@
             "state" : "translated",
             "value" : "الحالة مقروءة من iOS الآن. لا يكون الملف آمنًا في iCloud إلا عندما يظهر كمرفوع؛ iOS هو من يقرر وقت الرفع، لذا قد يستغرق ذلك بعض الوقت بعد انتهاء النسخ."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "狀態剛剛從 iOS 讀取。檔案只有顯示為已上傳後才安全地存放在 iCloud 中；上傳時間由 iOS 決定，因此備份結束後可能需要一段時間。"
+          }
         }
       }
     },
@@ -27017,6 +29339,12 @@
             "state" : "translated",
             "value" : "نسخ احتياطي جزئي — مساحة iCloud ممتلئة، لذا يرفض iCloud الملفات الجديدة. ملفاتك الأصلية آمنة. حرّر مساحة في iCloud أو اختر وجهة أخرى (قرصًا خارجيًا أو NAS)."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分備份 — 您的 iCloud 儲存空間已滿，iCloud 拒絕接收新檔案。您的原始檔案是安全的。請釋放 iCloud 空間或選擇其他目的地（外置驅動器或 NAS）。"
+          }
         }
       }
     },
@@ -27068,6 +29396,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скопировано: %lld — хранилище iCloud заполнено, копирование остановлено. Освободите место в iCloud или выберите другое место назначения · %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已複製 %lld 個 — 您的 iCloud 儲存空間已滿，備份已停止。請釋放 iCloud 空間或選擇其他目的地 · %@"
           }
         }
       }
@@ -27145,6 +29479,12 @@
             "state" : "translated",
             "value" : "قد يكون iCloud Drive بطيئًا"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Drive 可能較慢"
+          }
         }
       }
     },
@@ -27220,6 +29560,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انسخ على أي حال"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仍然備份"
           }
         }
       }
@@ -27297,6 +29643,12 @@
             "state" : "translated",
             "value" : "تُكتب الملفات أولًا على هذا iPhone، ثم يرفعها iOS إلى iCloud عندما يقرر ذلك. لا يتوفر على iPhone سوى %@، لذا قد تستغرق المكتبة الكبيرة ساعات طويلة، وقد يتوقف النسخ إذا امتلأت مساحة iPhone أو iCloud. القرص الخارجي أو NAS أكثر أمانًا وأسرع بكثير."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案會先寫入此 iPhone，再由 iOS 自行決定何時上傳到 iCloud。您的 iPhone 僅剩 %@ 可用空間，因此較大的資料庫可能需要數小時，且當 iPhone 或 iCloud 儲存空間已滿時備份可能會停止。外置驅動器或 NAS 更安全，速度也快得多。"
+          }
         }
       }
     },
@@ -27372,6 +29724,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "النسخ الاحتياطية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份"
           }
         }
       }
@@ -27449,6 +29807,12 @@
             "state" : "translated",
             "value" : "متقدم"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高級"
+          }
         }
       }
     },
@@ -27524,6 +29888,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "نسخة احتياطية جديدة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新建備份"
           }
         }
       }
@@ -27601,6 +29971,12 @@
             "state" : "translated",
             "value" : "أنشئ أول نسخة احتياطية"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建立您的第一個備份"
+          }
         }
       }
     },
@@ -27676,6 +30052,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اختر ما تريد نسخه وأين. بعدها تكفي نقرة واحدة."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇要備份的內容和位置，之後只需輕點一下。"
           }
         }
       }
@@ -27753,6 +30135,12 @@
             "state" : "translated",
             "value" : "إعادة تسمية النسخة الاحتياطية"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新命名備份"
+          }
         }
       }
     },
@@ -27828,6 +30216,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "حذف هذه النسخة الاحتياطية؟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除此備份？"
           }
         }
       }
@@ -27905,6 +30299,12 @@
             "state" : "translated",
             "value" : "تتم إزالة إعدادات النسخة الاحتياطية. لا تتأثر الملفات المنسوخة مسبقًا."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份設定將被移除，已複製的檔案不受影響。"
+          }
         }
       }
     },
@@ -27980,6 +30380,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إعادة التسمية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新命名"
           }
         }
       }
@@ -28057,6 +30463,12 @@
             "state" : "translated",
             "value" : "تشغيل"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始"
+          }
         }
       }
     },
@@ -28132,6 +30544,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اختر نقطة بداية. ستختار القرص أو المجلد في الخطوة التالية."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請選擇一個起點。下一步再選擇驅動器或資料夾。"
           }
         }
       }
@@ -28209,6 +30627,12 @@
             "state" : "translated",
             "value" : "مكتبة الصور ← قرص خارجي"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫 → 外置驅動器"
+          }
         }
       }
     },
@@ -28284,6 +30708,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مكتبة الصور ← NAS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫 → NAS"
           }
         }
       }
@@ -28361,6 +30791,12 @@
             "state" : "translated",
             "value" : "مكتبة الصور ← iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫 → iCloud Drive"
+          }
         }
       }
     },
@@ -28436,6 +30872,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "كاميرا أو بطاقة SD ← قرص خارجي"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相機或 SD 卡 → 外置驅動器"
           }
         }
       }
@@ -28513,6 +30955,12 @@
             "state" : "translated",
             "value" : "قرص خارجي ← iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外置驅動器 → iCloud Drive"
+          }
         }
       }
     },
@@ -28588,6 +31036,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "مكتبة الصور ← قرص خارجي + NAS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片圖庫 → 外置驅動器 + NAS"
           }
         }
       }
@@ -28665,6 +31119,12 @@
             "state" : "translated",
             "value" : "الأبسط والأسرع. موصى به."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最簡單、最快。推薦。"
+          }
         }
       }
     },
@@ -28740,6 +31200,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انسخ احتياطيًا عبر Wi-Fi إلى جهاز NAS الخاص بك."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 Wi-Fi 備份到您的 NAS。"
           }
         }
       }
@@ -28817,6 +31283,12 @@
             "state" : "translated",
             "value" : "بطيء ويعتمد على iOS ومساحة iCloud لديك."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "較慢，取決於 iOS 和您的 iCloud 空間。"
+          }
         }
       }
     },
@@ -28892,6 +31364,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انسخ بطاقة كاميرا أو قرص USB إلى قرصك."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將相機記憶卡或 USB 隨身碟複製到您的驅動器。"
           }
         }
       }
@@ -28969,6 +31447,12 @@
             "state" : "translated",
             "value" : "أرسل نسخة احتياطية لديك بالفعل إلى iCloud Drive."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將已有的備份傳送到 iCloud Drive。"
+          }
         }
       }
     },
@@ -29044,6 +31528,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "نسختان دفعة واحدة: قرص وNAS."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一次兩份：驅動器和您的 NAS。"
           }
         }
       }
@@ -29121,6 +31611,12 @@
             "state" : "translated",
             "value" : "الصور ← قرص"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片 → 驅動器"
+          }
         }
       }
     },
@@ -29196,6 +31692,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الصور ← NAS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片 → NAS"
           }
         }
       }
@@ -29273,6 +31775,12 @@
             "state" : "translated",
             "value" : "الصور ← iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片 → iCloud Drive"
+          }
         }
       }
     },
@@ -29348,6 +31856,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "كاميرا ← قرص"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相機 → 驅動器"
           }
         }
       }
@@ -29425,6 +31939,12 @@
             "state" : "translated",
             "value" : "قرص ← iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "驅動器 → iCloud Drive"
+          }
         }
       }
     },
@@ -29500,6 +32020,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الصور ← قرص + NAS"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片 → 驅動器 + NAS"
           }
         }
       }
@@ -29577,6 +32103,12 @@
             "state" : "translated",
             "value" : "لم تتم إضافة بطاقة كاميرا أو قرص بعد."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未添加相機記憶卡或驅動器。"
+          }
         }
       }
     },
@@ -29652,6 +32184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إضافة مصدر…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加來源…"
           }
         }
       }
@@ -29729,6 +32267,12 @@
             "state" : "translated",
             "value" : "اختر مجلد البطاقة أو القرص المراد النسخ منه. إذا كان القرص يحتوي بالفعل على نسخة احتياطية، فاختر مجلد الجهاز بداخله."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇要複製的記憶卡或驅動器資料夾。對於已有備份的驅動器，請選擇其中的裝置資料夾。"
+          }
         }
       }
     },
@@ -29804,6 +32348,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لم يتم الاختيار"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未選擇"
           }
         }
       }
@@ -29881,6 +32431,12 @@
             "state" : "translated",
             "value" : "اختر مجلدًا في iCloud Drive (الملفات ← iCloud Drive). iCloud بطيء ويعتمد على iOS ومساحة iCloud لديك."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在 iCloud Drive 中選擇資料夾（「檔案」→ iCloud Drive）。iCloud 較慢，取決於 iOS 和您的 iCloud 空間。"
+          }
         }
       }
     },
@@ -29957,6 +32513,12 @@
             "state" : "translated",
             "value" : "وصّل القرص ثم اختر المجلد الذي ستُحفظ فيه النسخ. يمكنك إنشاء مجلد من أداة الاختيار."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連線您的驅動器，然後選擇備份目的地資料夾。您可以在選擇器中新建資料夾。"
+          }
         }
       }
     },
@@ -30008,6 +32570,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сначала настройте NAS в «Настройках», затем вернитесь."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請先在「設定」中設定 NAS，然後再回來。"
           }
         }
       }
@@ -30085,6 +32653,12 @@
             "state" : "translated",
             "value" : "إنشاء"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建立"
+          }
         }
       }
     },
@@ -30160,6 +32734,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "إحدى وجهات هذه النسخة الاحتياطية غير متصلة."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此備份的某個目的地未連線。"
           }
         }
       }
@@ -30237,6 +32817,12 @@
             "state" : "translated",
             "value" : "لم يعد هذا المصدر متاحًا."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此來源已不可用。"
+          }
         }
       }
     },
@@ -30288,6 +32874,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Интерфейс"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "介面"
           }
         }
       }
@@ -30341,6 +32933,12 @@
             "state" : "translated",
             "value" : "Показать расширенные экраны"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示高級介面"
+          }
         }
       }
     },
@@ -30392,6 +32990,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Расширенные экраны показывают каждый источник, место назначения и подробности. Большинству достаточно вкладки «Копии»."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高級介面會顯示每個來源、目的地和詳細資訊。大多數人只需使用「備份」標籤頁。"
           }
         }
       }
@@ -30469,6 +33073,12 @@
             "state" : "translated",
             "value" : "تُحفظ نسخك الاحتياطية في مجلد بهذا الاسم."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的備份會儲存在以此命名的資料夾中。"
+          }
         }
       }
     },
@@ -30544,6 +33154,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لا توجد وجهة متاحة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有可用的目的地"
           }
         }
       }
@@ -30621,6 +33237,12 @@
             "state" : "translated",
             "value" : "أنشئ نسخة احتياطية في تبويب النسخ الاحتياطية ووصّل قرصها."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在「備份」標籤頁中建立備份，並連線其驅動器。"
+          }
         }
       }
     },
@@ -30697,6 +33319,12 @@
             "state" : "translated",
             "value" : "لا توجد نسخ احتياطية هنا بعد."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這裡還沒有備份。"
+          }
         }
       }
     },
@@ -30749,6 +33377,12 @@
             "state" : "translated",
             "value" : "Профили копирования"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "備份設定"
+          }
         }
       }
     },
@@ -30800,6 +33434,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Эти папки принадлежат копиям на вкладке «Копии». Запускайте их оттуда."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這些資料夾屬於「備份」標籤頁中的備份，請在那裡執行。"
           }
         }
       }
@@ -30877,6 +33517,12 @@
             "state" : "translated",
             "value" : "اختيار مجلد آخر…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇其他資料夾…"
+          }
         }
       }
     },
@@ -30928,6 +33574,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Используйте, когда вы заменили диск или доступ к нему перестал работать. Уже скопированные файлы остаются на месте."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更換驅動器或其存取權限失效時使用。已複製的檔案保持原處。"
           }
         }
       }
@@ -31005,6 +33657,12 @@
             "state" : "translated",
             "value" : "لم يتم إعداد NAS لهذه النسخة الاحتياطية."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此備份的 NAS 尚未設定。"
+          }
         }
       }
     },
@@ -31081,6 +33739,12 @@
             "state" : "translated",
             "value" : "مجلد آخر…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他資料夾…"
+          }
         }
       }
     },
@@ -31153,6 +33817,12 @@
           }
         },
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "NAS"
@@ -31233,6 +33903,12 @@
             "state" : "translated",
             "value" : "إضافة وجهة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加目的地"
+          }
         }
       }
     },
@@ -31308,6 +33984,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "يمكن للنسخة الاحتياطية الواحدة أن تنسخ إلى عدة وجهات في وقت واحد. اسحب لإزالة إحداها. اختيار مجلد آخر مخصص لقرص تم استبداله أو وصول لم يعد يعمل — تبقى الملفات المنسوخة مسبقًا حيث هي."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一個備份可同時複製到多個目的地。滑動即可移除。當驅動器被更換或存取失效時，請選擇其他資料夾——已複製的檔案保持原處。"
           }
         }
       }
@@ -31385,6 +34067,12 @@
             "state" : "translated",
             "value" : "هذه هي القيم الافتراضية للنسخ الاحتياطية الجديدة. ثم تكون لكل نسخة إعداداتها الخاصة: تبويب النسخ الاحتياطية، اضغط مطولًا على نسخة احتياطية، ثم الإعدادات."
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這些是新備份的預設值。之後每個備份都有自己的設定：「備份」標籤頁，長按某個備份，再點「設定」。"
+          }
         }
       }
     },
@@ -31460,6 +34148,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "عدة نسخ احتياطية"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多個備份"
           }
         }
       }
@@ -31537,6 +34231,12 @@
             "state" : "translated",
             "value" : "أنشئ ما تحتاجه من النسخ الاحتياطية، ولكلٍّ منها أقراصها وNAS وإعداداتها الخاصة"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按需建立任意數量的備份，每個備份都有自己的驅動器、NAS 和設定"
+          }
         }
       }
     },
@@ -31612,6 +34312,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تتطلب هذه النسخة الاحتياطية الترقية إلى Pro."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此備份需要升級到 Pro。"
           }
         }
       }
@@ -31689,6 +34395,12 @@
             "state" : "translated",
             "value" : "يتداخل هذا المجلد مع وجهة أخرى"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此資料夾與另一個目的地重疊"
+          }
         }
       }
     },
@@ -31764,6 +34476,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "اختر مجلدًا ليس داخل وجهة أخرى من هذه النسخة الاحتياطية ولا يحتوي على إحداها: ستُكتب الملفات مرتين في المكان نفسه."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請選擇一個不在此備份其他目的地內、也不包含其他目的地的資料夾：否則檔案會在同一位置被寫入兩次。"
           }
         }
       }
@@ -31843,6 +34561,12 @@
             "state" : "translated",
             "value" : "انسخ مكتبة صور iPhone احتياطيًا إلى مجلد واحد: قرص خارجي أو iCloud Drive"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 iPhone 照片庫備份到一個資料夾：外置硬碟或 iCloud 雲盤"
+          }
         }
       }
     },
@@ -31920,6 +34644,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "انسخ احتياطيًا إلى NAS عبر Wi-Fi أو عن بُعد عبر VPN"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 Wi-Fi 或 VPN 遠程備份到您的 NAS"
           }
         }
       }
@@ -31999,6 +34729,12 @@
             "state" : "translated",
             "value" : "تصحيح الألوان بـ LUT"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "LUT 調色"
+          }
         }
       }
     },
@@ -32077,6 +34813,12 @@
             "state" : "translated",
             "value" : "صحّح ألوان فيديوهاتك بملفات .cube LUT وصدّرها بصيغة HEVC"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 .cube LUT 為影片調色並匯出為 HEVC"
+          }
         }
       }
     },
@@ -32154,6 +34896,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم فتح Pro"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已解鎖 Pro"
           }
         }
       }

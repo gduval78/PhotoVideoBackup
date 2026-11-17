@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>O meu cartão aparece como «Documents».</b> Algumas câmaras usam uma pasta genérica. Escreva um nome significativo ao adicionar a fonte."),
         ("p", "<b>Posso copiar com o telemóvel quase cheio?</b> Sim. Os ficheiros são enviados em fluxo para o destino, por isso só se retêm alguns megabytes de cada vez. Só uma cópia para um NAS <i>sozinho</i> precisa de espaço para um ficheiro de cada vez. Um ficheiro que realmente não cabe é assinalado como falhado e o resto continua."),
         ("p", "<b>Os meus dados são enviados para algum lado?</b> Não. Tudo se passa entre o seu telemóvel e a sua unidade ou NAS. A aplicação não tem servidor nem conta. O único tráfego de rede vai para o NAS que configura e para a transferência, pelo sistema, das suas próprias fotos do iCloud / Google."),
-        ("p", "<b>Que idiomas?</b> Inglês, francês, alemão, espanhol, italiano, português, chinês simplificado, russo, japonês, coreano, hindi e árabe. A aplicação segue o idioma do telemóvel; pode forçar um em <b>Definições → Idioma</b>, sem reiniciar."),
+        ("p", "<b>Que idiomas?</b> Inglês, francês, alemão, espanhol (neutro, para Espanha e América Latina), italiano, português (europeu), chinês simplificado, chinês tradicional, russo, japonês, coreano, hindi e árabe. A aplicação segue o idioma do telemóvel; pode forçar um em <b>Definições → Idioma</b>, sem reiniciar."),
     ]),
 ]
 

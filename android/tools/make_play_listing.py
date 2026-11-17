@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Google Play listing (8 languages) -> android/store/play_listing.json.
+"""Google Play listing (8 languages + zh-TW derived) -> android/store/play_listing.json.
 Play limits: title 30, short description 80, full description 4000. Source of truth for the texts: this file."""
 import json, pathlib
 
@@ -207,6 +207,13 @@ body="""PhotoVideoBackup копирует ваши фото и видео с т�
 
 Политика конфиденциальности: %s""",
 )
+
+# Traditional Chinese (zh-TW) derived from the Simplified text (Documentation/site/hant_convert.py; macOS + swiftc).
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "Documentation/site"))
+import hant_convert
+_s, _b = hant_convert.convert([L["zh-CN"]["short"], L["zh-CN"]["body"]])
+L["zh-TW"] = dict(short=_s, body=_b)
 
 out, ok = {}, True
 for k, v in L.items():

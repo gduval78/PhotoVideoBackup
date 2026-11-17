@@ -164,7 +164,7 @@ GUIDE = [
         ("p", "<b>Ma carte apparaît comme « Documents ».</b> Certains appareils utilisent un dossier générique. Saisissez un nom parlant quand vous ajoutez la source."),
         ("p", "<b>Puis-je sauvegarder quand mon téléphone est presque plein ?</b> Oui. Les fichiers sont envoyés en flux vers la destination : seuls quelques mégaoctets sont retenus à la fois. Seule une sauvegarde vers un NAS <i>seul</i> demande la place d'un fichier à la fois. Un fichier qui ne tient vraiment pas est signalé en échec et le reste continue."),
         ("p", "<b>Mes données sont-elles envoyées quelque part ?</b> Non. Tout se passe entre votre téléphone et votre disque ou NAS. L'application n'a ni serveur ni compte. Le seul trafic réseau va vers le NAS que vous configurez vous-même, et vers le téléchargement par le système de vos propres photos iCloud / Google."),
-        ("p", "<b>Quelles langues ?</b> Anglais, français, allemand, espagnol, italien, portugais, chinois simplifié, russe, japonais, coréen, hindi et arabe. L'application suit la langue du téléphone ; vous pouvez en forcer une dans <b>Réglages → Langue</b>, sans redémarrage."),
+        ("p", "<b>Quelles langues ?</b> Anglais, français, allemand, espagnol (neutre, pour l'Espagne et l'Amérique latine), italien, portugais (européen), chinois simplifié, chinois traditionnel, russe, japonais, coréen, hindi et arabe. L'application suit la langue du téléphone ; vous pouvez en forcer une dans <b>Réglages → Langue</b>, sans redémarrage."),
     ]),
 ]
 
