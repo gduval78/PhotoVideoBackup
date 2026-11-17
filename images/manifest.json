@@ -72,12 +72,12 @@
     "note": "Android Settings: defaults for new backups, Pro section (emulator, 2026-11-15)"
   },
   "android_viewer": {
-    "version": "2.6.1",
-    "note": "Android full-screen viewer"
+    "version": "2.7.0",
+    "note": "Android full-screen viewer (unchanged in 2.7.0, looked at again 2026-11-17)"
   },
   "android_lut": {
-    "version": "2.6.1",
-    "note": "Android LUT Grade section"
+    "version": "2.7.0",
+    "note": "Android LUT Grade section (Backups tab bar, grading complete) — retaken 2026-11-17 on the emulator"
   },
   "android_browse": {
     "version": "2.6.1",
