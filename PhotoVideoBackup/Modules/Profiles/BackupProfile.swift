@@ -20,6 +20,27 @@ enum ProfileDestination: Codable, Equatable, Hashable, Sendable {
     case nas
 }
 
+// MARK: - Transfer type
+
+/// How a backup's data travels, shown as a badge on the card's pictogram. Remote means a NAS or an
+/// iCloud Drive / cloud folder; Wi-Fi vs mobile data follows the network the phone is on right now.
+enum TransferKind: Equatable, Sendable {
+    case local, wifi, cellular
+
+    static func of(isRemote: Bool, isCellular: Bool) -> TransferKind {
+        guard isRemote else { return .local }
+        return isCellular ? .cellular : .wifi
+    }
+
+    var badgeSymbol: String {
+        switch self {
+        case .local:    return "cable.connector"
+        case .wifi:     return "wifi"
+        case .cellular: return "antenna.radiowaves.left.and.right"
+        }
+    }
+}
+
 // MARK: - Template
 
 /// The starting points offered by "New backup". A template fixes the *kind* of source and

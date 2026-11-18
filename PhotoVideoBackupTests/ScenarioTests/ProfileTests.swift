@@ -113,6 +113,15 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.requiresPro)
     }
 
+    // SCENARIO: The card's badge says how the data travels
+    // Local folders: cable. A NAS or a cloud folder: Wi-Fi, or mobile data when the phone is on SIM/eSIM.
+    func test_transferKind_localWifiCellular() {
+        XCTAssertEqual(TransferKind.of(isRemote: false, isCellular: false), .local)
+        XCTAssertEqual(TransferKind.of(isRemote: false, isCellular: true), .local)   // nothing leaves the phone's port
+        XCTAssertEqual(TransferKind.of(isRemote: true, isCellular: false), .wifi)
+        XCTAssertEqual(TransferKind.of(isRemote: true, isCellular: true), .cellular)
+    }
+
     // SCENARIO: A profile's own folder keys never collide with the global slots
     func test_folderKeys_areNamespaced() {
         let id = UUID()

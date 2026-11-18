@@ -31,6 +31,8 @@ struct BackupsView: View {
                                     onUnlock: { showPaywall = true },
                                     sourceName: sourceName(for: profile),
                                     connection: connections[profile.id],
+                                    transfer: .of(isRemote: profile.usesNAS || (connections[profile.id]?.hasCloudFolder ?? false),
+                                                  isCellular: viewModel.isLikelyCellular),
                                     sourceAvailable: sourceAvailable(for: profile),
                                     isRunning: viewModel.isRunning,
                                     onRun: { summarizing = profile },
@@ -203,6 +205,7 @@ private struct ProfileCard: View {
     let onUnlock: () -> Void
     let sourceName: String
     let connection: DashboardViewModel.ProfileConnection?
+    let transfer: TransferKind
     let sourceAvailable: Bool
     let isRunning: Bool
     let onRun: () -> Void
@@ -216,9 +219,20 @@ private struct ProfileCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: profile.template.symbol(hasCloudFolder: connection?.hasCloudFolder ?? false))
-                .font(.title2).foregroundStyle(ready ? Color.accentColor : .secondary)
-                .frame(width: 34)
+            // Main pictogram (drive / card / cloud) + a badge for the transfer type: local cable,
+            // Wi-Fi, or mobile data (SIM / eSIM).
+            ZStack(alignment: .bottomTrailing) {
+                Image(systemName: profile.template.symbol(hasCloudFolder: connection?.hasCloudFolder ?? false))
+                    .font(.title2).foregroundStyle(ready ? Color.accentColor : .secondary)
+                    .frame(width: 34, height: 30)
+                Image(systemName: transfer.badgeSymbol)
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(transfer == .cellular ? Color.orange : (ready ? Color.accentColor : .secondary))
+                    .padding(2)
+                    .background(Circle().fill(Color(.systemBackground)))
+                    .offset(x: 5, y: 4)
+            }
+            .frame(width: 38)
             VStack(alignment: .leading, spacing: 3) {
                 Text(verbatim: profile.name).font(.headline)
                 Text(verbatim: "\(sourceName) → \(destinations)")

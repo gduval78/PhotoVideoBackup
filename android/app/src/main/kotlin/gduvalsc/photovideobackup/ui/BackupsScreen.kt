@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +27,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.SignalCellularAlt
+import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MoreVert
@@ -271,12 +275,24 @@ private fun ProfileCard(
 
     Card(Modifier.padding(horizontal = 16.dp, vertical = 6.dp).fillMaxWidth()) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                // A cloud folder (Google Drive, OneDrive, Dropbox…) is detected from the folder itself: cloud pictogram; otherwise the source's.
-                if (CloudDestinations.firstCloud(profile.folders.map { it.uri }) != null) Icons.Default.Cloud
-                else if (profile.source.isGallery) Icons.Default.PhotoLibrary else Icons.Default.SdCard, null,
-                tint = if (connected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, modifier = Modifier.size(28.dp),
-            )
+            val cloud = CloudDestinations.firstCloud(profile.folders.map { it.uri }) != null
+            val tint = if (connected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+            // Main pictogram + a badge for the transfer type: USB (local), Wi-Fi, or mobile data (SIM / eSIM).
+            Box(Modifier.size(36.dp)) {
+                Icon(
+                    // A cloud folder (Google Drive, OneDrive, Dropbox…) is detected from the folder itself: cloud pictogram; otherwise the source's.
+                    if (cloud) Icons.Default.Cloud
+                    else if (profile.source.isGallery) Icons.Default.PhotoLibrary else Icons.Default.SdCard, null,
+                    tint = tint, modifier = Modifier.size(28.dp).align(Alignment.TopStart),
+                )
+                val remote = profile.usesNas || cloud
+                val cellular = remote && onMobileData(context)
+                Icon(
+                    if (!remote) Icons.Default.Usb else if (cellular) Icons.Default.SignalCellularAlt else Icons.Default.Wifi, null,
+                    tint = if (cellular) Tone.warn else tint,
+                    modifier = Modifier.size(15.dp).align(Alignment.BottomEnd).background(MaterialTheme.colorScheme.surface, androidx.compose.foundation.shape.CircleShape).padding(1.dp),
+                )
+            }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(profile.name, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
