@@ -58,6 +58,7 @@ GUIDE = [
     ]),
     ("photos", "Back up your photos and videos", [
         ("p", "Open the <b>Backups</b> tab. Each backup is a card with its name, where it copies from and to, and the free space of its drive. Tap <b>Run</b>. With Pro you can create several backups — for example one to a drive and one to a NAS — each with its own settings: long-press the card (iPhone) or tap its <b>⋮</b> menu (Android), then <b>Settings</b>. A small badge on the pictogram shows how the data travels: a cable for a local drive, Wi-Fi, or mobile data (SIM / eSIM) for a NAS or a cloud folder, depending on the network the phone is on."),
+        ("p", "Before the backup starts, a <b>Ready to back up?</b> screen shows what is about to happen: the source, then each destination, with a pictogram for its kind (drive, NAS, cloud folder, or the phone itself — in orange, with a warning). If the backup requires power, it also shows whether the phone is charging. Check it, then tap <b>Start backup</b>, or the cross to cancel."),
         ("fig", "backups_tab", "The Backups tab: one card per backup, with its free space and a Run button."),
         ("fig", "profile_settings", "A backup’s own settings (long-press its card): destinations, folder structure, file limit, naming."),
         ("p", "The app scans the library, then copies. The <b>first backup is the longest</b>; the next ones only copy what is new, and are much faster."),

@@ -75,6 +75,7 @@
     <string name="deselect_all">إلغاء تحديد الكل</string>
     <string name="dest_footer">وصّل القرص ثم اختر المجلد الذي ستُحفظ فيه النسخ. يمكنك إنشاء مجلد من أداة الاختيار.</string>
     <string name="dest_footer_cloud">اختر في أداة الاختيار مجلدًا من تخزينك السحابي (Google Drive أو OneDrive أو Dropbox…). المجلد السحابي بطيء ويعتمد على مساحتك السحابية.</string>
+    <string name="dest_on_device_warning">هذه الوجهة موجودة على الجهاز نفسه وليس على قرص خارجي.</string>
     <string name="destination">الوجهة</string>
     <string name="destination_1">الوجهة 1 (الأساسية)</string>
     <string name="destination_2">الوجهة 2 (الثانوية)</string>
@@ -108,6 +109,7 @@
     <string name="example">مثال</string>
     <string name="extensions_explainer">ستُضمَّن الملفات ذات هذه الامتدادات في كل نسخة احتياطية، لكل أنواع الأجهزة. أدخلها دون النقطة.</string>
     <string name="extensions_placeholder">مثال: srt, gpx, csv</string>
+    <string name="external_drive">قرص خارجي</string>
     <string name="failed">فشل</string>
     <string name="failed_count_fmt">فشل %1$d</string>
     <string name="feature_gallery">انسخ صور هاتفك ومقاطع الفيديو إلى مجلد</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">لم تتم إضافة بطاقة كاميرا أو قرص بعد.</string>
     <string name="no_ssd_connected">لا يوجد SSD متصل</string>
     <string name="none">لا شيء</string>
+    <string name="not_charging_warning">الهاتف لا يشحن بعد: صِل مصدر الطاقة وإلا فلن يبدأ النسخ الاحتياطي.</string>
     <string name="not_chosen">لم يتم الاختيار</string>
     <string name="not_configured">غير مضبوط</string>
     <string name="not_connected">غير متصل</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">تم نسخ %1$d — تم الإيقاف. شغّل مرة أخرى للمتابعة · %2$s</string>
     <string name="off">إيقاف</string>
     <string name="ok">حسنًا</string>
+    <string name="on_this_device">على هذا الجهاز</string>
     <string name="onboarding_gallery">انسخ صور هاتفك ومقاطع الفيديو إلى قرص SSD أو بطاقة SD</string>
     <string name="onboarding_naming">تُسمّى الملفات تلقائيًا أثناء نسخها احتياطيًا</string>
     <string name="onboarding_sources">بطاقات SD وDJI وInsta360 وGoPro وغيرها</string>
@@ -217,6 +221,8 @@
     <string name="password">كلمة المرور</string>
     <string name="pattern">النمط</string>
     <string name="port">المنفذ</string>
+    <string name="power">الطاقة</string>
+    <string name="power_bank_or_charger">بطارية محمولة أو شاحن</string>
     <string name="preparing_ellipsis">جارٍ التجهيز…</string>
     <string name="preparing_n_fmt">جارٍ تجهيز %1$d ملف…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">تعذّر تحميل معلومات المنتج.</string>
     <string name="progress_files_fmt">%1$d / %2$d ملف</string>
+    <string name="ready_to_back_up">هل أنت مستعد للنسخ الاحتياطي؟</string>
     <string name="reconnect">إعادة الاتصال</string>
     <string name="remove">إزالة</string>
     <string name="remove_nas">إزالة NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">مثال: Blackmagic، GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">المصادر</string>
+    <string name="start_backup">بدء النسخ الاحتياطي</string>
     <string name="starting_copy">جارٍ بدء النسخ…</string>
     <string name="stop">إيقاف</string>
     <string name="stopping">جارٍ الإيقاف…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">النسخ الاحتياطية</string>
     <string name="tab_browse">استعراض</string>
     <string name="test_connection">اختبار الاتصال</string>
+    <string name="this_device">هذا الجهاز</string>
     <string name="total_fmt">%1$s الإجمالي</string>
     <string name="tpl_camera_drive">كاميرا أو بطاقة SD ← مجلد</string>
     <string name="tpl_camera_drive_d">انسخ بطاقة كاميرا أو قرص USB إلى قرصك.</string>

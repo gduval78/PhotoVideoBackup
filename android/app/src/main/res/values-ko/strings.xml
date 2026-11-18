@@ -75,6 +75,7 @@
     <string name="deselect_all">모두 선택 해제</string>
     <string name="dest_footer">드라이브를 연결한 다음 백업할 폴더를 선택하세요. 선택 화면에서 폴더를 만들 수 있습니다.</string>
     <string name="dest_footer_cloud">선택 화면에서 클라우드 저장소(Google Drive, OneDrive, Dropbox 등)의 폴더를 선택하세요. 클라우드 폴더는 느리며 클라우드 공간에 따라 달라집니다.</string>
+    <string name="dest_on_device_warning">이 대상은 외장 드라이브가 아니라 기기 자체에 있습니다.</string>
     <string name="destination">대상</string>
     <string name="destination_1">대상 1(기본)</string>
     <string name="destination_2">대상 2(보조)</string>
@@ -108,6 +109,7 @@
     <string name="example">예시</string>
     <string name="extensions_explainer">이 확장자의 파일은 모든 기기 유형에서 매번 백업에 포함됩니다. 점 없이 입력하세요.</string>
     <string name="extensions_placeholder">예: srt, gpx, csv</string>
+    <string name="external_drive">외장 드라이브</string>
     <string name="failed">실패</string>
     <string name="failed_count_fmt">%1$d개 실패</string>
     <string name="feature_gallery">휴대폰의 사진과 비디오를 폴더에 백업</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">추가된 카메라 카드나 드라이브가 아직 없습니다.</string>
     <string name="no_ssd_connected">연결된 SSD 없음</string>
     <string name="none">없음</string>
+    <string name="not_charging_warning">휴대폰이 아직 충전 중이 아닙니다. 전원을 연결하지 않으면 백업이 시작되지 않습니다.</string>
     <string name="not_chosen">선택 안 됨</string>
     <string name="not_configured">설정되지 않음</string>
     <string name="not_connected">연결되지 않음</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d개 복사 — 중지됨. 계속하려면 다시 실행하세요 · %2$s</string>
     <string name="off">끔</string>
     <string name="ok">확인</string>
+    <string name="on_this_device">이 기기 내</string>
     <string name="onboarding_gallery">휴대폰의 사진과 비디오를 SSD 또는 SD 카드에 백업</string>
     <string name="onboarding_naming">백업하면서 파일 이름이 자동으로 지정됩니다</string>
     <string name="onboarding_sources">SD 카드, DJI, Insta360, GoPro 등</string>
@@ -217,6 +221,8 @@
     <string name="password">암호</string>
     <string name="pattern">패턴</string>
     <string name="port">포트</string>
+    <string name="power">전원</string>
+    <string name="power_bank_or_charger">보조 배터리 또는 충전기</string>
     <string name="preparing_ellipsis">준비 중…</string>
     <string name="preparing_n_fmt">파일 %1$d개 준비 중…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">제품 정보를 불러올 수 없습니다.</string>
     <string name="progress_files_fmt">%1$d / %2$d개 파일</string>
+    <string name="ready_to_back_up">백업을 시작할까요?</string>
     <string name="reconnect">다시 연결</string>
     <string name="remove">제거</string>
     <string name="remove_nas">NAS 제거</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">예: Blackmagic, GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">소스</string>
+    <string name="start_backup">백업 시작</string>
     <string name="starting_copy">복사 시작 중…</string>
     <string name="stop">중지</string>
     <string name="stopping">중지하는 중…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">백업</string>
     <string name="tab_browse">탐색</string>
     <string name="test_connection">연결 테스트</string>
+    <string name="this_device">이 기기</string>
     <string name="total_fmt">총 %1$s</string>
     <string name="tpl_camera_drive">카메라 또는 SD 카드 → 폴더</string>
     <string name="tpl_camera_drive_d">카메라 카드 또는 USB 드라이브를 드라이브로 복사합니다.</string>

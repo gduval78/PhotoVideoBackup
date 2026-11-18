@@ -75,6 +75,7 @@
     <string name="deselect_all">Tout désélectionner</string>
     <string name="dest_footer">Branchez votre disque, puis choisissez le dossier de destination. Vous pouvez créer un dossier dans le sélecteur.</string>
     <string name="dest_footer_cloud">Choisissez un dossier de votre stockage cloud (Google Drive, OneDrive, Dropbox…) dans le sélecteur. Un dossier cloud est lent et dépend de votre espace cloud.</string>
+    <string name="dest_on_device_warning">Cette destination se trouve sur l’appareil lui-même, pas sur un disque externe.</string>
     <string name="destination">Destination</string>
     <string name="destination_1">Destination 1 (principale)</string>
     <string name="destination_2">Destination 2 (secondaire)</string>
@@ -108,6 +109,7 @@
     <string name="example">Exemple</string>
     <string name="extensions_explainer">Les fichiers avec ces extensions seront inclus dans chaque sauvegarde, pour tous les types d\'appareils. Saisissez sans le point.</string>
     <string name="extensions_placeholder">ex. srt, gpx, csv</string>
+    <string name="external_drive">Disque externe</string>
     <string name="failed">Échoués</string>
     <string name="failed_count_fmt">%1$d échoués</string>
     <string name="feature_gallery">Sauvegardez les photos et vidéos du téléphone dans un dossier</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">Aucune carte de caméra ni aucun disque ajouté pour l\'instant.</string>
     <string name="no_ssd_connected">Aucun SSD connecté</string>
     <string name="none">Aucun</string>
+    <string name="not_charging_warning">Le téléphone n’est pas encore en charge : branchez la source d’alimentation, sinon la sauvegarde ne démarrera pas.</string>
     <string name="not_chosen">Non choisi</string>
     <string name="not_configured">Non configuré</string>
     <string name="not_connected">Non connecté</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d copié(s) — arrêté. Relancez pour continuer · %2$s</string>
     <string name="off">Désactivé</string>
     <string name="ok">OK</string>
+    <string name="on_this_device">Sur cet appareil</string>
     <string name="onboarding_gallery">Sauvegardez les photos et vidéos du téléphone sur un SSD ou une carte SD</string>
     <string name="onboarding_naming">Les fichiers sont nommés automatiquement pendant la sauvegarde</string>
     <string name="onboarding_sources">Cartes SD, DJI, Insta360, GoPro et plus</string>
@@ -217,6 +221,8 @@
     <string name="password">Mot de passe</string>
     <string name="pattern">Modèle</string>
     <string name="port">Port</string>
+    <string name="power">Alimentation</string>
+    <string name="power_bank_or_charger">Batterie externe ou chargeur</string>
     <string name="preparing_ellipsis">Préparation…</string>
     <string name="preparing_n_fmt">Préparation de %1$d fichier(s)…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">Impossible de charger les infos produit.</string>
     <string name="progress_files_fmt">%1$d / %2$d fichiers</string>
+    <string name="ready_to_back_up">Prêt à sauvegarder ?</string>
     <string name="reconnect">Reconnecter</string>
     <string name="remove">Supprimer</string>
     <string name="remove_nas">Supprimer le NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">ex. Blackmagic, GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">Sources</string>
+    <string name="start_backup">Lancer la sauvegarde</string>
     <string name="starting_copy">Démarrage de la copie…</string>
     <string name="stop">Arrêter</string>
     <string name="stopping">Arrêt…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">Sauvegardes</string>
     <string name="tab_browse">Parcourir</string>
     <string name="test_connection">Tester la connexion</string>
+    <string name="this_device">Cet appareil</string>
     <string name="total_fmt">%1$s au total</string>
     <string name="tpl_camera_drive">Caméra ou carte SD → dossier</string>
     <string name="tpl_camera_drive_d">Copiez une carte de caméra ou une clé USB vers votre disque.</string>

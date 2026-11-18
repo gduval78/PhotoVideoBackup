@@ -58,6 +58,7 @@ GUIDE = [
     ]),
     ("photos", "Copia le tue foto e i tuoi video", [
         ("p", "Apri la scheda <b>Backup</b>. Ogni backup è una scheda con il suo nome, da dove copia e verso dove, e lo spazio libero del suo disco. Tocca <b>Avvia</b>. Con Pro puoi creare più backup — per esempio uno su un disco e uno su un NAS — ciascuno con le proprie impostazioni: pressione prolungata sulla scheda (iPhone) o il suo menu <b>⋮</b> (Android), poi <b>Impostazioni</b>. Un piccolo badge sul pittogramma indica come viaggiano i dati: un cavo per un disco locale, Wi-Fi o dati mobili (SIM / eSIM) per un NAS o una cartella cloud, in base alla rete a cui è collegato il telefono."),
+        ("p", "Prima che il backup parta, una schermata <b>Pronto per il backup?</b> mostra cosa sta per succedere: l'origine e poi ogni destinazione, con un pittogramma per il suo tipo (disco, NAS, cartella cloud o il telefono stesso — in arancione, con un avviso). Se il backup richiede l'alimentazione, indica anche se il telefono è in carica. Controlla, poi tocca <b>Avvia backup</b>, oppure la croce per annullare."),
         ("fig", "backups_tab", "La scheda Backup: una scheda per ogni backup, con lo spazio libero e un pulsante Avvia."),
         ("fig", "profile_settings", "Le impostazioni proprie di un backup (pressione prolungata sulla scheda): destinazioni, struttura delle cartelle, limite di file, denominazione."),
         ("p", "L'app analizza la libreria e poi copia. Il <b>primo backup è il più lungo</b>; i successivi copiano solo il nuovo e sono molto più veloci."),

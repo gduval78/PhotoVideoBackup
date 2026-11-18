@@ -149,6 +149,12 @@ fun BackupsScreen(onPaywall: () -> Unit, onNewBackup: () -> Unit, onProfileSetti
         else action()
     }
 
+    var summarizing by remember { mutableStateOf<BackupProfile?>(null) }
+    /** Tap on *Run*: Pro check, then the summary screen (like iOS); the backup starts from its button. */
+    fun requestRun(p: BackupProfile) {
+        if (!ProfileRules.isAllowed(ProfileStore.indexOf(p.id), Pro.isPro)) { onPaywall(); return }
+        summarizing = p
+    }
     fun run(p: BackupProfile) {
         if (!ProfileRules.isAllowed(ProfileStore.indexOf(p.id), Pro.isPro)) { onPaywall(); return }
         guarded(p) {
@@ -184,7 +190,7 @@ fun BackupsScreen(onPaywall: () -> Unit, onNewBackup: () -> Unit, onProfileSetti
                     ProfileCard(
                         profile = p, conn = conn, running = running,
                         locked = !ProfileRules.isAllowed(ProfileStore.indexOf(p.id), Pro.isPro),
-                        onRun = { run(p) },
+                        onRun = { requestRun(p) },
                         onUnlock = onPaywall,
                         onReconnect = {
                             when {
@@ -203,6 +209,9 @@ fun BackupsScreen(onPaywall: () -> Unit, onNewBackup: () -> Unit, onProfileSetti
         if (running) ProgressCard(ui)
     }
 
+    summarizing?.let { p ->
+        BackupSummaryDialog(profile = p, conn = AppState.connection(p), onDismiss = { summarizing = null }, onStart = { summarizing = null; run(p) })
+    }
     renaming?.let { p ->
         AlertDialog(
             onDismissRequest = { renaming = null },

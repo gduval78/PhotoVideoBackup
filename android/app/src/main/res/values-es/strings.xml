@@ -75,6 +75,7 @@
     <string name="deselect_all">Deseleccionar todo</string>
     <string name="dest_footer">Conecte su unidad y elija la carpeta de destino. Puede crear una carpeta en el selector.</string>
     <string name="dest_footer_cloud">Elige en el selector una carpeta de tu almacenamiento en la nube (Google Drive, OneDrive, Dropbox…). Una carpeta en la nube es lenta y depende de tu espacio en la nube.</string>
+    <string name="dest_on_device_warning">Este destino está en el propio dispositivo, no en un disco externo.</string>
     <string name="destination">Destino</string>
     <string name="destination_1">Destino 1 (principal)</string>
     <string name="destination_2">Destino 2 (secundario)</string>
@@ -108,6 +109,7 @@
     <string name="example">Ejemplo</string>
     <string name="extensions_explainer">Los archivos con estas extensiones se incluirán en cada copia de seguridad, para todos los tipos de dispositivos. Ingresar sin el punto.</string>
     <string name="extensions_placeholder">ej. srt, gpx, csv</string>
+    <string name="external_drive">Disco externo</string>
     <string name="failed">Fallidos</string>
     <string name="failed_count_fmt">%1$d fallidos</string>
     <string name="feature_gallery">Copia las fotos y vídeos del teléfono en una carpeta</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">Aún no se ha añadido ninguna tarjeta de cámara ni unidad.</string>
     <string name="no_ssd_connected">Sin SSD conectado</string>
     <string name="none">Ninguno</string>
+    <string name="not_charging_warning">El móvil aún no está cargando: conecta la fuente de alimentación o la copia no se iniciará.</string>
     <string name="not_chosen">Sin elegir</string>
     <string name="not_configured">No configurado</string>
     <string name="not_connected">No conectado</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d copiados — detenido. Ejecute de nuevo para continuar · %2$s</string>
     <string name="off">No</string>
     <string name="ok">OK</string>
+    <string name="on_this_device">En este dispositivo</string>
     <string name="onboarding_gallery">Copia las fotos y vídeos del teléfono en un SSD o una tarjeta SD</string>
     <string name="onboarding_naming">Los archivos se nombran automáticamente al copiarse</string>
     <string name="onboarding_sources">Tarjetas SD, DJI, Insta360, GoPro y más</string>
@@ -217,6 +221,8 @@
     <string name="password">Contraseña</string>
     <string name="pattern">Patrón</string>
     <string name="port">Puerto</string>
+    <string name="power">Alimentación</string>
+    <string name="power_bank_or_charger">Batería externa o cargador</string>
     <string name="preparing_ellipsis">Preparando…</string>
     <string name="preparing_n_fmt">Preparando %1$d archivo(s)…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">No se pudo cargar la información del producto.</string>
     <string name="progress_files_fmt">%1$d / %2$d archivos</string>
+    <string name="ready_to_back_up">¿Listo para la copia?</string>
     <string name="reconnect">Reconectar</string>
     <string name="remove">Eliminar</string>
     <string name="remove_nas">Quitar NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">ej. Blackmagic, GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">Fuentes</string>
+    <string name="start_backup">Iniciar copia</string>
     <string name="starting_copy">Iniciando la copia…</string>
     <string name="stop">Detener</string>
     <string name="stopping">Deteniendo…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">Copias</string>
     <string name="tab_browse">Explorar</string>
     <string name="test_connection">Probar conexión</string>
+    <string name="this_device">Este dispositivo</string>
     <string name="total_fmt">%1$s en total</string>
     <string name="tpl_camera_drive">Cámara o tarjeta SD → carpeta</string>
     <string name="tpl_camera_drive_d">Copie una tarjeta de cámara o unidad USB a su unidad.</string>

@@ -58,6 +58,7 @@ GUIDE = [
     ]),
     ("photos", "Copia tus fotos y vídeos", [
         ("p", "Abre la pestaña <b>Copias</b>. Cada copia es una tarjeta con su nombre, de dónde copia y adónde, y el espacio libre de su disco. Pulsa <b>Iniciar</b>. Con Pro puedes crear varias copias — por ejemplo una a un disco y otra a un NAS — cada una con sus propios ajustes: pulsación larga en la tarjeta (iPhone) o su menú <b>⋮</b> (Android), y después <b>Ajustes</b>. Una pequeña insignia en el pictograma indica cómo viajan los datos: un cable para un disco local, Wi-Fi o datos móviles (SIM / eSIM) para un NAS o una carpeta en la nube, según la red en la que esté el teléfono."),
+        ("p", "Antes de iniciar la copia, una pantalla <b>¿Listo para la copia?</b> muestra lo que va a ocurrir: el origen y luego cada destino, con un pictograma según su tipo (disco, NAS, carpeta en la nube o el propio teléfono — en naranja, con una advertencia). Si la copia exige alimentación, indica también si el teléfono se está cargando. Compruébalo y pulsa <b>Iniciar copia</b>, o la cruz para cancelar."),
         ("fig", "backups_tab", "La pestaña Copias: una tarjeta por copia, con su espacio libre y un botón Ejecutar."),
         ("fig", "profile_settings", "Los ajustes propios de una copia (pulsación larga en su tarjeta): destinos, estructura de carpetas, límite de archivos, nombres."),
         ("p", "La aplicación analiza la biblioteca y después copia. La <b>primera copia es la más larga</b>; las siguientes solo copian lo nuevo y son mucho más rápidas."),

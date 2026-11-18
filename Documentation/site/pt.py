@@ -58,6 +58,7 @@ GUIDE = [
     ]),
     ("photos", "Copie as suas fotos e vídeos", [
         ("p", "Abra o separador <b>Cópias</b>. Cada cópia é um cartão com o seu nome, de onde copia e para onde, e o espaço livre do seu disco. Toque em <b>Iniciar</b>. Com o Pro pode criar várias cópias — por exemplo uma para um disco e outra para um NAS — cada uma com as suas definições: toque longo no cartão (iPhone) ou no seu menu <b>⋮</b> (Android), e depois em <b>Definições</b>. Um pequeno emblema no pictograma indica como os dados viajam: um cabo para um disco local, Wi-Fi ou dados móveis (SIM / eSIM) para um NAS ou uma pasta na nuvem, consoante a rede em que o telemóvel está."),
+        ("p", "Antes de a cópia começar, um ecrã <b>Pronto para a cópia?</b> mostra o que vai acontecer: a origem e depois cada destino, com um pictograma do seu tipo (disco, NAS, pasta na nuvem ou o próprio telemóvel — a laranja, com um aviso). Se a cópia exigir alimentação, indica também se o telemóvel está a carregar. Verifique e toque em <b>Iniciar cópia</b>, ou na cruz para cancelar."),
         ("fig", "backups_tab", "O separador Cópias: um cartão por cópia, com o espaço livre e um botão Executar."),
         ("fig", "profile_settings", "As definições próprias de uma cópia (prima longamente o cartão): destinos, estrutura de pastas, limite de ficheiros, nomes."),
         ("p", "A aplicação analisa a biblioteca e depois copia. A <b>primeira cópia é a mais demorada</b>; as seguintes só copiam o que é novo e são muito mais rápidas."),

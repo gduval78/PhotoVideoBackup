@@ -75,6 +75,7 @@
     <string name="deselect_all">Deseleziona tutto</string>
     <string name="dest_footer">Collega il disco e scegli la cartella di destinazione. Puoi creare una cartella nel selettore.</string>
     <string name="dest_footer_cloud">Scegli nel selettore una cartella del tuo archivio cloud (Google Drive, OneDrive, Dropbox…). Una cartella cloud è lenta e dipende dal tuo spazio cloud.</string>
+    <string name="dest_on_device_warning">Questa destinazione si trova sul dispositivo stesso, non su un disco esterno.</string>
     <string name="destination">Destinazione</string>
     <string name="destination_1">Destinazione 1 (principale)</string>
     <string name="destination_2">Destinazione 2 (secondaria)</string>
@@ -108,6 +109,7 @@
     <string name="example">Esempio</string>
     <string name="extensions_explainer">I file con queste estensioni verranno inclusi in ogni backup, per tutti i tipi di dispositivo. Inserisci senza il punto.</string>
     <string name="extensions_placeholder">es. srt, gpx, csv</string>
+    <string name="external_drive">Disco esterno</string>
     <string name="failed">Falliti</string>
     <string name="failed_count_fmt">%1$d falliti</string>
     <string name="feature_gallery">Esegui il backup di foto e video del telefono in una cartella</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">Nessuna scheda della fotocamera o unità aggiunta.</string>
     <string name="no_ssd_connected">Nessun SSD connesso</string>
     <string name="none">Nessuno</string>
+    <string name="not_charging_warning">Il telefono non è ancora in carica: collega la fonte di alimentazione, altrimenti il backup non partirà.</string>
     <string name="not_chosen">Non scelto</string>
     <string name="not_configured">Non configurato</string>
     <string name="not_connected">Non connesso</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d copiati — interrotto. Esegui di nuovo per continuare · %2$s</string>
     <string name="off">No</string>
     <string name="ok">OK</string>
+    <string name="on_this_device">Su questo dispositivo</string>
     <string name="onboarding_gallery">Esegui il backup di foto e video del telefono su SSD o scheda SD</string>
     <string name="onboarding_naming">I file vengono nominati automaticamente durante il backup</string>
     <string name="onboarding_sources">Schede SD, DJI, Insta360, GoPro e altro</string>
@@ -217,6 +221,8 @@
     <string name="password">Password</string>
     <string name="pattern">Modello</string>
     <string name="port">Porta</string>
+    <string name="power">Alimentazione</string>
+    <string name="power_bank_or_charger">Power bank o caricatore</string>
     <string name="preparing_ellipsis">Preparazione…</string>
     <string name="preparing_n_fmt">Preparazione di %1$d file…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">Impossibile caricare le informazioni sul prodotto.</string>
     <string name="progress_files_fmt">%1$d / %2$d file</string>
+    <string name="ready_to_back_up">Pronto per il backup?</string>
     <string name="reconnect">Riconnetti</string>
     <string name="remove">Rimuovi</string>
     <string name="remove_nas">Rimuovi NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">es. Blackmagic, GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">Sorgenti</string>
+    <string name="start_backup">Avvia backup</string>
     <string name="starting_copy">Avvio della copia…</string>
     <string name="stop">Interrompi</string>
     <string name="stopping">Interruzione…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">Backup</string>
     <string name="tab_browse">Sfoglia</string>
     <string name="test_connection">Prova connessione</string>
+    <string name="this_device">Questo dispositivo</string>
     <string name="total_fmt">%1$s totale</string>
     <string name="tpl_camera_drive">Fotocamera o scheda SD → cartella</string>
     <string name="tpl_camera_drive_d">Copia una scheda della fotocamera o un\'unità USB sul tuo disco.</string>

@@ -147,7 +147,7 @@ object BackupController {
 
     /** The whole backup; called by [BackupService] on a background dispatcher. */
     /** null = unknown (no battery information): never blocks. */
-    private fun isCharging(context: Context): Boolean? {
+    fun isCharging(context: Context): Boolean? {
         val intent = context.registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED)) ?: return null
         val plugged = intent.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, -1)
         return if (plugged < 0) null else plugged != 0

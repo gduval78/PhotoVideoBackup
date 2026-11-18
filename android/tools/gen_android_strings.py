@@ -25,6 +25,11 @@ LANGS = {"en": "values", "fr": "values-fr", "de": "values-de", "es": "values-es"
 
 # Android name -> iOS key (English literal)
 REUSED = {
+    "ready_to_back_up": "Ready to back up?", "start_backup": "Start backup", "this_device": "This device",
+    "external_drive": "External drive", "on_this_device": "On this device", "power": "Power",
+    "power_bank_or_charger": "Power bank or charger",
+    "not_charging_warning": "The phone is not charging yet: connect the power source or the backup will not start.",
+    "dest_on_device_warning": "This destination is on the device itself, not on an external drive.",
     "only_on_power": "Only run on power",
     "only_on_power_footer": "The backup refuses to start unless the phone is charging — for example from a power bank plugged into a USB-C hub. Avoids draining the battery on a long backup.",
     "err_requires_power": "This backup only runs on power. Connect a power bank or a charger (through the hub) and try again.",

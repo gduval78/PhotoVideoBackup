@@ -75,6 +75,7 @@
     <string name="deselect_all">Снять выбор</string>
     <string name="dest_footer">Подключите диск и выберите папку назначения. В окне выбора можно создать папку.</string>
     <string name="dest_footer_cloud">Выберите в окне выбора папку вашего облачного хранилища (Google Drive, OneDrive, Dropbox…). Папка в облаке работает медленно и зависит от вашего места в облаке.</string>
+    <string name="dest_on_device_warning">Это место назначения находится на самом устройстве, а не на внешнем диске.</string>
     <string name="destination">Назначение</string>
     <string name="destination_1">Назначение 1 (основное)</string>
     <string name="destination_2">Назначение 2 (дополнительное)</string>
@@ -108,6 +109,7 @@
     <string name="example">Пример</string>
     <string name="extensions_explainer">Файлы с этими расширениями будут включены в каждую резервную копию для всех типов устройств. Вводите без точки.</string>
     <string name="extensions_placeholder">например, srt, gpx, csv</string>
+    <string name="external_drive">Внешний диск</string>
     <string name="failed">Ошибка</string>
     <string name="failed_count_fmt">%1$d с ошибкой</string>
     <string name="feature_gallery">Резервное копирование фото и видео телефона в папку</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">Пока не добавлено ни одной карты камеры или диска.</string>
     <string name="no_ssd_connected">SSD не подключён</string>
     <string name="none">Нет</string>
+    <string name="not_charging_warning">Телефон ещё не заряжается: подключите источник питания, иначе копирование не начнётся.</string>
     <string name="not_chosen">Не выбрано</string>
     <string name="not_configured">Не настроено</string>
     <string name="not_connected">Не подключено</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d скопировано — остановлено. Запустите снова для продолжения · %2$s</string>
     <string name="off">Выкл.</string>
     <string name="ok">OK</string>
+    <string name="on_this_device">На этом устройстве</string>
     <string name="onboarding_gallery">Резервное копирование фото и видео телефона на SSD или SD-карту</string>
     <string name="onboarding_naming">Файлы автоматически именуются при резервном копировании</string>
     <string name="onboarding_sources">SD-карты, DJI, Insta360, GoPro и другие</string>
@@ -217,6 +221,8 @@
     <string name="password">Пароль</string>
     <string name="pattern">Шаблон</string>
     <string name="port">Порт</string>
+    <string name="power">Питание</string>
+    <string name="power_bank_or_charger">Внешний аккумулятор или зарядное устройство</string>
     <string name="preparing_ellipsis">Подготовка…</string>
     <string name="preparing_n_fmt">Подготовка %1$d файлов…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">Не удалось загрузить информацию о продукте.</string>
     <string name="progress_files_fmt">%1$d / %2$d файлов</string>
+    <string name="ready_to_back_up">Начать резервное копирование?</string>
     <string name="reconnect">Переподключить</string>
     <string name="remove">Удалить</string>
     <string name="remove_nas">Удалить NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">например, Blackmagic, GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">Источники</string>
+    <string name="start_backup">Начать копирование</string>
     <string name="starting_copy">Начало копирования…</string>
     <string name="stop">Стоп</string>
     <string name="stopping">Остановка…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">Копии</string>
     <string name="tab_browse">Обзор</string>
     <string name="test_connection">Проверить соединение</string>
+    <string name="this_device">Это устройство</string>
     <string name="total_fmt">%1$s всего</string>
     <string name="tpl_camera_drive">Камера или SD-карта → папка</string>
     <string name="tpl_camera_drive_d">Копируйте карту камеры или USB-накопитель на ваш диск.</string>

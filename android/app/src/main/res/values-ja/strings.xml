@@ -75,6 +75,7 @@
     <string name="deselect_all">すべて選択解除</string>
     <string name="dest_footer">ドライブを接続し、バックアップ先のフォルダを選んでください。選択画面でフォルダを作成することもできます。</string>
     <string name="dest_footer_cloud">選択画面で、クラウドストレージ（Google Drive、OneDrive、Dropbox など）のフォルダを選んでください。クラウドフォルダは低速で、クラウドの容量に左右されます。</string>
+    <string name="dest_on_device_warning">このバックアップ先は外付けドライブではなく、デバイス自体にあります。</string>
     <string name="destination">保存先</string>
     <string name="destination_1">保存先 1（メイン）</string>
     <string name="destination_2">保存先 2（サブ）</string>
@@ -108,6 +109,7 @@
     <string name="example">例</string>
     <string name="extensions_explainer">これらの拡張子のファイルは、すべてのデバイス種別で、毎回のバックアップに含まれます。ドットなしで入力してください。</string>
     <string name="extensions_placeholder">例: srt, gpx, csv</string>
+    <string name="external_drive">外付けドライブ</string>
     <string name="failed">失敗</string>
     <string name="failed_count_fmt">%1$d 件失敗</string>
     <string name="feature_gallery">スマートフォンの写真とビデオをフォルダにバックアップ</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">カメラカードまたはドライブがまだ追加されていません。</string>
     <string name="no_ssd_connected">SSD が接続されていません</string>
     <string name="none">なし</string>
+    <string name="not_charging_warning">スマートフォンはまだ充電されていません。電源を接続しないと、バックアップは開始されません。</string>
     <string name="not_chosen">未選択</string>
     <string name="not_configured">未設定</string>
     <string name="not_connected">未接続</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">%1$d 件コピー — 停止しました。続行するにはもう一度実行してください · %2$s</string>
     <string name="off">オフ</string>
     <string name="ok">OK</string>
+    <string name="on_this_device">このデバイス上</string>
     <string name="onboarding_gallery">スマートフォンの写真とビデオを SSD または SD カードにバックアップ</string>
     <string name="onboarding_naming">バックアップ時にファイル名が自動で付けられます</string>
     <string name="onboarding_sources">SD カード、DJI、Insta360、GoPro など</string>
@@ -217,6 +221,8 @@
     <string name="password">パスワード</string>
     <string name="pattern">パターン</string>
     <string name="port">ポート</string>
+    <string name="power">電源</string>
+    <string name="power_bank_or_charger">モバイルバッテリーまたは充電器</string>
     <string name="preparing_ellipsis">準備中…</string>
     <string name="preparing_n_fmt">%1$d 個のファイルを準備中…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">製品情報を読み込めませんでした。</string>
     <string name="progress_files_fmt">%1$d / %2$d 個のファイル</string>
+    <string name="ready_to_back_up">バックアップを開始しますか？</string>
     <string name="reconnect">再接続</string>
     <string name="remove">削除</string>
     <string name="remove_nas">NAS を削除</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">例: Blackmagic、GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">ソース</string>
+    <string name="start_backup">バックアップを開始</string>
     <string name="starting_copy">コピーを開始中…</string>
     <string name="stop">停止</string>
     <string name="stopping">停止中…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">バックアップ</string>
     <string name="tab_browse">参照</string>
     <string name="test_connection">接続をテスト</string>
+    <string name="this_device">このデバイス</string>
     <string name="total_fmt">合計 %1$s</string>
     <string name="tpl_camera_drive">カメラまたは SD カード → フォルダ</string>
     <string name="tpl_camera_drive_d">カメラカードまたは USB ドライブをドライブにコピーします。</string>

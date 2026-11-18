@@ -75,6 +75,7 @@
     <string name="deselect_all">取消全選</string>
     <string name="dest_footer">連線您的驅動器，然後選擇備份目的地資料夾。您可以在選擇器中新建資料夾。</string>
     <string name="dest_footer_cloud">在選擇器中選取雲儲存（Google Drive、OneDrive、Dropbox…）中的資料夾。雲端資料夾速度較慢，並取決於您的雲儲存空間。</string>
+    <string name="dest_on_device_warning">此目的地位於裝置本身，而不是外接硬碟。</string>
     <string name="destination">目的地</string>
     <string name="destination_1">目的地 1(主要)</string>
     <string name="destination_2">目的地 2(次要)</string>
@@ -108,6 +109,7 @@
     <string name="example">示例</string>
     <string name="extensions_explainer">包含這些擴展名的檔案將包含在每次備份中，適用於所有裝置類型。請不要輸入點號。</string>
     <string name="extensions_placeholder">例如 srt、gpx、csv</string>
+    <string name="external_drive">外接硬碟</string>
     <string name="failed">失敗</string>
     <string name="failed_count_fmt">%1$d 個失敗</string>
     <string name="feature_gallery">將手機的照片和影片備份到資料夾</string>
@@ -182,6 +184,7 @@
     <string name="no_source_added">尚未添加相機記憶卡或驅動器。</string>
     <string name="no_ssd_connected">未連線 SSD</string>
     <string name="none">無</string>
+    <string name="not_charging_warning">手機尚未充電：請連線電源，否則備份不會啓動。</string>
     <string name="not_chosen">未選擇</string>
     <string name="not_configured">未設定</string>
     <string name="not_connected">未連線</string>
@@ -198,6 +201,7 @@
     <string name="notif_summary_stopped">已複製 %1$d 個 — 已停止。再次執行以繼續 · %2$s</string>
     <string name="off">關閉</string>
     <string name="ok">好</string>
+    <string name="on_this_device">在此裝置上</string>
     <string name="onboarding_gallery">將手機的照片和影片備份到 SSD 或 SD 卡</string>
     <string name="onboarding_naming">備份時自動命名檔案</string>
     <string name="onboarding_sources">SD 卡、DJI、Insta360、GoPro 等</string>
@@ -217,6 +221,8 @@
     <string name="password">密碼</string>
     <string name="pattern">模式</string>
     <string name="port">端口</string>
+    <string name="power">電源</string>
+    <string name="power_bank_or_charger">移動電源或充電器</string>
     <string name="preparing_ellipsis">正在準備…</string>
     <string name="preparing_n_fmt">正在準備 %1$d 個檔案…</string>
     <string name="pro">Pro</string>
@@ -226,6 +232,7 @@
     <string name="pro_title">PhotoVideoBackup Pro</string>
     <string name="product_load_failed">無法加載產品資訊。</string>
     <string name="progress_files_fmt">%1$d / %2$d 個檔案</string>
+    <string name="ready_to_back_up">準備好備份了嗎？</string>
     <string name="reconnect">重新連線</string>
     <string name="remove">移除</string>
     <string name="remove_nas">移除 NAS</string>
@@ -258,6 +265,7 @@
     <string name="source_name_placeholder">例如 Blackmagic、GoPro…</string>
     <string name="source_subtitle_fmt">%1$s · %2$s</string>
     <string name="sources">來源</string>
+    <string name="start_backup">開始備份</string>
     <string name="starting_copy">正在開始複製…</string>
     <string name="stop">停止</string>
     <string name="stopping">正在停止…</string>
@@ -266,6 +274,7 @@
     <string name="tab_backups">備份</string>
     <string name="tab_browse">瀏覽</string>
     <string name="test_connection">測試連線</string>
+    <string name="this_device">此裝置</string>
     <string name="total_fmt">共 %1$s</string>
     <string name="tpl_camera_drive">相機或 SD 卡 → 資料夾</string>
     <string name="tpl_camera_drive_d">將相機記憶卡或 USB 隨身碟複製到您的驅動器。</string>
