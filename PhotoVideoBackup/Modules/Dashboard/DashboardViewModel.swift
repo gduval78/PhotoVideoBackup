@@ -542,6 +542,11 @@ final class DashboardViewModel {
             backupError = String(localized: "This backup needs the Pro upgrade.")
             return
         }
+        // "Only run on power": the phone must be charging (power bank on the hub, or a charger).
+        if let own = profile.settings, !PowerRequirement.isSatisfiedNow(required: own.requirePower) {
+            backupError = String(localized: "This backup only runs on power. Connect a power bank or a charger (through the hub) and try again.")
+            return
+        }
         let dm = DestinationManager.shared
         let urls = profile.folderKeys.compactMap { dm.resolveBookmark(forKey: $0) }
         guard urls.count == profile.folderKeys.count else {

@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">Aucune photo ou vidéo trouvée sur ce téléphone.</string>
     <string name="err_no_files_source">Aucun fichier multimédia trouvé dans %1$s.</string>
     <string name="err_profile_pro">Cette sauvegarde nécessite la version Pro.</string>
+    <string name="err_requires_power">Cette sauvegarde ne s’exécute que sur secteur. Branchez une batterie externe ou un chargeur (via le hub) et réessayez.</string>
     <string name="err_scan_failed">Impossible de lire la source : %1$s</string>
     <string name="err_source_not_connected">« %1$s » n\'est pas connecté. Reconnectez la carte SD et réessayez.</string>
     <string name="err_source_unavailable">Cette source n\'est plus disponible.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d fichier supprimé avec succès.</string>
     <string name="one_file_in_folder">1 fichier dans ce dossier</string>
     <string name="one_time_purchase">Achat unique — sans abonnement</string>
+    <string name="only_on_power">Exécuter seulement sur secteur</string>
+    <string name="only_on_power_footer">La sauvegarde refuse de démarrer si le téléphone n’est pas en charge — par exemple depuis une batterie externe branchée sur un hub USB-C. Évite de vider la batterie lors d’une longue sauvegarde.</string>
     <string name="overlap_message">Choisissez un dossier qui n\'est pas dans une autre destination de cette sauvegarde et qui n\'en contient aucune : les fichiers seraient écrits deux fois au même endroit.</string>
     <string name="overlap_title">Ce dossier chevauche une autre destination</string>
     <string name="partial">Partielle</string>

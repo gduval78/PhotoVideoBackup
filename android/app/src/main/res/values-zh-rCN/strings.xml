@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">此手机上未找到照片或视频。</string>
     <string name="err_no_files_source">在 %1$s 中未找到媒体文件。</string>
     <string name="err_profile_pro">此备份需要升级到 Pro。</string>
+    <string name="err_requires_power">此备份仅在接通电源时运行。请连接移动电源或充电器（通过集线器）后重试。</string>
     <string name="err_scan_failed">无法读取来源:%1$s</string>
     <string name="err_source_not_connected">\"%1$s\"未连接。请重新连接 SD 卡后重试。</string>
     <string name="err_source_unavailable">此来源已不可用。</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">已成功删除 %1$d 个文件。</string>
     <string name="one_file_in_folder">此文件夹中有 1 个文件</string>
     <string name="one_time_purchase">一次性购买 — 无需订阅</string>
+    <string name="only_on_power">仅在接通电源时运行</string>
+    <string name="only_on_power_footer">除非手机正在充电（例如通过接在 USB-C 集线器上的移动电源），否则备份不会启动。避免长时间备份耗尽电池。</string>
     <string name="overlap_message">请选择一个不在此备份其他目标位置内、也不包含其他目标位置的文件夹：否则文件会在同一位置被写入两次。</string>
     <string name="overlap_title">此文件夹与另一个目标位置重叠</string>
     <string name="partial">部分完成</string>

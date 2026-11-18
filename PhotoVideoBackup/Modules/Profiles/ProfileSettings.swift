@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 // MARK: - RunSettings
 
@@ -45,6 +46,8 @@ struct ProfileSettings: Codable, Equatable, Hashable, Sendable {
     var fileLimit: Int
     /// Comma-separated, as typed ("gpx, srt").
     var extraExtensions: String
+    /// Refuse to start unless the device is charging (a power bank on the hub counts). Default off.
+    var requirePower: Bool = false
 
     /// A copy of today's global settings — what a new profile starts from, and what migration gives
     /// to the profiles it creates so each one is self-contained.
@@ -60,5 +63,45 @@ struct ProfileSettings: Codable, Equatable, Hashable, Sendable {
                     namingEnabled: namingEnabled, namingPattern: namingPattern,
                     fileLimit: fileLimit > 0 ? fileLimit : nil,
                     extraExtensions: RunSettings.parseExtensions(extraExtensions))
+    }
+}
+
+/// Older stored profiles have no `requirePower` key: read it as off instead of failing the decode.
+extension ProfileSettings {
+    enum CodingKeys: String, CodingKey {
+        case organization, namingEnabled, namingPattern, fileLimit, extraExtensions, requirePower
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        organization = try c.decode(String.self, forKey: .organization)
+        namingEnabled = try c.decode(Bool.self, forKey: .namingEnabled)
+        namingPattern = try c.decode(String.self, forKey: .namingPattern)
+        fileLimit = try c.decode(Int.self, forKey: .fileLimit)
+        extraExtensions = try c.decode(String.self, forKey: .extraExtensions)
+        requirePower = try c.decodeIfPresent(Bool.self, forKey: .requirePower) ?? false
+    }
+}
+
+// MARK: - PowerRequirement
+
+/// The "only run on power" decision (a backup that uses a hub and a power bank must not drain the
+/// phone). Pure, unit-tested. The phone cannot tell a power bank from a wall charger — only whether
+/// it is being charged — so that is what is required. `.unknown` (Mac "Designed for iPad", the
+/// simulator, monitoring off) never blocks: absence of information must not refuse a backup.
+enum PowerRequirement {
+    static func isSatisfied(required: Bool, state: UIDevice.BatteryState) -> Bool {
+        guard required else { return true }
+        switch state {
+        case .charging, .full, .unknown: return true
+        case .unplugged: return false
+        @unknown default: return true
+        }
+    }
+
+    /// Reads the live state (enables battery monitoring first — it is off by default).
+    @MainActor static func isSatisfiedNow(required: Bool) -> Bool {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        return isSatisfied(required: required, state: UIDevice.current.batteryState)
     }
 }

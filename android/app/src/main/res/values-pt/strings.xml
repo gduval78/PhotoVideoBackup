@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">Não foram encontradas fotos nem vídeos neste telemóvel.</string>
     <string name="err_no_files_source">Nenhum ficheiro de média encontrado em %1$s.</string>
     <string name="err_profile_pro">Esta cópia requer a versão Pro.</string>
+    <string name="err_requires_power">Esta cópia só é executada com alimentação. Ligue um power bank ou um carregador (através do hub) e tente novamente.</string>
     <string name="err_scan_failed">Não foi possível ler a origem: %1$s</string>
     <string name="err_source_not_connected">\"%1$s\" não está conectado. Reconecte o cartão SD e tente novamente.</string>
     <string name="err_source_unavailable">Esta origem já não está disponível.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d ficheiro eliminado com sucesso.</string>
     <string name="one_file_in_folder">1 ficheiro nesta pasta</string>
     <string name="one_time_purchase">Compra única — sem subscrição</string>
+    <string name="only_on_power">Executar só com alimentação</string>
+    <string name="only_on_power_footer">A cópia não arranca se o telemóvel não estiver a carregar — por exemplo a partir de um power bank ligado a um hub USB-C. Evita esgotar a bateria numa cópia longa.</string>
     <string name="overlap_message">Escolha uma pasta que não esteja dentro de outro destino desta cópia e que não contenha nenhum: os ficheiros seriam escritos duas vezes no mesmo local.</string>
     <string name="overlap_title">Esta pasta sobrepõe-se a outro destino</string>
     <string name="partial">Parcial</string>

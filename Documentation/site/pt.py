@@ -40,6 +40,9 @@ GUIDE = [
             ["Um hub ou leitor (opcional)", "Um pequeno hub USB-C para ligar em conjunto um SSD e um leitor de cartões", "Um leitor de cartões USB-C ou um hub OTG"],
         ]),
         ("note", "Copiar muito vídeo gasta bateria. Ligue o telemóvel ao carregador ou comece com boa carga."),
+        ("p", "<b>Cópias longas, dois discos.</b> O telemóvel tem uma única porta USB-C e os SSD alimentados pelo barramento tiram daí a energia. Um hub USB-C com <b>passagem de carga (Power Delivery)</b> permite ligar <b>dois discos e um power bank</b> (ou o carregador) ao mesmo tempo: o power bank alimenta o hub, o hub alimenta os SSD e carrega o telemóvel, e a cópia pode durar horas sem esgotar a bateria."),
+        ("fig", "hub_power", "Telemóvel → hub → dois SSD, com um power bank na porta de carregamento do hub."),
+        ("note", "Escolha um hub com <b>entrada de carregamento (PD)</b> USB-C e um power bank com saída USB-C PD (30 W ou mais é confortável com dois SSD). No Android, um hub OTG com entrada de alimentação funciona da mesma forma. Nas definições da cópia, ative <b>Executar só com alimentação</b>: a cópia não arranca se o telemóvel não estiver a carregar (não distingue um power bank de um carregador)."),
     ]),
     ("start", "Primeiro arranque e permissões", [
         ("p", "Um ecrã de boas-vindas apresenta a aplicação e cinco montagens típicas — do simples telemóvel → SSD até um NAS acedido por VPN. Toque em <b>Começar</b>."),

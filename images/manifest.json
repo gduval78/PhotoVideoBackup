@@ -86,5 +86,9 @@
   "android_report": {
     "version": "2.6.1",
     "note": "Android report"
+  },
+  "hub_power": {
+    "version": "2.7.0",
+    "note": "Diagram (not a screenshot): phone → USB-C hub → 2 SSDs + power bank on the hub's PD port. Source: images/hub_power.svg"
   }
 }

@@ -40,6 +40,9 @@ GUIDE = [
             ["A hub or reader (optional)", "A small USB-C hub to plug an SSD and a card reader together", "A USB-C card reader, or an OTG hub"],
         ]),
         ("note", "Copying a lot of video uses battery. Plug your phone in, or start with a good charge."),
+        ("p", "<b>Long backups, two drives.</b> The phone has a single USB-C port, and bus-powered SSDs draw their power from it. A USB-C hub with <b>Power Delivery pass-through</b> lets you plug <b>two drives and a power bank</b> (or the charger) at once: the power bank feeds the hub, the hub powers the SSDs and charges the phone, and the backup can run for hours without draining the battery."),
+        ("fig", "hub_power", "Phone → hub → two SSDs, with a power bank on the hub’s charging port."),
+        ("note", "Choose a hub that has a USB-C <b>charging (PD) input</b>, and a power bank with USB-C PD output (30 W or more is comfortable with two SSDs). On Android, an OTG hub with power input works the same way. In the backup’s settings, turn on <b>Only run on power</b>: the backup then refuses to start unless the phone is charging (it cannot tell a power bank from a charger)."),
     ]),
     ("start", "First launch and permissions", [
         ("p", "A welcome screen presents the app and five typical set-ups — from a simple phone → SSD to a NAS reached over a VPN. Tap <b>Get Started</b>."),

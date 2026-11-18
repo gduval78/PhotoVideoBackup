@@ -40,6 +40,12 @@ struct ProfileOptionsForm: View {
         .onAppear { limitText = settings.fileLimit > 0 ? String(settings.fileLimit) : "" }
 
         Section {
+            Toggle("Only run on power", isOn: $settings.requirePower)
+        } footer: {
+            Text("The backup refuses to start unless the phone is charging — for example from a power bank plugged into a USB-C hub. Avoids draining the battery on a long backup.")
+        }
+
+        Section {
             Toggle("Rename files during backup", isOn: $settings.namingEnabled)
             if settings.namingEnabled {
                 TextField("Pattern", text: $settings.namingPattern)

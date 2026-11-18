@@ -146,6 +146,13 @@ object BackupController {
     }
 
     /** The whole backup; called by [BackupService] on a background dispatcher. */
+    /** null = unknown (no battery information): never blocks. */
+    private fun isCharging(context: Context): Boolean? {
+        val intent = context.registerReceiver(null, android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED)) ?: return null
+        val plugged = intent.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, -1)
+        return if (plugged < 0) null else plugged != 0
+    }
+
     suspend fun run(context: Context, request: SourceRequest) = withContext(Dispatchers.IO) {
         val ctx = LocaleContext.wrap(context)
         var targets: List<BackupTarget> = emptyList()
@@ -159,6 +166,9 @@ object BackupController {
             val pro = Pro.isPro
             if (!ProfileRules.isAllowed(ProfileStore.indexOf(profile.id), pro) || (!pro && ProfileRules.needsProToRun(profile)))
                 return@withContext abort(Msg(R.string.err_profile_pro))
+            // "Only run on power": the phone must be charging (power bank on the hub, or a charger).
+            if (!gduvalsc.pvb.core.PowerRequirement.isSatisfied(profile.settings.requirePower, isCharging(ctx)))
+                return@withContext abort(Msg(R.string.err_requires_power))
             if (profile.usesNas && (profile.nas == null || !profile.nas!!.isComplete)) return@withContext abort(Msg(R.string.err_nas_not_set_up))
 
             // The source first: cheap preconditions fail before any network connection.

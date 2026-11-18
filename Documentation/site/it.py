@@ -40,6 +40,9 @@ GUIDE = [
             ["Un hub o un lettore (facoltativo)", "Un piccolo hub USB-C per collegare insieme SSD e lettore di schede", "Un lettore di schede USB-C o un hub OTG"],
         ]),
         ("note", "Copiare molti video consuma batteria. Collega il telefono al caricatore o parti con una buona carica."),
+        ("p", "<b>Backup lunghi, due dischi.</b> Il telefono ha una sola porta USB-C e gli SSD alimentati dal bus prendono l’energia da lì. Un hub USB-C con <b>passaggio di carica (Power Delivery)</b> permette di collegare <b>due dischi e un power bank</b> (o il caricatore) contemporaneamente: il power bank alimenta l’hub, l’hub alimenta gli SSD e ricarica il telefono, e il backup può durare ore senza scaricare la batteria."),
+        ("fig", "hub_power", "Telefono → hub → due SSD, con un power bank sulla porta di ricarica dell’hub."),
+        ("note", "Scegli un hub con <b>ingresso di ricarica (PD)</b> USB-C e un power bank con uscita USB-C PD (30 W o più va bene con due SSD). Su Android un hub OTG con ingresso di alimentazione funziona allo stesso modo. Nelle impostazioni del backup attiva <b>Esegui solo con alimentazione</b>: il backup non parte se il telefono non è in carica (non distingue un power bank da un caricatore)."),
     ]),
     ("start", "Primo avvio e autorizzazioni", [
         ("p", "Una schermata di benvenuto presenta l'app e cinque configurazioni tipiche — dal semplice telefono → SSD fino al NAS raggiunto tramite VPN. Tocca <b>Inizia</b>."),

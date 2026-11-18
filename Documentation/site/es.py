@@ -40,6 +40,9 @@ GUIDE = [
             ["Un hub o lector (opcional)", "Un pequeño hub USB-C para conectar a la vez un SSD y un lector de tarjetas", "Un lector de tarjetas USB-C o un hub OTG"],
         ]),
         ("note", "Copiar mucho vídeo consume batería. Conecta el móvil al cargador o empieza con buena carga."),
+        ("p", "<b>Copias largas, dos discos.</b> El móvil tiene un solo puerto USB-C y los SSD alimentados por el bus toman la energía de él. Un hub USB-C con <b>paso de carga (Power Delivery)</b> permite conectar <b>dos discos y una batería externa</b> (o el cargador) a la vez: la batería alimenta el hub, el hub alimenta los SSD y carga el móvil, y la copia puede durar horas sin vaciar la batería."),
+        ("fig", "hub_power", "Móvil → hub → dos SSD, con una batería externa en el puerto de carga del hub."),
+        ("note", "Elige un hub con <b>entrada de carga (PD)</b> USB-C y una batería externa con salida USB-C PD (30 W o más es cómodo con dos SSD). En Android, un hub OTG con entrada de alimentación funciona igual. En los ajustes de la copia, activa <b>Ejecutar solo con alimentación</b>: la copia no se inicia si el móvil no está cargando (no distingue una batería externa de un cargador)."),
     ]),
     ("start", "Primer inicio y permisos", [
         ("p", "Una pantalla de bienvenida presenta la aplicación y cinco montajes típicos — desde el sencillo móvil → SSD hasta un NAS al que se llega por VPN. Toca <b>Comenzar</b>."),

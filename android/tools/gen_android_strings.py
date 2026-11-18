@@ -25,6 +25,9 @@ LANGS = {"en": "values", "fr": "values-fr", "de": "values-de", "es": "values-es"
 
 # Android name -> iOS key (English literal)
 REUSED = {
+    "only_on_power": "Only run on power",
+    "only_on_power_footer": "The backup refuses to start unless the phone is charging — for example from a power bank plugged into a USB-C hub. Avoids draining the battery on a long backup.",
+    "err_requires_power": "This backup only runs on power. Connect a power bank or a charger (through the hub) and try again.",
     "about": "About", "active": "Active", "add": "Add", "add_source": "Add Source (SD Card, USB Drive…)",
     "additional_file_types": "Additional file types", "all_files": "All files", "all_photos_videos": "all photos & videos",
     "already_present": "Already present", "analyzing_source": "Analyzing source…", "back": "Back", "backup": "Backup",

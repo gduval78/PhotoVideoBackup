@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">Keine Fotos oder Videos auf diesem Telefon gefunden.</string>
     <string name="err_no_files_source">Keine Mediendateien in %1$s gefunden.</string>
     <string name="err_profile_pro">Dieses Backup erfordert das Pro-Upgrade.</string>
+    <string name="err_requires_power">Dieses Backup läuft nur mit Stromversorgung. Schließen Sie eine Powerbank oder ein Ladegerät (über den Hub) an und versuchen Sie es erneut.</string>
     <string name="err_scan_failed">Die Quelle konnte nicht gelesen werden: %1$s</string>
     <string name="err_source_not_connected">„%1$s“ ist nicht verbunden. SD-Karte erneut verbinden und versuchen.</string>
     <string name="err_source_unavailable">Diese Quelle ist nicht mehr verfügbar.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d Datei erfolgreich gelöscht.</string>
     <string name="one_file_in_folder">1 Datei in diesem Ordner</string>
     <string name="one_time_purchase">Einmaliger Kauf — kein Abonnement</string>
+    <string name="only_on_power">Nur mit Stromversorgung starten</string>
+    <string name="only_on_power_footer">Das Backup startet nur, wenn das Telefon lädt — zum Beispiel über eine Powerbank am USB-C-Hub. So wird der Akku bei einem langen Backup nicht geleert.</string>
     <string name="overlap_message">Wählen Sie einen Ordner, der nicht in einem anderen Ziel dieses Backups liegt und keines enthält: Die Dateien würden sonst zweimal am selben Ort geschrieben.</string>
     <string name="overlap_title">Dieser Ordner überschneidet sich mit einem anderen Ziel</string>
     <string name="partial">Teilweise</string>

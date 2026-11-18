@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">لم يتم العثور على صور أو مقاطع فيديو على هذا الهاتف.</string>
     <string name="err_no_files_source">لم يتم العثور على ملفات وسائط في %1$s.</string>
     <string name="err_profile_pro">تتطلب هذه النسخة الاحتياطية الترقية إلى Pro.</string>
+    <string name="err_requires_power">يعمل هذا النسخ الاحتياطي فقط عند توصيل الطاقة. صِل بطارية محمولة أو شاحنًا (عبر الموزّع) وحاول مرة أخرى.</string>
     <string name="err_scan_failed">تعذّرت قراءة المصدر: %1$s</string>
     <string name="err_source_not_connected">“%1$s” غير متصل. أعد توصيل بطاقة SD وحاول مرة أخرى.</string>
     <string name="err_source_unavailable">لم يعد هذا المصدر متاحًا.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">تم حذف %1$d ملف بنجاح.</string>
     <string name="one_file_in_folder">ملف واحد في هذا المجلد</string>
     <string name="one_time_purchase">شراء لمرة واحدة — بدون اشتراك</string>
+    <string name="only_on_power">التشغيل فقط عند توصيل الطاقة</string>
+    <string name="only_on_power_footer">لن يبدأ النسخ الاحتياطي ما لم يكن الهاتف قيد الشحن — مثلًا من بطارية محمولة موصولة بموزّع USB-C. يمنع استنزاف البطارية أثناء نسخ طويل.</string>
     <string name="overlap_message">اختر مجلدًا ليس داخل وجهة أخرى من هذه النسخة الاحتياطية ولا يحتوي على إحداها: ستُكتب الملفات مرتين في المكان نفسه.</string>
     <string name="overlap_title">يتداخل هذا المجلد مع وجهة أخرى</string>
     <string name="partial">جزئي</string>

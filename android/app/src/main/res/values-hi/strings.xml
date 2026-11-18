@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">इस फ़ोन पर कोई फ़ोटो या वीडियो नहीं मिला।</string>
     <string name="err_no_files_source">%1$s में कोई मीडिया फ़ाइल नहीं मिली।</string>
     <string name="err_profile_pro">इस बैकअप के लिए Pro में अपग्रेड ज़रूरी है।</string>
+    <string name="err_requires_power">यह बैकअप केवल बिजली से जुड़े होने पर चलता है। पावर बैंक या चार्जर (हब के ज़रिए) जोड़ें और फिर से कोशिश करें।</string>
     <string name="err_scan_failed">स्रोत पढ़ा नहीं जा सका: %1$s</string>
     <string name="err_source_not_connected">“%1$s” कनेक्ट नहीं है। SD कार्ड फिर से कनेक्ट करें और दोबारा कोशिश करें।</string>
     <string name="err_source_unavailable">यह स्रोत अब उपलब्ध नहीं है।</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d फ़ाइल सफलतापूर्वक हटाई गई।</string>
     <string name="one_file_in_folder">इस फ़ोल्डर में 1 फ़ाइल</string>
     <string name="one_time_purchase">एकमुश्त खरीद — कोई सदस्यता नहीं</string>
+    <string name="only_on_power">केवल बिजली से जुड़ा होने पर चलाएँ</string>
+    <string name="only_on_power_footer">जब तक फ़ोन चार्ज नहीं हो रहा हो (जैसे USB-C हब से जुड़े पावर बैंक से), बैकअप शुरू नहीं होगा। लंबे बैकअप में बैटरी खाली होने से बचाता है।</string>
     <string name="overlap_message">ऐसा फ़ोल्डर चुनें जो इस बैकअप के किसी दूसरे गंतव्य के अंदर न हो और जिसमें कोई गंतव्य न हो: फ़ाइलें एक ही जगह दो बार लिखी जाएँगी।</string>
     <string name="overlap_title">यह फ़ोल्डर किसी दूसरे गंतव्य से मेल खाता है</string>
     <string name="partial">आंशिक</string>

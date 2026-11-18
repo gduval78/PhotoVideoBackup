@@ -77,6 +77,24 @@ final class ProfileSettingsTests: ScenarioTestCase {
         XCTAssertEqual(oldProfile.runSettings.organization, RunSettings.global().organization)
     }
 
+    // SCENARIO: "Only run on power" refuses an unplugged phone, accepts a charging one, and never blocks without information
+    func test_requirePower_decision() throws {
+        XCTAssertFalse(PowerRequirement.isSatisfied(required: true, state: .unplugged))
+        XCTAssertTrue(PowerRequirement.isSatisfied(required: true, state: .charging))
+        XCTAssertTrue(PowerRequirement.isSatisfied(required: true, state: .full))
+        XCTAssertTrue(PowerRequirement.isSatisfied(required: true, state: .unknown))    // Mac / simulator: fail open
+        XCTAssertTrue(PowerRequirement.isSatisfied(required: false, state: .unplugged)) // not required: never blocks
+
+        // The flag survives storage, and a profile stored before it existed reads as off.
+        var settings = ProfileSettings.fromGlobal()
+        XCTAssertFalse(settings.requirePower)
+        settings.requirePower = true
+        let back = try JSONDecoder().decode(ProfileSettings.self, from: JSONEncoder().encode(settings))
+        XCTAssertTrue(back.requirePower)
+        let old = #"{"organization":"flat","namingEnabled":false,"namingPattern":"","fileLimit":0,"extraExtensions":""}"#
+        XCTAssertFalse(try JSONDecoder().decode(ProfileSettings.self, from: Data(old.utf8)).requirePower)
+    }
+
     // SCENARIO: Migration gives each profile its own copy of the global settings and NAS
     func test_migration_snapshotsSettingsAndNAS() {
         let nas = NASConfig(host: "nas.local", port: 445, share: "photo", basePath: "", username: "me",

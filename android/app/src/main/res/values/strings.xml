@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">No photos or videos found on this phone.</string>
     <string name="err_no_files_source">No media files found in %1$s.</string>
     <string name="err_profile_pro">This backup needs the Pro upgrade.</string>
+    <string name="err_requires_power">This backup only runs on power. Connect a power bank or a charger (through the hub) and try again.</string>
     <string name="err_scan_failed">Could not read the source: %1$s</string>
     <string name="err_source_not_connected">\"%1$s\" is not connected. Reconnect the SD card and try again.</string>
     <string name="err_source_unavailable">This source is no longer available.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d file deleted successfully.</string>
     <string name="one_file_in_folder">1 file in this folder</string>
     <string name="one_time_purchase">One-time purchase — no subscription</string>
+    <string name="only_on_power">Only run on power</string>
+    <string name="only_on_power_footer">The backup refuses to start unless the phone is charging — for example from a power bank plugged into a USB-C hub. Avoids draining the battery on a long backup.</string>
     <string name="overlap_message">Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place.</string>
     <string name="overlap_title">This folder overlaps another destination</string>
     <string name="partial">Partial</string>

@@ -40,6 +40,9 @@ GUIDE = [
             ["Un hub ou un lecteur (facultatif)", "Un petit hub USB-C pour brancher ensemble un SSD et un lecteur de cartes", "Un lecteur de cartes USB-C, ou un hub OTG"],
         ]),
         ("note", "Copier beaucoup de vidéo consomme de la batterie. Branchez votre téléphone, ou partez avec une bonne charge."),
+        ("p", "<b>Sauvegardes longues, deux disques.</b> Le téléphone n’a qu’un seul port USB-C, et les SSD alimentés par le bus y puisent leur énergie. Un hub USB-C avec <b>passage de charge (Power Delivery)</b> permet de brancher <b>deux disques et une batterie externe</b> (ou le chargeur) en même temps : la batterie alimente le hub, le hub alimente les SSD et charge le téléphone, et la sauvegarde peut durer des heures sans vider la batterie."),
+        ("fig", "hub_power", "Téléphone → hub → deux SSD, avec une batterie externe sur le port de charge du hub."),
+        ("note", "Choisissez un hub doté d’une <b>entrée de charge (PD)</b> USB-C, et une batterie externe avec sortie USB-C PD (30 W ou plus, c’est confortable avec deux SSD). Sous Android, un hub OTG avec entrée d’alimentation fonctionne de la même façon. Dans les réglages de la sauvegarde, activez <b>Exécuter seulement sur secteur</b> : la sauvegarde refuse alors de démarrer si le téléphone n’est pas en charge (il ne distingue pas une batterie externe d’un chargeur)."),
     ]),
     ("start", "Premier lancement et autorisations", [
         ("p", "Un écran d'accueil présente l'application et cinq montages types — du simple téléphone → SSD jusqu'au NAS atteint par un VPN. Touchez <b>Commencer</b>."),

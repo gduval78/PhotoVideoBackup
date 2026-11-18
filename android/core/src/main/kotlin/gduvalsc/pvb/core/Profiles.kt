@@ -96,6 +96,8 @@ data class ProfileSettings(
     val fileLimit: Int = 0,
     /** Comma-separated, as typed by the user. */
     val customExtensions: String = "",
+    /** Refuse to start unless the phone is charging (a power bank on the hub counts). Default off. */
+    val requirePower: Boolean = false,
 ) {
     val engine: EngineSettings
         get() = EngineSettings(
@@ -196,4 +198,13 @@ object ProfileMigration {
         }
         return result
     }
+}
+
+/**
+ * The "only run on power" decision: a backup that uses a hub and a power bank must not drain the phone.
+ * The phone cannot tell a power bank from a charger — only whether it is charging — so that is what is
+ * required. Unknown state never blocks (absence of information must not refuse a backup).
+ */
+object PowerRequirement {
+    fun isSatisfied(required: Boolean, charging: Boolean?): Boolean = !required || charging != false
 }

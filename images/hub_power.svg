@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 100 1400 720" width="1400" height="720" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="aB" viewBox="0 0 12 12" refX="9" refY="6" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="30" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" fill="#6b7280"/></marker>
+    <marker id="aO" viewBox="0 0 12 12" refX="9" refY="6" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="30" orient="auto-start-reverse"><path d="M1 1 L11 6 L1 11 Z" fill="#f59e0b"/></marker>
+  </defs>
+  <rect y="100" width="1400" height="720" rx="36" fill="#ffffff"/>
+
+  <!-- iPhone -->
+  <rect x="110" y="300" width="170" height="300" rx="34" fill="#dbeafe" stroke="#2563eb" stroke-width="7"/>
+  <rect x="165" y="318" width="60" height="12" rx="6" fill="#2563eb"/>
+  <text x="195" y="470" text-anchor="middle" font-size="34" font-weight="700" fill="#1d4ed8">iPhone</text>
+  <text x="195" y="640" text-anchor="middle" font-size="26" fill="#6b7280">single USB-C port</text>
+
+  <!-- Hub -->
+  <rect x="520" y="335" width="360" height="170" rx="30" fill="#fae8ff" stroke="#c026d3" stroke-width="7"/>
+  <text x="700" y="410" text-anchor="middle" font-size="40" font-weight="700" fill="#a21caf">USB-C hub</text>
+  <text x="700" y="456" text-anchor="middle" font-size="25" fill="#a21caf">Power Delivery pass-through</text>
+
+  <!-- SSDs -->
+  <rect x="1080" y="170" width="230" height="130" rx="26" fill="#d1fae5" stroke="#059669" stroke-width="7"/>
+  <text x="1195" y="250" text-anchor="middle" font-size="38" font-weight="700" fill="#047857">SSD 1</text>
+  <rect x="1080" y="370" width="230" height="130" rx="26" fill="#d1fae5" stroke="#059669" stroke-width="7"/>
+  <text x="1195" y="450" text-anchor="middle" font-size="38" font-weight="700" fill="#047857">SSD 2</text>
+
+  <!-- Power bank -->
+  <rect x="540" y="640" width="320" height="130" rx="26" fill="#fef3c7" stroke="#d97706" stroke-width="7"/>
+  <rect x="860" y="685" width="22" height="40" rx="6" fill="#d97706"/>
+  <path d="M 612 660 L 580 712 L 606 712 L 592 752 L 636 692 L 610 692 Z" fill="#f59e0b"/>
+  <text x="745" y="718" text-anchor="middle" font-size="36" font-weight="700" fill="#b45309">Power bank</text>
+
+  <!-- arrows: phone <-> hub -->
+  <line x1="300" y1="420" x2="500" y2="420" stroke="#6b7280" stroke-width="8" marker-end="url(#aB)" marker-start="url(#aB)"/>
+  <text x="400" y="385" text-anchor="middle" font-size="26" fill="#374151">photos</text>
+  <text x="400" y="472" text-anchor="middle" font-size="26" fill="#d97706" font-weight="700">+ charging</text>
+  <!-- hub -> SSDs -->
+  <line x1="900" y1="395" x2="1062" y2="285" stroke="#6b7280" stroke-width="8" marker-end="url(#aB)"/>
+  <line x1="900" y1="445" x2="1062" y2="440" stroke="#6b7280" stroke-width="8" marker-end="url(#aB)"/>
+  <text x="985" y="515" text-anchor="middle" font-size="26" fill="#374151">data + power</text>
+  <!-- power bank -> hub -->
+  <line x1="700" y1="625" x2="700" y2="525" stroke="#f59e0b" stroke-width="10" marker-end="url(#aO)"/>
+  <text x="730" y="590" font-size="28" font-weight="700" fill="#b45309">power in</text>
+
+</svg>

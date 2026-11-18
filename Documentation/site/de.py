@@ -40,6 +40,9 @@ GUIDE = [
             ["Hub oder Kartenleser (optional)", "Ein kleiner USB-C-Hub, um SSD und Kartenleser zusammen anzuschließen", "Ein USB-C-Kartenleser oder ein OTG-Hub"],
         ]),
         ("note", "Viel Video zu kopieren verbraucht Akku. Schließen Sie das Telefon an oder starten Sie mit gutem Ladestand."),
+        ("p", "<b>Lange Backups, zwei Laufwerke.</b> Das Telefon hat nur einen USB-C-Anschluss, und über den Bus versorgte SSDs beziehen ihren Strom daraus. Ein USB-C-Hub mit <b>Power-Delivery-Durchleitung</b> erlaubt es, <b>zwei Laufwerke und eine Powerbank</b> (oder das Ladegerät) gleichzeitig anzuschließen: Die Powerbank speist den Hub, der Hub versorgt die SSDs und lädt das Telefon, und das Backup kann stundenlang laufen, ohne den Akku zu leeren."),
+        ("fig", "hub_power", "Telefon → Hub → zwei SSDs, mit einer Powerbank am Ladeanschluss des Hubs."),
+        ("note", "Wählen Sie einen Hub mit USB-C-<b>Ladeeingang (PD)</b> und eine Powerbank mit USB-C-PD-Ausgang (ab 30 W ist es mit zwei SSDs komfortabel). Unter Android funktioniert ein OTG-Hub mit Stromeingang genauso. Aktivieren Sie in den Einstellungen des Backups <b>Nur mit Stromversorgung starten</b>: Das Backup startet dann nur, wenn das Telefon lädt (es kann eine Powerbank nicht von einem Ladegerät unterscheiden)."),
     ]),
     ("start", "Erster Start und Berechtigungen", [
         ("p", "Ein Willkommensbildschirm stellt die App und fünf typische Aufbauten vor — vom einfachen Telefon → SSD bis zum NAS über ein VPN. Tippen Sie auf <b>Loslegen</b>."),

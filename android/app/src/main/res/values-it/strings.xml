@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">Nessuna foto o video trovato su questo telefono.</string>
     <string name="err_no_files_source">Nessun file multimediale trovato in %1$s.</string>
     <string name="err_profile_pro">Questo backup richiede l\'upgrade Pro.</string>
+    <string name="err_requires_power">Questo backup viene eseguito solo con alimentazione. Collega un power bank o un caricatore (tramite l’hub) e riprova.</string>
     <string name="err_scan_failed">Impossibile leggere la sorgente: %1$s</string>
     <string name="err_source_not_connected">\"%1$s\" non è connesso. Ricollega la scheda SD e riprova.</string>
     <string name="err_source_unavailable">Questa sorgente non è più disponibile.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d file eliminato con successo.</string>
     <string name="one_file_in_folder">1 file in questa cartella</string>
     <string name="one_time_purchase">Acquisto unico — nessun abbonamento</string>
+    <string name="only_on_power">Esegui solo con alimentazione</string>
+    <string name="only_on_power_footer">Il backup non parte se il telefono non è in carica — per esempio da un power bank collegato a un hub USB-C. Evita di scaricare la batteria durante un backup lungo.</string>
     <string name="overlap_message">Scegli una cartella che non sia dentro un\'altra destinazione di questo backup e che non ne contenga nessuna: i file verrebbero scritti due volte nello stesso posto.</string>
     <string name="overlap_title">Questa cartella si sovrappone a un\'altra destinazione</string>
     <string name="partial">Parziale</string>

@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">このスマートフォンに写真やビデオが見つかりません。</string>
     <string name="err_no_files_source">%1$s にメディアファイルが見つかりません。</string>
     <string name="err_profile_pro">このバックアップには Pro へのアップグレードが必要です。</string>
+    <string name="err_requires_power">このバックアップは電源接続時のみ実行されます。モバイルバッテリーまたは充電器を（ハブ経由で）接続してから、もう一度お試しください。</string>
     <string name="err_scan_failed">ソースを読み取れませんでした: %1$s</string>
     <string name="err_source_not_connected">「%1$s」は接続されていません。SDカードを接続し直して、もう一度お試しください。</string>
     <string name="err_source_unavailable">このソースは利用できなくなりました。</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d 個のファイルを削除しました。</string>
     <string name="one_file_in_folder">このフォルダに 1 個のファイル</string>
     <string name="one_time_purchase">買い切り — サブスクリプションなし</string>
+    <string name="only_on_power">電源接続時のみ実行</string>
+    <string name="only_on_power_footer">スマートフォンが充電中でない場合、バックアップは開始されません（USB-C ハブに接続したモバイルバッテリーなど）。長時間のバックアップでバッテリーが空になるのを防ぎます。</string>
     <string name="overlap_message">このバックアップの別の保存先の内側にあるフォルダ、または別の保存先を含むフォルダは選べません。ファイルが同じ場所に二重に書き込まれてしまいます。</string>
     <string name="overlap_title">このフォルダは別の保存先と重複しています</string>
     <string name="partial">一部</string>

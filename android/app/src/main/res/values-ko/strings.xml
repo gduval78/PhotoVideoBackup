@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">이 휴대폰에서 사진이나 비디오를 찾을 수 없습니다.</string>
     <string name="err_no_files_source">%1$s에서 미디어 파일을 찾을 수 없습니다.</string>
     <string name="err_profile_pro">이 백업에는 Pro 업그레이드가 필요합니다.</string>
+    <string name="err_requires_power">이 백업은 전원이 연결된 경우에만 실행됩니다. 보조 배터리나 충전기를 (허브를 통해) 연결한 후 다시 시도하세요.</string>
     <string name="err_scan_failed">소스를 읽을 수 없습니다: %1$s</string>
     <string name="err_source_not_connected">“%1$s”이(가) 연결되어 있지 않습니다. SD 카드를 다시 연결한 후 다시 시도하세요.</string>
     <string name="err_source_unavailable">이 소스는 더 이상 사용할 수 없습니다.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">파일 %1$d개를 삭제했습니다.</string>
     <string name="one_file_in_folder">이 폴더에 파일 1개</string>
     <string name="one_time_purchase">일회성 구매 — 구독 아님</string>
+    <string name="only_on_power">전원 연결 시에만 실행</string>
+    <string name="only_on_power_footer">휴대폰이 충전 중이 아니면 백업이 시작되지 않습니다(예: USB-C 허브에 연결한 보조 배터리). 긴 백업 중 배터리가 방전되는 것을 막아 줍니다.</string>
     <string name="overlap_message">이 백업의 다른 대상 안에 있거나 다른 대상을 포함하는 폴더는 선택할 수 없습니다. 파일이 같은 위치에 두 번 기록됩니다.</string>
     <string name="overlap_title">이 폴더는 다른 대상과 겹칩니다</string>
     <string name="partial">일부</string>

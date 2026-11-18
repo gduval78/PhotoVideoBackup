@@ -68,6 +68,7 @@ fun ProfileSettingsScreen(profileId: String, onClose: () -> Unit, onPaywall: () 
     var extensions by remember { mutableStateOf(profile.settings.customExtensions) }
     var namingEnabled by remember { mutableStateOf(profile.settings.namingEnabled) }
     var namingPattern by remember { mutableStateOf(profile.settings.namingPattern) }
+    var requirePower by remember { mutableStateOf(profile.settings.requirePower) }
     var showStructure by remember { mutableStateOf(false) }
     var addMenu by remember { mutableStateOf(false) }
     var overlapAlert by remember { mutableStateOf(false) }
@@ -97,7 +98,7 @@ fun ProfileSettingsScreen(profileId: String, onClose: () -> Unit, onPaywall: () 
                 if (ownNas != null) SecretStore.put(context, profile.nasSecretName, nasDraft.password) else SecretStore.remove(context, profile.nasSecretName)
                 val updated: BackupProfile = profile.copy(
                     name = name.trim(), destinations = destinations, nas = ownNas,
-                    settings = ProfileSettings(organization.raw, namingEnabled, namingPattern, limit, extensions),
+                    settings = ProfileSettings(organization.raw, namingEnabled, namingPattern, limit, extensions, requirePower),
                 )
                 // Folders this backup no longer uses lose their grant unless another backup keeps them.
                 val kept = ProfileStore.profiles.filter { it.id != profile.id }.flatMap { it.folders.map { f -> f.uri } }.toSet() +
@@ -155,6 +156,12 @@ fun ProfileSettingsScreen(profileId: String, onClose: () -> Unit, onPaywall: () 
                 label = { Text(stringResource(R.string.additional_file_types)) }, placeholder = { Text(stringResource(R.string.extensions_placeholder)) },
                 supportingText = { Text(stringResource(R.string.extensions_explainer)) }, modifier = Modifier.fillMaxWidth(),
             )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.only_on_power), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = requirePower, onCheckedChange = { requirePower = it })
+            }
+            Text(stringResource(R.string.only_on_power_footer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             SectionHeader(stringResource(R.string.file_naming))
             Row(verticalAlignment = Alignment.CenterVertically) {

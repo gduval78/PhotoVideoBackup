@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">На этом телефоне не найдено фото или видео.</string>
     <string name="err_no_files_source">Медиафайлы в %1$s не найдены.</string>
     <string name="err_profile_pro">Для этой копии нужна версия Pro.</string>
+    <string name="err_requires_power">Это копирование выполняется только при питании. Подключите внешний аккумулятор или зарядное устройство (через хаб) и повторите попытку.</string>
     <string name="err_scan_failed">Не удалось прочитать источник: %1$s</string>
     <string name="err_source_not_connected">\"%1$s\" не подключён. Подключите карту SD и повторите попытку.</string>
     <string name="err_source_unavailable">Этот источник больше недоступен.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d файл успешно удалён.</string>
     <string name="one_file_in_folder">1 файл в этой папке</string>
     <string name="one_time_purchase">Единовременная покупка — без подписки</string>
+    <string name="only_on_power">Запускать только при питании</string>
+    <string name="only_on_power_footer">Копирование не начнётся, пока телефон не заряжается — например, от внешнего аккумулятора, подключённого к USB-C-хабу. Это не даёт разрядить батарею при долгом копировании.</string>
     <string name="overlap_message">Выберите папку, которая не находится внутри другого места назначения этой копии и не содержит его: иначе файлы будут записаны дважды в одном месте.</string>
     <string name="overlap_title">Эта папка пересекается с другим местом назначения</string>
     <string name="partial">Частично</string>

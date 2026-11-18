@@ -98,6 +98,7 @@
     <string name="err_no_files_gallery">No se encontraron fotos ni vídeos en este teléfono.</string>
     <string name="err_no_files_source">No se encontraron archivos multimedia en %1$s.</string>
     <string name="err_profile_pro">Esta copia requiere la versión Pro.</string>
+    <string name="err_requires_power">Esta copia solo se ejecuta con alimentación. Conecta una batería externa o un cargador (a través del hub) e inténtalo de nuevo.</string>
     <string name="err_scan_failed">No se pudo leer el origen: %1$s</string>
     <string name="err_source_not_connected">«%1$s» no está conectado. Vuelva a conectar la tarjeta SD e intente de nuevo.</string>
     <string name="err_source_unavailable">Este origen ya no está disponible.</string>
@@ -202,6 +203,8 @@
     <string name="one_deleted_ok">%1$d archivo eliminado correctamente.</string>
     <string name="one_file_in_folder">1 archivo en esta carpeta</string>
     <string name="one_time_purchase">Compra única — sin suscripción</string>
+    <string name="only_on_power">Ejecutar solo con alimentación</string>
+    <string name="only_on_power_footer">La copia no se inicia si el móvil no está cargando — por ejemplo desde una batería externa conectada a un hub USB-C. Evita vaciar la batería en una copia larga.</string>
     <string name="overlap_message">Elija una carpeta que no esté dentro de otro destino de esta copia y que no contenga ninguno: los archivos se escribirían dos veces en el mismo lugar.</string>
     <string name="overlap_title">Esta carpeta se solapa con otro destino</string>
     <string name="partial">Parcial</string>

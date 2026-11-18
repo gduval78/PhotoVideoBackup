@@ -156,4 +156,12 @@ class ProfilePersistenceTests {
         assertEquals(a.identity, b.identity)
         assertTrue(a.identity != a.copy(share = "video").identity)
     }
+
+    @Test fun `only run on power refuses an unplugged phone and never blocks without information`() {
+        assertFalse(PowerRequirement.isSatisfied(required = true, charging = false))
+        assertTrue(PowerRequirement.isSatisfied(required = true, charging = true))
+        assertTrue(PowerRequirement.isSatisfied(required = true, charging = null))
+        assertTrue(PowerRequirement.isSatisfied(required = false, charging = false))
+        assertFalse(ProfileSettings().requirePower)
+    }
 }

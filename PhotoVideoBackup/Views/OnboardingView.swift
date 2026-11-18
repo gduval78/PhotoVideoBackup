@@ -165,22 +165,28 @@ private struct BasicDiagram: View {
     }
 }
 
-// MARK: - Diagram 2 — Hub (iPhone → Hub → SD Card + SSD)
+// MARK: - Diagram 2 — Hub (iPhone ⇄ Hub → 2 SSD, power bank feeding the hub)
 
 private struct HubDiagram: View {
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
             DiagramNode(icon: "iphone", label: "iPhone", color: .blue, size: 28)
             DiagramArrow()
-            HubNode()
+            VStack(spacing: 6) {
+                HubNode()
+                Image(systemName: "arrow.up")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.yellow)
+                DiagramNode(icon: "battery.100", label: "Battery", color: .yellow, size: 20)
+            }
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 8) {
                     DiagramArrow()
-                    DiagramNode(icon: "sdcard",        label: "SD Card", color: .orange, size: 24)
+                    DiagramNode(icon: "externaldrive", label: "SSD 1", color: .mint, size: 24)
                 }
                 HStack(spacing: 8) {
                     DiagramArrow()
-                    DiagramNode(icon: "externaldrive", label: "SSD",     color: .mint,   size: 24)
+                    DiagramNode(icon: "externaldrive", label: "SSD 2", color: .mint, size: 24)
                 }
             }
         }
