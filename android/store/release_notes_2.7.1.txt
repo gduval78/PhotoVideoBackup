@@ -1,0 +1,36 @@
+<en-US>
+New backup templates: camera or SD card → NAS, and camera or SD card → folder + NAS. A cloud folder (Google Drive, OneDrive, Dropbox) is now detected from the folder you pick. Each backup card shows how the data travels: USB, Wi-Fi or mobile data.
+</en-US>
+<fr-FR>
+Nouveaux modèles de sauvegarde : caméra ou carte SD → NAS, et caméra ou carte SD → dossier + NAS. Un dossier cloud (Google Drive, OneDrive, Dropbox) est maintenant détecté depuis le dossier choisi. Chaque carte de sauvegarde indique comment circulent les données : USB, Wi-Fi ou données mobiles.
+</fr-FR>
+<de-DE>
+Neue Backup-Vorlagen: Kamera oder SD-Karte → NAS sowie Kamera oder SD-Karte → Ordner + NAS. Ein Cloud-Ordner (Google Drive, OneDrive, Dropbox) wird jetzt am gewählten Ordner erkannt. Jede Backup-Karte zeigt, wie die Daten übertragen werden: USB, WLAN oder mobile Daten.
+</de-DE>
+<es-ES>
+Nuevas plantillas de copia: cámara o tarjeta SD → NAS, y cámara o tarjeta SD → carpeta + NAS. Una carpeta en la nube (Google Drive, OneDrive, Dropbox) se detecta ahora a partir de la carpeta elegida. Cada tarjeta de copia muestra cómo viajan los datos: USB, Wi-Fi o datos móviles.
+</es-ES>
+<it-IT>
+Nuovi modelli di backup: fotocamera o scheda SD → NAS e fotocamera o scheda SD → cartella + NAS. Una cartella cloud (Google Drive, OneDrive, Dropbox) viene ora riconosciuta dalla cartella scelta. Ogni scheda di backup mostra come viaggiano i dati: USB, Wi-Fi o dati mobili.
+</it-IT>
+<pt-PT>
+Novos modelos de cópia: câmara ou cartão SD → NAS e câmara ou cartão SD → pasta + NAS. Uma pasta na nuvem (Google Drive, OneDrive, Dropbox) passa a ser detetada a partir da pasta escolhida. Cada cartão de cópia mostra como os dados viajam: USB, Wi-Fi ou dados móveis.
+</pt-PT>
+<zh-CN>
+新增备份模板：相机或 SD 卡 → NAS，以及相机或 SD 卡 → 文件夹 + NAS。现在会根据所选文件夹自动识别云端文件夹（Google Drive、OneDrive、Dropbox）。每张备份卡片会显示数据的传输方式：USB、Wi-Fi 或移动数据。
+</zh-CN>
+<ru-RU>
+Новые шаблоны резервных копий: камера или SD-карта → NAS и камера или SD-карта → папка + NAS. Облачная папка (Google Drive, OneDrive, Dropbox) теперь определяется по выбранной папке. На каждой карточке копии показано, как передаются данные: USB, Wi-Fi или мобильный интернет.
+</ru-RU>
+<ja-JP>
+新しいバックアップテンプレート：カメラまたは SD カード → NAS、カメラまたは SD カード → フォルダ + NAS。選択したフォルダからクラウドフォルダ（Google Drive、OneDrive、Dropbox）を自動判別します。各バックアップカードにデータの経路（USB、Wi-Fi、モバイルデータ）が表示されます。
+</ja-JP>
+<ko-KR>
+새 백업 템플릿: 카메라 또는 SD 카드 → NAS, 카메라 또는 SD 카드 → 폴더 + NAS. 선택한 폴더에서 클라우드 폴더(Google Drive, OneDrive, Dropbox)를 자동으로 인식합니다. 각 백업 카드에 데이터 전송 방식(USB, Wi-Fi, 모바일 데이터)이 표시됩니다.
+</ko-KR>
+<hi-IN>
+नए बैकअप टेम्पलेट: कैमरा या SD कार्ड → NAS और कैमरा या SD कार्ड → फ़ोल्डर + NAS। चुने गए फ़ोल्डर से क्लाउड फ़ोल्डर (Google Drive, OneDrive, Dropbox) अब अपने-आप पहचाना जाता है। हर बैकअप कार्ड दिखाता है कि डेटा कैसे जा रहा है: USB, Wi-Fi या मोबाइल डेटा।
+</hi-IN>
+<ar>
+قوالب نسخ احتياطي جديدة: كاميرا أو بطاقة SD ← NAS، وكاميرا أو بطاقة SD ← مجلد + NAS. يُكتشف الآن مجلد السحابة (Google Drive وOneDrive وDropbox) من المجلد الذي تختاره. تعرض كل بطاقة نسخ احتياطي كيفية انتقال البيانات: USB أو Wi-Fi أو بيانات الجوال.
+</ar>
