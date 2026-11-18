@@ -18,6 +18,7 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - **The Advanced tab no longer exists.** An existing setup is turned into profiles automatically at the first launch of 2.7.0; nothing to reconfigure. Settings → Backup now holds the *defaults for new backups*.
 - A card shows **Reconnect** when its source (card/drive) or a destination folder cannot be reached: tap it and pick the folder again. Replacing a drive: Settings of the backup → *Choose another folder…*. Several destinations: Settings of the backup → *Add a destination* (Pro).
 - Each backup can use **its own NAS**; Browse lists every NAS and every profile folder.
+- **Run opens a summary screen first** ("Ready to back up?"): the source, then each destination with a pictogram for its kind (drive, NAS, cloud folder, or the phone itself in orange with a warning that the destination is on the device, not on an external drive), and the power state when *Only run on power* is on. **Start backup** launches it, the cross cancels. iPhone since 2.7.0; **Android since 2.7.1 (code 20707)** — earlier Android builds started the backup directly on tap.
 - Android does not have profiles yet (same screens as before).
 
 ## Common situations
