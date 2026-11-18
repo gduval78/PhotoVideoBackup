@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C27AA00000000000000B502 /* BackupSummarySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27AA00000000000000B501 /* BackupSummarySheet.swift */; };
 		01D092FE59C6B6EC66868658 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF8DE591BF6877017B539C /* ContentView.swift */; };
 		5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AB01 /* BackupTarget.swift */; };
 		5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FD01 /* DiskSpacePreflight.swift */; };
@@ -123,6 +124,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5C27AA00000000000000B501 /* BackupSummarySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSummarySheet.swift; sourceTree = "<group>"; };
 		06B3129B8F58C22E80BB8708 /* IndexStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexStore.swift; sourceTree = "<group>"; };
 		0AF044A988E2FF055550C23B /* PhotoVideoBackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoVideoBackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EA9D06B2DC52920C62CC5F1 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
@@ -399,6 +401,7 @@
 				5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */,
 				5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */,
 				5C270F33EBA437E84E8B98C0 /* BackupsView.swift */,
+				5C27AA00000000000000B501 /* BackupSummarySheet.swift */,
 				5C2730249C3567714F8C821D /* CompletionBannerSection.swift */,
 				BB1234567890ABCDEF123456 /* BackupBrowserView.swift */,
 				F001ABCDE00000000001B102 /* DeleteConfirmationSheet.swift */,
@@ -660,6 +663,7 @@
 				5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */,
 				5C27AD36830B5436442AA534 /* NewBackupFlow.swift in Sources */,
 				5C277DFDB9B403F2408F87D4 /* BackupsView.swift in Sources */,
+				5C27AA00000000000000B502 /* BackupSummarySheet.swift in Sources */,
 				5C276C33AC6EB13B4263B9F6 /* CompletionBannerSection.swift in Sources */,
 				5C27E16736412B254C5EAFC2 /* BackupProfile.swift in Sources */,
 				AA1234567890ABCDEF123456 /* BackupBrowserView.swift in Sources */,

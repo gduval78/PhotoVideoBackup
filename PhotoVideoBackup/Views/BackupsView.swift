@@ -13,6 +13,8 @@ struct BackupsView: View {
     @State private var renameText = ""
     @State private var deleting: BackupProfile?
     @State private var editing: BackupProfile?
+    /// The backup whose summary (source → destinations) is shown before it runs.
+    @State private var summarizing: BackupProfile?
     /// What the folder picker is reconnecting: a card/drive source or a destination folder.
     private enum Reconnect { case source(UUID), folder(String) }
     @State private var reconnecting: Reconnect?
@@ -31,7 +33,7 @@ struct BackupsView: View {
                                     connection: connections[profile.id],
                                     sourceAvailable: sourceAvailable(for: profile),
                                     isRunning: viewModel.isRunning,
-                                    onRun: { Task { await viewModel.runProfile(profile) } },
+                                    onRun: { summarizing = profile },
                                     onRename: { renameText = profile.name; renaming = profile },
                                     onSettings: { editing = profile },
                                     onReconnect: { startReconnect(profile) },
@@ -64,6 +66,12 @@ struct BackupsView: View {
         }
         .sheet(isPresented: $showNew, onDismiss: refreshConnections) { NewBackupFlow() }
         .sheet(isPresented: $showPaywall) { PaywallView() }
+        .sheet(item: $summarizing) { profile in
+            BackupSummarySheet(profile: profile,
+                               sourceName: sourceName(for: profile),
+                               destinationNames: connections[profile.id]?.destinationNames ?? [],
+                               onStart: { Task { await viewModel.runProfile(profile) } })
+        }
         .sheet(item: $editing, onDismiss: refreshConnections) { profile in
             NavigationStack { ProfileDetailView(profile: profile) }
         }
