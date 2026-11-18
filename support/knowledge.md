@@ -3,8 +3,8 @@
 Curated notes for the support agent. **Keep this file up to date at every store delivery** (see the "Documentation maintenance" checklist in CLAUDE.md): add each new feature, limit or known issue, with the version it appeared in.
 
 ## Versions
-- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.7.0 (backup profiles, 12 languages).
-- Android: 2.7.0 (backup profiles, 12 languages; same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
+- iPhone / iPad (and Apple-silicon Mac as "Designed for iPad"): 2.7.1 (backup profiles, 12 languages; 2.7.1 adds the SD card → NAS templates).
+- Android: 2.7.1 (backup profiles, 12 languages; same version number as iOS; same engine and same features as iOS except iCloud Drive, which does not exist on Android).
 - A backup started on one platform is recognised by the other (the hidden `.pvb-index.json` at each destination root is shared).
 
 ## Pro
@@ -13,7 +13,7 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - Refunds and charges are handled by Apple / Google, not by us.
 
 ## Backup profiles (iPhone / iPad, 2.7.0)
-- Each backup is a **profile**: a card on the **Backups** tab with its own source, destination(s), NAS and settings (folder structure, file naming, max files, extra file types). Tap **Run**; long-press a card → **Settings** to edit, rename or delete. **New backup** (+) offers templates: photo library → external drive / NAS / iCloud Drive; camera or SD card → external drive; external drive → iCloud Drive; photo library → drive + NAS.
+- Each backup is a **profile**: a card on the **Backups** tab with its own source, destination(s), NAS and settings (folder structure, file naming, max files, extra file types). Tap **Run**; long-press a card → **Settings** to edit, rename or delete. **New backup** (+) offers six templates (2.7.1): photo library → folder / NAS / folder + NAS; camera or SD card → folder / NAS / folder + NAS. A folder can be a drive or an iCloud Drive folder (detected automatically; iCloud is slower and depends on iOS and iCloud space). On a backup card the badge shows how the data travels: cable = local, Wi-Fi, or mobile data (SIM / eSIM) for a NAS or cloud folder, following the current network. Before 2.7.1 (2.7.0) the templates were: photo library → external drive / NAS / iCloud Drive; camera or SD card → external drive; external drive → iCloud Drive; photo library → drive + NAS.
 - **Free = one backup** (photo library → one folder). **Several backups, a second destination, a NAS, camera/USB sources and LUT grading are Pro.** If Pro is lost the first backup keeps working and the others show *Unlock* — nothing is deleted.
 - **The Advanced tab no longer exists.** An existing setup is turned into profiles automatically at the first launch of 2.7.0; nothing to reconfigure. Settings → Backup now holds the *defaults for new backups*.
 - A card shows **Reconnect** when its source (card/drive) or a destination folder cannot be reached: tap it and pick the folder again. Replacing a drive: Settings of the backup → *Choose another folder…*. Several destinations: Settings of the backup → *Add a destination* (Pro).
