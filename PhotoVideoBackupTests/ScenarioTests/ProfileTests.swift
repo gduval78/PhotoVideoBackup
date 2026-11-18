@@ -113,6 +113,32 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.requiresPro)
     }
 
+    // SCENARIO: A profile this build cannot read never wipes the others
+    // Field case: 2.7.0 read a `cameraToNAS` profile (written by a newer build), failed to decode the
+    // whole list and showed no backup at all. An unknown template is now read as "custom", and a
+    // profile that cannot be decoded is set aside and written back untouched by the next save.
+    @MainActor func test_tolerantRead_unknownTemplate_andUnreadableProfile() throws {
+        let suite = "pvb.tolerant.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let good = BackupProfile(name: "Photos", template: .photosToNAS, source: .photos, destinations: [.nas])
+        var objects = try JSONSerialization.jsonObject(with: JSONEncoder().encode([good])) as! [[String: Any]]
+        var future = objects[0]
+        future["id"] = UUID().uuidString; future["name"] = "From the future"; future["template"] = "someNewTemplate"
+        let broken: [String: Any] = ["name": "Broken", "id": "not-a-uuid"]
+        objects.append(future); objects.append(broken)
+        defaults.set(try JSONSerialization.data(withJSONObject: objects), forKey: "PhotoVideoBackup.profiles")
+
+        let store = ProfileStore(defaults: defaults)
+        XCTAssertEqual(store.profiles.map(\.name), ["Photos", "From the future"])
+        XCTAssertEqual(store.profiles[1].template, .custom)
+
+        store.rename(good.id, to: "Photos 2")   // a save
+        let saved = try JSONSerialization.jsonObject(with: defaults.data(forKey: "PhotoVideoBackup.profiles")!) as! [[String: Any]]
+        XCTAssertEqual(saved.count, 3)           // the unreadable one is still there
+        XCTAssertTrue(saved.contains { ($0["name"] as? String) == "Broken" })
+    }
+
     // SCENARIO: The card's badge says how the data travels
     // Local folders: cable. A NAS or a cloud folder: Wi-Fi, or mobile data when the phone is on SIM/eSIM.
     func test_transferKind_localWifiCellular() {

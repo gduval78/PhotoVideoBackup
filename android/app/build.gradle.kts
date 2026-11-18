@@ -22,9 +22,9 @@ android {
         // 2.7.0: code 20700 was burned by a deleted Play draft (Play never reuses a code); 20701 was the first
         // 2.7.0 upload, 20702 added the billing diagnostics, 20703 remembers provider document ids (Drive),
         // 20704 reuses a folder that differs only by capitalisation (exFAT). Same versionName, a higher code each time.
-        // 2.7.1 would be 20701, already used: it keeps the +4 offset so it is 20705 (Play never reuses a code).
+        // 2.7.1 would be 20701, already used: +4 gave 20705 (first upload); +5 gives 20706 (tolerant profile read). Play never reuses a code.
         versionCode = appVersion.split(".").let { it[0].toInt() * 10000 + it[1].toInt() * 100 + it[2].toInt() } +
-            (if (appVersion == "2.7.0" || appVersion == "2.7.1") 4 else 0)
+            (if (appVersion == "2.7.0") 4 else if (appVersion == "2.7.1") 5 else 0)
         // The 8 languages of the iOS app: only these are packaged (libraries bring dozens of others).
         resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "b+zh+Hant", "ru", "ja", "ko", "hi", "ar")
     }

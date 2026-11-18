@@ -57,6 +57,14 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     /// A setup migrated from before profiles existed.
     case custom
 
+    /// A template this build does not know (a profile written by a newer build, e.g. `cameraToNAS`
+    /// read by 2.7.0) is read as `custom` instead of making the whole profile list unreadable — which
+    /// is how a user once saw every backup disappear after switching builds.
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = ProfileTemplate(rawValue: raw) ?? .custom
+    }
+
     /// The templates shown in the "New backup" list. `custom` (migration) and the two "→ iCloud Drive"
     /// templates (kept so profiles already created still load) are not offered any more: whether a
     /// folder is in iCloud Drive is detected from the folder itself (`ICloudEvictionManager.isUbiquitous`),
@@ -278,22 +286,50 @@ final class ProfileStore {
     }
 
     private let defaults: UserDefaults
+    /// Stored profiles this build could not read, as raw JSON. They are written back untouched at
+    /// every save, so a profile an older build cannot understand is never lost by editing another one.
+    private var unreadable: [Any] = []
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        profiles = Self.load(from: defaults)
+        let loaded = Self.loadTolerant(from: defaults)
+        profiles = loaded.profiles
+        unreadable = loaded.unreadable
+        if !unreadable.isEmpty {
+            DiagnosticLog.write("[PROFILES] \(unreadable.count) stored profile(s) could not be read by this build — kept as they are")
+        }
     }
 
     // MARK: Persistence
 
     nonisolated static func load(from defaults: UserDefaults) -> [BackupProfile] {
+        loadTolerant(from: defaults).profiles
+    }
+
+    /// Reads the profiles one by one: a profile that cannot be decoded is set aside (not dropped, not
+    /// fatal for the others).
+    nonisolated static func loadTolerant(from defaults: UserDefaults) -> (profiles: [BackupProfile], unreadable: [Any]) {
         guard let data = defaults.data(forKey: Keys.profiles),
-              let decoded = try? JSONDecoder().decode([BackupProfile].self, from: data) else { return [] }
-        return decoded
+              let array = (try? JSONSerialization.jsonObject(with: data)) as? [Any] else { return ([], []) }
+        var profiles: [BackupProfile] = []
+        var unreadable: [Any] = []
+        for element in array {
+            if JSONSerialization.isValidJSONObject(element),
+               let elementData = try? JSONSerialization.data(withJSONObject: element),
+               let profile = try? JSONDecoder().decode(BackupProfile.self, from: elementData) {
+                profiles.append(profile)
+            } else {
+                unreadable.append(element)
+            }
+        }
+        return (profiles, unreadable)
     }
 
     private func persist() {
-        if let data = try? JSONEncoder().encode(profiles) { defaults.set(data, forKey: Keys.profiles) }
+        guard let encoded = try? JSONEncoder().encode(profiles),
+              let objects = (try? JSONSerialization.jsonObject(with: encoded)) as? [Any],
+              let data = try? JSONSerialization.data(withJSONObject: objects + unreadable) else { return }
+        defaults.set(data, forKey: Keys.profiles)
     }
 
     // MARK: Editing
