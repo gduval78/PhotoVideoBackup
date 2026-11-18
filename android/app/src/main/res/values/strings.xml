@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">%1$d files deleted successfully.</string>
     <string name="name">Name</string>
     <string name="name_camera_drive">Camera → drive</string>
+    <string name="name_camera_drive_nas">Camera → drive + NAS</string>
+    <string name="name_camera_nas">Camera → NAS</string>
     <string name="name_drive_cloud">Drive → cloud folder</string>
     <string name="name_not_configured">Name not configured</string>
     <string name="name_photos_cloud">Gallery → cloud folder</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">Browse</string>
     <string name="test_connection">Test connection</string>
     <string name="total_fmt">%1$s total</string>
-    <string name="tpl_camera_drive">Camera or SD card → external drive</string>
+    <string name="tpl_camera_drive">Camera or SD card → folder</string>
     <string name="tpl_camera_drive_d">Copy a camera card or USB drive to your drive.</string>
+    <string name="tpl_camera_folder_nas">Camera or SD card → folder + NAS</string>
+    <string name="tpl_camera_nas">Camera or SD card → NAS</string>
+    <string name="tpl_camera_nas_d">Copy a camera card or USB drive to your NAS over Wi-Fi.</string>
     <string name="tpl_drive_cloud">External drive → cloud folder</string>
     <string name="tpl_drive_cloud_d">Send a backup you already have to a cloud folder.</string>
     <string name="tpl_photos_cloud">Gallery → cloud folder</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">The simplest and fastest. Recommended.</string>
     <string name="tpl_photos_drive_nas">Gallery → external drive + NAS</string>
     <string name="tpl_photos_drive_nas_d">Two copies in one go: a drive and your NAS.</string>
+    <string name="tpl_photos_folder">Gallery → folder</string>
+    <string name="tpl_photos_folder_nas">Gallery → folder + NAS</string>
     <string name="tpl_photos_nas">Gallery → NAS</string>
     <string name="tpl_photos_nas_d">Back up over Wi-Fi to your NAS.</string>
     <string name="unlimited">Unlimited</string>

@@ -50,6 +50,12 @@ class ProfileFreeTierTests {
 
     @Test fun selectableTemplatesExcludeCustom() {
         assertEquals(6, ProfileTemplate.selectable.size)
+        assertFalse(ProfileTemplate.DRIVE_TO_CLOUD in ProfileTemplate.selectable)
+        assertTrue(ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.usesExternalSource && ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.includesNas)
+        assertEquals(1, ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.folderCount)
+        assertTrue(ProfileTemplate.CAMERA_TO_NAS.usesExternalSource && ProfileTemplate.CAMERA_TO_NAS.includesNas)
+        assertEquals(0, ProfileTemplate.CAMERA_TO_NAS.folderCount)
+        assertTrue(ProfileTemplate.CAMERA_TO_NAS.requiresPro)
         assertFalse(ProfileTemplate.CUSTOM in ProfileTemplate.selectable)
     }
 }

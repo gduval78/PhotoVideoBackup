@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">تم حذف %1$d ملف بنجاح.</string>
     <string name="name">الاسم</string>
     <string name="name_camera_drive">كاميرا ← قرص</string>
+    <string name="name_camera_drive_nas">كاميرا ← قرص + NAS</string>
+    <string name="name_camera_nas">كاميرا ← NAS</string>
     <string name="name_drive_cloud">قرص ← مجلد سحابي</string>
     <string name="name_not_configured">الاسم غير مضبوط</string>
     <string name="name_photos_cloud">المعرض ← مجلد سحابي</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">استعراض</string>
     <string name="test_connection">اختبار الاتصال</string>
     <string name="total_fmt">%1$s الإجمالي</string>
-    <string name="tpl_camera_drive">كاميرا أو بطاقة SD ← قرص خارجي</string>
+    <string name="tpl_camera_drive">كاميرا أو بطاقة SD ← مجلد</string>
     <string name="tpl_camera_drive_d">انسخ بطاقة كاميرا أو قرص USB إلى قرصك.</string>
+    <string name="tpl_camera_folder_nas">كاميرا أو بطاقة SD ← مجلد + NAS</string>
+    <string name="tpl_camera_nas">كاميرا أو بطاقة SD ← NAS</string>
+    <string name="tpl_camera_nas_d">انسخ بطاقة كاميرا أو قرص USB إلى جهاز NAS عبر Wi-Fi.</string>
     <string name="tpl_drive_cloud">قرص خارجي ← مجلد سحابي</string>
     <string name="tpl_drive_cloud_d">أرسل نسخة احتياطية لديك بالفعل إلى مجلد سحابي.</string>
     <string name="tpl_photos_cloud">المعرض ← مجلد سحابي</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">الأبسط والأسرع. موصى به.</string>
     <string name="tpl_photos_drive_nas">المعرض ← قرص خارجي + NAS</string>
     <string name="tpl_photos_drive_nas_d">نسختان دفعة واحدة: قرص وNAS.</string>
+    <string name="tpl_photos_folder">المعرض ← مجلد</string>
+    <string name="tpl_photos_folder_nas">المعرض ← مجلد + NAS</string>
     <string name="tpl_photos_nas">المعرض ← NAS</string>
     <string name="tpl_photos_nas_d">انسخ احتياطيًا عبر Wi-Fi إلى جهاز NAS الخاص بك.</string>
     <string name="unlimited">غير محدود</string>

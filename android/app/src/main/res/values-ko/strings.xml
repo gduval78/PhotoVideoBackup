@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">파일 %1$d개를 삭제했습니다.</string>
     <string name="name">이름</string>
     <string name="name_camera_drive">카메라 → 드라이브</string>
+    <string name="name_camera_drive_nas">카메라 → 드라이브 + NAS</string>
+    <string name="name_camera_nas">카메라 → NAS</string>
     <string name="name_drive_cloud">드라이브 → 클라우드 폴더</string>
     <string name="name_not_configured">이름이 설정되지 않음</string>
     <string name="name_photos_cloud">갤러리 → 클라우드 폴더</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">탐색</string>
     <string name="test_connection">연결 테스트</string>
     <string name="total_fmt">총 %1$s</string>
-    <string name="tpl_camera_drive">카메라 또는 SD 카드 → 외장 드라이브</string>
+    <string name="tpl_camera_drive">카메라 또는 SD 카드 → 폴더</string>
     <string name="tpl_camera_drive_d">카메라 카드 또는 USB 드라이브를 드라이브로 복사합니다.</string>
+    <string name="tpl_camera_folder_nas">카메라 또는 SD 카드 → 폴더 + NAS</string>
+    <string name="tpl_camera_nas">카메라 또는 SD 카드 → NAS</string>
+    <string name="tpl_camera_nas_d">카메라 카드 또는 USB 드라이브를 Wi-Fi로 NAS에 복사합니다.</string>
     <string name="tpl_drive_cloud">외장 드라이브 → 클라우드 폴더</string>
     <string name="tpl_drive_cloud_d">이미 가지고 있는 백업을 클라우드 폴더로 보냅니다.</string>
     <string name="tpl_photos_cloud">갤러리 → 클라우드 폴더</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">가장 간단하고 빠릅니다. 권장.</string>
     <string name="tpl_photos_drive_nas">갤러리 → 외장 드라이브 + NAS</string>
     <string name="tpl_photos_drive_nas_d">한 번에 사본 두 개: 드라이브와 NAS.</string>
+    <string name="tpl_photos_folder">갤러리 → 폴더</string>
+    <string name="tpl_photos_folder_nas">갤러리 → 폴더 + NAS</string>
     <string name="tpl_photos_nas">갤러리 → NAS</string>
     <string name="tpl_photos_nas_d">Wi-Fi로 NAS에 백업합니다.</string>
     <string name="unlimited">무제한</string>

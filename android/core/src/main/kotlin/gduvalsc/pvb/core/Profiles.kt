@@ -67,21 +67,24 @@ enum class ProfileTemplate(val raw: String) {
     PHOTOS_TO_NAS("photosToNAS"),
     PHOTOS_TO_CLOUD("photosToCloud"),
     CAMERA_TO_DRIVE("cameraToDrive"),
+    CAMERA_TO_NAS("cameraToNAS"),
+    CAMERA_TO_DRIVE_AND_NAS("cameraToDriveAndNAS"),
     DRIVE_TO_CLOUD("driveToCloud"),
     PHOTOS_TO_DRIVE_AND_NAS("photosToDriveAndNAS"),
     /** A setup migrated from before profiles existed. */
     CUSTOM("custom");
 
-    val usesExternalSource: Boolean get() = this == CAMERA_TO_DRIVE || this == DRIVE_TO_CLOUD
-    val includesNas: Boolean get() = this == PHOTOS_TO_NAS || this == PHOTOS_TO_DRIVE_AND_NAS
+    val usesExternalSource: Boolean get() = this == CAMERA_TO_DRIVE || this == CAMERA_TO_NAS || this == CAMERA_TO_DRIVE_AND_NAS || this == DRIVE_TO_CLOUD
+    val includesNas: Boolean get() = this == PHOTOS_TO_NAS || this == CAMERA_TO_NAS || this == PHOTOS_TO_DRIVE_AND_NAS || this == CAMERA_TO_DRIVE_AND_NAS
     /** How many folders the user has to choose. */
-    val folderCount: Int get() = if (this == PHOTOS_TO_NAS || this == CUSTOM) 0 else 1
+    val folderCount: Int get() = if (this == PHOTOS_TO_NAS || this == CAMERA_TO_NAS || this == CUSTOM) 0 else 1
     /** Free users can back up the gallery to one folder; everything else is Pro. */
     val requiresPro: Boolean get() = !(this == PHOTOS_TO_DRIVE || this == PHOTOS_TO_CLOUD)
 
     companion object {
-        /** The templates shown in the "New backup" list; `CUSTOM` is only ever created by migration. */
-        val selectable: List<ProfileTemplate> get() = entries.filter { it != CUSTOM }
+        /** The templates shown in the "New backup" list. `CUSTOM` (migration) and the two cloud templates (kept so existing profiles still load) are not offered: a cloud folder is detected from the folder itself (`CloudDestinations`). */
+        val selectable: List<ProfileTemplate> get() =
+            listOf(PHOTOS_TO_DRIVE, PHOTOS_TO_NAS, PHOTOS_TO_DRIVE_AND_NAS, CAMERA_TO_DRIVE, CAMERA_TO_NAS, CAMERA_TO_DRIVE_AND_NAS)
         fun fromRaw(raw: String?): ProfileTemplate = entries.firstOrNull { it.raw == raw } ?: CUSTOM
     }
 }

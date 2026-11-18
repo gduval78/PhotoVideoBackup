@@ -62,6 +62,8 @@ private struct NewBackupSetup: View {
     @State private var profileID = UUID()
     @State private var name = ""
     @State private var folderLabel: String?
+    /// Detected from the folder the user picked (not from the template).
+    @State private var folderIsICloud = false
     @State private var sourceID: UUID?
     @State private var showImporter = false
     @State private var pickTarget: PickTarget = .destination
@@ -155,10 +157,9 @@ private struct NewBackupSetup: View {
         } header: {
             Text("Destination")
         } footer: {
-            switch template {
-            case .photosToICloud, .driveToICloud:
-                Text("Pick a folder in iCloud Drive (Files → iCloud Drive). iCloud is slow and depends on iOS and your iCloud space.")
-            default:
+            if folderIsICloud {
+                Text("This folder is in iCloud Drive. iCloud is slow and depends on iOS and your iCloud space.")
+            } else {
                 Text("Connect your drive, then pick the folder to back up into. You can create a folder in the picker.")
             }
         }
@@ -195,6 +196,7 @@ private struct NewBackupSetup: View {
             let folder = dm.folderName(forKey: folderKey)
             folderLabel = [volume, folder].filter { !$0.isEmpty }.joined(separator: " / ")
             if folderLabel?.isEmpty ?? true { folderLabel = url.lastPathComponent }
+            folderIsICloud = ICloudEvictionManager.isUbiquitous(url)
         case .source:
             // The bookmark must be made right here, while the picker's security scope is active.
             _ = url.startAccessingSecurityScopedResource()

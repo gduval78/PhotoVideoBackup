@@ -272,7 +272,9 @@ private fun ProfileCard(
     Card(Modifier.padding(horizontal = 16.dp, vertical = 6.dp).fillMaxWidth()) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                if (profile.source.isGallery) Icons.Default.PhotoLibrary else Icons.Default.SdCard, null,
+                // A cloud folder (Google Drive, OneDrive, Dropbox…) is detected from the folder itself: cloud pictogram; otherwise the source's.
+                if (CloudDestinations.firstCloud(profile.folders.map { it.uri }) != null) Icons.Default.Cloud
+                else if (profile.source.isGallery) Icons.Default.PhotoLibrary else Icons.Default.SdCard, null,
                 tint = if (connected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline, modifier = Modifier.size(28.dp),
             )
             Spacer(Modifier.width(12.dp))

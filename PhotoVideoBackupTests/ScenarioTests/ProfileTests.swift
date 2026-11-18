@@ -86,7 +86,10 @@ final class ProfileTests: XCTestCase {
     func test_templates_shapeAndProGates() {
         XCTAssertEqual(ProfileTemplate.selectable.count, 6)
         XCTAssertFalse(ProfileTemplate.selectable.contains(.custom))
-        XCTAssertTrue(ProfileTemplate.selectable.contains(.driveToICloud))
+        // The iCloud templates are no longer offered (iCloud is detected from the folder) but still load.
+        XCTAssertFalse(ProfileTemplate.selectable.contains(.driveToICloud))
+        XCTAssertFalse(ProfileTemplate.selectable.contains(.photosToICloud))
+        XCTAssertNotNil(ProfileTemplate(rawValue: "photosToICloud"))
         XCTAssertFalse(ProfileTemplate.photosToDrive.requiresPro)
         XCTAssertFalse(ProfileTemplate.photosToICloud.requiresPro)
         XCTAssertTrue(ProfileTemplate.photosToNAS.requiresPro)
@@ -97,6 +100,17 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(ProfileTemplate.photosToDriveAndNAS.includesNAS)
         XCTAssertTrue(ProfileTemplate.cameraToDrive.usesExternalSource)
         XCTAssertFalse(ProfileTemplate.photosToDrive.usesExternalSource)
+        // Camera / SD card → NAS: an external source, no folder to pick, a NAS, Pro.
+        XCTAssertTrue(ProfileTemplate.selectable.contains(.cameraToNAS))
+        XCTAssertTrue(ProfileTemplate.cameraToNAS.usesExternalSource)
+        XCTAssertTrue(ProfileTemplate.cameraToNAS.includesNAS)
+        XCTAssertEqual(ProfileTemplate.cameraToNAS.folderCount, 0)
+        XCTAssertTrue(ProfileTemplate.cameraToNAS.requiresPro)
+        // Camera / SD card → folder + NAS: an external source, one folder, a NAS, Pro.
+        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.usesExternalSource)
+        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.includesNAS)
+        XCTAssertEqual(ProfileTemplate.cameraToDriveAndNAS.folderCount, 1)
+        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.requiresPro)
     }
 
     // SCENARIO: A profile's own folder keys never collide with the global slots

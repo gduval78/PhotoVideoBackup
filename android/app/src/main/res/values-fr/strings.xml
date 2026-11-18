@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">%1$d fichiers supprimés avec succès.</string>
     <string name="name">Nom</string>
     <string name="name_camera_drive">Caméra → disque</string>
+    <string name="name_camera_drive_nas">Caméra → disque + NAS</string>
+    <string name="name_camera_nas">Caméra → NAS</string>
     <string name="name_drive_cloud">Disque → dossier cloud</string>
     <string name="name_not_configured">Nom non configuré</string>
     <string name="name_photos_cloud">Galerie → dossier cloud</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">Parcourir</string>
     <string name="test_connection">Tester la connexion</string>
     <string name="total_fmt">%1$s au total</string>
-    <string name="tpl_camera_drive">Caméra ou carte SD → disque externe</string>
+    <string name="tpl_camera_drive">Caméra ou carte SD → dossier</string>
     <string name="tpl_camera_drive_d">Copiez une carte de caméra ou une clé USB vers votre disque.</string>
+    <string name="tpl_camera_folder_nas">Caméra ou carte SD → dossier + NAS</string>
+    <string name="tpl_camera_nas">Caméra ou carte SD → NAS</string>
+    <string name="tpl_camera_nas_d">Copiez une carte de caméra ou une clé USB vers votre NAS en Wi-Fi.</string>
     <string name="tpl_drive_cloud">Disque externe → dossier cloud</string>
     <string name="tpl_drive_cloud_d">Envoyez une sauvegarde que vous avez déjà vers un dossier cloud.</string>
     <string name="tpl_photos_cloud">Galerie → dossier cloud</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">Le plus simple et le plus rapide. Recommandé.</string>
     <string name="tpl_photos_drive_nas">Galerie → disque externe + NAS</string>
     <string name="tpl_photos_drive_nas_d">Deux copies d\'un coup : un disque et votre NAS.</string>
+    <string name="tpl_photos_folder">Galerie → dossier</string>
+    <string name="tpl_photos_folder_nas">Galerie → dossier + NAS</string>
     <string name="tpl_photos_nas">Galerie → NAS</string>
     <string name="tpl_photos_nas_d">Sauvegardez par Wi-Fi vers votre NAS.</string>
     <string name="unlimited">Illimité</string>

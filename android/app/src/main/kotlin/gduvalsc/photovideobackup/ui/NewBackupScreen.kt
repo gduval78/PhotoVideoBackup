@@ -52,6 +52,7 @@ import gduvalsc.photovideobackup.Saf
 import gduvalsc.photovideobackup.SecretStore
 import gduvalsc.photovideobackup.StoredSource
 import gduvalsc.pvb.core.BackupProfile
+import gduvalsc.pvb.core.CloudDestinations
 import gduvalsc.pvb.core.DeviceType
 import gduvalsc.pvb.core.MediaScanner
 import gduvalsc.pvb.core.ProfileDestination
@@ -69,18 +70,22 @@ private fun ProfileTemplate.icon(): ImageVector = when (this) {
     ProfileTemplate.PHOTOS_TO_NAS -> Icons.Default.Cloud
     ProfileTemplate.PHOTOS_TO_CLOUD -> Icons.Default.Cloud
     ProfileTemplate.CAMERA_TO_DRIVE -> Icons.Default.SdCard
+    ProfileTemplate.CAMERA_TO_NAS -> Icons.Default.SdCard
+    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> Icons.Default.SdCard
     ProfileTemplate.DRIVE_TO_CLOUD -> Icons.Default.CloudUpload
     ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> Icons.Default.PhotoLibrary
     ProfileTemplate.CUSTOM -> Icons.Default.Storage
 }
 
 fun ProfileTemplate.titleRes(): Int = when (this) {
-    ProfileTemplate.PHOTOS_TO_DRIVE -> R.string.tpl_photos_drive
+    ProfileTemplate.PHOTOS_TO_DRIVE -> R.string.tpl_photos_folder
     ProfileTemplate.PHOTOS_TO_NAS -> R.string.tpl_photos_nas
     ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.tpl_photos_cloud
     ProfileTemplate.CAMERA_TO_DRIVE -> R.string.tpl_camera_drive
+    ProfileTemplate.CAMERA_TO_NAS -> R.string.tpl_camera_nas
+    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.tpl_camera_folder_nas
     ProfileTemplate.DRIVE_TO_CLOUD -> R.string.tpl_drive_cloud
-    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.tpl_photos_drive_nas
+    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.tpl_photos_folder_nas
     ProfileTemplate.CUSTOM -> R.string.backup
 }
 
@@ -89,6 +94,8 @@ private fun ProfileTemplate.detailRes(): Int = when (this) {
     ProfileTemplate.PHOTOS_TO_NAS -> R.string.tpl_photos_nas_d
     ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.tpl_photos_cloud_d
     ProfileTemplate.CAMERA_TO_DRIVE -> R.string.tpl_camera_drive_d
+    ProfileTemplate.CAMERA_TO_NAS -> R.string.tpl_camera_nas_d
+    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.tpl_photos_drive_nas_d
     ProfileTemplate.DRIVE_TO_CLOUD -> R.string.tpl_drive_cloud_d
     ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.tpl_photos_drive_nas_d
     ProfileTemplate.CUSTOM -> R.string.backup
@@ -99,6 +106,8 @@ private fun ProfileTemplate.defaultNameRes(): Int = when (this) {
     ProfileTemplate.PHOTOS_TO_NAS -> R.string.name_photos_nas
     ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.name_photos_cloud
     ProfileTemplate.CAMERA_TO_DRIVE -> R.string.name_camera_drive
+    ProfileTemplate.CAMERA_TO_NAS -> R.string.name_camera_nas
+    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.name_camera_drive_nas
     ProfileTemplate.DRIVE_TO_CLOUD -> R.string.name_drive_cloud
     ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.name_photos_drive_nas
     ProfileTemplate.CUSTOM -> R.string.backup
@@ -199,7 +208,7 @@ private fun NewBackupSetup(template: ProfileTemplate, onDone: () -> Unit) {
             }
             OutlinedButton(onClick = { folderPicker.launch(null) }) { Text(stringResource(R.string.choose_ellipsis)) }
             Text(
-                stringResource(if (template == ProfileTemplate.PHOTOS_TO_CLOUD || template == ProfileTemplate.DRIVE_TO_CLOUD) R.string.dest_footer_cloud else R.string.dest_footer),
+                stringResource(if (folder?.let { CloudDestinations.providerOf(it.uri) } != null || template == ProfileTemplate.PHOTOS_TO_CLOUD || template == ProfileTemplate.DRIVE_TO_CLOUD) R.string.dest_footer_cloud else R.string.dest_footer),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">已成功刪除 %1$d 個檔案。</string>
     <string name="name">名稱</string>
     <string name="name_camera_drive">相機 → 驅動器</string>
+    <string name="name_camera_drive_nas">相機 → 驅動器 + NAS</string>
+    <string name="name_camera_nas">相機 → NAS</string>
     <string name="name_drive_cloud">硬碟 → 雲端資料夾</string>
     <string name="name_not_configured">未設定名稱</string>
     <string name="name_photos_cloud">相簿 → 雲端資料夾</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">瀏覽</string>
     <string name="test_connection">測試連線</string>
     <string name="total_fmt">共 %1$s</string>
-    <string name="tpl_camera_drive">相機或 SD 卡 → 外接驅動器</string>
+    <string name="tpl_camera_drive">相機或 SD 卡 → 資料夾</string>
     <string name="tpl_camera_drive_d">將相機記憶卡或 USB 隨身碟複製到您的驅動器。</string>
+    <string name="tpl_camera_folder_nas">相機或 SD 卡 → 資料夾 + NAS</string>
+    <string name="tpl_camera_nas">相機或 SD 卡 → NAS</string>
+    <string name="tpl_camera_nas_d">透過 Wi-Fi 將相機記憶卡或 USB 隨身碟複製到您的 NAS。</string>
     <string name="tpl_drive_cloud">外接硬碟 → 雲端資料夾</string>
     <string name="tpl_drive_cloud_d">將已有的備份傳送到雲端資料夾。</string>
     <string name="tpl_photos_cloud">相簿 → 雲端資料夾</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">最簡單、最快。推薦。</string>
     <string name="tpl_photos_drive_nas">相簿 → 外接硬碟 + NAS</string>
     <string name="tpl_photos_drive_nas_d">一次兩份：驅動器和您的 NAS。</string>
+    <string name="tpl_photos_folder">相簿 → 資料夾</string>
+    <string name="tpl_photos_folder_nas">相簿 → 資料夾 + NAS</string>
     <string name="tpl_photos_nas">相簿 → NAS</string>
     <string name="tpl_photos_nas_d">透過 Wi-Fi 備份到您的 NAS。</string>
     <string name="unlimited">無限制</string>

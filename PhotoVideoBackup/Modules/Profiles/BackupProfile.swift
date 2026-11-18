@@ -29,24 +29,32 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     case photosToNAS
     case photosToICloud
     case cameraToDrive
+    case cameraToNAS
+    case cameraToDriveAndNAS
     case driveToICloud
     case photosToDriveAndNAS
     /// A setup migrated from before profiles existed.
     case custom
 
-    /// The templates shown in the "New backup" list. `custom` is only ever created by migration.
-    /// `driveToICloud` runs on `FileCopyEngine`, which carries the iCloud protection (`ICloudRunGuard`:
-    /// release of uploaded copies, pause under a space reserve, quota detection) since 2.7.0.
-    static var selectable: [ProfileTemplate] { allCases.filter { $0 != .custom } }
+    /// The templates shown in the "New backup" list. `custom` (migration) and the two "→ iCloud Drive"
+    /// templates (kept so profiles already created still load) are not offered any more: whether a
+    /// folder is in iCloud Drive is detected from the folder itself (`ICloudEvictionManager.isUbiquitous`),
+    /// so "photo library → folder" and "camera → folder" cover iCloud too, with the same protection
+    /// (`PHBackupEngine` / `ICloudRunGuard`).
+    static var selectable: [ProfileTemplate] {
+        [.photosToDrive, .photosToNAS, .photosToDriveAndNAS, .cameraToDrive, .cameraToNAS, .cameraToDriveAndNAS]
+    }
 
     var titleKey: LocalizedStringKey {
         switch self {
-        case .photosToDrive:       return "Photo library → external drive"
+        case .photosToDrive:       return "Photo library → folder"
         case .photosToNAS:         return "Photo library → NAS"
         case .photosToICloud:      return "Photo library → iCloud Drive"
-        case .cameraToDrive:       return "Camera or SD card → external drive"
+        case .cameraToDrive:       return "Camera or SD card → folder"
+        case .cameraToNAS:         return "Camera or SD card → NAS"
+        case .cameraToDriveAndNAS: return "Camera or SD card → folder + NAS"
         case .driveToICloud:       return "External drive → iCloud Drive"
-        case .photosToDriveAndNAS: return "Photo library → external drive + NAS"
+        case .photosToDriveAndNAS: return "Photo library → folder + NAS"
         case .custom:              return "Backup"
         }
     }
@@ -57,6 +65,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .photosToNAS:         return "Back up over Wi-Fi to your NAS."
         case .photosToICloud:      return "Slow and dependent on iOS and your iCloud space."
         case .cameraToDrive:       return "Copy a camera card or USB drive to your drive."
+        case .cameraToNAS:         return "Copy a camera card or USB drive to your NAS over Wi-Fi."
+        case .cameraToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
         case .driveToICloud:       return "Send a backup you already have to iCloud Drive."
         case .photosToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
         case .custom:              return ""
@@ -69,24 +79,33 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .photosToNAS:         return "server.rack"
         case .photosToICloud:      return "icloud.fill"
         case .cameraToDrive:       return "sdcard.fill"
+        case .cameraToNAS:         return "sdcard"
+        case .cameraToDriveAndNAS: return "sdcard.fill"
         case .driveToICloud:       return "icloud.and.arrow.up.fill"
         case .photosToDriveAndNAS: return "externaldrive.badge.plus"
         case .custom:              return "arrow.triangle.2.circlepath"
         }
     }
 
+    /// The pictogram of a backup card: a drive for a local folder, a cloud when a folder is in iCloud Drive
+    /// (detected from the folder — the template no longer says). A NAS-only backup keeps its own symbol.
+    func symbol(hasCloudFolder: Bool) -> String {
+        guard hasCloudFolder else { return symbol }
+        return usesExternalSource ? "icloud.and.arrow.up.fill" : "icloud.fill"
+    }
+
     /// True when the source is a camera card / drive rather than the photo library.
-    var usesExternalSource: Bool { self == .cameraToDrive || self == .driveToICloud }
+    var usesExternalSource: Bool { self == .cameraToDrive || self == .cameraToNAS || self == .cameraToDriveAndNAS || self == .driveToICloud }
 
     /// How many folders the user has to choose.
     var folderCount: Int {
         switch self {
-        case .photosToNAS, .custom: return 0
+        case .photosToNAS, .cameraToNAS, .custom: return 0
         default:                    return 1
         }
     }
 
-    var includesNAS: Bool { self == .photosToNAS || self == .photosToDriveAndNAS }
+    var includesNAS: Bool { self == .photosToNAS || self == .cameraToNAS || self == .photosToDriveAndNAS || self == .cameraToDriveAndNAS }
 
     /// Free users can back up the photo library to one folder; everything else is Pro.
     var requiresPro: Bool {
@@ -103,6 +122,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .photosToNAS:         return String(localized: "Photos → NAS")
         case .photosToICloud:      return String(localized: "Photos → iCloud Drive")
         case .cameraToDrive:       return String(localized: "Camera → drive")
+        case .cameraToNAS:         return String(localized: "Camera → NAS")
+        case .cameraToDriveAndNAS: return String(localized: "Camera → drive + NAS")
         case .driveToICloud:       return String(localized: "Drive → iCloud Drive")
         case .photosToDriveAndNAS: return String(localized: "Photos → drive + NAS")
         case .custom:              return String(localized: "Backup")

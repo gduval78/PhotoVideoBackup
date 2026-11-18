@@ -148,6 +148,8 @@
     <string name="n_deleted_ok">%1$d файлов успешно удалено.</string>
     <string name="name">Имя</string>
     <string name="name_camera_drive">Камера → диск</string>
+    <string name="name_camera_drive_nas">Камера → диск + NAS</string>
+    <string name="name_camera_nas">Камера → NAS</string>
     <string name="name_drive_cloud">Диск → папка в облаке</string>
     <string name="name_not_configured">Имя не настроено</string>
     <string name="name_photos_cloud">Галерея → папка в облаке</string>
@@ -265,8 +267,11 @@
     <string name="tab_browse">Обзор</string>
     <string name="test_connection">Проверить соединение</string>
     <string name="total_fmt">%1$s всего</string>
-    <string name="tpl_camera_drive">Камера или SD-карта → внешний диск</string>
+    <string name="tpl_camera_drive">Камера или SD-карта → папка</string>
     <string name="tpl_camera_drive_d">Копируйте карту камеры или USB-накопитель на ваш диск.</string>
+    <string name="tpl_camera_folder_nas">Камера или SD-карта → папка + NAS</string>
+    <string name="tpl_camera_nas">Камера или SD-карта → NAS</string>
+    <string name="tpl_camera_nas_d">Копируйте карту камеры или USB-накопитель на ваш NAS по Wi-Fi.</string>
     <string name="tpl_drive_cloud">Внешний диск → папка в облаке</string>
     <string name="tpl_drive_cloud_d">Отправьте уже имеющуюся копию в папку в облаке.</string>
     <string name="tpl_photos_cloud">Галерея → папка в облаке</string>
@@ -275,6 +280,8 @@
     <string name="tpl_photos_drive_d">Самый простой и быстрый. Рекомендуется.</string>
     <string name="tpl_photos_drive_nas">Галерея → внешний диск + NAS</string>
     <string name="tpl_photos_drive_nas_d">Две копии сразу: диск и ваш NAS.</string>
+    <string name="tpl_photos_folder">Галерея → папка</string>
+    <string name="tpl_photos_folder_nas">Галерея → папка + NAS</string>
     <string name="tpl_photos_nas">Галерея → NAS</string>
     <string name="tpl_photos_nas_d">Копирование по Wi-Fi на ваш NAS.</string>
     <string name="unlimited">Без ограничений</string>

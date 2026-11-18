@@ -216,7 +216,7 @@ private struct ProfileCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: profile.template.symbol)
+            Image(systemName: profile.template.symbol(hasCloudFolder: connection?.hasCloudFolder ?? false))
                 .font(.title2).foregroundStyle(ready ? Color.accentColor : .secondary)
                 .frame(width: 34)
             VStack(alignment: .leading, spacing: 3) {

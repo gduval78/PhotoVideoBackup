@@ -492,6 +492,9 @@ final class DashboardViewModel {
         var usedFraction: Double? = nil
         /// The first folder that cannot be reached: *Reconnect* offers to choose it again.
         var disconnectedFolderKey: String? = nil
+        /// True when one of the folders is in iCloud Drive: the card then shows a cloud pictogram
+        /// instead of a drive (detected from the folder, not from the template).
+        var hasCloudFolder = false
     }
 
     func connection(of profile: BackupProfile) -> ProfileConnection {
@@ -501,6 +504,7 @@ final class DashboardViewModel {
         var free: Int64? = nil
         var used: Double? = nil
         var missingKey: String? = nil
+        var cloud = false
         for key in profile.folderKeys {
             let saved = UserDefaults.standard.string(forKey: key + ".displayName") ?? ""
             let folder = dm.folderName(forKey: key)
@@ -510,6 +514,9 @@ final class DashboardViewModel {
                 names.append(saved.isEmpty ? folder : saved)
                 continue
             }
+            let granted = url.startAccessingSecurityScopedResource()
+            if ICloudEvictionManager.isUbiquitous(url) { cloud = true }
+            if granted { url.stopAccessingSecurityScopedResource() }
             let status = destinationStatus(for: url, folderPath: folder, savedName: saved)
             if !status.isConnected { connected = false; missingKey = missingKey ?? key }
             else {
@@ -523,7 +530,8 @@ final class DashboardViewModel {
             else { connected = false; names.append(String(localized: "NAS")) }
         }
         return ProfileConnection(isConnected: connected, destinationNames: names,
-                                 freeBytes: free, usedFraction: used, disconnectedFolderKey: missingKey)
+                                 freeBytes: free, usedFraction: used, disconnectedFolderKey: missingKey,
+                                 hasCloudFolder: cloud)
     }
 
     /// Runs a profile with the existing engines: same scan, same copy, same dedup, same reports —

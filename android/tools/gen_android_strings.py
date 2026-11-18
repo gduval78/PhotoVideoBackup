@@ -131,7 +131,12 @@ REUSED = {
     "overlap_title": "This folder overlaps another destination",
     "overlap_message": "Choose a folder that is not inside another destination of this backup and does not contain one: the files would be written twice in the same place.",
     "choose_starting_point": "Choose a starting point. You pick the drive or folder in the next step.",
-    "tpl_camera_drive": "Camera or SD card → external drive",
+    "tpl_camera_drive": "Camera or SD card → folder",
+    "tpl_camera_folder_nas": "Camera or SD card → folder + NAS",
+    "name_camera_drive_nas": "Camera → drive + NAS",
+    "tpl_camera_nas": "Camera or SD card → NAS",
+    "tpl_camera_nas_d": "Copy a camera card or USB drive to your NAS over Wi-Fi.",
+    "name_camera_nas": "Camera → NAS",
     "tpl_photos_drive_d": "The simplest and fastest. Recommended.", "tpl_photos_nas_d": "Back up over Wi-Fi to your NAS.",
     "tpl_camera_drive_d": "Copy a camera card or USB drive to your drive.",
     "tpl_photos_drive_nas_d": "Two copies in one go: a drive and your NAS.",
@@ -201,6 +206,8 @@ PLACEHOLDER = re.compile(r"%(\d+\$)?(@|lld|ld|d)")
 def _t(en, fr, de, es, it, pt, zh, ru): return {"en": en, "fr": fr, "de": de, "es": es, "it": it, "pt": pt, "zh-Hans": zh, "ru": ru}
 
 EXTRA.update({
+    "tpl_photos_folder": {"en": "Gallery → folder", "fr": "Galerie → dossier", "de": "Galerie → Ordner", "es": "Galería → carpeta", "it": "Galleria → cartella", "pt": "Galeria → pasta", "zh-Hans": "相册 → 文件夹", "ru": "Галерея → папка", "ja": "ギャラリー → フォルダ", "ko": "갤러리 → 폴더", "hi": "गैलरी → फ़ोल्डर", "ar": "المعرض ← مجلد"},
+    "tpl_photos_folder_nas": {"en": "Gallery → folder + NAS", "fr": "Galerie → dossier + NAS", "de": "Galerie → Ordner + NAS", "es": "Galería → carpeta + NAS", "it": "Galleria → cartella + NAS", "pt": "Galeria → pasta + NAS", "zh-Hans": "相册 → 文件夹 + NAS", "ru": "Галерея → папка + NAS", "ja": "ギャラリー → フォルダ + NAS", "ko": "갤러리 → 폴더 + NAS", "hi": "गैलरी → फ़ोल्डर + NAS", "ar": "المعرض ← مجلد + NAS"},
     "tpl_photos_drive": _t("Gallery → external drive", "Galerie → disque externe", "Galerie → externes Laufwerk", "Galería → disco externo", "Galleria → disco esterno", "Galeria → disco externo", "相册 → 外置硬盘", "Галерея → внешний диск"),
     "tpl_photos_nas": _t("Gallery → NAS", "Galerie → NAS", "Galerie → NAS", "Galería → NAS", "Galleria → NAS", "Galeria → NAS", "相册 → NAS", "Галерея → NAS"),
     "tpl_photos_cloud": _t("Gallery → cloud folder", "Galerie → dossier cloud", "Galerie → Cloud-Ordner", "Galería → carpeta en la nube", "Galleria → cartella cloud", "Galeria → pasta na nuvem", "相册 → 云端文件夹", "Галерея → папка в облаке"),
