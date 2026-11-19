@@ -50,6 +50,16 @@ interface BackupTarget {
     suspend fun writeSmallFile(data: ByteArray, rel: String)
 }
 
+/**
+ * An output stream whose data is only sent when it is closed (a remote target that spools to a file and
+ * uploads at the end). The engine calls [abort] instead of `close()` when the copy is abandoned
+ * (a failed write, a cancel), so a partial file is never uploaded under its final name.
+ */
+interface AbortableOutput { fun abort() }
+
+/** Abandons [stream]: an [AbortableOutput] drops what it holds, any other stream is closed. */
+fun abandon(stream: OutputStream) { if (stream is AbortableOutput) stream.abort() else runCatching { stream.close() } }
+
 /** SHA-256 of the file at [rel], by re-reading it from the target (local re-read / remote re-download). */
 suspend fun BackupTarget.sha256(rel: String): String = openInput(rel).use { sha256Hex(it) }
 

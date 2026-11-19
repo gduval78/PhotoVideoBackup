@@ -278,7 +278,7 @@ class CopyEngine(private val index: IndexStore) {
                             throw e
                         } catch (e: Exception) {
                             it.remove()
-                            runCatching { o.stream.close() }
+                            abandon(o.stream)
                             drop(o.target, e)
                         }
                     }
@@ -287,12 +287,12 @@ class CopyEngine(private val index: IndexStore) {
                 }
             }
         } catch (e: CancellationException) {
-            active.forEach { runCatching { it.stream.close() }; runCatching { it.target.delete(rel) } }
+            active.forEach { abandon(it.stream); runCatching { it.target.delete(rel) } }
             throw e
         } catch (e: Exception) {
             // The source could not be read: nothing trustworthy was written.
             val note = "source read failed: ${e.message ?: e.javaClass.simpleName}"
-            active.forEach { runCatching { it.stream.close() }; runCatching { it.target.delete(rel) } }
+            active.forEach { abandon(it.stream); runCatching { it.target.delete(rel) } }
             return FanOutResult(emptyList(), disconnected, errors + note)
         }
 
