@@ -157,4 +157,102 @@ final class RemoteDedupTests: XCTestCase {
 
         XCTAssertEqual(free, "DJI Neo 2/2024-01-14/clip-2.mp4")
     }
+
+    // MARK: Sidecar reads that fail for a moment
+
+    /// A target whose sidecar reads misbehave a few times before working, like a network read of a big file.
+    final class FlakySidecarTarget: BackupTarget, @unchecked Sendable {
+        enum Fault { case truncated, failed }
+        let inner: FakeRemoteTarget
+        let fault: Fault
+        var failuresLeft: Int
+        private(set) var reads = 0
+        init(_ inner: FakeRemoteTarget, fault: Fault, failures: Int) { self.inner = inner; self.fault = fault; failuresLeft = failures }
+        var rootIdentifier: String { inner.rootIdentifier }
+        var displayName: String { inner.displayName }
+        var isRemote: Bool { true }
+        func absolutePath(forRelative rel: String) -> String { inner.absolutePath(forRelative: rel) }
+        func existingSize(forRelative rel: String) async -> Int64? { await inner.existingSize(forRelative: rel) }
+        func size(atAbsolutePath path: String) async -> Int64? { await inner.size(atAbsolutePath: path) }
+        func sha256(forRelative rel: String) async throws -> String { try await inner.sha256(forRelative: rel) }
+        func isReachable() async -> Bool { await inner.isReachable() }
+        func writeSmallFile(_ data: Data, atRelative rel: String) async throws { try await inner.writeSmallFile(data, atRelative: rel) }
+        func readSmallFile(atRelative rel: String) async -> Data? {
+            reads += 1
+            let data = await inner.readSmallFile(atRelative: rel)
+            guard rel == DestinationIndex.relativeName, failuresLeft > 0 else { return data }
+            failuresLeft -= 1
+            switch fault {
+            case .truncated: return data.map { Data($0.prefix($0.count / 2)) }
+            case .failed:    return nil
+            }
+        }
+    }
+
+    private func seedSidecar(on nas: FakeRemoteTarget) async throws -> String {
+        let abs = nas.absolutePath(forRelative: "Dev/2024-01-14/a.mp4")
+        await MainActor.run {
+            IndexStore.shared.context.insert(IndexedFile(
+                sourcePath: "x", sourceDevice: "Dev", fileName: "a.mp4", fileSize: 10, sha256: "abc",
+                copyStatus: .copied, destinationPaths: [abs], sourceName: "a.mp4", sourceSize: 10,
+                sourceModified: Date(timeIntervalSince1970: 1_700_000_000)))
+        }
+        await DestinationIndex.flush(targets: [nas])
+        try IndexStore.shared.clearHistory()
+        return abs
+    }
+
+    // SCENARIO: A short read of the sidecar is retried, not taken for a damaged index
+    // Field case: a NAS index of 6 933 entries was once reported unreadable and would have been rewritten from
+    // a smaller local copy. A read that comes back truncated is now tried again; the next attempt succeeds and
+    // the entries are merged as usual, with nothing kept aside.
+    func test_sidecar_shortRead_isRetried() async throws {
+        let nas = FakeRemoteTarget(name: "FlakyNAS")
+        defer { nas.cleanup() }
+        let abs = try await seedSidecar(on: nas)
+        let flaky = FlakySidecarTarget(nas, fault: .truncated, failures: 2)
+        await DestinationIndex.load(targets: [flaky])
+        XCTAssertEqual(flaky.reads, 3)
+        XCTAssertEqual(IndexStore.shared.sourceHashes(writtenAt: abs), ["abc"])
+        let corrupt = await nas.readSmallFile(atRelative: DestinationIndex.corruptCopyName)
+        XCTAssertNil(corrupt)
+    }
+
+    // SCENARIO: A sidecar that exists but cannot be read is left exactly as it is
+    // The read fails every time (network): nothing is merged, and — the point — the run never overwrites a file it
+    // could not read, because the local copy may be smaller than what other devices recorded.
+    func test_sidecar_existsButUnreadable_isNeverOverwritten() async throws {
+        let nas = FakeRemoteTarget(name: "DownNAS")
+        defer { nas.cleanup() }
+        _ = try await seedSidecar(on: nas)
+        let before = await nas.readSmallFile(atRelative: DestinationIndex.relativeName)
+        let flaky = FlakySidecarTarget(nas, fault: .failed, failures: 10)
+        await DestinationIndex.load(targets: [flaky])
+        await DestinationIndex.flush(targets: [flaky])
+        let after = await nas.readSmallFile(atRelative: DestinationIndex.relativeName)
+        XCTAssertEqual(before, after)
+    }
+
+    // SCENARIO: A sidecar that stays damaged is kept aside before it is rewritten
+    func test_sidecar_stillDamaged_isKeptAsideThenRewritten() async throws {
+        let nas = FakeRemoteTarget(name: "BrokenNAS")
+        defer { nas.cleanup() }
+        _ = try await seedSidecar(on: nas)
+        let good = await nas.readSmallFile(atRelative: DestinationIndex.relativeName)!
+        let flaky = FlakySidecarTarget(nas, fault: .truncated, failures: 10)
+        await DestinationIndex.load(targets: [flaky])
+        let kept = await nas.readSmallFile(atRelative: DestinationIndex.corruptCopyName)
+        XCTAssertNotNil(kept)                                  // what was there is not lost
+        XCTAssertEqual(flaky.reads, DestinationIndex.readAttempts)
+        XCTAssertFalse(good.isEmpty)
+    }
+
+    // SCENARIO: A destination without a sidecar is not retried
+    func test_sidecar_absent_isNotRetried() async throws {
+        let nas = FakeRemoteTarget(name: "NewNAS")
+        defer { nas.cleanup() }
+        let flaky = FlakySidecarTarget(nas, fault: .failed, failures: 10)
+        await DestinationIndex.load(targets: [flaky])
+        XCTAssertEqual(flaky.reads, 1)
+    }
 }

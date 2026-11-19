@@ -246,21 +246,71 @@ enum DestinationIndex {
     /// Roots whose sidecar was written by a newer app version: read-only, so it is never overwritten.
     @MainActor private static var readOnlyRoots = Set<String>()
 
+    /// How many times a sidecar is read before it is judged missing or unreadable, and the pauses between
+    /// attempts. A network read (SMB, WebDAV) of a large file can come back short or fail for a moment; one
+    /// such hiccup used to be taken for a damaged index (field log, 2026-11-19: "unreadable sidecar" on a
+    /// 6 933-entry NAS index that read fine the next run).
+    static let readAttempts = 3
+    private static var retryPauses: [UInt64] { IndexStore.isRunningTests ? [0, 0] : [400_000_000, 1_000_000_000] }
+
+    /// Name of the copy kept of a sidecar that stays unreadable after every attempt, before it is rewritten.
+    static let corruptCopyName = ".pvb-index.corrupt.json"
+
+    private enum SidecarRead {
+        /// Nothing at the sidecar's name: a destination that never had one.
+        case absent
+        /// The file is there but could not be read at all (network error): never overwrite what was not read.
+        case unreadable
+        /// Bytes arrived but do not decode: a damaged or short read.
+        case damaged(Data)
+        case ok(SidecarFile)
+    }
+
+    /// Reads and decodes the sidecar, trying again when a read fails or returns something that does not decode.
+    private static func readSidecar(_ target: BackupTarget) async -> SidecarRead {
+        var last: SidecarRead = .absent
+        for attempt in 0..<readAttempts {
+            if attempt > 0 {
+                let pause = retryPauses[min(attempt - 1, retryPauses.count - 1)]
+                if pause > 0 { try? await Task.sleep(nanoseconds: pause) }
+                DiagnosticLog.write("[INDEX] retrying the sidecar of \(target.displayName) (attempt \(attempt + 1) of \(readAttempts))")
+            }
+            if let data = await target.readSmallFile(atRelative: relativeName) {
+                if let file = try? JSONDecoder().decode(SidecarFile.self, from: data) { return .ok(file) }
+                last = .damaged(data)
+            } else if await target.existingSize(forRelative: relativeName) != nil {
+                last = .unreadable            // it exists, yet the read failed
+            } else {
+                return .absent                // really not there: no point trying again
+            }
+        }
+        return last
+    }
+
     /// Merges every target's sidecar into the local index. Call before looking anything up.
     static func load(targets: [BackupTarget]) async {
         for target in targets {
-            guard let data = await target.readSmallFile(atRelative: relativeName) else { continue }
-            guard let file = try? JSONDecoder().decode(SidecarFile.self, from: data) else {
-                DiagnosticLog.write("[INDEX] unreadable sidecar on \(target.displayName) — ignored, will be rewritten")
+            switch await readSidecar(target) {
+            case .absent:
                 continue
-            }
-            if file.version > currentVersion {
-                DiagnosticLog.write("[INDEX] sidecar on \(target.displayName) is version \(file.version) — left untouched")
+            case .unreadable:
+                // The file exists but could not be read: leave it exactly as it is for this run (writing our
+                // own smaller copy over it could drop entries other devices recorded).
+                DiagnosticLog.write("[INDEX] sidecar on \(target.displayName) could not be read after \(readAttempts) attempts — left untouched")
                 await MainActor.run { _ = readOnlyRoots.insert(target.rootIdentifier) }
-                continue
+            case .damaged(let data):
+                // Still undecodable after every attempt: keep what was there, then let the run rewrite it.
+                try? await target.writeSmallFile(data, atRelative: corruptCopyName)
+                DiagnosticLog.write("[INDEX] unreadable sidecar on \(target.displayName) after \(readAttempts) attempts — copy kept as \(corruptCopyName), will be rewritten")
+            case .ok(let file):
+                if file.version > currentVersion {
+                    DiagnosticLog.write("[INDEX] sidecar on \(target.displayName) is version \(file.version) — left untouched")
+                    await MainActor.run { _ = readOnlyRoots.insert(target.rootIdentifier) }
+                    continue
+                }
+                let added = await MainActor.run { IndexStore.shared.mergeSidecar(file.entries, target: target) }
+                DiagnosticLog.write("[INDEX] \(target.displayName): \(file.entries.count) entries, \(added) new to this device")
             }
-            let added = await MainActor.run { IndexStore.shared.mergeSidecar(file.entries, target: target) }
-            DiagnosticLog.write("[INDEX] \(target.displayName): \(file.entries.count) entries, \(added) new to this device")
         }
     }
 
