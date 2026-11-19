@@ -250,6 +250,11 @@ final class PCloudTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendab
         catch { if !isMissing(error) { throw error } }
     }
 
+    /// Removes a folder and everything in it (tests only — the live test's throwaway folder).
+    func removeFolderForTests(_ rel: String) async throws {
+        try await call("deletefolderrecursive", ["path": apiPath(forRelative: rel)])
+    }
+
     // MARK: Reachability and connection test
 
     /// False for an unreachable server **and** a revoked token — the caller never prunes the ledger on either.

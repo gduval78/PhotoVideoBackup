@@ -5,7 +5,9 @@
 @media(prefers-color-scheme:dark){body{background:#1c1c1e;color:#f5f5f7}}main{padding:24px;max-width:420px;text-align:center}a{color:#0a84ff}</style></head>
 <body><main><h1>PhotoVideoBackup</h1>
 <p id="m">Returning to the app…</p>
-<p><a id="l" href="photovideobackup://pcloud" hidden>Open PhotoVideoBackup</a></p></main>
+<p><a id="l" href="photovideobackup://pcloud" hidden>Open PhotoVideoBackup</a></p>
+<div id="manual" hidden><p>The app did not open (this happens in a desktop browser). For a manual test, copy the line below into the test configuration file:</p>
+<textarea id="frag" readonly rows="4" style="width:100%;font:12px monospace"></textarea></div></main>
 <script>
 // pCloud returns the token in the URI fragment (never sent to a server). Hand it to the app unchanged;
 // nothing is stored or transmitted from this page.
@@ -13,6 +15,14 @@ var h = location.hash || "", q = location.search || "";
 var target = "photovideobackup://pcloud" + q + h;
 document.getElementById("l").href = target;
 document.getElementById("l").hidden = false;
-if (h || q) { location.replace(target); }
+if (h || q) {
+  location.replace(target);
+  // Still here after a moment: no app handled the link — show the values locally (never sent anywhere).
+  setTimeout(function () {
+    document.getElementById("frag").value = (h || q).replace(/^[#?]/, "");
+    document.getElementById("manual").hidden = false;
+    document.getElementById("m").textContent = "Signed in.";
+  }, 1500);
+}
 else { document.getElementById("m").textContent = "Nothing to return. You can close this page."; }
 </script></body></html>

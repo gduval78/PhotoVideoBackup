@@ -18,6 +18,7 @@ test-all:
 	  -destination "$(DESTINATION)" \
 	  -skip-testing:PhotoVideoBackupTests/LiveNASIntegrationTests \
 	  -skip-testing:PhotoVideoBackupTests/LiveWebDAVIntegrationTests \
+	  -skip-testing:PhotoVideoBackupTests/LivePCloudIntegrationTests \
 	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
 	  | sed 's/^/  /'
 
@@ -41,6 +42,15 @@ test-webdav:
 	  -scheme $(SCHEME) \
 	  -destination "platform=iOS Simulator,name=iPhone 17 Pro" \
 	  -only-testing:PhotoVideoBackupTests/LiveWebDAVIntegrationTests \
+	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
+	  | sed 's/^/  /'
+
+# Live pCloud round-trip. Needs pcloud-config.json (gitignored) with `oauth_fragment`. Simulator, like test-nas.
+test-pcloud:
+	xcodebuild test \
+	  -scheme $(SCHEME) \
+	  -destination "platform=iOS Simulator,name=iPhone 17 Pro" \
+	  -only-testing:PhotoVideoBackupTests/LivePCloudIntegrationTests \
 	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
 	  | sed 's/^/  /'
 
