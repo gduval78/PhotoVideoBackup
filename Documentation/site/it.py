@@ -26,7 +26,7 @@ GUIDE = [
             ["Sfogliare e visualizzare i backup (anteprima LUT inclusa)", "✓", "✓"],
             ["Copiare schede di fotocamere e unità USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Mirror su una seconda unità", "—", "✓"],
-            ["Copiare su un NAS via Wi-Fi", "—", "✓"],
+            ["Copiare su un NAS via Wi-Fi", "—", "✓"], ["Backup su un server WebDAV (Nextcloud, pCloud…) — iPhone", "—", "✓"],
             ["Applicare una LUT a video LOG (esportazione H.265)", "—", "✓"],
         ]),
         ("note", "Su iPhone, un'installazione gratuita include <b>un</b> backup. Se ne crei altri e poi perdi Pro (ad esempio dopo un rimborso), non vengono eliminati: restano nell'elenco, bloccati, finché non passi di nuovo a Pro. Il tuo primo backup continua a funzionare finché usa solo funzioni gratuite (la libreria foto, un disco o una cartella). Un backup con un NAS o una seconda destinazione richiede Pro per essere eseguito. Hai già acquistato Pro su un altro dispositivo? Apri <b>Impostazioni → Pro → Ripristina acquisti</b>."),
@@ -113,7 +113,7 @@ GUIDE = [
         ("fig", "browse_media_grid", "La griglia dei contenuti di un giorno."),
         ("p", "Per inviare file altrove: tocca <b>Seleziona</b>, spunta i file e poi <b>Condividi</b> — AirDrop, messaggi, e-mail, un'altra app."),
         ("fig", "android_viewer", "Android: il visualizzatore a schermo intero."),
-        ("p", "Su un NAS, Sfoglia elenca i file e scarica ciascuno solo quando lo apri."),
+        ("p", "Su un NAS, Sfoglia elenca i file e scarica ciascuno solo quando lo apri. Un server WebDAV funziona allo stesso modo."),
     ]),
     ("naming", "Cartelle e nomi dei file", [
         ("p", "In <b>Impostazioni → Backup</b>, <b>Struttura cartelle</b> stabilisce come è organizzata una cartella di dispositivo: <i>Flat</i> (piatta), <i>By month</i> (per mese), <i>By date</i> (per data, predefinita) o <i>By year / month</i> (anno / mese). La scheda Sfoglia si adatta a ciò che c'è sull'unità."),
@@ -145,6 +145,13 @@ GUIDE = [
         ("p", "Il NAS compare ora sulla scheda del backup, con il suo spazio libero. Ogni backup ha il proprio NAS, quindi puoi usarne più di uno. Puoi fare il backup <b>lontano da casa</b> se il NAS è raggiungibile — il modo sicuro più semplice è una VPN come <b>Tailscale</b>: installala sul NAS e sul telefono, poi usa l'indirizzo <code>100.x.x.x</code> del NAS come host."),
         ("note", "Con i dati mobili, un banner arancione ti avverte che i video grandi possono consumare molti dati; <b>Interrompi</b> ferma il backup (viene contrassegnato come Parziale)."),
     ]),
+    ("webdav", "Backup su Nextcloud, pCloud o un altro server WebDAV (Pro)", [
+        ("p", "Oltre a un disco o a un NAS, un backup da iPhone può andare su un server <b>WebDAV</b>: <b>Nextcloud</b>, ownCloud, <b>pCloud</b>, un Synology o QNAP con WebDAV attivo, una Hetzner Storage Box… L’indirizzo è un indirizzo sicuro <code>https</code>, quindi funziona da qualsiasi luogo, senza VPN. Ogni file viene verificato con SHA-256, come su un NAS."),
+        ("ol", ["Procurati l’indirizzo WebDAV del tuo server. Nextcloud: <code>https://tuo-server/remote.php/dav/files/tuo-nome/</code>. pCloud: <code>https://ewebdav.pcloud.com/</code> (account in Europa) oppure <code>https://webdav.pcloud.com/</code> (Stati Uniti).", "Con l’autenticazione a due fattori, crea una <b>password per le app</b> nelle impostazioni di sicurezza del tuo server e usala al posto della tua password.", "Nell’app: crea un backup con il modello <i>Libreria foto → server WebDAV</i> o <i>Fotocamera o scheda SD → server WebDAV</i>, oppure aggiungi <b>Un server WebDAV</b> a un backup esistente dalle sue <b>Impostazioni</b>.", "Compila l’indirizzo del <b>server</b>, una <b>cartella</b> facoltativa (per esempio <code>Backups</code>), il tuo <b>nome utente</b> e la tua <b>password</b>. La password è conservata nel portachiavi di iOS.", "Tocca <b>Prova connessione</b>. Poi <b>Crea</b> (oppure <b>Salva</b> nelle impostazioni di un backup)."]),
+        ("p", "<b>Il tuo server con un certificato autofirmato.</b> Se iOS non si fida del certificato del server, il test lo segnala e mostra la sua <b>impronta</b>. Verifica che sia quella che mostra il tuo server, poi tocca <b>Considera attendibile questo certificato</b>: da quel momento viene accettato solo quel certificato esatto (uno diverso viene rifiutato). <b>Dimentica questo certificato</b> lo rimuove."),
+        ("p", "<b>File di grandi dimensioni.</b> Su Nextcloud e ownCloud i video oltre 100 MB vengono inviati a blocchi, e un invio interrotto riprende da dove si era fermato. Gli altri server ricevono ogni file in una sola richiesta: se un server o un proxy davanti ad esso limita la dimensione di un invio, il file risulta fallito con <i>«Il server ha rifiutato le dimensioni di questo file: controlla il suo limite di caricamento.»</i> Alza il limite sul server e riavvia. Lo stesso pCloud dichiara che WebDAV non è pensato per backup molto grandi: per i video pesanti preferisci un disco o un NAS."),
+        ("note", "In questa versione WebDAV è disponibile su iPhone e iPad; Android seguirà. La <b>Crypto Folder</b> cifrata di pCloud non è raggiungibile tramite WebDAV."),
+    ]),
     ("android", "Android e iPhone: le differenze", [
         ("p", "Le due app condividono lo stesso motore: stesso rilevamento dei duplicati, stessi nomi, stessa verifica SHA-256, stesso indice — un backup iniziato su una viene riconosciuto dall'altra."),
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -167,8 +174,10 @@ GUIDE = [
         ("p", "<b>La barra indica il 3% e sembra bloccata.</b> I primi file sono spesso video grandi. Attendi qualche minuto."),
         ("p", "<b>La mia scheda appare come «Documents».</b> Alcune fotocamere usano una cartella generica. Scrivi un nome significativo quando aggiungi la sorgente."),
         ("p", "<b>Posso fare il backup con il telefono quasi pieno?</b> Sì. I file vengono trasmessi in streaming alla destinazione, quindi si trattengono solo pochi megabyte alla volta. Solo un backup su un NAS <i>da solo</i> richiede spazio per un file alla volta. Un file che davvero non ci sta viene segnalato come fallito e il resto prosegue."),
-        ("p", "<b>I miei dati vengono inviati da qualche parte?</b> No. Tutto avviene tra il telefono e la tua unità o il tuo NAS. L'app non ha server né account. L'unico traffico di rete è verso il NAS che configuri tu e il download, da parte del sistema, delle tue foto iCloud / Google."),
+        ("p", "<b>I miei dati vengono inviati da qualche parte?</b> No. Tutto avviene tra il telefono e la tua unità o il tuo NAS. L'app non ha server né account. L'unico traffico di rete è verso il NAS che configuri tu e il download, da parte del sistema, delle tue foto iCloud / Google. Lo stesso vale per un server WebDAV che configuri tu stesso."),
         ("p", "<b>Quali lingue?</b> Inglese, francese, tedesco, spagnolo (neutro, per Spagna e America Latina), italiano, portoghese (europeo), cinese semplificato, cinese tradizionale, russo, giapponese, coreano, hindi e arabo. L'app segue la lingua del telefono; puoi forzarne una in <b>Impostazioni → Lingua</b>, senza riavviare."),
+        ("p", "<b>Posso fare il backup su pCloud?</b> Sì, tramite WebDAV: usa <code>https://ewebdav.pcloud.com/</code> (oppure <code>https://webdav.pcloud.com/</code> per un account negli Stati Uniti), l’e-mail e la password del tuo account pCloud e una cartella come <code>Backups</code>. I duplicati vengono rilevati come per qualsiasi destinazione. I file vengono inviati in un unico blocco, quindi per i video pesanti un disco o un NAS è più affidabile."),
+        ("p", "<b>«Il server ha rifiutato le dimensioni di questo file».</b> Il server, o un proxy davanti ad esso (nginx, Cloudflare…), limita la dimensione di un invio. Alza il limite (su Nextcloud: <code>upload_max_filesize</code>, <code>post_max_size</code> e la dimensione delle richieste del proxy), oppure fai il backup dei video pesanti su un disco o un NAS. Nextcloud e ownCloud accettano anche invii a blocchi, che aggirano il limite."),
     ]),
 ]
 
@@ -181,7 +190,7 @@ PRIVACY = {
             ("ul", ["Alle tue foto e ai tuoi video — in <b>sola lettura</b>, per copiarli sull'unità, la cartella o il NAS che scegli. Su Android ciò include la posizione salvata nelle foto, perché la copia sia identica all'originale.", "Alle cartelle e alle schede che scegli con il gestore file del sistema.", "Alle notifiche, per avvisarti quando un backup finisce."]),
         ]),
         ("Che cosa esce dal tuo dispositivo", [
-            ("ul", ["<b>Nulla arriva a noi.</b> I tuoi file vengono scritti solo nelle destinazioni che scegli.", "Se configuri un NAS, l'app si connette a <b>quel server</b>, all'indirizzo che hai inserito, e da nessun'altra parte. La password è conservata nel Portachiavi di iOS o nel Keystore di Android.", "iOS o Android può scaricare le tue foto iCloud o Google perché l'app possa leggerle; lo fa il sistema, per il tuo account.", "Gli acquisti sono gestiti da Apple o Google. Non riceviamo alcuna informazione di pagamento."]),
+            ("ul", ["<b>Nulla arriva a noi.</b> I tuoi file vengono scritti solo nelle destinazioni che scegli.", "Se configuri un NAS, l'app si connette a <b>quel server</b>, all'indirizzo che hai inserito, e da nessun'altra parte. La password è conservata nel Portachiavi di iOS o nel Keystore di Android.", "iOS o Android può scaricare le tue foto iCloud o Google perché l'app possa leggerle; lo fa il sistema, per il tuo account.", "Gli acquisti sono gestiti da Apple o Google. Non riceviamo alcuna informazione di pagamento.", "Se configuri un server WebDAV (Nextcloud, pCloud…), l’app si collega a <b>quel server</b>, all’indirizzo che hai digitato, e da nessun’altra parte. La password è conservata nel portachiavi di iOS. Se scegli di considerare attendibile il certificato di un server, sul tuo dispositivo viene conservata solo la sua impronta."]),
         ]),
         ("Registro diagnostico", [
             ("p", "L'app tiene sul tuo dispositivo un piccolo registro diagnostico, senza contenuti personali. Viene inviato solo se scegli di inviarlo per e-mail all'assistenza dall'app."),

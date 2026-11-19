@@ -26,7 +26,7 @@ GUIDE = [
             ["Explorar y previsualizar las copias (con vista previa de LUT)", "✓", "✓"],
             ["Copiar tarjetas de cámara y unidades USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Réplica en una segunda unidad", "—", "✓"],
-            ["Copiar a un NAS por Wi-Fi", "—", "✓"],
+            ["Copiar a un NAS por Wi-Fi", "—", "✓"], ["Copiar a un servidor WebDAV (Nextcloud, pCloud…) — iPhone", "—", "✓"],
             ["Gradar vídeos LOG con una LUT (exportación H.265)", "—", "✓"],
         ]),
         ("note", "En iPhone, una instalación gratuita incluye <b>una</b> copia de seguridad. Si creas más y luego pierdes Pro (por ejemplo, tras un reembolso), no se eliminan: permanecen en la lista, bloqueadas, hasta que vuelvas a actualizar. Tu primera copia sigue funcionando mientras solo use funciones gratuitas (la fototeca, un disco o una carpeta). Una copia que tenga un NAS o un segundo destino necesita Pro para ejecutarse. ¿Ya compraste Pro en otro dispositivo? Abre <b>Ajustes → Pro → Restaurar compras</b>."),
@@ -113,7 +113,7 @@ GUIDE = [
         ("fig", "browse_media_grid", "La cuadrícula de medios de un día."),
         ("p", "Para enviar archivos a otro sitio: toca <b>Seleccionar</b>, marca los archivos y luego <b>Compartir</b> — AirDrop, mensajes, correo, otra aplicación."),
         ("fig", "android_viewer", "Android: el visor a pantalla completa."),
-        ("p", "En un NAS, Explorar lista los archivos y descarga cada uno solo cuando lo abres."),
+        ("p", "En un NAS, Explorar lista los archivos y descarga cada uno solo cuando lo abres. Un servidor WebDAV funciona igual."),
     ]),
     ("naming", "Carpetas y nombres de archivo", [
         ("p", "En <b>Ajustes → Copia</b>, <b>Estructura de carpetas</b> define cómo se organiza una carpeta de dispositivo: <i>Flat</i> (plana), <i>By month</i> (por mes), <i>By date</i> (por fecha, predeterminada) o <i>By year / month</i> (año / mes). La pestaña Explorar se adapta a lo que haya en la unidad."),
@@ -145,6 +145,13 @@ GUIDE = [
         ("p", "El NAS aparece ahora en la tarjeta de la copia, con su espacio libre. Cada copia tiene su propio NAS, así que puedes usar varios. Puedes copiar <b>fuera de casa</b> si el NAS es accesible — la forma segura más sencilla es una VPN como <b>Tailscale</b>: instálala en el NAS y en el teléfono y usa la dirección <code>100.x.x.x</code> del NAS como host."),
         ("note", "Con datos móviles, un aviso naranja te advierte de que los vídeos grandes pueden consumir muchos datos; <b>Detener</b> interrumpe la copia (queda marcada como Parcial)."),
     ]),
+    ("webdav", "Copiar a Nextcloud, pCloud u otro servidor WebDAV (Pro)", [
+        ("p", "Además de un disco o un NAS, una copia en el iPhone puede ir a un servidor <b>WebDAV</b>: <b>Nextcloud</b>, ownCloud, <b>pCloud</b>, un Synology o QNAP con WebDAV activado, una Hetzner Storage Box… La dirección es una dirección segura <code>https</code>, así que funciona desde cualquier lugar, sin VPN. Cada archivo se verifica con SHA-256, como en un NAS."),
+        ("ol", ["Consigue la dirección WebDAV de tu servidor. Nextcloud: <code>https://tu-servidor/remote.php/dav/files/tu-nombre/</code>. pCloud: <code>https://ewebdav.pcloud.com/</code> (cuenta en Europa) o <code>https://webdav.pcloud.com/</code> (Estados Unidos).", "Con la autenticación en dos pasos, crea una <b>contraseña de aplicación</b> en los ajustes de seguridad de tu servidor y úsala en lugar de tu contraseña.", "En la app: crea una copia con la plantilla <i>Fototeca → servidor WebDAV</i> o <i>Cámara o tarjeta SD → servidor WebDAV</i>, o añade <b>Un servidor WebDAV</b> a una copia existente desde sus <b>Ajustes</b>.", "Rellena la dirección del <b>servidor</b>, una <b>carpeta</b> opcional (por ejemplo <code>Backups</code>), tu <b>nombre de usuario</b> y tu <b>contraseña</b>. La contraseña se guarda en el llavero de iOS.", "Toca <b>Probar conexión</b>. Después <b>Crear</b> (o <b>Guardar</b> en los ajustes de una copia)."]),
+        ("p", "<b>Tu propio servidor con un certificado autofirmado.</b> Si iOS no confía en el certificado del servidor, la prueba lo indica y muestra su <b>huella</b>. Comprueba que es la que muestra tu servidor y toca <b>Confiar en este certificado</b>: a partir de entonces solo se acepta exactamente ese certificado (otro distinto se rechaza). <b>Olvidar este certificado</b> lo elimina."),
+        ("p", "<b>Archivos grandes.</b> En Nextcloud y ownCloud, los vídeos de más de 100 MB se envían por partes, y una subida interrumpida se reanuda donde se quedó. Los demás servidores reciben cada archivo en una sola petición: si un servidor o un proxy situado delante limita el tamaño de una subida, el archivo se marca como fallido con <i>«El servidor rechazó el tamaño de este archivo: revisa su límite de subida.»</i> Sube el límite en el servidor y vuelve a ejecutar. El propio pCloud dice que WebDAV no está pensado para copias muy grandes: para vídeos grandes, prefiere un disco o un NAS."),
+        ("note", "En esta versión WebDAV está disponible en iPhone y iPad; Android lo incorporará. La <b>Crypto Folder</b> cifrada de pCloud no es accesible por WebDAV."),
+    ]),
     ("android", "Android e iPhone: en qué se diferencian", [
         ("p", "Las dos aplicaciones comparten el mismo motor: misma detección de duplicados, mismo nombrado, misma verificación SHA-256, mismo índice — una copia empezada en una es reconocida por la otra."),
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -167,8 +174,10 @@ GUIDE = [
         ("p", "<b>La barra marca 3 % y parece atascada.</b> Los primeros archivos suelen ser vídeos grandes. Espera unos minutos."),
         ("p", "<b>Mi tarjeta aparece como «Documents».</b> Algunas cámaras usan una carpeta genérica. Escribe un nombre descriptivo al añadir la fuente."),
         ("p", "<b>¿Puedo copiar con el móvil casi lleno?</b> Sí. Los archivos se envían en flujo al destino, así que solo se retienen unos pocos megabytes a la vez. Solo una copia a un NAS <i>solo</i> necesita espacio para un archivo cada vez. Un archivo que de verdad no cabe se señala como fallido y el resto continúa."),
-        ("p", "<b>¿Se envían mis datos a alguna parte?</b> No. Todo ocurre entre tu móvil y tu unidad o NAS. La aplicación no tiene servidor ni cuenta. El único tráfico de red va al NAS que configuras tú y a la descarga, por parte del sistema, de tus propias fotos de iCloud / Google."),
+        ("p", "<b>¿Se envían mis datos a alguna parte?</b> No. Todo ocurre entre tu móvil y tu unidad o NAS. La aplicación no tiene servidor ni cuenta. El único tráfico de red va al NAS que configuras tú y a la descarga, por parte del sistema, de tus propias fotos de iCloud / Google. Lo mismo ocurre con un servidor WebDAV que configures tú mismo."),
         ("p", "<b>¿Qué idiomas?</b> Inglés, francés, alemán, español (neutro, para España y Latinoamérica), italiano, portugués (europeo), chino simplificado, chino tradicional, ruso, japonés, coreano, hindi y árabe. La aplicación sigue el idioma del móvil; puedes forzar uno en <b>Ajustes → Idioma</b>, sin reiniciar."),
+        ("p", "<b>¿Puedo copiar a pCloud?</b> Sí, mediante WebDAV: usa <code>https://ewebdav.pcloud.com/</code> (o <code>https://webdav.pcloud.com/</code> para una cuenta en Estados Unidos), el correo y la contraseña de tu cuenta de pCloud y una carpeta como <code>Backups</code>. Los duplicados se detectan como en cualquier destino. Los archivos se envían de una pieza, así que para vídeos grandes un disco o un NAS es más fiable."),
+        ("p", "<b>«El servidor rechazó el tamaño de este archivo».</b> El servidor, o un proxy situado delante (nginx, Cloudflare…), limita el tamaño de una subida. Sube el límite (en Nextcloud: <code>upload_max_filesize</code>, <code>post_max_size</code> y el tamaño de petición del proxy), o copia los vídeos grandes a un disco o un NAS. Nextcloud y ownCloud también aceptan subidas por partes, que evitan el límite."),
     ]),
 ]
 
@@ -181,7 +190,7 @@ PRIVACY = {
             ("ul", ["A tus fotos y vídeos — en <b>solo lectura</b>, para copiarlos a la unidad, carpeta o NAS que elijas. En Android incluye la ubicación guardada en tus fotos, para que la copia sea idéntica al original.", "A las carpetas y tarjetas que eliges con el explorador de archivos del sistema.", "A las notificaciones, para avisarte al terminar una copia."]),
         ]),
         ("Qué sale de tu dispositivo", [
-            ("ul", ["<b>Nada llega a nosotros.</b> Tus archivos solo se escriben en los destinos que eliges.", "Si configuras un NAS, la aplicación se conecta a <b>ese servidor</b>, en la dirección que escribiste, y a ningún otro sitio. La contraseña se guarda en el llavero de iOS o en el Keystore de Android.", "iOS o Android puede descargar tus propias fotos de iCloud o Google para que la aplicación las lea; lo hace el sistema, para tu cuenta.", "Las compras las gestionan Apple o Google. No recibimos ninguna información de pago."]),
+            ("ul", ["<b>Nada llega a nosotros.</b> Tus archivos solo se escriben en los destinos que eliges.", "Si configuras un NAS, la aplicación se conecta a <b>ese servidor</b>, en la dirección que escribiste, y a ningún otro sitio. La contraseña se guarda en el llavero de iOS o en el Keystore de Android.", "iOS o Android puede descargar tus propias fotos de iCloud o Google para que la aplicación las lea; lo hace el sistema, para tu cuenta.", "Las compras las gestionan Apple o Google. No recibimos ninguna información de pago.", "Si configuras un servidor WebDAV (Nextcloud, pCloud…), la app se conecta a <b>ese servidor</b>, en la dirección que escribiste, y a ningún otro sitio. La contraseña se guarda en el llavero de iOS. Si decides confiar en el certificado de un servidor, solo su huella se guarda en tu dispositivo."]),
         ]),
         ("Registro de diagnóstico", [
             ("p", "La aplicación guarda en tu dispositivo un pequeño registro de diagnóstico, sin contenido personal. Solo se envía si decides mandarlo por correo al soporte desde la aplicación."),

@@ -26,7 +26,7 @@ GUIDE = [
             ["Browse and preview backups (LUT preview included)", "✓", "✓"],
             ["Back up camera cards and USB drives (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Mirror to a second drive", "—", "✓"],
-            ["Back up to a NAS over Wi-Fi", "—", "✓"],
+            ["Back up to a NAS over Wi-Fi", "—", "✓"], ["Back up to a WebDAV server (Nextcloud, pCloud…) — iPhone", "—", "✓"],
             ["Grade LOG videos with a LUT (H.265 export)", "—", "✓"],
         ]),
         ("note", "On iPhone, a free install keeps <b>one</b> backup. If you create more and later lose Pro (for example after a refund), they are not deleted: they stay in the list, locked, until you upgrade again. Your first backup keeps working as long as it only uses free features (the photo library, one drive or folder). A backup that has a NAS or a second destination needs Pro to run. Already bought Pro on another device? Open <b>Settings → Pro → Restore Purchases</b>."),
@@ -113,7 +113,7 @@ GUIDE = [
         ("fig", "browse_media_grid", "The media grid of a day."),
         ("p", "To send files elsewhere: tap <b>Select</b>, tick the files, then <b>Share</b> — AirDrop, messages, e-mail, another app."),
         ("fig", "android_viewer", "Android: the full-screen viewer."),
-        ("p", "On a NAS, Browse lists the files and downloads each one only when you open it."),
+        ("p", "On a NAS, Browse lists the files and downloads each one only when you open it. A WebDAV server works the same way."),
     ]),
     ("naming", "Folders and file names", [
         ("p", "In <b>Settings → Backup</b>, <b>Folder structure</b> sets how a device folder is organised: <i>Flat</i>, <i>By month</i>, <i>By date</i> (default) or <i>By year / month</i>. The Browse tab adapts to whatever is on the drive."),
@@ -145,6 +145,13 @@ GUIDE = [
         ("p", "The NAS now appears on the backup’s card, with its free space. Each backup has its own NAS, so you can use several. You can back up <b>away from home</b> if the NAS is reachable — the simplest secure way is a VPN such as <b>Tailscale</b>: install it on the NAS and on the phone, then use the NAS’s <code>100.x.x.x</code> address as host."),
         ("note", "Over mobile data, an orange banner warns you that large videos can use a lot of data; <b>Stop</b> halts the backup (it is marked Partial)."),
     ]),
+    ("webdav", "Back up to Nextcloud, pCloud or another WebDAV server (Pro)", [
+        ("p", "Besides a drive or a NAS, an iPhone backup can go to a <b>WebDAV</b> server — <b>Nextcloud</b>, ownCloud, <b>pCloud</b>, a Synology or QNAP with WebDAV enabled, a Hetzner Storage Box… The address is a secure <code>https</code> address, so it works from anywhere, without a VPN. Each file is verified by SHA-256, like on a NAS."),
+        ("ol", ["Get your server’s WebDAV address. Nextcloud: <code>https://your-server/remote.php/dav/files/your-name/</code>. pCloud: <code>https://ewebdav.pcloud.com/</code> (account in Europe) or <code>https://webdav.pcloud.com/</code> (United States).", "With two-factor authentication, create an <b>app password</b> in your server’s security settings and use it instead of your password.", "In the app: create a backup with the <i>Photo library → WebDAV server</i> or <i>Camera or SD card → WebDAV server</i> template, or add <b>A WebDAV server</b> to an existing backup from its <b>Settings</b>.", "Fill in the <b>server</b> address, an optional <b>folder</b> (for example <code>Backups</code>), your <b>user name</b> and <b>password</b>. The password is stored in the iOS Keychain.", "Tap <b>Test connection</b>. Then <b>Create</b> (or <b>Save</b> in a backup’s settings)."]),
+        ("p", "<b>Your own server with a self-signed certificate.</b> If iOS does not trust the server’s certificate, the test says so and shows its <b>fingerprint</b>. Check that it is the one your server shows, then tap <b>Trust this certificate</b>: from then on only that exact certificate is accepted (a different one is refused). <b>Forget this certificate</b> removes it."),
+        ("p", "<b>Large files.</b> On Nextcloud and ownCloud, videos above 100 MB are sent in pieces, and an interrupted upload resumes where it stopped. Other servers receive each file in one request: if a server or a proxy in front of it limits the size of an upload, the file is reported as failed with <i>“The server refused this file size — check its upload limit.”</i> Raise the limit on the server and run again. pCloud itself says WebDAV is not made for very large backups: prefer a drive or a NAS for big videos."),
+        ("note", "In this version WebDAV is available on iPhone and iPad; Android follows. pCloud’s encrypted <b>Crypto Folder</b> cannot be reached through WebDAV."),
+    ]),
     ("android", "Android and iPhone: what differs", [
         ("p", "The two apps share the same engine: same duplicate detection, same naming, same SHA-256 verification, same index — a backup started on one is recognised by the other."),
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -167,8 +174,10 @@ GUIDE = [
         ("p", "<b>The bar says 3% and seems stuck.</b> The first files are often large videos. Wait a few minutes."),
         ("p", "<b>My card appears as “Documents”.</b> Some cameras use a generic folder. Type a meaningful name when you add the source."),
         ("p", "<b>Can I back up when my phone is almost full?</b> Yes. Files are streamed to the destination, so only a few megabytes are held at a time. Only a backup to a NAS <i>alone</i> needs room for one file at a time. A file that really cannot fit is reported as failed and the rest continues."),
-        ("p", "<b>Is my data sent anywhere?</b> No. Everything happens between your phone and your drive or NAS. The app has no server and no account. The only network traffic is to the NAS you set up yourself, and the download of your own iCloud / Google photos by the system."),
+        ("p", "<b>Is my data sent anywhere?</b> No. Everything happens between your phone and your drive or NAS. The app has no server and no account. The only network traffic is to the NAS you set up yourself, and the download of your own iCloud / Google photos by the system. The same goes for a WebDAV server you set up yourself."),
         ("p", "<b>Which languages?</b> English, French, German, Spanish (neutral, for Spain and Latin America), Italian, Portuguese (European), Simplified Chinese, Traditional Chinese, Russian, Japanese, Korean, Hindi and Arabic. The app follows the phone language; you can force one in <b>Settings → Language</b>, with no restart."),
+        ("p", "<b>Can I back up to pCloud?</b> Yes, through WebDAV: use <code>https://ewebdav.pcloud.com/</code> (or <code>https://webdav.pcloud.com/</code> for an account in the United States), your pCloud e-mail and password, and a folder such as <code>Backups</code>. Duplicates are detected as with any destination. Files are sent in one piece, so for large videos a drive or a NAS is more reliable."),
+        ("p", "<b>“The server refused this file size.”</b> The server, or a proxy in front of it (nginx, Cloudflare…), limits the size of an upload. Raise the limit (on Nextcloud: <code>upload_max_filesize</code>, <code>post_max_size</code> and the proxy’s body size), or back up large videos to a drive or a NAS. Nextcloud and ownCloud also accept uploads in pieces, which get around the limit."),
     ]),
 ]
 
@@ -181,7 +190,7 @@ PRIVACY = {
             ("ul", ["Your photos and videos — <b>read-only</b>, to copy them to the drive, folder or NAS that you choose. On Android this includes the location stored in your photos, so that the copy is identical to the original.", "The folders and cards that you pick with the system file browser.", "Notifications, to tell you when a backup ends."]),
         ]),
         ("What leaves your device", [
-            ("ul", ["<b>Nothing goes to us.</b> Your files are written only to the destinations you choose.", "If you configure a NAS, the app connects to <b>that server</b>, at the address you typed, and nowhere else. The password is kept in the iOS Keychain or the Android Keystore.", "iOS or Android may download your own iCloud or Google photos so the app can read them; this is done by the system, for your account.", "Purchases are handled by Apple or Google. We receive no payment information."]),
+            ("ul", ["<b>Nothing goes to us.</b> Your files are written only to the destinations you choose.", "If you configure a NAS, the app connects to <b>that server</b>, at the address you typed, and nowhere else. The password is kept in the iOS Keychain or the Android Keystore.", "iOS or Android may download your own iCloud or Google photos so the app can read them; this is done by the system, for your account.", "Purchases are handled by Apple or Google. We receive no payment information.", "If you configure a WebDAV server (Nextcloud, pCloud…), the app connects to <b>that server</b>, at the address you typed, and nowhere else. The password is kept in the iOS Keychain. If you choose to trust a server’s certificate, only its fingerprint is kept on your device."]),
         ]),
         ("Diagnostic log", [
             ("p", "The app keeps a small diagnostic log on your device, with no personal content. It is sent only if you choose to e-mail it to support from the app."),

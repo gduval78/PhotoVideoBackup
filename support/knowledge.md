@@ -21,6 +21,14 @@ Curated notes for the support agent. **Keep this file up to date at every store 
 - **Run opens a summary screen first** ("Ready to back up?"): the source, then each destination with a pictogram for its kind (drive, NAS, cloud folder, or the phone itself in orange with a warning that the destination is on the device, not on an external drive), and the power state when *Only run on power* is on. **Start backup** launches it, the cross cancels. iPhone since 2.7.0; **Android since 2.7.1 (code 20707)** — earlier Android builds started the backup directly on tap.
 - Android does not have profiles yet (same screens as before).
 
+## WebDAV destination (iPhone / iPad, 2.8.0 — NOT RELEASED YET: do not tell users it exists until the release)
+- A backup can go to a **WebDAV server** (Nextcloud, ownCloud, pCloud, Synology/QNAP WebDAV, Hetzner Storage Box…): template *Photo library → WebDAV server* / *Camera or SD card → WebDAV server*, or Settings of a backup → *Add a destination → A WebDAV server*. **Pro**, like the NAS. Android follows (same version number on both platforms).
+- Server address is **https only**. Nextcloud: `https://server/remote.php/dav/files/NAME/`. pCloud: `https://ewebdav.pcloud.com/` (EU account) or `https://webdav.pcloud.com/` (US). With two-factor authentication use an **app password**. Password in the iOS Keychain.
+- **Self-signed certificate**: *Test connection* says the certificate is not trusted and shows its fingerprint; *Trust this certificate* pins it (only that exact certificate is accepted afterwards; a different one reads "certificate has changed"; *Forget this certificate* removes it). Plain http is not accepted.
+- **Large files**: Nextcloud/ownCloud get videos above 100 MB in 10 MB pieces (resumable). Any other server (pCloud, Synology…) gets one request per file; a server or proxy limit shows "The server refused this file size — check its upload limit." (HTTP 413) → raise `upload_max_filesize` / `post_max_size` / proxy body size, or use a drive or NAS. pCloud itself says WebDAV is not made for very large backups. Not validated with multi-GB files.
+- Verified on a Docker Nextcloud (self-signed) and a real pCloud WebDAV account. **Not validated**: Synology WebDAV Server, Hetzner, ownCloud, pCloud with 2FA by e-mail. pCloud's Crypto Folder is not reachable through WebDAV.
+- Known limits: Browse lists a WebDAV server and opens files by downloading them (no thumbnails, no LUT Grade); a WebDAV backup is not readable by builds older than this feature (kept aside, not lost).
+
 ## Common situations
 - **"Not connected" source or destination after ejecting and reinserting a card or drive**: tap **Reconnect** (the system gives the app a new access each time a volume is mounted). Name and type are kept.
 - **Backup button disabled**: no device name set (Settings → Device → Folder name), or the destination is not connected.

@@ -26,7 +26,7 @@ GUIDE = [
             ["Explorar e pré-visualizar as cópias (pré-visualização de LUT incluída)", "✓", "✓"],
             ["Copiar cartões de câmaras e unidades USB (SD, DJI, GoPro, Insta360…)", "—", "✓"],
             ["Espelho numa segunda unidade", "—", "✓"],
-            ["Copiar para um NAS por Wi-Fi", "—", "✓"],
+            ["Copiar para um NAS por Wi-Fi", "—", "✓"], ["Cópia para um servidor WebDAV (Nextcloud, pCloud…) — iPhone", "—", "✓"],
             ["Aplicar uma LUT a vídeos LOG (exportação H.265)", "—", "✓"],
         ]),
         ("note", "No iPhone, uma instalação gratuita inclui <b>uma</b> cópia de segurança. Se criar mais e depois perder o Pro (por exemplo, após um reembolso), não são eliminadas: ficam na lista, bloqueadas, até voltar a atualizar. A sua primeira cópia continua a funcionar enquanto usar apenas funcionalidades gratuitas (a fototeca, um disco ou uma pasta). Uma cópia com NAS ou um segundo destino precisa do Pro para ser executada. Já comprou o Pro noutro dispositivo? Abra <b>Definições → Pro → Restaurar compras</b>."),
@@ -113,7 +113,7 @@ GUIDE = [
         ("fig", "browse_media_grid", "A grelha de conteúdos de um dia."),
         ("p", "Para enviar ficheiros para outro lado: toque em <b>Selecionar</b>, assinale os ficheiros e depois em <b>Partilhar</b> — AirDrop, mensagens, e-mail, outra aplicação."),
         ("fig", "android_viewer", "Android: o visualizador em ecrã inteiro."),
-        ("p", "Num NAS, Explorar lista os ficheiros e só transfere cada um quando o abre."),
+        ("p", "Num NAS, Explorar lista os ficheiros e só transfere cada um quando o abre. Um servidor WebDAV funciona da mesma forma."),
     ]),
     ("naming", "Pastas e nomes de ficheiros", [
         ("p", "Em <b>Definições → Backup</b>, <b>Estrutura de pastas</b> define como se organiza uma pasta de dispositivo: <i>Flat</i> (plana), <i>By month</i> (por mês), <i>By date</i> (por data, predefinição) ou <i>By year / month</i> (ano / mês). O separador Explorar adapta-se ao que existe na unidade."),
@@ -145,6 +145,13 @@ GUIDE = [
         ("p", "O NAS aparece agora no cartão da cópia, com o seu espaço livre. Cada cópia tem o seu próprio NAS, por isso pode usar vários. Pode copiar <b>fora de casa</b> se o NAS estiver acessível — a forma segura mais simples é uma VPN como o <b>Tailscale</b>: instale-o no NAS e no telefone e use o endereço <code>100.x.x.x</code> do NAS como anfitrião."),
         ("note", "Com dados móveis, um aviso laranja alerta que os vídeos grandes podem gastar muitos dados; <b>Parar</b> interrompe a cópia (fica marcada como Parcial)."),
     ]),
+    ("webdav", "Cópia para o Nextcloud, pCloud ou outro servidor WebDAV (Pro)", [
+        ("p", "Além de um disco ou de um NAS, uma cópia no iPhone pode ir para um servidor <b>WebDAV</b>: <b>Nextcloud</b>, ownCloud, <b>pCloud</b>, um Synology ou QNAP com WebDAV ativado, uma Hetzner Storage Box… O endereço é um endereço seguro <code>https</code>, por isso funciona a partir de qualquer lugar, sem VPN. Cada ficheiro é verificado por SHA-256, como num NAS."),
+        ("ol", ["Obtenha o endereço WebDAV do seu servidor. Nextcloud: <code>https://o-seu-servidor/remote.php/dav/files/o-seu-nome/</code>. pCloud: <code>https://ewebdav.pcloud.com/</code> (conta na Europa) ou <code>https://webdav.pcloud.com/</code> (Estados Unidos).", "Com a autenticação de dois fatores, crie uma <b>palavra-passe de aplicação</b> nas definições de segurança do seu servidor e utilize-a em vez da sua palavra-passe.", "Na app: crie uma cópia com o modelo <i>Fototeca → servidor WebDAV</i> ou <i>Câmara ou cartão SD → servidor WebDAV</i>, ou adicione <b>Um servidor WebDAV</b> a uma cópia existente a partir das suas <b>Definições</b>.", "Preencha o endereço do <b>servidor</b>, uma <b>pasta</b> opcional (por exemplo <code>Backups</code>), o seu <b>nome de utilizador</b> e a sua <b>palavra-passe</b>. A palavra-passe é guardada na Keychain do iOS.", "Toque em <b>Testar ligação</b>. Depois em <b>Criar</b> (ou <b>Guardar</b> nas definições de uma cópia)."]),
+        ("p", "<b>O seu próprio servidor com um certificado autoassinado.</b> Se o iOS não confiar no certificado do servidor, o teste indica-o e mostra a sua <b>impressão digital</b>. Verifique que é a que o seu servidor mostra e toque em <b>Confiar neste certificado</b>: a partir daí só esse certificado exato é aceite (outro diferente é recusado). <b>Esquecer este certificado</b> remove-o."),
+        ("p", "<b>Ficheiros grandes.</b> No Nextcloud e no ownCloud, os vídeos com mais de 100 MB são enviados por partes, e um envio interrompido retoma onde parou. Os outros servidores recebem cada ficheiro num único pedido: se um servidor ou um proxy à sua frente limitar o tamanho de um envio, o ficheiro é indicado como falhado com <i>«O servidor recusou o tamanho deste ficheiro — verifique o seu limite de envio.»</i> Aumente o limite no servidor e execute de novo. O próprio pCloud diz que o WebDAV não é feito para cópias muito grandes: para vídeos grandes, prefira um disco ou um NAS."),
+        ("note", "Nesta versão o WebDAV está disponível no iPhone e no iPad; o Android seguirá. A <b>Crypto Folder</b> cifrada do pCloud não é acessível por WebDAV."),
+    ]),
     ("android", "Android e iPhone: o que difere", [
         ("p", "As duas aplicações partilham o mesmo motor: mesma deteção de duplicados, mesmos nomes, mesma verificação SHA-256, mesmo índice — uma cópia iniciada numa é reconhecida pela outra."),
         ("table", ["", "iPhone / iPad", "Android"], [
@@ -167,8 +174,10 @@ GUIDE = [
         ("p", "<b>A barra indica 3 % e parece bloqueada.</b> Os primeiros ficheiros são muitas vezes vídeos grandes. Aguarde alguns minutos."),
         ("p", "<b>O meu cartão aparece como «Documents».</b> Algumas câmaras usam uma pasta genérica. Escreva um nome significativo ao adicionar a fonte."),
         ("p", "<b>Posso copiar com o telemóvel quase cheio?</b> Sim. Os ficheiros são enviados em fluxo para o destino, por isso só se retêm alguns megabytes de cada vez. Só uma cópia para um NAS <i>sozinho</i> precisa de espaço para um ficheiro de cada vez. Um ficheiro que realmente não cabe é assinalado como falhado e o resto continua."),
-        ("p", "<b>Os meus dados são enviados para algum lado?</b> Não. Tudo se passa entre o seu telemóvel e a sua unidade ou NAS. A aplicação não tem servidor nem conta. O único tráfego de rede vai para o NAS que configura e para a transferência, pelo sistema, das suas próprias fotos do iCloud / Google."),
+        ("p", "<b>Os meus dados são enviados para algum lado?</b> Não. Tudo se passa entre o seu telemóvel e a sua unidade ou NAS. A aplicação não tem servidor nem conta. O único tráfego de rede vai para o NAS que configura e para a transferência, pelo sistema, das suas próprias fotos do iCloud / Google. O mesmo se aplica a um servidor WebDAV que configure você mesmo."),
         ("p", "<b>Que idiomas?</b> Inglês, francês, alemão, espanhol (neutro, para Espanha e América Latina), italiano, português (europeu), chinês simplificado, chinês tradicional, russo, japonês, coreano, hindi e árabe. A aplicação segue o idioma do telemóvel; pode forçar um em <b>Definições → Idioma</b>, sem reiniciar."),
+        ("p", "<b>Posso fazer cópias para o pCloud?</b> Sim, através de WebDAV: utilize <code>https://ewebdav.pcloud.com/</code> (ou <code>https://webdav.pcloud.com/</code> para uma conta nos Estados Unidos), o e-mail e a palavra-passe da sua conta pCloud e uma pasta como <code>Backups</code>. Os duplicados são detetados como em qualquer destino. Os ficheiros são enviados de uma só vez, por isso, para vídeos grandes, um disco ou um NAS é mais fiável."),
+        ("p", "<b>«O servidor recusou o tamanho deste ficheiro».</b> O servidor, ou um proxy à sua frente (nginx, Cloudflare…), limita o tamanho de um envio. Aumente o limite (no Nextcloud: <code>upload_max_filesize</code>, <code>post_max_size</code> e o tamanho de pedido do proxy), ou faça a cópia dos vídeos grandes para um disco ou um NAS. O Nextcloud e o ownCloud também aceitam envios por partes, que contornam o limite."),
     ]),
 ]
 
@@ -181,7 +190,7 @@ PRIVACY = {
             ("ul", ["Às suas fotos e vídeos — em <b>só de leitura</b>, para os copiar para a unidade, pasta ou NAS que escolher. No Android inclui a localização guardada nas fotos, para que a cópia seja idêntica ao original.", "Às pastas e cartões que escolhe com o explorador de ficheiros do sistema.", "Às notificações, para o avisar quando uma cópia termina."]),
         ]),
         ("O que sai do seu dispositivo", [
-            ("ul", ["<b>Nada chega até nós.</b> Os seus ficheiros só são escritos nos destinos que escolher.", "Se configurar um NAS, a aplicação liga-se a <b>esse servidor</b>, no endereço que introduziu, e a mais nenhum lado. A palavra-passe fica guardada na Keychain do iOS ou no Keystore do Android.", "O iOS ou o Android pode transferir as suas próprias fotos do iCloud ou do Google para que a aplicação as leia; é o sistema que o faz, para a sua conta.", "As compras são tratadas pela Apple ou pela Google. Não recebemos qualquer informação de pagamento."]),
+            ("ul", ["<b>Nada chega até nós.</b> Os seus ficheiros só são escritos nos destinos que escolher.", "Se configurar um NAS, a aplicação liga-se a <b>esse servidor</b>, no endereço que introduziu, e a mais nenhum lado. A palavra-passe fica guardada na Keychain do iOS ou no Keystore do Android.", "O iOS ou o Android pode transferir as suas próprias fotos do iCloud ou do Google para que a aplicação as leia; é o sistema que o faz, para a sua conta.", "As compras são tratadas pela Apple ou pela Google. Não recebemos qualquer informação de pagamento.", "Se configurar um servidor WebDAV (Nextcloud, pCloud…), a app liga-se a <b>esse servidor</b>, no endereço que escreveu, e a mais nenhum sítio. A palavra-passe é guardada na Keychain do iOS. Se optar por confiar no certificado de um servidor, apenas a sua impressão digital fica guardada no seu dispositivo."]),
         ]),
         ("Registo de diagnóstico", [
             ("p", "A aplicação guarda no seu dispositivo um pequeno registo de diagnóstico, sem conteúdo pessoal. Só é enviado se decidir enviá-lo por e-mail ao suporte a partir da aplicação."),
