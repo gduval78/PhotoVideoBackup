@@ -9,7 +9,7 @@ UI = {'back': 'उपयोगकर्ता मार्गदर्शिक�
  'tagline': 'अपनी फ़ोटो और वीडियो का बैकअप बाहरी SSD, SD कार्ड या NAS पर लें — '
             'अपने iPhone या Android फ़ोन से।',
  'toc': 'विषय-सूची',
- 'version_line': 'PhotoVideoBackup 2.7 की मार्गदर्शिका — iPhone (iOS 16 या बाद '
+ 'version_line': 'PhotoVideoBackup 2.8 की मार्गदर्शिका — iPhone (iOS 16 या बाद '
                  'का) और Android (9 या बाद का)'}
 GUIDE = [('what',
   'PhotoVideoBackup क्या है?',

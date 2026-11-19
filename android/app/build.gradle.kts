@@ -17,7 +17,7 @@ android {
         targetSdk = 36
         // Same user-visible number as the iOS app (PhotoVideoBackup.xcodeproj MARKETING_VERSION). Play's integer
         // versionCode is derived from it so it always grows with the version: 2.6.0 -> 20600, 2.6.1 -> 20601.
-        val appVersion = "2.7.1"
+        val appVersion = "2.8.0"
         versionName = appVersion
         // 2.7.0: code 20700 was burned by a deleted Play draft (Play never reuses a code); 20701 was the first
         // 2.7.0 upload, 20702 added the billing diagnostics, 20703 remembers provider document ids (Drive),

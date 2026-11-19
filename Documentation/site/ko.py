@@ -8,7 +8,7 @@ UI = {'back': '사용 설명서로 돌아가기',
  'privacy_link': '개인정보 처리방침',
  'tagline': '사진과 비디오를 외장 SSD, SD 카드 또는 NAS에 백업하세요 — iPhone에서도 Android 휴대폰에서도.',
  'toc': '목차',
- 'version_line': 'PhotoVideoBackup 2.7 가이드 — iPhone(iOS 16 이상) 및 Android(9 이상)'}
+ 'version_line': 'PhotoVideoBackup 2.8 가이드 — iPhone(iOS 16 이상) 및 Android(9 이상)'}
 GUIDE = [('what',
   'PhotoVideoBackup이란?',
   [('p',

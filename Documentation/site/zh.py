@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — 用户指南",
     "tagline": "将照片和视频备份到外置 SSD、SD 卡或 NAS —— 在 iPhone 或 Android 手机上都能使用。",
-    "version_line": "PhotoVideoBackup 2.7 指南 — iPhone（iOS 16 及以上）和 Android（9 及以上）",
+    "version_line": "PhotoVideoBackup 2.8 指南 — iPhone（iOS 16 及以上）和 Android（9 及以上）",
     "toc": "目录",
     "privacy_link": "隐私政策",
     "contact": "支持",

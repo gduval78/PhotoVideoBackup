@@ -1,7 +1,7 @@
 UI = {
     "guide_title": "PhotoVideoBackup — Benutzerhandbuch",
     "tagline": "Sichern Sie Ihre Fotos und Videos auf einer externen SSD, einer SD-Karte oder einem NAS — von Ihrem iPhone oder Android-Smartphone.",
-    "version_line": "Handbuch für PhotoVideoBackup 2.7 — iPhone (iOS 16 oder neuer) und Android (9 oder neuer)",
+    "version_line": "Handbuch für PhotoVideoBackup 2.8 — iPhone (iOS 16 oder neuer) und Android (9 oder neuer)",
     "toc": "Inhalt",
     "privacy_link": "Datenschutzerklärung",
     "contact": "Support",

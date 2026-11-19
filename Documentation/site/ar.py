@@ -9,7 +9,7 @@ UI = {'back': 'العودة إلى دليل المستخدم',
  'tagline': 'انسخ صورك ومقاطع الفيديو احتياطيًا إلى قرص SSD خارجي أو بطاقة SD '
             'أو NAS — من iPhone أو من هاتف Android.',
  'toc': 'المحتويات',
- 'version_line': 'دليل PhotoVideoBackup 2.7 — iPhone (iOS 16 أو أحدث) وAndroid '
+ 'version_line': 'دليل PhotoVideoBackup 2.8 — iPhone (iOS 16 أو أحدث) وAndroid '
                  '(9 أو أحدث)'}
 GUIDE = [('what',
   'ما هو PhotoVideoBackup؟',

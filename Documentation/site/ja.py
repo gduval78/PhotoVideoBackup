@@ -9,7 +9,7 @@ UI = {'back': 'ユーザーガイドに戻る',
  'tagline': '写真とビデオを、外付け SSD、SD カード、または NAS にバックアップ — iPhone でも Android '
             'スマートフォンでも。',
  'toc': '目次',
- 'version_line': 'PhotoVideoBackup 2.7 ガイド — iPhone（iOS 16 以降）と Android（9 以降）'}
+ 'version_line': 'PhotoVideoBackup 2.8 ガイド — iPhone（iOS 16 以降）と Android（9 以降）'}
 GUIDE = [('what',
   'PhotoVideoBackup とは？',
   [('p',
