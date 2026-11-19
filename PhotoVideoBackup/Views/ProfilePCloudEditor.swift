@@ -37,7 +37,7 @@ struct ProfilePCloudEditor: View {
         } header: {
             Text("Account")
         } footer: {
-            Text("You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. pCloud does not let an app be limited to one folder, so this token reaches your whole pCloud — the app only uses the folder named below. You can revoke it in your pCloud settings.")
+            Text("You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. The app can only see its own folder in your pCloud (Applications/PhotoVideoBackup), not the rest of your files. You can revoke it in your pCloud settings.")
         }
         Section {
             HStack {

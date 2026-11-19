@@ -41682,84 +41682,84 @@
         }
       }
     },
-    "You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. pCloud does not let an app be limited to one folder, so this token reaches your whole pCloud — the app only uses the folder named below. You can revoke it in your pCloud settings." : {
+    "You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. The app can only see its own folder in your pCloud (Applications/PhotoVideoBackup), not the rest of your files. You can revoke it in your pCloud settings." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. pCloud does not let an app be limited to one folder, so this token reaches your whole pCloud — the app only uses the folder named below. You can revoke it in your pCloud settings."
+            "value" : "You sign in on pCloud's own page; the app only keeps an access token in the Keychain, never your password. The app can only see its own folder in your pCloud (Applications/PhotoVideoBackup), not the rest of your files. You can revoke it in your pCloud settings."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous vous connectez sur la page de pCloud ; l'app ne garde qu'un jeton d'accès dans le Trousseau, jamais votre mot de passe. pCloud ne permet pas de limiter une app à un seul dossier : ce jeton atteint tout votre pCloud, mais l'app n'utilise que le dossier indiqué ci-dessous. Vous pouvez le révoquer dans les réglages de pCloud."
+            "value" : "Vous vous connectez sur la page de pCloud ; l'app ne garde qu'un jeton d'accès dans le Trousseau, jamais votre mot de passe. L'app ne voit que son propre dossier dans votre pCloud (Applications/PhotoVideoBackup), pas le reste de vos fichiers. Vous pouvez le révoquer dans les réglages de pCloud."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sie melden sich auf der Seite von pCloud an; die App speichert nur ein Zugriffstoken im Schlüsselbund, nie Ihr Passwort. pCloud erlaubt keine Beschränkung einer App auf einen Ordner, daher reicht dieses Token an Ihr gesamtes pCloud – die App nutzt nur den unten genannten Ordner. Sie können es in den pCloud-Einstellungen widerrufen."
+            "value" : "Sie melden sich auf der Seite von pCloud an; die App speichert nur ein Zugriffstoken im Schlüsselbund, nie Ihr Passwort. Die App sieht nur ihren eigenen Ordner in Ihrem pCloud (Applications/PhotoVideoBackup), nicht Ihre übrigen Dateien. Sie können den Zugriff in den pCloud-Einstellungen widerrufen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicias sesión en la página de pCloud; la app solo guarda un token de acceso en el llavero, nunca tu contraseña. pCloud no permite limitar una app a una carpeta, así que este token llega a todo tu pCloud, pero la app solo usa la carpeta indicada abajo. Puedes revocarlo en los ajustes de pCloud."
+            "value" : "Inicias sesión en la página de pCloud; la app solo guarda un token de acceso en el llavero, nunca tu contraseña. La app solo ve su propia carpeta en tu pCloud (Applications/PhotoVideoBackup), no el resto de tus archivos. Puedes revocarlo en los ajustes de pCloud."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accedi sulla pagina di pCloud; l'app conserva solo un token di accesso nel Portachiavi, mai la tua password. pCloud non permette di limitare un'app a una sola cartella, quindi questo token raggiunge tutto il tuo pCloud, ma l'app usa solo la cartella indicata qui sotto. Puoi revocarlo nelle impostazioni di pCloud."
+            "value" : "Accedi sulla pagina di pCloud; l'app conserva solo un token di accesso nel Portachiavi, mai la tua password. L'app vede solo la propria cartella nel tuo pCloud (Applications/PhotoVideoBackup), non il resto dei tuoi file. Puoi revocarlo nelle impostazioni di pCloud."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicia sessão na página do pCloud; a app guarda apenas um token de acesso na Cadeia de Chaves, nunca a sua palavra-passe. O pCloud não permite limitar uma app a uma pasta, por isso este token chega a todo o seu pCloud, mas a app só utiliza a pasta indicada abaixo. Pode revogá-lo nas definições do pCloud."
+            "value" : "Inicia sessão na página do pCloud; a app guarda apenas um token de acesso na Cadeia de Chaves, nunca a sua palavra-passe. A app só vê a sua própria pasta no seu pCloud (Applications/PhotoVideoBackup), não o resto dos seus ficheiros. Pode revogá-lo nas definições do pCloud."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你在 pCloud 自己的页面登录；App 只在钥匙串中保存访问令牌，绝不保存你的密码。pCloud 不允许把 App 限制在某个文件夹，因此该令牌可访问你的整个 pCloud，但 App 只会使用下方指定的文件夹。你可以在 pCloud 设置中撤销它。"
+            "value" : "你在 pCloud 自己的页面登录；App 只在钥匙串中保存访问令牌，绝不保存你的密码。App 只能看到你 pCloud 中属于它自己的文件夹（Applications/PhotoVideoBackup），看不到其他文件。你可以在 pCloud 设置中撤销它。"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вход выполняется на странице pCloud; приложение хранит в связке ключей только токен доступа, но не ваш пароль. pCloud не позволяет ограничить приложение одной папкой, поэтому токен даёт доступ ко всему pCloud, но приложение использует только указанную ниже папку. Токен можно отозвать в настройках pCloud."
+            "value" : "Вход выполняется на странице pCloud; приложение хранит в связке ключей только токен доступа, но не ваш пароль. Приложение видит только свою папку в вашем pCloud (Applications/PhotoVideoBackup), а не остальные файлы. Токен можно отозвать в настройках pCloud."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サインインは pCloud 自身のページで行います。アプリはアクセストークンのみをキーチェーンに保存し、パスワードは保存しません。pCloud ではアプリを 1 つのフォルダに限定できないため、このトークンは pCloud 全体にアクセスできますが、アプリは下で指定したフォルダのみを使用します。pCloud の設定で取り消せます。"
+            "value" : "サインインは pCloud 自身のページで行います。アプリはアクセストークンのみをキーチェーンに保存し、パスワードは保存しません。アプリは pCloud 内の専用フォルダ（Applications/PhotoVideoBackup）しか見えず、他のファイルにはアクセスできません。pCloud の設定で取り消せます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로그인은 pCloud의 자체 페이지에서 진행됩니다. 앱은 접근 토큰만 키체인에 보관하며 비밀번호는 저장하지 않습니다. pCloud는 앱을 한 폴더로 제한할 수 없어 이 토큰으로 pCloud 전체에 접근할 수 있지만, 앱은 아래에 지정한 폴더만 사용합니다. pCloud 설정에서 취소할 수 있습니다."
+            "value" : "로그인은 pCloud의 자체 페이지에서 진행됩니다. 앱은 접근 토큰만 키체인에 보관하며 비밀번호는 저장하지 않습니다. 앱은 pCloud 안의 전용 폴더(Applications/PhotoVideoBackup)만 볼 수 있고 다른 파일은 볼 수 없습니다. pCloud 설정에서 취소할 수 있습니다."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "आप pCloud के अपने पेज पर साइन इन करते हैं; ऐप केवल एक एक्सेस टोकन कीचेन में रखता है, आपका पासवर्ड कभी नहीं। pCloud किसी ऐप को एक फ़ोल्डर तक सीमित नहीं करने देता, इसलिए यह टोकन आपके पूरे pCloud तक पहुँच सकता है, पर ऐप केवल नीचे बताए फ़ोल्डर का उपयोग करता है। आप इसे pCloud की सेटिंग में रद्द कर सकते हैं।"
+            "value" : "आप pCloud के अपने पेज पर साइन इन करते हैं; ऐप केवल एक एक्सेस टोकन कीचेन में रखता है, आपका पासवर्ड कभी नहीं। ऐप आपके pCloud में केवल अपना फ़ोल्डर (Applications/PhotoVideoBackup) देख सकता है, आपकी बाकी फ़ाइलें नहीं। आप इसे pCloud की सेटिंग में रद्द कर सकते हैं।"
           }
         },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تسجّل الدخول على صفحة pCloud نفسها؛ يحتفظ التطبيق برمز وصول فقط في سلسلة المفاتيح، ولا يحتفظ بكلمة مرورك أبدًا. لا يتيح pCloud حصر تطبيق في مجلد واحد، لذا يصل هذا الرمز إلى كامل حسابك، لكن التطبيق يستخدم المجلد المذكور أدناه فقط. يمكنك إلغاءه من إعدادات pCloud."
+            "value" : "تسجّل الدخول على صفحة pCloud نفسها؛ يحتفظ التطبيق برمز وصول فقط في سلسلة المفاتيح، ولا يحتفظ بكلمة مرورك أبدًا. لا يرى التطبيق سوى مجلده الخاص في pCloud (Applications/PhotoVideoBackup) وليس بقية ملفاتك. يمكنك إلغاءه من إعدادات pCloud."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你在 pCloud 自己的頁面登入；App 只在鑰匙串中儲存存取令牌，絕不儲存你的密碼。pCloud 不允許把 App 限制在某個資料夾，因此該令牌可存取你的整個 pCloud，但 App 只會使用下方指定的資料夾。你可以在 pCloud 設定中撤銷它。"
+            "value" : "你在 pCloud 自己的頁面登入；App 只在鑰匙串中儲存存取令牌，絕不儲存你的密碼。App 只能看到你 pCloud 中屬於它自己的資料夾（Applications/PhotoVideoBackup），看不到其他檔案。你可以在 pCloud 設定中撤銷它。"
           }
         }
       }

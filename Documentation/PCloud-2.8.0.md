@@ -85,3 +85,8 @@ Android: `PCloudTarget` with OkHttp, JSON parsing and region/id logic in `core` 
 ## Not in scope
 
 Crypto Folder, sharing links, pCloud Photos/Backup features, public folder links, Business-team folders, scheduling.
+
+
+## Update 2026-11-19 — what the API token really sees
+
+The registered app is an **application-folder app**: its token is confined to `/Applications/PhotoVideoBackup` in the user's pCloud, and *that folder is the root* (`/` for the token; `/Applications` does not exist for it). Consequences: the API destination writes there, **not** next to the user's WebDAV backups at the account root; the first API run re-copies what WebDAV already holds (separate sidecar index). Safer (no access to the rest of the account), but a different place. The earlier note "no app-folder scope" was wrong for this app. Changing the access type of the app at pCloud (My Apps) would be needed to share the WebDAV location.
