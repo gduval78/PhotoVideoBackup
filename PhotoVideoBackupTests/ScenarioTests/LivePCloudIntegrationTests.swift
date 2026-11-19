@@ -18,7 +18,7 @@ final class LivePCloudIntegrationTests: XCTestCase {
         var c = URLComponents(); c.query = frag
         let q = Dictionary(uniqueKeysWithValues: (c.queryItems ?? []).map { ($0.name, $0.value ?? "") })
         guard let token = q["access_token"] else { throw XCTSkip("no access_token") }
-        return (token, Int(q["uid"] ?? "") ?? 0, PCloudRegion(locationID: Int(q["locationid"] ?? "") ?? 2))
+        return (token, Int(q["userid"] ?? q["uid"] ?? "") ?? 0, PCloudRegion(locationID: Int(q["locationid"] ?? "") ?? 2))
     }
 
     // SCENARIO: live round trip on a real pCloud account
