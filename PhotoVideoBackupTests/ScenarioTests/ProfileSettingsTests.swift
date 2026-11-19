@@ -64,8 +64,9 @@ final class ProfileSettingsTests: ScenarioTestCase {
 
         let nas = NASConfig(host: "nas.local", port: 445, share: "photo", basePath: "PVB",
                             username: "me", displayName: "Home", enabled: true)
-        let profile = BackupProfile(name: "N", template: .photosToNAS, source: .photos, destinations: [.nas],
-                                    settings: settings, nas: nas, nasPasswordAccount: "profile.x.nas")
+        let profile = BackupProfile(name: "N", template: .photosToNAS, source: .photos,
+                                    destinations: [.server(ServerDestination(id: UUID(), passwordAccount: "profile.x.nas", connection: .smb(nas)))],
+                                    settings: settings)
         let decoded = try JSONDecoder().decode(BackupProfile.self, from: JSONEncoder().encode(profile))
         XCTAssertEqual(decoded, profile)
 
@@ -73,7 +74,7 @@ final class ProfileSettingsTests: ScenarioTestCase {
         let old = #"{"id":"11111111-1111-1111-1111-111111111111","name":"Old","template":"photosToDrive","source":{"photos":{}},"destinations":[{"folder":{"bookmarkKey":"k"}}]}"#
         let oldProfile = try JSONDecoder().decode(BackupProfile.self, from: Data(old.utf8))
         XCTAssertNil(oldProfile.settings)
-        XCTAssertNil(oldProfile.nas)
+        XCTAssertFalse(oldProfile.usesServer)
         XCTAssertEqual(oldProfile.runSettings.organization, RunSettings.global().organization)
     }
 
@@ -106,11 +107,13 @@ final class ProfileSettingsTests: ScenarioTestCase {
             externalSources: [.init(id: UUID(), name: "Card")], photosName: "Photos", nasName: "NAS",
             settings: settings, nas: nas, nasPasswordAccount: "nas.primary")
         XCTAssertEqual(profiles.count, 2)
-        XCTAssertTrue(profiles.allSatisfy { $0.settings == settings && $0.nas == nas && $0.nasPasswordAccount == "nas.primary" })
+        XCTAssertTrue(profiles.allSatisfy {
+            $0.settings == settings && $0.servers.first?.connection == .smb(nas) && $0.servers.first?.passwordAccount == "nas.primary"
+        })
         // No NAS configured → no NAS copied.
         let noNAS = ProfileMigration.profiles(configuredFolderKeys: ["k"], nasConfigured: false, externalSources: [],
                                               photosName: "P", nasName: "N", settings: settings, nas: nas,
                                               nasPasswordAccount: "nas.primary")
-        XCTAssertNil(noNAS.first?.nas)
+        XCTAssertFalse(noNAS.first?.usesServer ?? true)
     }
 }

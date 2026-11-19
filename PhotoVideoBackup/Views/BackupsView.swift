@@ -31,7 +31,7 @@ struct BackupsView: View {
                                     onUnlock: { showPaywall = true },
                                     sourceName: sourceName(for: profile),
                                     connection: connections[profile.id],
-                                    transfer: .of(isRemote: profile.usesNAS || profile.usesWebDAV || (connections[profile.id]?.hasCloudFolder ?? false),
+                                    transfer: .of(isRemote: profile.usesServer || (connections[profile.id]?.hasCloudFolder ?? false),
                                                   isCellular: viewModel.isLikelyCellular),
                                     sourceAvailable: sourceAvailable(for: profile),
                                     isRunning: viewModel.isRunning,
@@ -222,7 +222,7 @@ private struct ProfileCard: View {
             // Main pictogram (drive / card / cloud) + a badge for the transfer type: local cable,
             // Wi-Fi, or mobile data (SIM / eSIM).
             ZStack(alignment: .bottomTrailing) {
-                Image(systemName: profile.template.symbol(hasCloudFolder: connection?.hasCloudFolder ?? false))
+                Image(systemName: profile.symbol(hasCloudFolder: connection?.hasCloudFolder ?? false))
                     .font(.title2).foregroundStyle(ready ? Color.accentColor : .secondary)
                     .frame(width: 34, height: 30)
                 Image(systemName: transfer.badgeSymbol)

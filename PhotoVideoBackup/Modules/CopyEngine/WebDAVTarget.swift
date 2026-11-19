@@ -252,7 +252,7 @@ enum WebDAVTrust {
 /// Rules shared with `SMBTarget`: a different file is **never overwritten** (`PUT` with
 /// `If-None-Match: *`; a 412 surfaces as `WebDAVError.alreadyExists`), verification re-downloads the
 /// file and hashes it, an unreachable server is "offline" and never an empty one.
-final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
+final class WebDAVTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendable {
 
     private let serverURL: URL
     private let basePath: String
@@ -606,24 +606,16 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
 
     // MARK: Browsing
 
-    struct Entry: Identifiable, Sendable {
-        let id = UUID()
-        let name: String
-        let isDirectory: Bool
-        let size: Int64
-        let modificationDate: Date?
-    }
-
     /// Lists a folder relative to `basePath`: folders first, then files, alphabetical; hidden entries dropped.
-    func list(relativeSubPath subPath: String) async throws -> [Entry] {
+    func list(relativeSubPath subPath: String) async throws -> [RemoteEntry] {
         let folder = url(forRelative: subPath)
         let result = try await propfind(folder.absoluteString.hasSuffix("/") ? folder : folder.appendingPathComponent(""), depth: 1)
         guard result.status == 207 else { throw WebDAVError.forWrite(status: result.status) ?? .http(result.status) }
         // The first entry is the folder itself.
         let selfName = result.entries.first?.path
-        let entries: [Entry] = result.entries.compactMap { e in
+        let entries: [RemoteEntry] = result.entries.compactMap { e in
             guard e.path != selfName, !e.name.isEmpty, !e.name.hasPrefix(".") else { return nil }
-            return Entry(name: e.name, isDirectory: e.isCollection, size: e.size ?? 0, modificationDate: e.modified)
+            return RemoteEntry(name: e.name, isDirectory: e.isCollection, size: e.size ?? 0, modificationDate: e.modified)
         }
         return entries.sorted {
             $0.isDirectory != $1.isDirectory ? $0.isDirectory
@@ -632,11 +624,14 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     }
 
     /// Downloads a file (relative to `basePath`) to a local URL — on-demand preview.
-    func download(relativeSubPath subPath: String, to localURL: URL) async throws {
+    func download(relativeSubPath subPath: String, to localURL: URL,
+                  onProgress: @escaping @Sendable (_ bytes: Int64, _ total: Int64) -> Void = { _, _ in }) async throws {
         let (tmp, response) = try await session.download(for: request("GET", url(forRelative: subPath)))
         if let err = WebDAVError.forWrite(status: try status(of: response)) { try? FileManager.default.removeItem(at: tmp); throw err }
         try? FileManager.default.removeItem(at: localURL)
         try FileManager.default.moveItem(at: tmp, to: localURL)
+        let size = ((try? localURL.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)
+        onProgress(Int64(size), Int64(size))
     }
 }
 

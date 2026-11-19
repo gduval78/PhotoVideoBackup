@@ -57,70 +57,37 @@ final class BackupBrowserViewModel {
         profiles.flatMap(\.folderKeys)
     }
 
-    /// A NAS the Browse tab can open: the global one (Advanced settings) or a backup's own.
-    struct NASEntry: Equatable {
-        let config: NASConfig
+    /// A server the Browse tab can open: one entry per distinct connection of the existing backups.
+    struct ServerEntry: Equatable {
+        let connection: ServerConnection
         /// Keychain account of its password.
         let passwordAccount: String
-        var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? "NAS" : config.displayName }
+        var title: String { connection.title }
+        /// Prefix of the keys under which LUT assignments of this server's folders are stored. A NAS keeps
+        /// the original `nas:` prefix (assignments made before 2.8.0 keep working); other types are keyed by
+        /// their identity so two servers never share an assignment.
+        var lutKeyPrefix: String {
+            if case .smb = connection { return "nas:" }
+            return "server:\(connection.identity):"
+        }
     }
 
-    /// Every distinct NAS of the existing backups: each profile's own, plus the global one only when
-    /// a backup that uses the NAS carries no config of its own (a profile saved by an earlier
-    /// development build). Two entries describing the same server, share, folder and user are one NAS.
-    /// With no backup using a NAS, none is listed.
-    nonisolated static func nasEntries(global: NASConfig?, globalAccount: String,
-                                       profiles: [BackupProfile]) -> [NASEntry] {
-        func identity(_ c: NASConfig) -> String {
-            [c.host.lowercased(), String(c.port), c.share.lowercased(),
-             c.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased(),
-             c.username.lowercased()].joined(separator: "|")
-        }
+    /// Every distinct server of the existing backups. Two destinations describing the same server, folder
+    /// and user are one server; an incomplete one is not listed. With no backup using a server, none is listed.
+    nonisolated static func serverEntries(profiles: [BackupProfile]) -> [ServerEntry] {
         var seen = Set<String>()
-        var result: [NASEntry] = []
-        let needsGlobal = profiles.contains { $0.usesNAS && $0.nas == nil }
-        if needsGlobal, let global, global.isComplete, seen.insert(identity(global)).inserted {
-            result.append(NASEntry(config: global, passwordAccount: globalAccount))
-        }
-        for profile in profiles where profile.usesNAS {
-            guard let cfg = profile.nas, cfg.isComplete, seen.insert(identity(cfg)).inserted else { continue }
-            result.append(NASEntry(config: cfg, passwordAccount: profile.nasPasswordAccount ?? globalAccount))
+        var result: [ServerEntry] = []
+        for profile in profiles {
+            for server in profile.servers {
+                guard server.connection.isComplete, let account = server.passwordAccount,
+                      seen.insert(server.connection.identity).inserted else { continue }
+                result.append(ServerEntry(connection: server.connection, passwordAccount: account))
+            }
         }
         return result
     }
 
-    var nasEntries: [NASEntry] {
-        let dm = DestinationManager.shared
-        return Self.nasEntries(global: dm.loadNASConfig(), globalAccount: dm.legacyNASPasswordAccount,
-                               profiles: ProfileStore.shared.profiles)
-    }
-
-    /// A WebDAV server the Browse tab can open: a backup's own.
-    struct WebDAVEntry: Equatable {
-        let config: WebDAVConfig
-        /// Keychain account of its password.
-        let passwordAccount: String
-        var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? (config.url?.host ?? "WebDAV") : config.displayName }
-    }
-
-    /// Every distinct WebDAV server of the existing backups. Two backups describing the same server,
-    /// folder and user are one entry (the first one's password account is used).
-    nonisolated static func webdavEntries(profiles: [BackupProfile]) -> [WebDAVEntry] {
-        func identity(_ c: WebDAVConfig) -> String {
-            [c.normalizedURLString.lowercased(), c.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased(),
-             c.username.lowercased()].joined(separator: "|")
-        }
-        var seen = Set<String>()
-        var result: [WebDAVEntry] = []
-        for profile in profiles where profile.usesWebDAV {
-            guard let cfg = profile.webdav, cfg.isComplete, let account = profile.webdavPasswordAccount,
-                  seen.insert(identity(cfg)).inserted else { continue }
-            result.append(WebDAVEntry(config: cfg, passwordAccount: account))
-        }
-        return result
-    }
-
-    var webdavEntries: [WebDAVEntry] { Self.webdavEntries(profiles: ProfileStore.shared.profiles) }
+    var serverEntries: [ServerEntry] { Self.serverEntries(profiles: ProfileStore.shared.profiles) }
 
     /// Several profiles (or a profile and a legacy slot) can point at the same folder — a migrated
     /// profile reuses the legacy key. Browse lists a folder once. Compared on the standardized path.
@@ -315,7 +282,7 @@ final class BackupBrowserViewModel {
     /// user, and uploads each result to the mirrored `(Graded)` sibling on the NAS. The user picks
     /// which clips to grade because a camera folder often mixes LOG and non-LOG footage — grading
     /// non-LOG footage with a LOG LUT would ruin it. Already-graded files on the NAS are skipped.
-    func startNASGrading(target: SMBTarget, subPath: String, relFiles: [String], lut: ParsedLUT) {
+    func startNASGrading(target: ServerTarget, subPath: String, relFiles: [String], lut: ParsedLUT) {
         cancelNASGrading()
         let videos = relFiles
             .filter { Self.gradableExtensions.contains(($0 as NSString).pathExtension.lowercased()) }

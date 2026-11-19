@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import CryptoKit
 
 // MARK: - Source / destination
 
@@ -11,16 +12,44 @@ enum ProfileSource: Codable, Equatable, Hashable, Sendable {
     case external(UUID)
 }
 
-/// Where a profile backs up to.
+/// Where a profile backs up to: a **folder** (anything the system file picker gives — SSD, USB, iCloud
+/// Drive, Google Drive…) or a **server** (a NAS, Nextcloud, pCloud… reached by an address and an account,
+/// its connection typed — see `ServerConnection`).
 enum ProfileDestination: Codable, Equatable, Hashable, Sendable {
-    /// A folder the user picked (SSD, USB drive, iCloud Drive…), kept as a security-scoped bookmark
-    /// under this `DestinationManager` key.
+    /// A folder the user picked, kept as a security-scoped bookmark under this `DestinationManager` key.
     case folder(bookmarkKey: String)
-    /// The NAS configured in Settings.
-    case nas
-    /// A WebDAV server (Nextcloud, ownCloud, Synology/QNAP WebDAV, Hetzner Storage Box…), configured
-    /// in the profile itself (`BackupProfile.webdav`).
-    case webdav
+    case server(ServerDestination)
+
+    private enum Key: String, CodingKey { case folder, server }
+    private enum FolderKey: String, CodingKey { case bookmarkKey }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: Key.self)
+        if c.contains(.folder) {
+            let f = try c.nestedContainer(keyedBy: FolderKey.self, forKey: .folder)
+            self = .folder(bookmarkKey: try f.decode(String.self, forKey: .bookmarkKey))
+        } else if c.contains(.server) {
+            self = .server(try c.decode(ServerDestination.self, forKey: .server))
+        } else {
+            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "unknown destination"))
+        }
+    }
+
+    /// The folder shape is unchanged from 2.7, so a folder-only profile stays readable by older builds.
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: Key.self)
+        switch self {
+        case .folder(let key):
+            var f = c.nestedContainer(keyedBy: FolderKey.self, forKey: .folder)
+            try f.encode(key, forKey: .bookmarkKey)
+        case .server(let server):
+            try c.encode(server, forKey: .server)
+        }
+    }
+
+    var serverDestination: ServerDestination? {
+        if case .server(let s) = self { return s } else { return nil }
+    }
 }
 
 // MARK: - Transfer type
@@ -44,10 +73,11 @@ enum TransferKind: Equatable, Sendable {
     }
 }
 
-// MARK: - Template
+// MARK: - Template (legacy)
 
-/// The starting points offered by "New backup". A template fixes the *kind* of source and
-/// destinations; the user then picks the actual drive / folder once.
+/// What a profile was created from before 2.8.0 ("New backup" offered eight templates, one per
+/// source × destination kind). A backup is now a source plus a list of destinations and templates are no
+/// longer offered; the value is only read from stored profiles (an unknown one is read as `custom`).
 enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     case photosToDrive
     case photosToNAS
@@ -59,119 +89,15 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     case photosToDriveAndNAS
     case photosToWebDAV
     case cameraToWebDAV
-    /// A setup migrated from before profiles existed.
+    /// A setup migrated from before profiles existed, and every backup created since 2.8.0.
     case custom
 
-    /// A template this build does not know (a profile written by a newer build, e.g. `cameraToNAS`
-    /// read by 2.7.0) is read as `custom` instead of making the whole profile list unreadable — which
-    /// is how a user once saw every backup disappear after switching builds.
+    /// A template this build does not know (a profile written by a newer build) is read as `custom`
+    /// instead of making the whole profile list unreadable — which is how a user once saw every backup
+    /// disappear after switching builds.
     init(from decoder: Decoder) throws {
         let raw = try decoder.singleValueContainer().decode(String.self)
         self = ProfileTemplate(rawValue: raw) ?? .custom
-    }
-
-    /// The templates shown in the "New backup" list. `custom` (migration) and the two "→ iCloud Drive"
-    /// templates (kept so profiles already created still load) are not offered any more: whether a
-    /// folder is in iCloud Drive is detected from the folder itself (`ICloudEvictionManager.isUbiquitous`),
-    /// so "photo library → folder" and "camera → folder" cover iCloud too, with the same protection
-    /// (`PHBackupEngine` / `ICloudRunGuard`).
-    static var selectable: [ProfileTemplate] {
-        [.photosToDrive, .photosToNAS, .photosToWebDAV, .photosToDriveAndNAS, .cameraToDrive, .cameraToNAS, .cameraToWebDAV, .cameraToDriveAndNAS]
-    }
-
-    var titleKey: LocalizedStringKey {
-        switch self {
-        case .photosToDrive:       return "Photo library → folder"
-        case .photosToNAS:         return "Photo library → NAS"
-        case .photosToICloud:      return "Photo library → iCloud Drive"
-        case .cameraToDrive:       return "Camera or SD card → folder"
-        case .cameraToNAS:         return "Camera or SD card → NAS"
-        case .cameraToDriveAndNAS: return "Camera or SD card → folder + NAS"
-        case .driveToICloud:       return "External drive → iCloud Drive"
-        case .photosToDriveAndNAS: return "Photo library → folder + NAS"
-        case .photosToWebDAV:      return "Photo library → WebDAV server"
-        case .cameraToWebDAV:      return "Camera or SD card → WebDAV server"
-        case .custom:              return "Backup"
-        }
-    }
-
-    var detailKey: LocalizedStringKey {
-        switch self {
-        case .photosToDrive:       return "The simplest and fastest. Recommended."
-        case .photosToNAS:         return "Back up over Wi-Fi to your NAS."
-        case .photosToICloud:      return "Slow and dependent on iOS and your iCloud space."
-        case .cameraToDrive:       return "Copy a camera card or USB drive to your drive."
-        case .cameraToNAS:         return "Copy a camera card or USB drive to your NAS over Wi-Fi."
-        case .cameraToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
-        case .driveToICloud:       return "Send a backup you already have to iCloud Drive."
-        case .photosToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
-        case .photosToWebDAV:      return "Back up to Nextcloud or any WebDAV server."
-        case .cameraToWebDAV:      return "Copy a camera card or USB drive to a WebDAV server."
-        case .custom:              return ""
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .photosToDrive:       return "externaldrive.fill"
-        case .photosToNAS:         return "server.rack"
-        case .photosToICloud:      return "icloud.fill"
-        case .cameraToDrive:       return "sdcard.fill"
-        case .cameraToNAS:         return "sdcard"
-        case .cameraToDriveAndNAS: return "sdcard.fill"
-        case .driveToICloud:       return "icloud.and.arrow.up.fill"
-        case .photosToDriveAndNAS: return "externaldrive.badge.plus"
-        case .photosToWebDAV:      return "network"
-        case .cameraToWebDAV:      return "network"
-        case .custom:              return "arrow.triangle.2.circlepath"
-        }
-    }
-
-    /// The pictogram of a backup card: a drive for a local folder, a cloud when a folder is in iCloud Drive
-    /// (detected from the folder — the template no longer says). A NAS-only backup keeps its own symbol.
-    func symbol(hasCloudFolder: Bool) -> String {
-        guard hasCloudFolder else { return symbol }
-        return usesExternalSource ? "icloud.and.arrow.up.fill" : "icloud.fill"
-    }
-
-    /// True when the source is a camera card / drive rather than the photo library.
-    var usesExternalSource: Bool { self == .cameraToDrive || self == .cameraToNAS || self == .cameraToDriveAndNAS || self == .driveToICloud || self == .cameraToWebDAV }
-
-    /// How many folders the user has to choose.
-    var folderCount: Int {
-        switch self {
-        case .photosToNAS, .cameraToNAS, .photosToWebDAV, .cameraToWebDAV, .custom: return 0
-        default:                    return 1
-        }
-    }
-
-    var includesNAS: Bool { self == .photosToNAS || self == .cameraToNAS || self == .photosToDriveAndNAS || self == .cameraToDriveAndNAS }
-
-    var includesWebDAV: Bool { self == .photosToWebDAV || self == .cameraToWebDAV }
-
-    /// Free users can back up the photo library to one folder; everything else is Pro.
-    var requiresPro: Bool {
-        switch self {
-        case .photosToDrive, .photosToICloud: return false
-        default:                              return true
-        }
-    }
-
-    /// The name pre-filled in the last step, in English (the user may change it; it is stored verbatim).
-    var defaultName: String {
-        switch self {
-        case .photosToDrive:       return String(localized: "Photos → drive")
-        case .photosToNAS:         return String(localized: "Photos → NAS")
-        case .photosToICloud:      return String(localized: "Photos → iCloud Drive")
-        case .cameraToDrive:       return String(localized: "Camera → drive")
-        case .cameraToNAS:         return String(localized: "Camera → NAS")
-        case .cameraToDriveAndNAS: return String(localized: "Camera → drive + NAS")
-        case .driveToICloud:       return String(localized: "Drive → iCloud Drive")
-        case .photosToDriveAndNAS: return String(localized: "Photos → drive + NAS")
-        case .photosToWebDAV:      return String(localized: "Photos → WebDAV")
-        case .cameraToWebDAV:      return String(localized: "Camera → WebDAV")
-        case .custom:              return String(localized: "Backup")
-        }
     }
 }
 
@@ -180,49 +106,120 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
 struct BackupProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var id: UUID
     var name: String
+    /// Legacy (see `ProfileTemplate`); new backups are `.custom`.
     var template: ProfileTemplate
     var source: ProfileSource
     var destinations: [ProfileDestination]
     /// The profile's own settings (folder structure, naming, limits). nil = follow the global
     /// settings — a profile saved by a build that predates this field keeps working.
     var settings: ProfileSettings?
-    /// The profile's own NAS (when `destinations` contains `.nas`). nil = the NAS configured in the
-    /// Advanced settings, as before this field existed.
-    var nas: NASConfig?
-    /// Keychain account holding the password of `nas`.
-    var nasPasswordAccount: String?
-    /// The profile's WebDAV server (when `destinations` contains `.webdav`) and the Keychain account of its password.
-    var webdav: WebDAVConfig?
-    var webdavPasswordAccount: String?
 
-    init(id: UUID = UUID(), name: String, template: ProfileTemplate,
-         source: ProfileSource, destinations: [ProfileDestination],
-         settings: ProfileSettings? = nil, nas: NASConfig? = nil, nasPasswordAccount: String? = nil,
-         webdav: WebDAVConfig? = nil, webdavPasswordAccount: String? = nil) {
-        self.webdav = webdav; self.webdavPasswordAccount = webdavPasswordAccount
+    init(id: UUID = UUID(), name: String, template: ProfileTemplate = .custom,
+         source: ProfileSource, destinations: [ProfileDestination], settings: ProfileSettings? = nil) {
         self.id = id; self.name = name; self.template = template
-        self.source = source; self.destinations = destinations
-        self.settings = settings; self.nas = nas; self.nasPasswordAccount = nasPasswordAccount
+        self.source = source; self.destinations = destinations; self.settings = settings
     }
+
+    // MARK: Coding
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, template, source, destinations, settings
+        // Before 2.8.0 the NAS and the WebDAV server were `.nas` / `.webdav` destinations whose
+        // configuration sat at the profile's top level. Read-only: converted to `.server` on load.
+        case nas, nasPasswordAccount, webdav, webdavPasswordAccount
+    }
+
+    /// A destination as stored: the current shape, or a pre-2.8.0 `.nas` / `.webdav` marker.
+    private enum StoredDestination: Decodable {
+        case current(ProfileDestination)
+        case legacyNAS, legacyWebDAV
+
+        private struct AnyKey: CodingKey {
+            var stringValue: String; var intValue: Int? { nil }
+            init?(stringValue: String) { self.stringValue = stringValue }
+            init?(intValue: Int) { return nil }
+        }
+
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: AnyKey.self)
+            if c.contains(AnyKey(stringValue: "nas")!) { self = .legacyNAS }
+            else if c.contains(AnyKey(stringValue: "webdav")!) { self = .legacyWebDAV }
+            else { self = .current(try ProfileDestination(from: decoder)) }
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let id = try c.decode(UUID.self, forKey: .id)
+        self.id = id
+        name = try c.decode(String.self, forKey: .name)
+        template = try c.decode(ProfileTemplate.self, forKey: .template)
+        source = try c.decode(ProfileSource.self, forKey: .source)
+        settings = try c.decodeIfPresent(ProfileSettings.self, forKey: .settings)
+        let legacyNAS = try c.decodeIfPresent(NASConfig.self, forKey: .nas)
+        let legacyNASAccount = try c.decodeIfPresent(String.self, forKey: .nasPasswordAccount)
+        let legacyDAV = try c.decodeIfPresent(WebDAVConfig.self, forKey: .webdav)
+        let legacyDAVAccount = try c.decodeIfPresent(String.self, forKey: .webdavPasswordAccount)
+        destinations = try c.decode([StoredDestination].self, forKey: .destinations).map { stored in
+            switch stored {
+            case .current(let d):
+                return d
+            case .legacyNAS:
+                // A profile from an early development build carries no NAS of its own (nil = the Advanced
+                // settings' NAS): `ProfileStore` resolves that placeholder after loading.
+                return .server(ServerDestination(id: Self.stableID(profile: id, kind: "nas"), passwordAccount: legacyNASAccount,
+                                                 connection: .smb(legacyNAS ?? .empty)))
+            case .legacyWebDAV:
+                return .server(ServerDestination(id: Self.stableID(profile: id, kind: "webdav"), passwordAccount: legacyDAVAccount,
+                                                 connection: .webdav(legacyDAV ?? .empty)))
+            }
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(name, forKey: .name)
+        try c.encode(template, forKey: .template)
+        try c.encode(source, forKey: .source)
+        try c.encode(destinations, forKey: .destinations)
+        try c.encodeIfPresent(settings, forKey: .settings)
+    }
+
+    /// A destination converted from the old shape keeps the same id at every load (until the profile is saved).
+    private static func stableID(profile: UUID, kind: String) -> UUID {
+        let digest = Array(SHA256.hash(data: Data("\(profile.uuidString)|\(kind)".utf8)))
+        return UUID(uuid: (digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
+                           digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]))
+    }
+
+    // MARK: Derived
 
     /// The settings a run of this profile uses.
     var runSettings: RunSettings { settings?.run ?? RunSettings.global() }
-
-    /// The Keychain account for the NAS password of a profile created by the "New backup" flow.
-    static func nasPasswordAccount(profileID: UUID) -> String { "profile.\(profileID.uuidString).nas" }
-
-    /// The Keychain account for the WebDAV password of a profile.
-    static func webdavPasswordAccount(profileID: UUID) -> String { "profile.\(profileID.uuidString).webdav" }
 
     /// The bookmark keys of this profile's folders, in order.
     var folderKeys: [String] {
         destinations.compactMap { if case .folder(let key) = $0 { return key } else { return nil } }
     }
 
-    var usesNAS: Bool { destinations.contains(.nas) }
-    var usesWebDAV: Bool { destinations.contains(.webdav) }
+    /// The profile's servers, in order.
+    var servers: [ServerDestination] { destinations.compactMap(\.serverDestination) }
 
-    /// The `DestinationManager` key for the n-th folder of a profile created by the "New backup" flow.
+    var usesServer: Bool { !servers.isEmpty }
+
+    /// True when the source is a camera card / drive rather than the photo library.
+    var usesExternalSource: Bool { if case .external = source { return true } else { return false } }
+
+    /// The pictogram of a backup card: a cloud when a folder is in iCloud Drive (detected from the folder),
+    /// a server symbol for a server-only backup, otherwise a drive or a card for the source.
+    func symbol(hasCloudFolder: Bool) -> String {
+        if hasCloudFolder { return usesExternalSource ? "icloud.and.arrow.up.fill" : "icloud.fill" }
+        if folderKeys.isEmpty, let server = servers.first { return server.connection.symbol }
+        return usesExternalSource ? "sdcard.fill" : "externaldrive.fill"
+    }
+
+    /// The `DestinationManager` key for the n-th folder of a backup.
     static func folderKey(profileID: UUID, index: Int) -> String {
         "PhotoVideoBackup.profile.\(profileID.uuidString).\(index)"
     }
@@ -245,19 +242,17 @@ enum ProfileMigration {
                          nasPasswordAccount: String? = nil) -> [BackupProfile] {
         var result: [BackupProfile] = []
         var destinations: [ProfileDestination] = configuredFolderKeys.map { .folder(bookmarkKey: $0) }
-        if nasConfigured { destinations.append(.nas) }
-        let profileNAS = nasConfigured ? nas : nil
-        let account = nasConfigured ? nasPasswordAccount : nil
+        if nasConfigured {
+            destinations.append(.server(ServerDestination(passwordAccount: nasPasswordAccount, connection: .smb(nas ?? .empty))))
+        }
         // The photo library profile exists only when there is somewhere to send it.
         if !destinations.isEmpty {
             result.append(BackupProfile(name: photosName, template: .custom, source: .photos,
-                                        destinations: destinations, settings: settings,
-                                        nas: profileNAS, nasPasswordAccount: account))
+                                        destinations: destinations, settings: settings))
         }
         for source in externalSources where !destinations.isEmpty {
             result.append(BackupProfile(name: source.name, template: .custom, source: .external(source.id),
-                                        destinations: destinations, settings: settings,
-                                        nas: profileNAS, nasPasswordAccount: account))
+                                        destinations: destinations, settings: settings))
         }
         return result
     }
@@ -317,7 +312,7 @@ final class ProfileStore {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         let loaded = Self.loadTolerant(from: defaults)
-        profiles = loaded.profiles
+        profiles = loaded.profiles.map(Self.resolvingGlobalNAS)
         unreadable = loaded.unreadable
         if !unreadable.isEmpty {
             DiagnosticLog.write("[PROFILES] \(unreadable.count) stored profile(s) could not be read by this build — kept as they are")
@@ -347,6 +342,21 @@ final class ProfileStore {
             }
         }
         return (profiles, unreadable)
+    }
+
+    /// A NAS destination read from a profile of an early development build has no configuration of its own
+    /// (it followed the NAS of the Advanced settings): fill it from there, once, so it is typed like the others.
+    static func resolvingGlobalNAS(_ profile: BackupProfile) -> BackupProfile {
+        var result = profile
+        for (i, destination) in profile.destinations.enumerated() {
+            guard case .server(var server) = destination, case .smb(let cfg) = server.connection,
+                  cfg == .empty, server.passwordAccount == nil,
+                  let global = DestinationManager.shared.loadNASConfig() else { continue }
+            server.connection = .smb(global)
+            server.passwordAccount = DestinationManager.shared.legacyNASPasswordAccount
+            result.destinations[i] = .server(server)
+        }
+        return result
     }
 
     private func persist() {
@@ -384,13 +394,12 @@ final class ProfileStore {
         for key in profile.folderKeys where key.hasPrefix("PhotoVideoBackup.profile.") {
             DestinationManager.shared.clearBookmark(forKey: key)
         }
-        // The NAS password of a profile created by the "New backup" flow dies with it. The legacy
-        // account is shared with the Advanced NAS settings and is never touched.
-        if let account = profile.nasPasswordAccount, account.hasPrefix("profile.") {
-            KeychainStore.delete(account: account)
-        }
-        if let account = profile.webdavPasswordAccount, account.hasPrefix("profile.") {
-            KeychainStore.delete(account: account)
+        // The password of a server created by the editor dies with its backup. The legacy account is shared
+        // with the Advanced NAS settings and is never touched.
+        for server in profile.servers {
+            if let account = server.passwordAccount, account.hasPrefix("profile.") || account.hasPrefix("server.") {
+                KeychainStore.delete(account: account)
+            }
         }
         profiles.removeAll { $0.id == id }
         persist()

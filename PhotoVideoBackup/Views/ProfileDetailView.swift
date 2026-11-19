@@ -1,19 +1,28 @@
 import SwiftUI
 
-/// A backup's settings: its name, its destinations (any number of folders and a NAS), its own NAS and
-/// its own options. Edited as a copy and saved at once, so cancelling leaves the backup exactly as it was.
+/// A backup's editor — used to **create** a backup (after choosing what to back up) and to **edit** one:
+/// its name, its destinations (any number of **folders** and **servers**; a server's type — NAS, WebDAV… —
+/// is chosen when it is added and its form follows the typed connection), and its own options. Edited as a
+/// copy and saved at once, so cancelling leaves the backup exactly as it was.
 struct ProfileDetailView: View {
     let original: BackupProfile
+    /// Creating a new backup (not yet stored) rather than editing one.
+    var isNew = false
+    /// Called after Save / Cancel when the editor is shown inside a flow that must close itself.
+    var onDone: (() -> Void)? = nil
+
     @Environment(\.dismiss) private var dismiss
     @Environment(DashboardViewModel.self) private var viewModel
     @Environment(StoreManager.self) private var store
+    @AppStorage("deviceName") private var deviceName: String = ""
 
     @State private var profile: BackupProfile
     @State private var settings: ProfileSettings
-    @State private var nasConfig: NASConfig
-    @State private var nasPassword = ""
-    @State private var webdavConfig: WebDAVConfig
-    @State private var webdavPassword = ""
+    /// Passwords being edited, by server id (they reach the Keychain only on Save).
+    @State private var passwords: [UUID: String] = [:]
+    @State private var sourceID: UUID?
+    private enum PickTarget { case destination, source }
+    @State private var pickTarget: PickTarget = .destination
     /// Which folder row the importer is choosing for, or nil when it adds a new destination.
     @State private var pickingIndex: Int?
     @State private var showImporter = false
@@ -22,55 +31,64 @@ struct ProfileDetailView: View {
     /// Next number for the keys of folders picked in this session (never collides with stored ones).
     @State private var nextKeyIndex = 100
 
-    init(profile: BackupProfile) {
+    init(profile: BackupProfile, isNew: Bool = false, onDone: (() -> Void)? = nil) {
         self.original = profile
+        self.isNew = isNew
+        self.onDone = onDone
         _profile = State(initialValue: profile)
         _settings = State(initialValue: profile.settings ?? ProfileSettings.fromGlobal())
-        _nasConfig = State(initialValue: profile.nas ?? DestinationManager.shared.loadNASConfig() ?? .empty)
-        _webdavConfig = State(initialValue: profile.webdav ?? .empty)
+    }
+
+    private var availableSources: [ExternalSource] { viewModel.externalSources.filter(\.isAvailable) }
+
+    private var needsDeviceName: Bool {
+        isNew && !profile.usesExternalSource && deviceName.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
     private var canSave: Bool {
         !profile.name.trimmingCharacters(in: .whitespaces).isEmpty
             && !profile.destinations.isEmpty
-            && (!profile.usesNAS || nasConfig.isComplete)
-            && (!profile.usesWebDAV || webdavConfig.isComplete)
+            && profile.servers.allSatisfy { $0.connection.isComplete }
+            && !needsDeviceName
+            && (!isNew || !profile.usesExternalSource || sourceID != nil)
     }
 
     var body: some View {
         Form {
             Section("Name") { TextField("Name", text: $profile.name) }
 
+            if isNew && profile.usesExternalSource { sourceSection }
+
             destinationsSection
 
-            if profile.usesNAS {
-                ProfileNASEditor(config: $nasConfig, password: $nasPassword)
+            ForEach(profile.servers) { server in
+                ServerEditor(connection: connectionBinding(server.id), password: passwordBinding(server.id))
             }
-            if profile.usesWebDAV {
-                ProfileWebDAVEditor(config: $webdavConfig, password: $webdavPassword)
-            }
+
+            if isNew && !profile.usesExternalSource { deviceNameSection }
 
             ProfileOptionsForm(settings: $settings)
         }
-        .navigationTitle(Text(verbatim: original.name))
+        .navigationTitle(isNew ? Text("New backup") : Text(verbatim: original.name))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { cancel() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { save() }.disabled(!canSave) }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(isNew ? "Create" : "Save") { save() }.disabled(!canSave)
+            }
         }
+        .navigationBarBackButtonHidden(isNew)
         .onAppear {
-            if profile.usesNAS {
-                let account = original.nasPasswordAccount ?? DestinationManager.shared.legacyNASPasswordAccount
-                nasPassword = KeychainStore.get(account: account) ?? ""
+            for server in profile.servers where passwords[server.id] == nil {
+                passwords[server.id] = KeychainStore.get(account: server.passwordAccount ?? "") ?? ""
             }
-            if profile.usesWebDAV {
-                webdavPassword = KeychainStore.get(account: original.webdavPasswordAccount ?? "") ?? ""
-            }
+            if isNew, profile.usesExternalSource, sourceID == nil { sourceID = availableSources.first?.id }
+            if isNew, profile.name.isEmpty { profile.name = defaultName }
         }
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.folder],
                       allowsMultipleSelection: false) { result in
             guard case .success(let urls) = result, let url = urls.first else { return }
-            apply(url)
+            handlePicked(url)
         }
         .sheet(isPresented: $showPaywall) { PaywallView() }
         .alert("This folder overlaps another destination", isPresented: $showOverlapAlert) {
@@ -80,7 +98,56 @@ struct ProfileDetailView: View {
         }
     }
 
-    // MARK: Destinations
+    /// The name pre-filled for a new backup, from its source.
+    private var defaultName: String {
+        profile.usesExternalSource ? String(localized: "Camera backup") : String(localized: "Photos backup")
+    }
+
+    // MARK: Bindings
+
+    private func connectionBinding(_ id: UUID) -> Binding<ServerConnection> {
+        Binding(
+            get: { profile.servers.first { $0.id == id }?.connection ?? .unknown(type: "", fields: [:]) },
+            set: { new in
+                guard let i = profile.destinations.firstIndex(where: { $0.serverDestination?.id == id }),
+                      case .server(var server) = profile.destinations[i] else { return }
+                server.connection = new
+                profile.destinations[i] = .server(server)
+            })
+    }
+
+    private func passwordBinding(_ id: UUID) -> Binding<String> {
+        Binding(get: { passwords[id] ?? "" }, set: { passwords[id] = $0 })
+    }
+
+    // MARK: Sections
+
+    private var sourceSection: some View {
+        Section {
+            if availableSources.isEmpty {
+                Text("No camera card or drive added yet.").foregroundStyle(.secondary)
+            } else {
+                Picker("Source", selection: $sourceID) {
+                    ForEach(availableSources) { s in Text(verbatim: s.displayName).tag(Optional(s.id)) }
+                }
+            }
+            Button("Add a source…") { pick(.source) }
+        } header: {
+            Text("Source")
+        } footer: {
+            Text("Choose the folder of the card or drive to copy from. For a drive that already holds a backup, choose the device folder inside it.")
+        }
+    }
+
+    private var deviceNameSection: some View {
+        Section {
+            TextField("e.g. Gerard's iPhone", text: $deviceName)
+        } header: {
+            Text("Folder name")
+        } footer: {
+            Text("Your backups are saved in a folder with this name.")
+        }
+    }
 
     private var destinationsSection: some View {
         Section {
@@ -89,88 +156,106 @@ struct ProfileDetailView: View {
                 case .folder:
                     VStack(alignment: .leading, spacing: 6) {
                         Label { Text(verbatim: label(of: destination)) } icon: { Image(systemName: "externaldrive.fill") }
-                        Button("Choose another folder…") { pick(replacing: index) }
+                        Button("Choose another folder…") { pick(.destination, replacing: index) }
                             .font(.callout)
                     }
-                case .nas:
+                case .server(let server):
                     Label {
-                        Text(verbatim: nasConfig.isComplete ? nasConfig.label : String(localized: "NAS"))
-                    } icon: { Image(systemName: "server.rack") }
-                case .webdav:
-                    Label {
-                        Text(verbatim: webdavConfig.isComplete ? webdavConfig.label : String(localized: "WebDAV server"))
-                    } icon: { Image(systemName: "network") }
+                        Text(verbatim: server.connection.isComplete ? server.connection.label : (server.connection.kind.map(titleString) ?? String(localized: "Server")))
+                    } icon: { Image(systemName: server.connection.symbol) }
                 }
             }
             .onDelete { offsets in remove(at: offsets) }
-            .deleteDisabled(profile.destinations.count <= 1)
+            .deleteDisabled(!isNew && profile.destinations.count <= 1)
 
             Menu {
-                Button("Another folder…") { addFolder() }
-                if !profile.usesNAS { Button("A NAS") { addNAS() } }
-                if !profile.usesWebDAV { Button("A WebDAV server") { addWebDAV() } }
+                Button("A folder…") { addFolder() }
+                Menu("A server") {
+                    ForEach(ServerKind.allCases) { kind in
+                        Button { addServer(kind) } label: { Text(kind.titleKey) }
+                    }
+                }
             } label: {
                 Label("Add a destination", systemImage: "plus.circle")
             }
         } header: {
             Text("Destinations")
         } footer: {
-            Text("A backup can copy to several destinations at once. Swipe to remove one. Choosing another folder is for a replaced drive or an access that no longer works — files already copied stay where they are.")
+            Text("A backup can copy to several destinations at once. A folder is a drive, a card, or any folder in the Files app (iCloud Drive, Google Drive…). A server is reached by an address and an account (a NAS, Nextcloud, pCloud…). Swipe to remove a destination.")
+        }
+    }
+
+    private func titleString(_ kind: ServerKind) -> String {
+        switch kind {
+        case .smb:    return String(localized: "NAS")
+        case .webdav: return String(localized: "WebDAV server")
         }
     }
 
     private func label(of destination: ProfileDestination) -> String {
-        guard case .folder(let key) = destination else { return "NAS" }
+        guard case .folder(let key) = destination else { return "" }
         let dm = DestinationManager.shared
         let text = [dm.displayName(forKey: key), dm.folderName(forKey: key)]
             .filter { !$0.isEmpty }.joined(separator: " / ")
         return text.isEmpty ? "—" : text
     }
 
-    /// A second destination is a Pro feature, as everywhere else in the app.
-    private func requirePro() -> Bool {
-        guard profile.destinations.count >= 1, !store.isPremium else { return true }
+    // MARK: Adding and removing destinations
+
+    /// A server, or a second destination, is a Pro feature, as everywhere else in the app.
+    private func requirePro(forServer: Bool) -> Bool {
+        guard !store.isPremium, forServer || !profile.destinations.isEmpty else { return true }
         showPaywall = true
         return false
     }
 
     private func addFolder() {
-        guard requirePro() else { return }
-        pickingIndex = nil
-        pickFolder()
+        guard requirePro(forServer: false) else { return }
+        pick(.destination, replacing: nil)
     }
 
-    private func addNAS() {
-        guard requirePro() else { return }
-        nasConfig = .empty
-        nasPassword = ""
-        profile.destinations.append(.nas)
+    private func addServer(_ kind: ServerKind) {
+        guard requirePro(forServer: true) else { return }
+        let server = ServerDestination(connection: kind.emptyConnection)
+        passwords[server.id] = ""
+        profile.destinations.append(.server(server))
     }
 
-    private func addWebDAV() {
-        guard requirePro() else { return }
-        webdavConfig = .empty
-        webdavPassword = ""
-        profile.destinations.append(.webdav)
+    private func remove(at offsets: IndexSet) {
+        if !isNew { guard profile.destinations.count - offsets.count >= 1 else { return } }
+        profile.destinations.remove(atOffsets: offsets)
     }
 
-    private func pick(replacing index: Int) {
+    // MARK: Picking folders
+
+    private func pick(_ target: PickTarget, replacing index: Int? = nil) {
+        pickTarget = target
         pickingIndex = index
-        pickFolder()
-    }
-
-    private func pickFolder() {
         if ProcessInfo.processInfo.isiOSAppOnMac {
             guard let url = MacOpenPanel.pickFolder() else { return }
-            apply(url)
+            handlePicked(url)
         } else {
             showImporter = true
         }
     }
 
+    private func handlePicked(_ url: URL) {
+        switch pickTarget {
+        case .destination: applyFolder(url)
+        case .source:
+            // The bookmark must be made right here, while the picker's security scope is active.
+            _ = url.startAccessingSecurityScopedResource()
+            let bookmark = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
+            url.stopAccessingSecurityScopedResource()
+            guard let bookmark else { return }
+            viewModel.addExternalSource(url: url, bookmarkData: bookmark, customName: nil)
+            sourceID = viewModel.externalSources.first { $0.rootURL == url }?.id ?? availableSources.last?.id
+        }
+    }
+
     /// Saves the bookmark right away (the picker's access is only valid here) under a key of this
     /// session; it is kept or discarded when the user saves or cancels.
-    private func apply(_ url: URL) {
+    private func applyFolder(_ url: URL) {
         // The other destinations of this backup (not the one being replaced): the new folder must be
         // independent of all of them.
         let dm = DestinationManager.shared
@@ -194,11 +279,6 @@ struct ProfileDetailView: View {
         pickingIndex = nil
     }
 
-    private func remove(at offsets: IndexSet) {
-        guard profile.destinations.count - offsets.count >= 1 else { return }
-        profile.destinations.remove(atOffsets: offsets)
-    }
-
     // MARK: Cancel / Save
 
     /// Keys this edit created (not in the stored profile) — forgotten on cancel.
@@ -206,58 +286,43 @@ struct ProfileDetailView: View {
         profile.folderKeys.filter { !original.folderKeys.contains($0) }
     }
 
+    private func finish() { if let onDone { onDone() } else { dismiss() } }
+
     private func cancel() {
         for key in sessionKeys { DestinationManager.shared.clearBookmark(forKey: key) }
-        dismiss()
+        finish()
+    }
+
+    private func isOwnAccount(_ account: String?) -> Bool {
+        guard let account else { return false }
+        return account.hasPrefix("profile.") || account.hasPrefix("server.")
     }
 
     private func save() {
         var edited = profile
         edited.name = profile.name.trimmingCharacters(in: .whitespaces)
         edited.settings = settings
+        if isNew, profile.usesExternalSource, let sourceID { edited.source = .external(sourceID) }
         // Folders that were replaced or removed: a profile-owned one is forgotten, a legacy (shared)
         // key is left alone.
         for old in original.folderKeys where !edited.folderKeys.contains(old) && old.hasPrefix("PhotoVideoBackup.profile.") {
             DestinationManager.shared.clearBookmark(forKey: old)
         }
-        if edited.usesNAS {
-            var cleaned = nasConfig
-            cleaned.host = nasConfig.host.trimmingCharacters(in: .whitespaces)
-            cleaned.share = nasConfig.share.trimmingCharacters(in: .whitespaces)
-            cleaned.basePath = nasConfig.basePath.trimmingCharacters(in: .whitespaces)
-            cleaned.username = nasConfig.username.trimmingCharacters(in: .whitespaces)
-            cleaned.displayName = nasConfig.displayName.trimmingCharacters(in: .whitespaces)
-            // The password now belongs to this backup, whatever account it came from.
-            let account = BackupProfile.nasPasswordAccount(profileID: edited.id)
-            KeychainStore.set(nasPassword, account: account)
-            edited.nas = cleaned
-            edited.nasPasswordAccount = account
-        } else {
-            // The NAS was removed from this backup: forget its own password too.
-            if let account = original.nasPasswordAccount, account.hasPrefix("profile.") {
-                KeychainStore.delete(account: account)
-            }
-            edited.nas = nil
-            edited.nasPasswordAccount = nil
+        // Servers: the connection is saved trimmed, and the password now belongs to this backup (its own
+        // Keychain account), whatever account it came from. A removed server's password is forgotten.
+        for (i, destination) in edited.destinations.enumerated() {
+            guard case .server(var server) = destination else { continue }
+            server.connection = server.connection.normalized
+            let account = isOwnAccount(server.passwordAccount) ? server.passwordAccount! : ServerDestination.passwordAccount(for: server.id)
+            KeychainStore.set(passwords[server.id] ?? "", account: account)
+            server.passwordAccount = account
+            edited.destinations[i] = .server(server)
         }
-        if edited.usesWebDAV {
-            var cleaned = webdavConfig
-            cleaned.serverURL = webdavConfig.normalizedURLString
-            cleaned.basePath = webdavConfig.basePath.trimmingCharacters(in: .whitespaces)
-            cleaned.username = webdavConfig.username.trimmingCharacters(in: .whitespaces)
-            cleaned.displayName = webdavConfig.displayName.trimmingCharacters(in: .whitespaces)
-            let account = BackupProfile.webdavPasswordAccount(profileID: edited.id)
-            KeychainStore.set(webdavPassword, account: account)
-            edited.webdav = cleaned
-            edited.webdavPasswordAccount = account
-        } else {
-            if let account = original.webdavPasswordAccount, account.hasPrefix("profile.") {
-                KeychainStore.delete(account: account)
-            }
-            edited.webdav = nil
-            edited.webdavPasswordAccount = nil
+        let keptIDs = Set(edited.servers.map(\.id))
+        for old in original.servers where !keptIDs.contains(old.id) && isOwnAccount(old.passwordAccount) {
+            KeychainStore.delete(account: old.passwordAccount!)
         }
-        ProfileStore.shared.update(edited)
-        dismiss()
+        if isNew { ProfileStore.shared.add(edited) } else { ProfileStore.shared.update(edited) }
+        finish()
     }
 }

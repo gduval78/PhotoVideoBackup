@@ -9,10 +9,9 @@ struct BackupBrowserView: View {
 
     var body: some View {
         let _ = browser.folderListVersion
-        let nasEntries = browser.nasEntries
-        let webdavEntries = browser.webdavEntries
+        let serverEntries = browser.serverEntries
         Group {
-            if browser.destinations.isEmpty && nasEntries.isEmpty && webdavEntries.isEmpty {
+            if browser.destinations.isEmpty && serverEntries.isEmpty {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
                     title: "No destination available",
@@ -39,26 +38,13 @@ struct BackupBrowserView: View {
                         }
                     }
 
-                    // One section per distinct NAS: the global one and each backup's own.
-                    ForEach(nasEntries, id: \.config) { entry in
+                    // One section per distinct server of the backups, whatever its type.
+                    ForEach(serverEntries, id: \.connection) { entry in
                         Section(entry.title) {
                             NavigationLink {
-                                NASBrowserRootView(title: entry.title, config: entry.config,
-                                                   passwordAccount: entry.passwordAccount)
+                                ServerBrowserRootView(entry: entry)
                             } label: {
-                                Label(entry.config.label, systemImage: "externaldrive.connected.to.line.below")
-                            }
-                        }
-                    }
-
-                    // One section per distinct WebDAV server of the backups.
-                    ForEach(webdavEntries, id: \.config) { entry in
-                        Section(entry.title) {
-                            NavigationLink {
-                                WebDAVBrowserRootView(title: entry.title, config: entry.config,
-                                                      passwordAccount: entry.passwordAccount)
-                            } label: {
-                                Label(entry.config.label, systemImage: "network")
+                                Label(entry.connection.label, systemImage: entry.connection.symbol)
                             }
                         }
                     }

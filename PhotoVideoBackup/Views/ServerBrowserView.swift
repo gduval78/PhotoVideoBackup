@@ -1,31 +1,28 @@
 import SwiftUI
 import QuickLook
 
-// MARK: - NASBrowserRootView
+// MARK: - ServerBrowserRootView
 
-/// Connects to the configured NAS, then shows its share (starting at the configured base folder).
-/// Reached from the Browse tab when a NAS is configured.
-struct NASBrowserRootView: View {
-    let title: String
-    /// The NAS to open; nil = the global one (Advanced settings).
-    var config: NASConfig? = nil
-    var passwordAccount: String? = nil
+/// Connects to a server of the backups (NAS, WebDAV… — its typed connection says how), then shows its
+/// backup folder. Reached from the Browse tab.
+struct ServerBrowserRootView: View {
+    let entry: BackupBrowserViewModel.ServerEntry
 
-    @State private var target: SMBTarget?
+    @State private var target: (any ServerTarget)?
     @State private var connecting = true
     @State private var connectError: String?
 
     var body: some View {
         Group {
             if let target {
-                NASBrowserView(target: target, subPath: "", title: title)
+                ServerBrowserView(target: target, subPath: "", title: entry.title, lutKeyPrefix: entry.lutKeyPrefix)
             } else if connecting {
-                ProgressView("Connecting to NAS…")
+                ProgressView("Connecting to the server…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 8) {
                     Image(systemName: "network.slash").font(.largeTitle).foregroundStyle(.secondary)
-                    Text("Could not connect to the NAS.").font(.headline)
+                    Text("Could not connect to the server.").font(.headline)
                     if let connectError {
                         Text(verbatim: connectError).font(.caption).foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -36,7 +33,7 @@ struct NASBrowserRootView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle(title)
+        .navigationTitle(entry.title)
         .navigationBarTitleDisplayMode(.inline)
         .task { await connect() }
     }
@@ -44,31 +41,29 @@ struct NASBrowserRootView: View {
     private func connect() async {
         connecting = true
         connectError = nil
-        if let config {
-            let password = KeychainStore.get(account: passwordAccount ?? DestinationManager.shared.legacyNASPasswordAccount) ?? ""
-            target = await DestinationManager.shared.makeSMBTarget(from: config, password: password)
-        } else {
-            target = await DestinationManager.shared.makeSMBTarget()
-        }
-        if target == nil { connectError = String(localized: "The NAS is unreachable — check Wi-Fi/VPN and settings.") }
+        let password = KeychainStore.get(account: entry.passwordAccount) ?? ""
+        target = await entry.connection.connect(password: password)
+        if target == nil { connectError = String(localized: "The server is unreachable — check your connection and settings.") }
         connecting = false
     }
 }
 
-// MARK: - NASBrowserView
+// MARK: - ServerBrowserView
 
-/// Lists one SMB directory (relative to the NAS base folder). Folders push a deeper view;
+/// Lists one server directory (relative to the backup's base folder). Folders push a deeper view;
 /// tapping a file downloads it on demand to a temp file and previews it via QuickLook.
-struct NASBrowserView: View {
+struct ServerBrowserView: View {
     @Environment(LanguageManager.self) private var languageManager
     @Environment(BackupBrowserViewModel.self) private var browser
     @Environment(StoreManager.self) private var store
 
-    let target: SMBTarget
+    let target: any ServerTarget
     let subPath: String
     let title: String
+    /// Prefix of the LUT-assignment keys of this server's folders (see `ServerEntry.lutKeyPrefix`).
+    let lutKeyPrefix: String
 
-    @State private var entries: [SMBTarget.Entry] = []
+    @State private var entries: [RemoteEntry] = []
     @State private var loading = true
     @State private var loadError: String?
     @State private var busyName: String?
@@ -87,7 +82,7 @@ struct NASBrowserView: View {
         !subPath.isEmpty && !title.hasSuffix(" (Graded)")
     }
 
-    private var folderKey: String { BackupBrowserViewModel.nasLUTKey(subPath: subPath) }
+    private var folderKey: String { lutKeyPrefix + subPath }
 
     private static let videoExts: Set<String> = ["mp4", "mov", "avi", "m4v", "insv", "braw"]
     private func isVideo(_ name: String) -> Bool {
@@ -133,7 +128,7 @@ struct NASBrowserView: View {
                         }
                     } else if entry.isDirectory {
                         NavigationLink {
-                            NASBrowserView(target: target, subPath: child(entry.name), title: entry.name)
+                            ServerBrowserView(target: target, subPath: child(entry.name), title: entry.name, lutKeyPrefix: lutKeyPrefix)
                         } label: { row(entry) }
                     } else {
                         Button { Task { await preview(entry) } } label: { row(entry) }
@@ -215,7 +210,7 @@ struct NASBrowserView: View {
                     Text("Select only your LOG videos to grade.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Text("Downloading, grading, and uploading to a “(Graded)” copy on the NAS.")
+                    Text("Downloading, grading, and uploading to a “(Graded)” copy on the server.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -294,7 +289,7 @@ struct NASBrowserView: View {
     // MARK: Rows
 
     @ViewBuilder
-    private func row(_ entry: SMBTarget.Entry) -> some View {
+    private func row(_ entry: RemoteEntry) -> some View {
         HStack {
             Image(systemName: entry.isDirectory ? "folder.fill" : icon(for: entry.name))
                 .foregroundStyle(entry.isDirectory ? Color.accentColor : .secondary)
@@ -309,7 +304,7 @@ struct NASBrowserView: View {
         }
     }
 
-    private func subtitle(_ entry: SMBTarget.Entry) -> String {
+    private func subtitle(_ entry: RemoteEntry) -> String {
         var parts = [entry.size.formatted(.byteCount(style: .file).locale(languageManager.currentLocale))]
         if let date = entry.modificationDate {
             parts.append(date.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened)
@@ -342,7 +337,7 @@ struct NASBrowserView: View {
         loading = false
     }
 
-    private func preview(_ entry: SMBTarget.Entry) async {
+    private func preview(_ entry: RemoteEntry) async {
         busyName = entry.name
         defer { busyName = nil }
         let dest = FileManager.default.temporaryDirectory

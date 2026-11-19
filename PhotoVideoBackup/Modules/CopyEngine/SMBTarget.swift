@@ -10,7 +10,7 @@ import AMSMB2
 /// Path model:
 /// - `rootIdentifier` = "smb://host/share/basePath" — stable prefix stored in IndexStore for dedup.
 /// - AMSMB2 operations use **share-relative** paths, i.e. `basePath/deviceName/date/file`.
-final class SMBTarget: RemoteBackupTarget, @unchecked Sendable {
+final class SMBTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendable {
 
     private let client: SMB2Manager
     private let host: String
@@ -141,27 +141,18 @@ final class SMBTarget: RemoteBackupTarget, @unchecked Sendable {
 
     // MARK: - Browsing (Phase 3)
 
-    /// One entry in an SMB directory listing.
-    struct Entry: Identifiable, Sendable {
-        let id = UUID()
-        let name: String
-        let isDirectory: Bool
-        let size: Int64
-        let modificationDate: Date?
-    }
-
     /// Lists a directory whose path is relative to `basePath` ("" = the base folder itself).
     /// Folders come first, then files, both alphabetical. Hidden/self/parent entries are dropped.
-    func list(relativeSubPath subPath: String) async throws -> [Entry] {
+    func list(relativeSubPath subPath: String) async throws -> [RemoteEntry] {
         let raw = try await client.contentsOfDirectory(atPath: smbPath(forRelative: subPath))
-        let entries: [Entry] = raw.compactMap { attrs in
+        let entries: [RemoteEntry] = raw.compactMap { attrs in
             guard let name = attrs[.nameKey] as? String,
                   name != ".", name != "..", !name.hasPrefix(".") else { return nil }
             let type  = attrs[.fileResourceTypeKey] as? URLFileResourceType
             let isDir = type == .directory || (attrs[.isDirectoryKey] as? Bool == true)
             let size  = (attrs[.fileSizeKey] as? Int64) ?? 0
             let date  = attrs[.contentModificationDateKey] as? Date
-            return Entry(name: name, isDirectory: isDir, size: size, modificationDate: date)
+            return RemoteEntry(name: name, isDirectory: isDir, size: size, modificationDate: date)
         }
         return entries.sorted {
             $0.isDirectory != $1.isDirectory ? $0.isDirectory

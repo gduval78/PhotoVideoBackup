@@ -59,16 +59,11 @@ struct BackupSummarySheet: View {
                 nodes.append(Node(symbol: "externaldrive.fill", kind: "External drive", name: name))
             }
         }
-        // Names come in this order: folders, then the NAS, then the WebDAV server.
-        var next = profile.folderKeys.count
-        if profile.usesNAS {
-            let nasName = destinationNames.indices.contains(next) ? destinationNames[next] : String(localized: "NAS")
-            nodes.append(Node(symbol: "server.rack", kind: "NAS", name: nasName))
-            next += 1
-        }
-        if profile.usesWebDAV {
-            let davName = destinationNames.indices.contains(next) ? destinationNames[next] : String(localized: "WebDAV server")
-            nodes.append(Node(symbol: "network", kind: "WebDAV server", name: davName))
+        // Names come in this order: the folders, then the servers.
+        for (i, server) in profile.servers.enumerated() {
+            let index = profile.folderKeys.count + i
+            let name = destinationNames.indices.contains(index) ? destinationNames[index] : server.connection.label
+            nodes.append(Node(symbol: server.connection.symbol, kind: "Server", name: name))
         }
         return nodes
     }

@@ -120,17 +120,13 @@ final class DashboardViewModel {
         var targets = localTargets(localURLs)
         guard StoreManager.shared.isPremium else { return targets }
         if let run {
-            // A profile connects to its own NAS (or to none).
-            if let nas = run.nas,
-               let smb = await DestinationManager.shared.makeSMBTarget(from: nas.config, password: nas.password) {
-                targets.append(smb)
+            // A profile connects to each of its own servers: the typed connection says how.
+            for server in run.servers {
+                if let target = await server.connection.connect(password: server.password) { targets.append(target) }
+                else { DiagnosticLog.write("[SERVER_ERROR] unreachable: \(server.connection.label)") }
             }
         } else if let smb = await DestinationManager.shared.makeSMBTarget() {
             targets.append(smb)
-        }
-        if let dav = run?.webdav, let target = dav.config.makeTarget(password: dav.password) {
-            if await target.isReachable() { targets.append(target) }
-            else { DiagnosticLog.write("[WEBDAV_ERROR] server unreachable: \(dav.config.label)") }
         }
         return targets
     }
@@ -478,13 +474,11 @@ final class DashboardViewModel {
     struct ProfileRun {
         let name: String
         let localURLs: [URL]
-        /// The profile's own NAS and its password, or nil when the profile has no NAS.
-        let nas: (config: NASConfig, password: String)?
-        /// The profile's WebDAV server and its password, or nil.
-        var webdav: (config: WebDAVConfig, password: String)? = nil
+        /// The profile's servers (NAS, WebDAV…) with their passwords, in order.
+        let servers: [(connection: ServerConnection, password: String)]
         /// The profile's own folder structure, naming, limits and extensions.
         let settings: RunSettings
-        var includeNAS: Bool { nas != nil }
+        var includeServers: Bool { !servers.isEmpty }
     }
 
     /// Connection state of a profile's destinations, for its card: every folder reachable (and the
@@ -531,13 +525,9 @@ final class DashboardViewModel {
             }
             names.append(status.displayName.isEmpty ? url.lastPathComponent : status.displayName)
         }
-        if profile.usesNAS {
-            if let cfg = profile.nas ?? dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
-            else { connected = false; names.append(String(localized: "NAS")) }
-        }
-        if profile.usesWebDAV {
-            if let cfg = profile.webdav, cfg.isComplete { names.append(cfg.label) }
-            else { connected = false; names.append(String(localized: "WebDAV server")) }
+        for server in profile.servers {
+            if server.connection.isComplete { names.append(server.connection.label) }
+            else { connected = false; names.append(String(localized: "Server")) }
         }
         return ProfileConnection(isConnected: connected, destinationNames: names,
                                  freeBytes: free, usedFraction: used, disconnectedFolderKey: missingKey,
@@ -556,7 +546,7 @@ final class DashboardViewModel {
         }
         // A NAS or a second destination is Pro. Refuse with a message rather than silently
         // dropping the extra destination and running a backup the user thinks is doubled.
-        if !StoreManager.shared.isPremium && (profile.usesNAS || profile.usesWebDAV || profile.destinations.count > 1) {
+        if !StoreManager.shared.isPremium && (profile.usesServer || profile.destinations.count > 1) {
             backupError = String(localized: "This backup needs the Pro upgrade.")
             return
         }
@@ -571,26 +561,16 @@ final class DashboardViewModel {
             backupError = String(localized: "A destination of this backup is not connected.")
             return
         }
-        // The profile's own NAS (or, for a profile saved before it carried one, the Advanced settings').
-        var nas: (config: NASConfig, password: String)? = nil
-        if profile.usesNAS {
-            let config = profile.nas ?? dm.loadNASConfig()
-            let account = profile.nasPasswordAccount ?? dm.legacyNASPasswordAccount
-            guard let config, config.isComplete else {
-                backupError = String(localized: "The NAS of this backup is not set up.")
+        // Each server of the backup: its typed connection and the password from the Keychain.
+        var servers: [(connection: ServerConnection, password: String)] = []
+        for server in profile.servers {
+            guard server.connection.isComplete else {
+                backupError = String(localized: "A server of this backup is not set up.")
                 return
             }
-            nas = (config, KeychainStore.get(account: account) ?? "")
+            servers.append((server.connection, KeychainStore.get(account: server.passwordAccount ?? "") ?? ""))
         }
-        var webdav: (config: WebDAVConfig, password: String)? = nil
-        if profile.usesWebDAV {
-            guard let config = profile.webdav, config.isComplete else {
-                backupError = String(localized: "The WebDAV server of this backup is not set up.")
-                return
-            }
-            webdav = (config, KeychainStore.get(account: profile.webdavPasswordAccount ?? "") ?? "")
-        }
-        let run = ProfileRun(name: profile.name, localURLs: urls, nas: nas, webdav: webdav, settings: profile.runSettings)
+        let run = ProfileRun(name: profile.name, localURLs: urls, servers: servers, settings: profile.runSettings)
         switch profile.source {
         case .photos:
             await requestPhotosBackup(run: run)
@@ -757,7 +737,7 @@ final class DashboardViewModel {
         let session = BackupSession(
             sources: ["photos-library://local"],
             destinations: targets.map(\.rootIdentifier),
-            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + ($0.includeNAS ? 1 : 0) } ?? 1),
+            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + $0.servers.count } ?? 1),
             sourceDisplayName: rawName,
             folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)
@@ -871,7 +851,7 @@ final class DashboardViewModel {
         let session = BackupSession(
             sources: [sourceURL.path],
             destinations: targets.map(\.rootIdentifier),
-            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + ($0.includeNAS ? 1 : 0) } ?? 1),
+            incompleteMirror: Self.isIncompleteMirror(reached: targets.count, expected: run.map { $0.localURLs.count + $0.servers.count } ?? 1),
             sourceDisplayName: source.displayName,
             folderOrganizationRaw: runSettings.organization.rawValue,
             destinationDisplayNames: targets.map(\.displayName)

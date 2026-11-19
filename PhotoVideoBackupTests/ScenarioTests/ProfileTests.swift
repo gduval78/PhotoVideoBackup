@@ -12,6 +12,14 @@ final class ProfileTests: XCTestCase {
         return d
     }
 
+    private func nasConfig(_ host: String, share: String = "photo", user: String = "me") -> NASConfig {
+        NASConfig(host: host, port: 445, share: share, basePath: "PVB", username: user, displayName: host, enabled: true)
+    }
+
+    private func smbServer(_ host: String = "home.local", account: String? = nil) -> ProfileDestination {
+        .server(ServerDestination(passwordAccount: account, connection: .smb(nasConfig(host))))
+    }
+
     // SCENARIO: An upgrade keeps working without reconfiguration
     // A pre-profiles install had two drives and a NAS plus one camera card. Migration must give the
     // photo library one profile sending to all of them, and the card one profile, reusing the existing
@@ -23,7 +31,9 @@ final class ProfileTests: XCTestCase {
             externalSources: [card], photosName: "Photos", nasName: "NAS")
         XCTAssertEqual(profiles.count, 2)
         XCTAssertEqual(profiles[0].source, .photos)
-        XCTAssertEqual(profiles[0].destinations, [.folder(bookmarkKey: "k.ssd1"), .folder(bookmarkKey: "k.ssd2"), .nas])
+        XCTAssertEqual(Array(profiles[0].destinations.prefix(2)), [.folder(bookmarkKey: "k.ssd1"), .folder(bookmarkKey: "k.ssd2")])
+        XCTAssertEqual(profiles[0].servers.count, 1)                       // the NAS became a typed server
+        if case .smb = profiles[0].servers[0].connection {} else { XCTFail("the migrated NAS is an smb server") }
         XCTAssertEqual(profiles[1].source, .external(card.id))
         XCTAssertEqual(profiles[1].name, "DJI Neo 2")
         XCTAssertTrue(profiles.allSatisfy { $0.template == .custom })
@@ -80,39 +90,6 @@ final class ProfileTests: XCTestCase {
         XCTAssertTrue(store.profiles.isEmpty)
     }
 
-    // SCENARIO: Each template asks for the right things and the Pro gates match the app
-    // Free: photo library → one folder (drive or iCloud). Everything else — a NAS, a camera card, a
-    // second copy — is Pro, as everywhere else in the app.
-    func test_templates_shapeAndProGates() {
-        XCTAssertEqual(ProfileTemplate.selectable.count, 8)   // + the two WebDAV templates (2.8.0)
-        XCTAssertFalse(ProfileTemplate.selectable.contains(.custom))
-        // The iCloud templates are no longer offered (iCloud is detected from the folder) but still load.
-        XCTAssertFalse(ProfileTemplate.selectable.contains(.driveToICloud))
-        XCTAssertFalse(ProfileTemplate.selectable.contains(.photosToICloud))
-        XCTAssertNotNil(ProfileTemplate(rawValue: "photosToICloud"))
-        XCTAssertFalse(ProfileTemplate.photosToDrive.requiresPro)
-        XCTAssertFalse(ProfileTemplate.photosToICloud.requiresPro)
-        XCTAssertTrue(ProfileTemplate.photosToNAS.requiresPro)
-        XCTAssertTrue(ProfileTemplate.cameraToDrive.requiresPro)
-        XCTAssertTrue(ProfileTemplate.photosToDriveAndNAS.requiresPro)
-        XCTAssertEqual(ProfileTemplate.photosToNAS.folderCount, 0)
-        XCTAssertEqual(ProfileTemplate.photosToDriveAndNAS.folderCount, 1)
-        XCTAssertTrue(ProfileTemplate.photosToDriveAndNAS.includesNAS)
-        XCTAssertTrue(ProfileTemplate.cameraToDrive.usesExternalSource)
-        XCTAssertFalse(ProfileTemplate.photosToDrive.usesExternalSource)
-        // Camera / SD card → NAS: an external source, no folder to pick, a NAS, Pro.
-        XCTAssertTrue(ProfileTemplate.selectable.contains(.cameraToNAS))
-        XCTAssertTrue(ProfileTemplate.cameraToNAS.usesExternalSource)
-        XCTAssertTrue(ProfileTemplate.cameraToNAS.includesNAS)
-        XCTAssertEqual(ProfileTemplate.cameraToNAS.folderCount, 0)
-        XCTAssertTrue(ProfileTemplate.cameraToNAS.requiresPro)
-        // Camera / SD card → folder + NAS: an external source, one folder, a NAS, Pro.
-        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.usesExternalSource)
-        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.includesNAS)
-        XCTAssertEqual(ProfileTemplate.cameraToDriveAndNAS.folderCount, 1)
-        XCTAssertTrue(ProfileTemplate.cameraToDriveAndNAS.requiresPro)
-    }
-
     // SCENARIO: A profile this build cannot read never wipes the others
     // Field case: 2.7.0 read a `cameraToNAS` profile (written by a newer build), failed to decode the
     // whole list and showed no backup at all. An unknown template is now read as "custom", and a
@@ -121,7 +98,7 @@ final class ProfileTests: XCTestCase {
         let suite = "pvb.tolerant.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
-        let good = BackupProfile(name: "Photos", template: .photosToNAS, source: .photos, destinations: [.nas])
+        let good = BackupProfile(name: "Photos", template: .photosToNAS, source: .photos, destinations: [smbServer()])
         var objects = try JSONSerialization.jsonObject(with: JSONEncoder().encode([good])) as! [[String: Any]]
         var future = objects[0]
         future["id"] = UUID().uuidString; future["name"] = "From the future"; future["template"] = "someNewTemplate"
@@ -165,8 +142,8 @@ final class ProfileTests: XCTestCase {
         let a = BackupProfile(name: "A", template: .photosToDrive, source: .photos,
                               destinations: [.folder(bookmarkKey: "k.profile.a")])
         let b = BackupProfile(name: "B", template: .photosToDriveAndNAS, source: .photos,
-                              destinations: [.folder(bookmarkKey: "k.profile.b"), .nas])
-        let nasOnly = BackupProfile(name: "N", template: .photosToNAS, source: .photos, destinations: [.nas])
+                              destinations: [.folder(bookmarkKey: "k.profile.b"), smbServer()])
+        let nasOnly = BackupProfile(name: "N", template: .photosToNAS, source: .photos, destinations: [smbServer()])
         let keys = BackupBrowserViewModel.destinationKeys(profiles: [a, b, nasOnly])
         XCTAssertEqual(keys, ["k.profile.a", "k.profile.b"])                      // the NAS has no folder key
         // Delete every backup: nothing is left to browse.
@@ -179,31 +156,28 @@ final class ProfileTests: XCTestCase {
         XCTAssertEqual(unique.map(\.key), ["k.ssd1", "k.profile.b"])            // same folder once; "Backup 2" is another
     }
 
-    // SCENARIO: Browse shows each distinct NAS once — the global one and every backup's own
-    func test_browse_nasEntries_distinctPerServer() {
-        func nas(_ host: String, share: String = "photo", user: String = "me") -> NASConfig {
-            NASConfig(host: host, port: 445, share: share, basePath: "PVB", username: user,
-                      displayName: host, enabled: true)
+    // SCENARIO: Browse shows each distinct server once, whatever its type
+    // Two destinations describing the same server, folder and user are one section; an incomplete server or one
+    // without a password account adds nothing; a NAS keeps the `nas:` prefix of its LUT assignments, other
+    // types are keyed by their identity.
+    func test_browse_serverEntries_distinctPerServer() {
+        let home = ServerDestination(passwordAccount: "acc1", connection: .smb(nasConfig("home.local")))
+        let homeAgain = ServerDestination(passwordAccount: "acc2", connection: .smb(nasConfig("HOME.local")))
+        let office = ServerDestination(passwordAccount: "acc3", connection: .smb(nasConfig("office.local")))
+        let incomplete = ServerDestination(passwordAccount: "acc4", connection: .smb(.empty))
+        let noAccount = ServerDestination(passwordAccount: nil, connection: .smb(nasConfig("x.local")))
+        let dav = ServerDestination(passwordAccount: "acc5", connection: .webdav(WebDAVConfig(
+            serverURL: "https://cloud.example.com/remote.php/dav/files/me/", basePath: "Backups", username: "me", displayName: "Nextcloud")))
+        func profile(_ servers: [ServerDestination]) -> BackupProfile {
+            BackupProfile(name: "p", source: .photos, destinations: servers.map { .server($0) })
         }
-        let home = nas("home.local")
-        let office = nas("office.local")
-        let p1 = BackupProfile(name: "1", template: .photosToNAS, source: .photos, destinations: [.nas],
-                               nas: home, nasPasswordAccount: "profile.1.nas")          // same NAS as the global one
-        let p2 = BackupProfile(name: "2", template: .photosToNAS, source: .photos, destinations: [.nas],
-                               nas: office, nasPasswordAccount: "profile.2.nas")
-        let old = BackupProfile(name: "3", template: .photosToNAS, source: .photos, destinations: [.nas]) // no own config
-        let noNAS = BackupProfile(name: "4", template: .photosToDrive, source: .photos,
-                                  destinations: [.folder(bookmarkKey: "k")], nas: office)
-        let entries = BackupBrowserViewModel.nasEntries(global: home, globalAccount: "nas.primary",
-                                                        profiles: [p1, p2, old, noNAS])
-        XCTAssertEqual(entries.map(\.config.host), ["home.local", "office.local"])
-        XCTAssertEqual(entries.map(\.passwordAccount), ["nas.primary", "profile.2.nas"])
-        // Without a global NAS, a profile's own still shows.
-        XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: nil, globalAccount: "g", profiles: [p2]).count, 1)
-        // The global NAS is not listed on its own: only when a backup that uses it has no config of its own.
-        XCTAssertEqual(BackupBrowserViewModel.nasEntries(global: home, globalAccount: "g", profiles: [p2]).map(\.config.host),
-                       ["office.local"])
-        XCTAssertTrue(BackupBrowserViewModel.nasEntries(global: home, globalAccount: "g", profiles: []).isEmpty)
+        let entries = BackupBrowserViewModel.serverEntries(profiles: [profile([home, dav]), profile([homeAgain, office]),
+                                                                      profile([incomplete, noAccount])])
+        XCTAssertEqual(entries.map(\.passwordAccount), ["acc1", "acc5", "acc3"])
+        XCTAssertEqual(entries.map(\.title), ["home.local", "Nextcloud", "office.local"])
+        XCTAssertEqual(entries[0].lutKeyPrefix, "nas:")
+        XCTAssertTrue(entries[1].lutKeyPrefix.hasPrefix("server:webdav|"))
+        XCTAssertTrue(BackupBrowserViewModel.serverEntries(profiles: []).isEmpty)
     }
 
     // SCENARIO: The free version has one backup; Pro has as many as it wants
@@ -237,34 +211,25 @@ final class ProfileTests: XCTestCase {
     }
 
     // SCENARIO: A WebDAV backup keeps its server through save and reload
-    // The profile carries its own server (never the password, which is in the Keychain), the template
-    // says it is a WebDAV backup, and a profile saved before WebDAV existed still reads with no server.
-    @MainActor func test_webdav_profileRoundTrip() throws {
-        let suite = "pvb.webdav.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
-        defer { defaults.removePersistentDomain(forName: suite) }
+    // The profile carries its typed server (never the password, which is in the Keychain), and a profile saved
+    // before servers existed still reads with none.
+    func test_webdav_profileRoundTrip() throws {
+        let defaults = isolatedDefaults()
         let cfg = WebDAVConfig(serverURL: "cloud.example.com/remote.php/dav/files/me/", basePath: "Backups",
                                username: "me", displayName: "Nextcloud")
         XCTAssertEqual(cfg.normalizedURLString, "https://cloud.example.com/remote.php/dav/files/me/")
         XCTAssertTrue(cfg.isComplete)
-        let profile = BackupProfile(name: "Photos → WebDAV", template: .photosToWebDAV, source: .photos,
-                                    destinations: [.webdav], webdav: cfg, webdavPasswordAccount: "profile.x.webdav")
+        let server = ServerDestination(passwordAccount: "server.x", connection: .webdav(cfg))
+        let profile = BackupProfile(name: "Photos → WebDAV", source: .photos, destinations: [.server(server)])
         let store = ProfileStore(defaults: defaults)
         store.add(profile)
         let json = String(data: defaults.data(forKey: "PhotoVideoBackup.profiles")!, encoding: .utf8)!
         XCTAssertFalse(json.contains("secret"))
         let reloaded = ProfileStore(defaults: defaults).profiles
-        XCTAssertEqual(reloaded.first?.webdav, cfg)
-        XCTAssertTrue(reloaded.first?.usesWebDAV ?? false)
-        XCTAssertFalse(reloaded.first?.usesNAS ?? true)
-        XCTAssertTrue(ProfileTemplate.photosToWebDAV.includesWebDAV)
-        XCTAssertTrue(ProfileTemplate.photosToWebDAV.requiresPro)
-        XCTAssertEqual(ProfileTemplate.photosToWebDAV.folderCount, 0)
-        XCTAssertTrue(ProfileTemplate.cameraToWebDAV.usesExternalSource)
-
+        XCTAssertEqual(reloaded.first?.servers.first?.connection, .webdav(cfg))
+        XCTAssertTrue(reloaded.first?.usesServer ?? false)
         let old = BackupProfile(name: "Old", template: .photosToDrive, source: .photos, destinations: [.folder(bookmarkKey: "k")])
-        XCTAssertNil(old.webdav)
-        XCTAssertFalse(old.usesWebDAV)
+        XCTAssertFalse(old.usesServer)
     }
 
     // SCENARIO: Only secure server addresses are accepted
@@ -278,25 +243,105 @@ final class ProfileTests: XCTestCase {
         XCTAssertFalse(WebDAVConfig(serverURL: "https://dav.example.com", basePath: "", username: " ", displayName: "").isComplete)
     }
 
-    // SCENARIO: Browse lists each WebDAV server of the backups once
-    // Two backups pointing at the same server, folder and user are one section; a backup with an
-    // incomplete server, or without a password account, adds nothing; NAS-only backups are not listed.
-    func test_browse_webdavEntries_distinctAndComplete() {
-        let a = WebDAVConfig(serverURL: "https://cloud.example.com/remote.php/dav/files/me/", basePath: "Backups", username: "me", displayName: "Nextcloud")
-        let same = WebDAVConfig(serverURL: "HTTPS://cloud.example.com/remote.php/dav/files/me/", basePath: "/backups/", username: "ME", displayName: "Other label")
-        let other = WebDAVConfig(serverURL: "https://dav.example.org/", basePath: "", username: "u", displayName: "")
-        let incomplete = WebDAVConfig(serverURL: "", basePath: "", username: "u", displayName: "")
-        func profile(_ cfg: WebDAVConfig?, account: String?) -> BackupProfile {
-            BackupProfile(name: "p", template: .photosToWebDAV, source: .photos, destinations: [.webdav],
-                          webdav: cfg, webdavPasswordAccount: account)
-        }
-        let profiles = [profile(a, account: "acc1"), profile(same, account: "acc2"),
-                        profile(other, account: "acc3"), profile(incomplete, account: "acc4"),
-                        profile(a, account: nil),
-                        BackupProfile(name: "nas", template: .photosToNAS, source: .photos, destinations: [.nas])]
-        let entries = BackupBrowserViewModel.webdavEntries(profiles: profiles)
-        XCTAssertEqual(entries.map(\.passwordAccount), ["acc1", "acc3"])
-        XCTAssertEqual(entries.first?.title, "Nextcloud")
-        XCTAssertEqual(entries.last?.title, "dav.example.org")   // no label: the host
+    // MARK: Typed servers (2.8.0)
+
+    // SCENARIO: A profile saved by 2.7.x (a `.nas` marker plus the NAS config at the top level) opens as a typed server
+    // The field case of the upgrade: real 2.7.1 JSON, a folder and a NAS. The NAS becomes a `.server` with the
+    // same configuration and the same Keychain account (no password migration), and the id is stable across loads.
+    func test_legacyProfile_nasBecomesTypedServer() throws {
+        let json = #"""
+        {"id":"22222222-2222-2222-2222-222222222222","name":"Photos","template":"photosToDriveAndNAS",
+         "source":{"photos":{}},
+         "destinations":[{"folder":{"bookmarkKey":"k.ssd"}},{"nas":{}}],
+         "nas":{"host":"nas.local","port":445,"share":"photo","basePath":"PVB","username":"me","displayName":"Home","enabled":true},
+         "nasPasswordAccount":"profile.22222222-2222-2222-2222-222222222222.nas"}
+        """#
+        let a = try JSONDecoder().decode(BackupProfile.self, from: Data(json.utf8))
+        let b = try JSONDecoder().decode(BackupProfile.self, from: Data(json.utf8))
+        XCTAssertEqual(a.folderKeys, ["k.ssd"])
+        XCTAssertEqual(a.servers.count, 1)
+        XCTAssertEqual(a.servers[0].passwordAccount, "profile.22222222-2222-2222-2222-222222222222.nas")
+        guard case .smb(let cfg) = a.servers[0].connection else { return XCTFail("an smb server") }
+        XCTAssertEqual(cfg.host, "nas.local")
+        XCTAssertEqual(cfg.share, "photo")
+        XCTAssertEqual(a.servers[0].id, b.servers[0].id)               // stable until the profile is saved
+        XCTAssertEqual(a, b)
+    }
+
+    // SCENARIO: A 2.8.0 WebDAV profile of the development builds (a `.webdav` marker) opens as a typed server
+    func test_legacyProfile_webdavBecomesTypedServer() throws {
+        let json = #"""
+        {"id":"33333333-3333-3333-3333-333333333333","name":"Cloud","template":"photosToWebDAV","source":{"photos":{}},
+         "destinations":[{"webdav":{}}],
+         "webdav":{"serverURL":"https://cloud.example.com/remote.php/dav/files/me/","basePath":"B","username":"me","displayName":"NC","chunking":true},
+         "webdavPasswordAccount":"profile.33333333-3333-3333-3333-333333333333.webdav"}
+        """#
+        let p = try JSONDecoder().decode(BackupProfile.self, from: Data(json.utf8))
+        guard case .webdav(let cfg) = p.servers.first?.connection else { return XCTFail("a webdav server") }
+        XCTAssertEqual(cfg.chunking, true)
+        XCTAssertEqual(p.servers[0].passwordAccount, "profile.33333333-3333-3333-3333-333333333333.webdav")
+    }
+
+    // SCENARIO: The typed JSON has a `type` discriminator, and a folder keeps its 2.7 shape
+    // `{"type":"smb","host":…}`; the password is never in it; a folder-only profile still reads in an older build.
+    func test_typedJSON_shape() throws {
+        let server = ServerDestination(id: UUID(), passwordAccount: "server.x", connection: .smb(nasConfig("home.local")))
+        let profile = BackupProfile(name: "P", source: .photos, destinations: [.folder(bookmarkKey: "k"), .server(server)])
+        let data = try JSONEncoder().encode(profile)
+        let object = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        XCTAssertNil(object["nas"])                                          // the old top-level fields are gone
+        let destinations = object["destinations"] as! [[String: Any]]
+        XCTAssertEqual((destinations[0]["folder"] as! [String: String])["bookmarkKey"], "k")   // unchanged shape
+        let encoded = (destinations[1]["server"] as! [String: Any])
+        let connection = encoded["connection"] as! [String: Any]
+        XCTAssertEqual(connection["type"] as? String, "smb")
+        XCTAssertEqual(connection["host"] as? String, "home.local")
+        XCTAssertEqual(encoded["passwordAccount"] as? String, "server.x")
+        XCTAssertEqual(try JSONDecoder().decode(BackupProfile.self, from: data), profile)
+    }
+
+    // SCENARIO: A server type this build does not know is kept, field for field, and written back untouched
+    // A profile saved by a newer build (say an S3 bucket) must survive editing another profile with this one.
+    func test_unknownServerType_isPreserved() throws {
+        let json = #"""
+        {"id":"44444444-4444-4444-4444-444444444444","name":"Bucket","template":"custom","source":{"photos":{}},
+         "destinations":[{"server":{"id":"55555555-5555-5555-5555-555555555555","passwordAccount":"server.5",
+           "connection":{"type":"s3","bucket":"photos","region":"eu-west-1","port":443,"secure":true,"tags":["a","b"],"note":null}}}]}
+        """#
+        let p = try JSONDecoder().decode(BackupProfile.self, from: Data(json.utf8))
+        guard case .unknown(let type, let fields) = p.servers[0].connection else { return XCTFail("kept as unknown") }
+        XCTAssertEqual(type, "s3")
+        XCTAssertEqual(fields["bucket"], .string("photos"))
+        XCTAssertEqual(fields["secure"], .bool(true))
+        XCTAssertFalse(p.servers[0].connection.isComplete)                    // never run, never browsed
+        let back = try JSONSerialization.jsonObject(with: JSONEncoder().encode(p)) as! [String: Any]
+        let conn = ((((back["destinations"] as! [[String: Any]])[0]["server"]) as! [String: Any])["connection"]) as! [String: Any]
+        XCTAssertEqual(conn["type"] as? String, "s3")
+        XCTAssertEqual(conn["bucket"] as? String, "photos")
+        XCTAssertEqual(conn["region"] as? String, "eu-west-1")
+        XCTAssertEqual(conn["tags"] as? [String], ["a", "b"])
+    }
+
+    // SCENARIO: A backup can hold several servers of different types, in order
+    func test_severalServers_inOrder() {
+        let nas = ServerDestination(connection: .smb(nasConfig("home.local")))
+        let dav = ServerDestination(connection: .webdav(WebDAVConfig(serverURL: "https://a.example.com", basePath: "", username: "u", displayName: "")))
+        let p = BackupProfile(name: "P", source: .photos, destinations: [.folder(bookmarkKey: "k"), .server(nas), .server(dav)])
+        XCTAssertEqual(p.servers.map { $0.connection.kind }, [.smb, .webdav])
+        XCTAssertEqual(p.folderKeys, ["k"])
+        XCTAssertEqual(p.symbol(hasCloudFolder: false), "externaldrive.fill")
+        XCTAssertEqual(BackupProfile(name: "S", source: .photos, destinations: [.server(dav)]).symbol(hasCloudFolder: false), "network")
+        XCTAssertEqual(p.symbol(hasCloudFolder: true), "icloud.fill")
+        XCTAssertEqual(ServerConnection.smb(nasConfig("a")).identity, ServerConnection.smb(nasConfig("A")).identity)
+    }
+
+    // SCENARIO: Normalising a connection trims text and makes a WebDAV address explicit
+    func test_connection_normalized() {
+        let raw = ServerConnection.webdav(WebDAVConfig(serverURL: " cloud.example.com/dav ", basePath: " B ", username: " me ", displayName: " NC "))
+        guard case .webdav(let c) = raw.normalized else { return XCTFail() }
+        XCTAssertEqual(c.serverURL, "https://cloud.example.com/dav")
+        XCTAssertEqual(c.basePath, "B")
+        XCTAssertEqual(c.username, "me")
+        XCTAssertEqual(c.displayName, "NC")
     }
 }
