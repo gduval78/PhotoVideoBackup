@@ -178,13 +178,28 @@ enum WebDAVTrust {
     }
 
     /// Session delegate applying the pin (when there is one).
-    final class Delegate: NSObject, URLSessionDelegate, @unchecked Sendable {
+    final class Delegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
         let pin: String?
         private let lock = NSLock()
         private var _mismatch = false
         init(pin: String?) { self.pin = pin }
         /// True once a certificate other than the pinned one was presented.
         var pinMismatch: Bool { lock.withLock { _mismatch } }
+
+        /// A redirect on the same server (pCloud and Apache answer 301 for a folder asked without its
+        /// trailing slash) is followed **with the original method, headers and body**: URLSession would
+        /// otherwise drop the Authorization header and the request would come back as 401. A redirect to
+        /// another host is not followed.
+        func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
+                        newRequest request: URLRequest, completionHandler: @escaping @Sendable (URLRequest?) -> Void) {
+            guard let original = task.originalRequest, let from = original.url, let to = request.url,
+                  from.host == to.host, from.scheme == to.scheme else { completionHandler(nil); return }
+            var redirected = request
+            redirected.httpMethod = original.httpMethod
+            for (key, value) in original.allHTTPHeaderFields ?? [:] { redirected.setValue(value, forHTTPHeaderField: key) }
+            redirected.httpBody = original.httpBody
+            completionHandler(redirected)
+        }
 
         func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
                         completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -547,10 +562,11 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     }
 
     /// URL for components counted from the server root (basePath included).
+    /// A collection is addressed with a trailing slash: Apache-based servers (pCloud…) answer 301 otherwise.
     private func url(forAbsoluteComponents comps: [String]) -> URL {
         var s = serverURL.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         for c in comps { s += "/" + Self.encode(c) }
-        return URL(string: s) ?? serverURL
+        return URL(string: s + "/") ?? serverURL
     }
 
     // MARK: Reachability / connection test
@@ -600,7 +616,8 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
 
     /// Lists a folder relative to `basePath`: folders first, then files, alphabetical; hidden entries dropped.
     func list(relativeSubPath subPath: String) async throws -> [Entry] {
-        let result = try await propfind(url(forRelative: subPath), depth: 1)
+        let folder = url(forRelative: subPath)
+        let result = try await propfind(folder.absoluteString.hasSuffix("/") ? folder : folder.appendingPathComponent(""), depth: 1)
         guard result.status == 207 else { throw WebDAVError.forWrite(status: result.status) ?? .http(result.status) }
         // The first entry is the folder itself.
         let selfName = result.entries.first?.path

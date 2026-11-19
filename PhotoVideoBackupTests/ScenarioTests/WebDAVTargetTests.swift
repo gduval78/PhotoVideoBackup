@@ -397,6 +397,31 @@ final class WebDAVTargetTests: XCTestCase {
         let old = Data(#"{"serverURL":"https://x.example.com","basePath":"","username":"u","displayName":""}"#.utf8)
         XCTAssertNil(try JSONDecoder().decode(WebDAVConfig.self, from: old).pinnedCertificate)
     }
+
+    // SCENARIO: a server that redirects folders to their slash form keeps the credentials (pCloud)
+    // pCloud/Apache answer 301 for a folder asked without a trailing slash. URLSession drops the
+    // Authorization header on a redirect, which came back as "wrong credentials"; the delegate now
+    // follows a same-host redirect with the original method and headers. A folder is also asked with
+    // its slash from the start (MKCOL, listing), and deleting a folder without it still works.
+    func test_redirectedFolders_keepCredentials() async throws {
+        let delegate = WebDAVTrust.Delegate(pin: nil)
+        session = FakeWebDAVServer.start(delegate: delegate)
+        try? FileManager.default.createDirectory(at: FakeWebDAVServer.fileURL("remote.php/dav/files/me"), withIntermediateDirectories: true)
+        FakeWebDAVServer.redirectCollections = true
+        FakeWebDAVServer.expectedAuthorization = "Basic " + Data("me:pw".utf8).base64EncodedString()
+        let t = WebDAVTarget(serverURL: serverURL, basePath: "Backup", user: "me", password: "pw",
+                             displayName: "Cloud", session: session)
+        let (src, _) = sourceFile(bytes: 500)
+        try await t.upload(localFile: src, toRelative: "iPhone/a.bin") { _ in }
+        try await t.upload(localFile: src, toRelative: "iPhone/b.bin") { _ in }   // folders exist: no 401, no failure
+        let names = try await t.list(relativeSubPath: "iPhone").map(\.name)
+        XCTAssertEqual(names, ["a.bin", "b.bin"])
+        try await t.testConnection()                                              // the base folder exists too
+        try await t.delete(forRelative: "iPhone")                                 // a folder, asked without its slash
+        let gone = await t.existingSize(forRelative: "iPhone/a.bin")
+        XCTAssertNil(gone)
+        XCTAssertGreaterThan(FakeWebDAVServer.requests.filter { $0.path.hasSuffix("/") == false }.count, 0)
+    }
 }
 
 private final class ProgressBox: @unchecked Sendable {

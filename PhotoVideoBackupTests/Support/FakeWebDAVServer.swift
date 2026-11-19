@@ -13,6 +13,9 @@ final class FakeWebDAVServer: URLProtocol {
     nonisolated(unsafe) static var putStatusOverride: Int?
     nonisolated(unsafe) static var ignoreIfNoneMatch = false
     nonisolated(unsafe) static var offline = false
+    /// Like Apache/pCloud: PROPFIND / MKCOL / DELETE on an existing folder asked without its trailing
+    /// slash answer 301 to the slash form.
+    nonisolated(unsafe) static var redirectCollections = false
     /// Every request fails with this URL error (e.g. an untrusted certificate).
     nonisolated(unsafe) static var failure: URLError.Code?
     /// Whether /ocs capabilities advertise `dav.chunking`.
@@ -24,16 +27,16 @@ final class FakeWebDAVServer: URLProtocol {
     private static let lock = NSLock()
 
     /// Fresh empty tree; returns a session that routes every request to this server.
-    static func start() -> URLSession {
+    static func start(delegate: URLSessionDelegate? = nil) -> URLSession {
         lock.lock(); defer { lock.unlock() }
         root = FileManager.default.temporaryDirectory.appendingPathComponent("pvb_fake_dav_\(UUID().uuidString)")
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         requests = []; expectedAuthorization = nil; putStatusOverride = nil
         ignoreIfNoneMatch = false; offline = false
-        failure = nil; chunkingCapability = true; failChunkOnce = nil; moveStatusOverride = nil
+        failure = nil; redirectCollections = false; chunkingCapability = true; failChunkOnce = nil; moveStatusOverride = nil
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [FakeWebDAVServer.self]
-        return URLSession(configuration: config)
+        return URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
     }
 
     static func stop() { try? FileManager.default.removeItem(at: root) }
@@ -77,6 +80,15 @@ final class FakeWebDAVServer: URLProtocol {
         let exists = fm.fileExists(atPath: target.path, isDirectory: &isDir)
         let parentExists = fm.fileExists(atPath: target.deletingLastPathComponent().path)
 
+        if Self.redirectCollections, exists, isDir.boolValue, !url.absoluteString.hasSuffix("/"),
+           ["PROPFIND", "MKCOL", "DELETE"].contains(method) {
+            let location = url.absoluteString + "/"
+            let response = HTTPURLResponse(url: url, statusCode: 301, httpVersion: "HTTP/1.1", headerFields: ["Location": location])!
+            var next = request
+            next.url = URL(string: location)
+            client?.urlProtocol(self, wasRedirectedTo: next, redirectResponse: response)
+            return
+        }
         switch method {
         case "OPTIONS":
             respond(200)

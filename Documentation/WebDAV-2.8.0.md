@@ -6,6 +6,12 @@ Goal: a profile destination `.webdav` next to `.folder`, `.nas` (SMB) and the pl
 
 Ships with S3 as "remote destinations" in 2.8.0 (shared work: HTTP target plumbing, certificate trust, editor shell, cellular warning). WebDAV has more demand than S3 among self-hosters; if only one fits, build WebDAV first. **Version rule:** iOS and Android carry the same features under the same number — both platforms, or neither.
 
+## Validated on real servers (2026-11-19)
+
+- **Nextcloud** (Docker, self-signed TLS behind a proxy): connection, certificate pinning, plain and chunked upload (the `dav/uploads` + `MOVE .file` flow, `Overwrite: F` → 412 on a taken name), SHA-256 re-download, listing, no leftover upload folder.
+- **pCloud WebDAV** (`https://ewebdav.pcloud.com/`, EU, e-mail + password, no 2FA prompt hit): connection test, plain `PUT` (no chunking; a 13 MB file verified byte for byte), `If-None-Match: *` honoured (412), `MKCOL`, `PROPFIND`, `DELETE`. **Apache-style 301**: a folder asked without its trailing slash answers `301` to the slash form (`PROPFIND`, `MKCOL`, `DELETE`); URLSession **drops the Authorization header on a redirect**, which surfaced as "wrong credentials" — fixed by the session delegate (same-host redirects keep method, headers and body) and by asking folders with their slash. Not tried: very large files (pCloud's own help says WebDAV is not suited to them), 2FA by e-mail, the Crypto Folder (not reachable).
+- Not validated: Synology WebDAV Server, Hetzner Storage Box, ownCloud.
+
 ## Why it fits
 
 - `BackupTarget` / `RemoteBackupTarget` already abstract the destination: add `WebDAVTarget` beside `SMBTarget`. Dedup (`resolveCoverage`, ledger, `.pvb-index.json`, deterministic names) is **unchanged**.

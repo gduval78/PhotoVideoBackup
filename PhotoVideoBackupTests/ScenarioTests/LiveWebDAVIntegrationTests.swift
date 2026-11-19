@@ -97,7 +97,7 @@ final class LiveWebDAVIntegrationTests: XCTestCase {
         let c = try loadConfigOrSkip()
         let (target, _) = try await liveTarget(c)
         let run = "run-\(UUID().uuidString.prefix(8))"
-        defer { Task { try? await target.delete(forRelative: run) } }
+        addTeardownBlock { try? await target.delete(forRelative: run) }   // awaited, unlike a fire-and-forget Task
 
         let chunking = try await target.testConnection()
         print("[LIVE_WEBDAV] connected, chunking=\(chunking)")
@@ -137,7 +137,7 @@ final class LiveWebDAVIntegrationTests: XCTestCase {
         let c = try loadConfigOrSkip()
         let (target, base) = try await liveTarget(c, chunkThreshold: 1_000_000, chunkSize: 4_000_000)
         let run = "run-\(UUID().uuidString.prefix(8))"
-        defer { Task { try? await target.delete(forRelative: run) } }
+        addTeardownBlock { try? await target.delete(forRelative: run) }   // awaited, unlike a fire-and-forget Task
 
         let chunking = try await target.testConnection()
         let (file, sha) = try tempFile(bytes: 13_000_000)
