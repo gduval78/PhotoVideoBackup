@@ -28,8 +28,6 @@ struct ProfileDetailView: View {
     @State private var showImporter = false
     @State private var showPaywall = false
     @State private var showOverlapAlert = false
-    /// Next number for the keys of folders picked in this session (never collides with stored ones).
-    @State private var nextKeyIndex = 100
 
     init(profile: BackupProfile, isNew: Bool = false, onDone: (() -> Void)? = nil) {
         self.original = profile
@@ -268,9 +266,13 @@ struct ProfileDetailView: View {
             showOverlapAlert = true
             return
         }
-        let key = BackupProfile.folderKey(profileID: profile.id, index: nextKeyIndex)
-        nextKeyIndex += 1
-        DestinationManager.shared.saveBookmark(url: url, forKey: key)
+        // A key nothing else uses: not one of this backup's folders (stored or picked just now), and no
+        // bookmark saved under it — otherwise the new folder would overwrite another one.
+        let key = BackupProfile.uniqueFolderKey(profileID: profile.id) { candidate in
+            profile.folderKeys.contains(candidate) || original.folderKeys.contains(candidate)
+                || dm.isConfigured(forKey: candidate)
+        }
+        dm.saveBookmark(url: url, forKey: key)
         if let index = pickingIndex, profile.destinations.indices.contains(index) {
             profile.destinations[index] = .folder(bookmarkKey: key)
         } else {

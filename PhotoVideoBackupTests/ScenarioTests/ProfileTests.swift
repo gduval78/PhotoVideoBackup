@@ -344,4 +344,21 @@ final class ProfileTests: XCTestCase {
         XCTAssertEqual(c.username, "me")
         XCTAssertEqual(c.displayName, "NC")
     }
+
+    // SCENARIO: A second drive never gets the bookmark key of the first
+    // Field report: two SSDs chosen as destinations ended up as two identical destinations, because each
+    // editing session restarted its keys at 100 and the second drive overwrote the first one's bookmark.
+    // A new key skips every key already used by the backup or already holding a bookmark.
+    func test_uniqueFolderKey_skipsTakenKeys() {
+        let id = UUID()
+        let first = BackupProfile.uniqueFolderKey(profileID: id) { _ in false }
+        XCTAssertEqual(first, BackupProfile.folderKey(profileID: id, index: 100))
+        var taken: Set<String> = [first]
+        let second = BackupProfile.uniqueFolderKey(profileID: id) { taken.contains($0) }
+        XCTAssertNotEqual(second, first)
+        taken.insert(second)
+        let third = BackupProfile.uniqueFolderKey(profileID: id) { taken.contains($0) }
+        XCTAssertEqual(Set([first, second, third]).count, 3)
+        XCTAssertEqual(third, BackupProfile.folderKey(profileID: id, index: 102))
+    }
 }

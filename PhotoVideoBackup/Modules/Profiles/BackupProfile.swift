@@ -219,6 +219,18 @@ struct BackupProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
         return usesExternalSource ? "sdcard.fill" : "externaldrive.fill"
     }
 
+    /// A bookmark key for a new folder of this backup that nothing uses yet. Each editing session used to
+    /// count from 100 again, so a folder added in a later session got the key of one added earlier — the
+    /// second drive then overwrote the first (field report, 2026-11-19: two SSDs, one bookmark).
+    static func uniqueFolderKey(profileID: UUID, isTaken: (String) -> Bool) -> String {
+        var index = 100
+        while true {
+            let key = folderKey(profileID: profileID, index: index)
+            if !isTaken(key) { return key }
+            index += 1
+        }
+    }
+
     /// The `DestinationManager` key for the n-th folder of a backup.
     static func folderKey(profileID: UUID, index: Int) -> String {
         "PhotoVideoBackup.profile.\(profileID.uuidString).\(index)"
