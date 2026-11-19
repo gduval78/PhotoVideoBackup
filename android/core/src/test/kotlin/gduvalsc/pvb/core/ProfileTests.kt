@@ -1,7 +1,8 @@
 package gduvalsc.pvb.core
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -32,31 +33,15 @@ class ProfileFreeTierTests {
         assertTrue(ProfileRules.isAllowed(index = 3, isPro = true))
     }
 
-    // SCENARIO: Only the gallery to one folder is free; a NAS, a second destination or a card is Pro
-    @Test fun templatesAndRunRequirements() {
-        assertFalse(ProfileTemplate.PHOTOS_TO_DRIVE.requiresPro)
-        assertFalse(ProfileTemplate.PHOTOS_TO_CLOUD.requiresPro)
-        assertTrue(ProfileTemplate.PHOTOS_TO_NAS.requiresPro)
-        assertTrue(ProfileTemplate.CAMERA_TO_DRIVE.requiresPro)
-        assertTrue(ProfileTemplate.DRIVE_TO_CLOUD.requiresPro)
-        assertTrue(ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS.requiresPro)
-
+    // SCENARIO: Only the gallery to one folder is free; a server, a second destination or a card is Pro
+    @Test fun runRequirements() {
         val oneFolder = BackupProfile(name = "a", destinations = listOf(ProfileDestination.folder(dest(SSD))))
         assertFalse(ProfileRules.needsProToRun(oneFolder))
-        assertTrue(ProfileRules.needsProToRun(oneFolder.copy(destinations = oneFolder.destinations + ProfileDestination.nas)))
+        val server = ProfileDestination.server(ServerDestination.create(ServerKind.WEBDAV.emptyConnection))
+        assertTrue(ProfileRules.needsProToRun(oneFolder.copy(destinations = oneFolder.destinations + server)))
+        assertTrue(ProfileRules.needsProToRun(oneFolder.copy(destinations = listOf(server))))
         assertTrue(ProfileRules.needsProToRun(oneFolder.copy(destinations = oneFolder.destinations + ProfileDestination.folder(dest(OTHER_VOLUME)))))
         assertTrue(ProfileRules.needsProToRun(oneFolder.copy(source = ProfileSource.external("sd"))))
-    }
-
-    @Test fun selectableTemplatesExcludeCustom() {
-        assertEquals(6, ProfileTemplate.selectable.size)
-        assertFalse(ProfileTemplate.DRIVE_TO_CLOUD in ProfileTemplate.selectable)
-        assertTrue(ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.usesExternalSource && ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.includesNas)
-        assertEquals(1, ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS.folderCount)
-        assertTrue(ProfileTemplate.CAMERA_TO_NAS.usesExternalSource && ProfileTemplate.CAMERA_TO_NAS.includesNas)
-        assertEquals(0, ProfileTemplate.CAMERA_TO_NAS.folderCount)
-        assertTrue(ProfileTemplate.CAMERA_TO_NAS.requiresPro)
-        assertFalse(ProfileTemplate.CUSTOM in ProfileTemplate.selectable)
     }
 }
 
@@ -102,14 +87,18 @@ class ProfileMigrationTests {
         val photos = profiles[0]
         assertTrue(photos.source.isGallery)
         assertEquals(3, photos.destinations.size)
-        assertTrue(photos.usesNas)
-        assertEquals(nas, photos.nas)
+        assertTrue(photos.usesServer)
+        val server = photos.servers.single()
+        assertEquals(ServerConnection.Smb(nas), server.connection)
+        assertEquals("profile.${photos.id}.nas", server.passwordAccount)   // the account the migration copies the password to
         assertEquals("byMonth", photos.settings.folderOrganizationRaw)
         assertEquals(ProfileTemplate.CUSTOM, photos.template)
         val card = profiles[1]
         assertEquals(ProfileSource.external("sd1"), card.source)
         assertEquals("DJI Mini 3 Pro", card.name)
-        assertEquals(photos.destinations, card.destinations)
+        assertEquals(photos.folders, card.folders)
+        assertEquals(ServerConnection.Smb(nas), card.servers.single().connection)
+        assertEquals("profile.${card.id}.nas", card.servers.single().passwordAccount)
     }
 
     // SCENARIO: A fresh install, or a setup with nowhere to send files, starts with no backup
@@ -122,38 +111,142 @@ class ProfileMigrationTests {
     // SCENARIO: A disabled or half-filled NAS is not carried over
     @Test fun unusableNasIsDropped() {
         val p = ProfileMigration.profiles(listOf(dest(SSD)), nas.copy(enabled = false), emptyList(), "P", settings).single()
-        assertFalse(p.usesNas); assertNull(p.nas)
+        assertFalse(p.usesServer)
         val q = ProfileMigration.profiles(listOf(dest(SSD)), NasConfig(host = "h"), emptyList(), "P", settings).single()
-        assertFalse(q.usesNas)
+        assertFalse(q.usesServer)
     }
 }
 
 class ProfilePersistenceTests {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = PvbJson
 
-    // SCENARIO: A profile survives a save / load, with its own NAS and settings
+    private fun roundTrip(p: BackupProfile) = ProfileCodec.decode(ProfileCodec.encode(listOf(p))).profiles.single()
+
+    // SCENARIO: A profile survives a save / load, with its servers and settings
     @Test fun roundTrip() {
+        val smb = ServerDestination.create(ServerConnection.Smb(NasConfig(host = "nas", share = "photo", username = "me")))
+        val dav = ServerDestination.create(ServerConnection.WebDav(WebDavConfig("https://c.example/remote.php/dav/files/me/", "Backups", "me", "Nextcloud", true, "ab12")))
         val p = BackupProfile(
-            name = "Photos → drive", templateRaw = ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS.raw,
-            destinations = listOf(ProfileDestination.folder(dest(SSD, "SSD")), ProfileDestination.nas),
+            name = "Photos → drive",
+            destinations = listOf(ProfileDestination.folder(dest(SSD, "SSD")), ProfileDestination.server(smb), ProfileDestination.server(dav)),
             settings = ProfileSettings(namingEnabled = true, fileLimit = 10, customExtensions = "srt, gpx"),
-            nas = NasConfig(host = "nas", share = "photo", username = "me"),
         )
-        val back = json.decodeFromString<List<BackupProfile>>(json.encodeToString(listOf(p))).single()
+        val back = roundTrip(p)
         assertEquals(p, back)
+        assertEquals(2, back.servers.size)
         assertEquals(10, back.settings.engine.fileLimit)
         assertTrue(back.settings.engine.naming.enabled)
     }
 
+    // SCENARIO: The typed connection is written as {"type":…, fields…} — the same JSON as iOS
+    @Test fun typedJsonShape() {
+        val smb = json.parseToJsonElement(json.encodeToString(ServerConnection.serializer(), ServerConnection.Smb(NasConfig(host = "h", share = "s", username = "u")))).jsonObject
+        assertEquals("smb", smb["type"]!!.jsonPrimitive.content)
+        assertEquals("h", smb["host"]!!.jsonPrimitive.content)
+        val dav = json.parseToJsonElement(json.encodeToString(ServerConnection.serializer(),
+            ServerConnection.WebDav(WebDavConfig("https://x/dav/", "B", "u", "N", null, null)))).jsonObject
+        assertEquals("webdav", dav["type"]!!.jsonPrimitive.content)
+        assertEquals("https://x/dav/", dav["serverURL"]!!.jsonPrimitive.content)
+        assertEquals("B", dav["basePath"]!!.jsonPrimitive.content)
+    }
+
+    // SCENARIO: A profile of the pre-2.8 shape (a "nas" marker + a top-level nas) is read as a typed server with the same password account
+    @Test fun legacyNasProfileLoadsAsTypedServer() {
+        val legacy = """[{"id":"p1","name":"Gallery → NAS","templateRaw":"photosToDriveAndNAS","source":{"kind":"photos"},
+            "destinations":[{"kind":"folder","folder":{"uri":"$SSD","name":"SSD"}},{"kind":"nas"}],
+            "settings":{"namingEnabled":true},
+            "nas":{"host":"192.168.1.20","port":445,"share":"photo","basePath":"Backups","username":"me","displayName":"Synology","enabled":true}}]"""
+        val loaded = ProfileCodec.decode(legacy)
+        assertTrue(loaded.unreadable.isEmpty())
+        val p = loaded.profiles.single()
+        assertEquals(ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS, p.template)
+        assertEquals(1, p.folders.size)
+        val server = p.servers.single()
+        assertEquals("profile.p1.nas", server.passwordAccount)   // the Keystore account is unchanged: no password migration
+        assertEquals(ServerConnection.Smb(NasConfig("192.168.1.20", 445, "photo", "Backups", "me", "Synology")), server.connection)
+        // …and written back in the new shape, without the top-level nas
+        val out = ProfileCodec.encode(loaded.profiles)
+        assertFalse(out.contains("\"nas\":{"))
+        assertTrue(out.contains("\"kind\":\"server\""))
+        assertEquals(p, ProfileCodec.decode(out).profiles.single())
+        // the converted destination keeps the same id at every load
+        assertEquals(server.id, ProfileCodec.decode(legacy).profiles.single().servers.single().id)
+    }
+
+    // SCENARIO: A 2.7.x profile that is a folder + an unconfigured NAS marker (early build) still loads
+    @Test fun legacyNasMarkerWithoutNasLoadsIncomplete() {
+        val p = ProfileCodec.decode("""[{"id":"p2","name":"x","destinations":[{"kind":"nas"}]}]""").profiles.single()
+        assertFalse(p.servers.single().connection.isComplete)
+    }
+
+    // SCENARIO: A connection of a type this build does not know is kept field for field and written back untouched
+    @Test fun unknownTypeIsPreserved() {
+        val raw = """[{"id":"p3","name":"future","destinations":[{"kind":"server","server":{"id":"s1","passwordAccount":"server.s1",
+            "connection":{"type":"s3","endpoint":"https://s3.example","region":"eu","nested":{"a":[1,2,3]},"flag":true}}}]}]"""
+        val p = ProfileCodec.decode(raw).profiles.single()
+        val c = p.servers.single().connection
+        assertTrue(c is ServerConnection.Unknown)
+        assertFalse(c.isComplete)
+        val back = json.parseToJsonElement(ProfileCodec.encode(listOf(p))).jsonArray.single().jsonObject["destinations"]!!.jsonArray.single()
+            .jsonObject["server"]!!.jsonObject["connection"]!!.jsonObject
+        val orig = json.parseToJsonElement(raw).jsonArray.single().jsonObject["destinations"]!!.jsonArray.single()
+            .jsonObject["server"]!!.jsonObject["connection"]!!.jsonObject
+        assertEquals(orig, back)
+    }
+
+    // SCENARIO: One profile this build cannot read is set aside untouched; the others stay visible and it is written back
+    @Test fun unreadableProfileIsKeptAside() {
+        val raw = """[{"id":"a","name":"ok"},{"id":"b","name":"bad","destinations":[{"kind":"teleport"}]}]"""
+        val loaded = ProfileCodec.decode(raw)
+        assertEquals(listOf("ok"), loaded.profiles.map { it.name })
+        assertEquals(1, loaded.unreadable.size)
+        val saved = ProfileCodec.decode(ProfileCodec.encode(loaded.profiles, loaded.unreadable))
+        assertEquals(loaded.unreadable, saved.unreadable)
+        assertTrue(ProfileCodec.decode("not json").profiles.isEmpty())
+    }
+
+    // SCENARIO: Several servers in one backup, each with its own id and password account; a second folder never reuses the first
+    @Test fun severalServersAndFoldersStayDistinct() {
+        val a = ServerDestination.create(ServerKind.SMB.emptyConnection)
+        val b = ServerDestination.create(ServerKind.SMB.emptyConnection)
+        assertTrue(a.id != b.id && a.passwordAccount != b.passwordAccount)
+        val p = BackupProfile(name = "m", destinations = listOf(
+            ProfileDestination.folder(dest(SSD, "SSD1")), ProfileDestination.folder(dest(OTHER_VOLUME, "SSD2")),
+            ProfileDestination.server(a), ProfileDestination.server(b)))
+        val back = roundTrip(p)
+        assertEquals(listOf("SSD1", "SSD2"), back.folders.map { it.name })
+        assertEquals(listOf(a.id, b.id), back.servers.map { it.id })
+        // the second folder is refused when it overlaps the first, so it can never shadow it
+        assertTrue(ProfileRules.overlapsAny(SSD_SUB, back.folders.map { it.uri }))
+    }
+
     // SCENARIO: A profile saved by an older build (fields missing) still loads with defaults
     @Test fun missingFieldsFallBackToDefaults() {
-        val p = json.decodeFromString<BackupProfile>("""{"name":"Old"}""")
+        val p = ProfileCodec.decode("""[{"name":"Old"}]""").profiles.single()
         assertEquals("Old", p.name)
         assertEquals(ProfileTemplate.CUSTOM, p.template)
         assertTrue(p.source.isGallery)
         assertNull(p.settings.engine.fileLimit)
         assertEquals(FolderOrganization.BY_DATE, p.settings.engine.folderOrganization)
-        assertEquals("profile.${p.id}.nas", p.nasSecretName)
+    }
+
+    // SCENARIO: An unknown legacy template reads as custom
+    @Test fun unknownTemplateReadsAsCustom() {
+        assertEquals(ProfileTemplate.CUSTOM, ProfileTemplate.fromRaw("somethingNew"))
+        assertEquals(ProfileTemplate.PHOTOS_TO_WEBDAV, ProfileTemplate.fromRaw("photosToWebDAV"))
+    }
+
+    // SCENARIO: WebDAV addresses are https only, and the label/identity follow the typed fields
+    @Test fun webDavConfigRules() {
+        assertFalse(WebDavConfig("http://x.example/dav", "", "u").isComplete)
+        assertFalse(WebDavConfig("", "", "u").isComplete)
+        assertTrue(WebDavConfig("cloud.example.com/dav", "", "u").isComplete)   // a missing scheme means https
+        assertEquals("Nextcloud / Backups", WebDavConfig("https://c/dav", "/Backups/", "u", "Nextcloud").label)
+        val a = ServerConnection.WebDav(WebDavConfig("https://C.example/dav/", "/B/", "Me"))
+        val b = ServerConnection.WebDav(WebDavConfig("https://c.example/dav/", "B", "me"))
+        assertEquals(a.identity, b.identity)
+        assertEquals("nas:Cam/2024", ServerConnection.Smb(NasConfig()).lutKey("Cam/2024"))
+        assertTrue(a.lutKey("Cam").startsWith("server:webdav|"))
     }
 
     @Test fun nasIdentityIgnoresCaseAndSlashes() {
