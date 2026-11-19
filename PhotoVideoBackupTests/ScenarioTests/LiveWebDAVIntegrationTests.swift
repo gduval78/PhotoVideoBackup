@@ -2,11 +2,12 @@ import XCTest
 import CryptoKit
 @testable import PhotoVideoBackup
 
-// Live round-trip against a real WebDAV / Nextcloud server (typically a throwaway Docker Nextcloud
-// behind a self-signed TLS proxy). Not hermetic: kept out of `make test-all` and run with
-// `make test-webdav`; it skips itself when `webdav-test-config.json` (gitignored, repo root) is absent.
-// It checks what the in-process fake cannot: the real TLS handshake with a self-signed certificate
-// (untrusted → fingerprint → pinned), Nextcloud's chunked-upload protocol, and name protection.
+// Live round-trip against a real WebDAV server: a throwaway Docker Nextcloud behind a self-signed TLS
+// proxy, a Synology, pCloud (`https://ewebdav.pcloud.com/`)… Not hermetic: kept out of `make test-all`
+// and run with `make test-webdav`; it skips itself when `webdav-test-config.json` (gitignored, repo
+// root) is absent. It checks what the in-process fake cannot: the real server's behaviour on upload,
+// verification, folders, listing and deletion; with `"selfSigned": true` the TLS handshake
+// (untrusted → fingerprint → pinned); on a server that advertises Nextcloud chunking, the chunked upload.
 final class LiveWebDAVIntegrationTests: XCTestCase {
 
     private struct Config: Decodable {
@@ -16,6 +17,8 @@ final class LiveWebDAVIntegrationTests: XCTestCase {
         let basePath: String?
         /// SHA-256 (hex) of the server's certificate, when the test should check what the app reads.
         let expectedFingerprint: String?
+        /// True for a server with a self-signed certificate: the pinning test runs and the others pin it.
+        let selfSigned: Bool?
     }
 
     private func loadConfigOrSkip() throws -> Config {
@@ -46,6 +49,7 @@ final class LiveWebDAVIntegrationTests: XCTestCase {
     // reads "certificate changed". Nextcloud advertises chunking.
     func test_selfSigned_untrusted_pin_wrongPin() async throws {
         let c = try loadConfigOrSkip()
+        try XCTSkipUnless(c.selfSigned == true, "the server's certificate is trusted: nothing to pin")
 
         let plain = try XCTUnwrap(config(c, pin: nil).makeTarget(password: c.password))
         do { try await plain.testConnection(); XCTFail("a self-signed certificate must not be accepted without a pin") }
@@ -66,62 +70,99 @@ final class LiveWebDAVIntegrationTests: XCTestCase {
         XCTAssertTrue(chunking, "Nextcloud should advertise dav.chunking")
     }
 
-    // SCENARIO: real uploads — plain, never overwritten, and chunked with the real MOVE assembly
-    // A small file goes up with one PUT and verifies by SHA-256; a second upload to the same name is
-    // refused; a larger file (small thresholds) goes up in chunks, is assembled by Nextcloud, matches
-    // byte for byte and leaves no upload folder behind. Everything is deleted at the end.
-    func test_realUploads_plain_noOverwrite_chunked() async throws {
-        let c = try loadConfigOrSkip()
-        let fp = await WebDAVTrust.presentedFingerprint(of: try XCTUnwrap(config(c, pin: nil).url))
-        let pin = try XCTUnwrap(fp)
+    /// The target of this server: pinned when the certificate is self-signed, plain otherwise.
+    private func liveTarget(_ c: Config, chunkThreshold: Int64 = WebDAVTarget.defaultChunkThreshold,
+                            chunkSize: Int = WebDAVTarget.defaultChunkSize) async throws -> (WebDAVTarget, WebDAVConfig) {
+        var pin: String?
+        if c.selfSigned == true {
+            let fp = await WebDAVTrust.presentedFingerprint(of: try XCTUnwrap(config(c, pin: nil).url))
+            pin = try XCTUnwrap(fp)
+        }
         let base = config(c, pin: pin)
-        let target = try XCTUnwrap(base.makeTarget(password: c.password))
-        let chunked = WebDAVTarget(serverURL: try XCTUnwrap(base.url), basePath: c.basePath ?? "",
-                                   user: c.username, password: c.password, displayName: "Live",
-                                   chunking: nil, pinnedCertificate: pin,
-                                   chunkThreshold: 1_000_000, chunkSize: 4_000_000)
+        let target = WebDAVTarget(serverURL: try XCTUnwrap(base.url), basePath: c.basePath ?? "",
+                                  user: c.username, password: c.password, displayName: "Live",
+                                  chunking: nil, pinnedCertificate: pin,
+                                  chunkThreshold: chunkThreshold, chunkSize: chunkSize)
+        return (target, base)
+    }
 
+    // SCENARIO: any real server — connect, upload, verify, folders, listing, delete
+    // Works on a server with a trusted certificate (pCloud, a Nextcloud behind Let's Encrypt…) as on a
+    // pinned self-signed one. The connection test passes; a small file goes up with one PUT, is found at
+    // the right size, verifies by SHA-256 after a re-download, appears in the listing and is deleted.
+    // A second upload to the same name must not destroy the first: the server either refuses it (412)
+    // or — if it ignores If-None-Match — replaces it, which the engine's check before the copy prevents;
+    // the test records which, as a finding, instead of failing.
+    func test_realServer_roundTrip() async throws {
+        let c = try loadConfigOrSkip()
+        let (target, _) = try await liveTarget(c)
         let run = "run-\(UUID().uuidString.prefix(8))"
-        let small = "\(run)/small.bin", big = "\(run)/folder/big.bin"
         defer { Task { try? await target.delete(forRelative: run) } }
 
-        let (smallFile, smallSHA) = try tempFile(bytes: 300_000)
-        defer { try? FileManager.default.removeItem(at: smallFile) }
-        try await target.upload(localFile: smallFile, toRelative: small) { _ in }
-        let size = await target.existingSize(forRelative: small)
+        let chunking = try await target.testConnection()
+        print("[LIVE_WEBDAV] connected, chunking=\(chunking)")
+
+        let (file, sha) = try tempFile(bytes: 300_000)
+        defer { try? FileManager.default.removeItem(at: file) }
+        let rel = "\(run)/sub folder/clip é#1.bin"            // spaces, accent and # in the name
+        try await target.upload(localFile: file, toRelative: rel) { _ in }
+        let size = await target.existingSize(forRelative: rel)
         XCTAssertEqual(size, 300_000)
-        let smallDigest = try await target.sha256(forRelative: small)
-        XCTAssertEqual(smallDigest, smallSHA)
+        let digest = try await target.sha256(forRelative: rel)
+        XCTAssertEqual(digest, sha)
 
-        let (other, _) = try tempFile(bytes: 1000)
+        let (other, otherSHA) = try tempFile(bytes: 1_000)
         defer { try? FileManager.default.removeItem(at: other) }
-        do { try await target.upload(localFile: other, toRelative: small) { _ in }; XCTFail("must not overwrite") }
-        catch let e as WebDAVError { XCTAssertEqual(e, .alreadyExists) }
-        let stillSame = try await target.sha256(forRelative: small)
-        XCTAssertEqual(stillSame, smallSHA)
+        do {
+            try await target.upload(localFile: other, toRelative: rel) { _ in }
+            let now = try await target.sha256(forRelative: rel)
+            print("[LIVE_WEBDAV] FINDING: the server ignores If-None-Match — a second PUT replaced the file (\(now == otherSHA ? "replaced" : "kept")). The engine's name check is what protects it.")
+        } catch let e as WebDAVError {
+            XCTAssertEqual(e, .alreadyExists)
+            print("[LIVE_WEBDAV] the server refuses an overwrite (412)")
+        }
 
-        let (bigFile, bigSHA) = try tempFile(bytes: 13_000_000)   // 4 chunks of ≤ 4 MB
-        defer { try? FileManager.default.removeItem(at: bigFile) }
+        let names = try await target.list(relativeSubPath: "\(run)/sub folder").map(\.name)
+        XCTAssertEqual(names, ["clip é#1.bin"])
+
+        try await target.delete(forRelative: run)
+        let gone = await target.existingSize(forRelative: rel)
+        XCTAssertNil(gone)
+    }
+
+    // SCENARIO: a larger file, in chunks when the server has Nextcloud chunking, in one PUT otherwise
+    // 13 MB: with chunking (small thresholds) it goes up as four chunks, is assembled by the server and
+    // leaves no upload folder; without, it is one request. Either way it matches byte for byte.
+    func test_realServer_largerFile() async throws {
+        let c = try loadConfigOrSkip()
+        let (target, base) = try await liveTarget(c, chunkThreshold: 1_000_000, chunkSize: 4_000_000)
+        let run = "run-\(UUID().uuidString.prefix(8))"
+        defer { Task { try? await target.delete(forRelative: run) } }
+
+        let chunking = try await target.testConnection()
+        let (file, sha) = try tempFile(bytes: 13_000_000)
+        defer { try? FileManager.default.removeItem(at: file) }
         let progress = LiveProgress()
-        try await chunked.upload(localFile: bigFile, toRelative: big) { progress.value = $0 }
-        XCTAssertEqual(progress.value, 13_000_000)
-        let bigSize = await chunked.existingSize(forRelative: big)
-        XCTAssertEqual(bigSize, 13_000_000)
-        let bigDigest = try await chunked.sha256(forRelative: big)
-        XCTAssertEqual(bigDigest, bigSHA)
+        let rel = "\(run)/folder/big.bin"
+        try await target.upload(localFile: file, toRelative: rel) { progress.value = $0 }
+        print("[LIVE_WEBDAV] 13 MB uploaded, chunked=\(chunking), progress=\(progress.value)")
+        let size = await target.existingSize(forRelative: rel)
+        XCTAssertEqual(size, 13_000_000)
+        let digest = try await target.sha256(forRelative: rel)
+        XCTAssertEqual(digest, sha)
 
-        // No upload folder of ours left on the server.
-        let uploads = try XCTUnwrap(URL(string: c.serverURL.replacingOccurrences(of: "/files/", with: "/uploads/")))
-        var req = URLRequest(url: uploads)
-        req.httpMethod = "PROPFIND"
-        req.setValue("1", forHTTPHeaderField: "Depth")
-        req.setValue("Basic " + Data("\(c.username):\(c.password)".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
-        let session = URLSession(configuration: .ephemeral, delegate: WebDAVTrust.Delegate(pin: pin), delegateQueue: nil)
-        let (data, _) = try await session.data(for: req)
-        XCTAssertFalse(String(decoding: data, as: UTF8.self).contains("pvb-"), "an upload folder was left behind")
-
-        let names = try await target.list(relativeSubPath: run).map(\.name)
-        XCTAssertEqual(names, ["folder", "small.bin"])
+        if chunking {
+            XCTAssertEqual(progress.value, 13_000_000)
+            // No upload folder of ours left on the server.
+            let uploads = try XCTUnwrap(URL(string: c.serverURL.replacingOccurrences(of: "/files/", with: "/uploads/")))
+            var req = URLRequest(url: uploads)
+            req.httpMethod = "PROPFIND"
+            req.setValue("1", forHTTPHeaderField: "Depth")
+            req.setValue("Basic " + Data("\(c.username):\(c.password)".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
+            let session = URLSession(configuration: .ephemeral, delegate: WebDAVTrust.Delegate(pin: base.pinnedCertificate), delegateQueue: nil)
+            let (data, _) = try await session.data(for: req)
+            XCTAssertFalse(String(decoding: data, as: UTF8.self).contains("pvb-"), "an upload folder was left behind")
+        }
     }
 }
 
