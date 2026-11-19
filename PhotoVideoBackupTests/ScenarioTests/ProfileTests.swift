@@ -84,7 +84,7 @@ final class ProfileTests: XCTestCase {
     // Free: photo library → one folder (drive or iCloud). Everything else — a NAS, a camera card, a
     // second copy — is Pro, as everywhere else in the app.
     func test_templates_shapeAndProGates() {
-        XCTAssertEqual(ProfileTemplate.selectable.count, 6)
+        XCTAssertEqual(ProfileTemplate.selectable.count, 8)   // + the two WebDAV templates (2.8.0)
         XCTAssertFalse(ProfileTemplate.selectable.contains(.custom))
         // The iCloud templates are no longer offered (iCloud is detected from the folder) but still load.
         XCTAssertFalse(ProfileTemplate.selectable.contains(.driveToICloud))
@@ -234,5 +234,47 @@ final class ProfileTests: XCTestCase {
         XCTAssertFalse(ProfileStore.overlaps(URL(fileURLWithPath: "/Volumes/SSD2/Backup"),
                                              with: [URL(fileURLWithPath: "/Volumes/SSD1/Backup")]))
         XCTAssertFalse(ProfileStore.overlaps(inner, with: []))
+    }
+
+    // SCENARIO: A WebDAV backup keeps its server through save and reload
+    // The profile carries its own server (never the password, which is in the Keychain), the template
+    // says it is a WebDAV backup, and a profile saved before WebDAV existed still reads with no server.
+    @MainActor func test_webdav_profileRoundTrip() throws {
+        let suite = "pvb.webdav.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let cfg = WebDAVConfig(serverURL: "cloud.example.com/remote.php/dav/files/me/", basePath: "Backups",
+                               username: "me", displayName: "Nextcloud")
+        XCTAssertEqual(cfg.normalizedURLString, "https://cloud.example.com/remote.php/dav/files/me/")
+        XCTAssertTrue(cfg.isComplete)
+        let profile = BackupProfile(name: "Photos → WebDAV", template: .photosToWebDAV, source: .photos,
+                                    destinations: [.webdav], webdav: cfg, webdavPasswordAccount: "profile.x.webdav")
+        let store = ProfileStore(defaults: defaults)
+        store.add(profile)
+        let json = String(data: defaults.data(forKey: "PhotoVideoBackup.profiles")!, encoding: .utf8)!
+        XCTAssertFalse(json.contains("secret"))
+        let reloaded = ProfileStore(defaults: defaults).profiles
+        XCTAssertEqual(reloaded.first?.webdav, cfg)
+        XCTAssertTrue(reloaded.first?.usesWebDAV ?? false)
+        XCTAssertFalse(reloaded.first?.usesNAS ?? true)
+        XCTAssertTrue(ProfileTemplate.photosToWebDAV.includesWebDAV)
+        XCTAssertTrue(ProfileTemplate.photosToWebDAV.requiresPro)
+        XCTAssertEqual(ProfileTemplate.photosToWebDAV.folderCount, 0)
+        XCTAssertTrue(ProfileTemplate.cameraToWebDAV.usesExternalSource)
+
+        let old = BackupProfile(name: "Old", template: .photosToDrive, source: .photos, destinations: [.folder(bookmarkKey: "k")])
+        XCTAssertNil(old.webdav)
+        XCTAssertFalse(old.usesWebDAV)
+    }
+
+    // SCENARIO: Only secure server addresses are accepted
+    // Plain http would send the password in clear (and iOS blocks it); an address without a scheme means https.
+    func test_webdavConfig_requiresHTTPS() {
+        func cfg(_ url: String) -> WebDAVConfig { WebDAVConfig(serverURL: url, basePath: "", username: "u", displayName: "") }
+        XCTAssertTrue(cfg("https://dav.example.com").isComplete)
+        XCTAssertTrue(cfg("dav.example.com/remote.php/dav").isComplete)
+        XCTAssertFalse(cfg("http://dav.example.com").isComplete)
+        XCTAssertFalse(cfg("").isComplete)
+        XCTAssertFalse(WebDAVConfig(serverURL: "https://dav.example.com", basePath: "", username: " ", displayName: "").isComplete)
     }
 }

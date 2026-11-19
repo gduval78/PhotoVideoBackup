@@ -18,6 +18,9 @@ enum ProfileDestination: Codable, Equatable, Hashable, Sendable {
     case folder(bookmarkKey: String)
     /// The NAS configured in Settings.
     case nas
+    /// A WebDAV server (Nextcloud, ownCloud, Synology/QNAP WebDAV, Hetzner Storage Box…), configured
+    /// in the profile itself (`BackupProfile.webdav`).
+    case webdav
 }
 
 // MARK: - Transfer type
@@ -54,6 +57,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     case cameraToDriveAndNAS
     case driveToICloud
     case photosToDriveAndNAS
+    case photosToWebDAV
+    case cameraToWebDAV
     /// A setup migrated from before profiles existed.
     case custom
 
@@ -71,7 +76,7 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     /// so "photo library → folder" and "camera → folder" cover iCloud too, with the same protection
     /// (`PHBackupEngine` / `ICloudRunGuard`).
     static var selectable: [ProfileTemplate] {
-        [.photosToDrive, .photosToNAS, .photosToDriveAndNAS, .cameraToDrive, .cameraToNAS, .cameraToDriveAndNAS]
+        [.photosToDrive, .photosToNAS, .photosToWebDAV, .photosToDriveAndNAS, .cameraToDrive, .cameraToNAS, .cameraToWebDAV, .cameraToDriveAndNAS]
     }
 
     var titleKey: LocalizedStringKey {
@@ -84,6 +89,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .cameraToDriveAndNAS: return "Camera or SD card → folder + NAS"
         case .driveToICloud:       return "External drive → iCloud Drive"
         case .photosToDriveAndNAS: return "Photo library → folder + NAS"
+        case .photosToWebDAV:      return "Photo library → WebDAV server"
+        case .cameraToWebDAV:      return "Camera or SD card → WebDAV server"
         case .custom:              return "Backup"
         }
     }
@@ -98,6 +105,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .cameraToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
         case .driveToICloud:       return "Send a backup you already have to iCloud Drive."
         case .photosToDriveAndNAS: return "Two copies in one go: a drive and your NAS."
+        case .photosToWebDAV:      return "Back up to Nextcloud or any WebDAV server."
+        case .cameraToWebDAV:      return "Copy a camera card or USB drive to a WebDAV server."
         case .custom:              return ""
         }
     }
@@ -112,6 +121,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .cameraToDriveAndNAS: return "sdcard.fill"
         case .driveToICloud:       return "icloud.and.arrow.up.fill"
         case .photosToDriveAndNAS: return "externaldrive.badge.plus"
+        case .photosToWebDAV:      return "network"
+        case .cameraToWebDAV:      return "network"
         case .custom:              return "arrow.triangle.2.circlepath"
         }
     }
@@ -124,17 +135,19 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
     }
 
     /// True when the source is a camera card / drive rather than the photo library.
-    var usesExternalSource: Bool { self == .cameraToDrive || self == .cameraToNAS || self == .cameraToDriveAndNAS || self == .driveToICloud }
+    var usesExternalSource: Bool { self == .cameraToDrive || self == .cameraToNAS || self == .cameraToDriveAndNAS || self == .driveToICloud || self == .cameraToWebDAV }
 
     /// How many folders the user has to choose.
     var folderCount: Int {
         switch self {
-        case .photosToNAS, .cameraToNAS, .custom: return 0
+        case .photosToNAS, .cameraToNAS, .photosToWebDAV, .cameraToWebDAV, .custom: return 0
         default:                    return 1
         }
     }
 
     var includesNAS: Bool { self == .photosToNAS || self == .cameraToNAS || self == .photosToDriveAndNAS || self == .cameraToDriveAndNAS }
+
+    var includesWebDAV: Bool { self == .photosToWebDAV || self == .cameraToWebDAV }
 
     /// Free users can back up the photo library to one folder; everything else is Pro.
     var requiresPro: Bool {
@@ -155,6 +168,8 @@ enum ProfileTemplate: String, Codable, CaseIterable, Sendable {
         case .cameraToDriveAndNAS: return String(localized: "Camera → drive + NAS")
         case .driveToICloud:       return String(localized: "Drive → iCloud Drive")
         case .photosToDriveAndNAS: return String(localized: "Photos → drive + NAS")
+        case .photosToWebDAV:      return String(localized: "Photos → WebDAV")
+        case .cameraToWebDAV:      return String(localized: "Camera → WebDAV")
         case .custom:              return String(localized: "Backup")
         }
     }
@@ -176,10 +191,15 @@ struct BackupProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     var nas: NASConfig?
     /// Keychain account holding the password of `nas`.
     var nasPasswordAccount: String?
+    /// The profile's WebDAV server (when `destinations` contains `.webdav`) and the Keychain account of its password.
+    var webdav: WebDAVConfig?
+    var webdavPasswordAccount: String?
 
     init(id: UUID = UUID(), name: String, template: ProfileTemplate,
          source: ProfileSource, destinations: [ProfileDestination],
-         settings: ProfileSettings? = nil, nas: NASConfig? = nil, nasPasswordAccount: String? = nil) {
+         settings: ProfileSettings? = nil, nas: NASConfig? = nil, nasPasswordAccount: String? = nil,
+         webdav: WebDAVConfig? = nil, webdavPasswordAccount: String? = nil) {
+        self.webdav = webdav; self.webdavPasswordAccount = webdavPasswordAccount
         self.id = id; self.name = name; self.template = template
         self.source = source; self.destinations = destinations
         self.settings = settings; self.nas = nas; self.nasPasswordAccount = nasPasswordAccount
@@ -191,12 +211,16 @@ struct BackupProfile: Codable, Identifiable, Equatable, Hashable, Sendable {
     /// The Keychain account for the NAS password of a profile created by the "New backup" flow.
     static func nasPasswordAccount(profileID: UUID) -> String { "profile.\(profileID.uuidString).nas" }
 
+    /// The Keychain account for the WebDAV password of a profile.
+    static func webdavPasswordAccount(profileID: UUID) -> String { "profile.\(profileID.uuidString).webdav" }
+
     /// The bookmark keys of this profile's folders, in order.
     var folderKeys: [String] {
         destinations.compactMap { if case .folder(let key) = $0 { return key } else { return nil } }
     }
 
     var usesNAS: Bool { destinations.contains(.nas) }
+    var usesWebDAV: Bool { destinations.contains(.webdav) }
 
     /// The `DestinationManager` key for the n-th folder of a profile created by the "New backup" flow.
     static func folderKey(profileID: UUID, index: Int) -> String {
@@ -363,6 +387,9 @@ final class ProfileStore {
         // The NAS password of a profile created by the "New backup" flow dies with it. The legacy
         // account is shared with the Advanced NAS settings and is never touched.
         if let account = profile.nasPasswordAccount, account.hasPrefix("profile.") {
+            KeychainStore.delete(account: account)
+        }
+        if let account = profile.webdavPasswordAccount, account.hasPrefix("profile.") {
             KeychainStore.delete(account: account)
         }
         profiles.removeAll { $0.id == id }

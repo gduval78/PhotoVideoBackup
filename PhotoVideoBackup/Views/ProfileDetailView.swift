@@ -12,6 +12,8 @@ struct ProfileDetailView: View {
     @State private var settings: ProfileSettings
     @State private var nasConfig: NASConfig
     @State private var nasPassword = ""
+    @State private var webdavConfig: WebDAVConfig
+    @State private var webdavPassword = ""
     /// Which folder row the importer is choosing for, or nil when it adds a new destination.
     @State private var pickingIndex: Int?
     @State private var showImporter = false
@@ -25,12 +27,14 @@ struct ProfileDetailView: View {
         _profile = State(initialValue: profile)
         _settings = State(initialValue: profile.settings ?? ProfileSettings.fromGlobal())
         _nasConfig = State(initialValue: profile.nas ?? DestinationManager.shared.loadNASConfig() ?? .empty)
+        _webdavConfig = State(initialValue: profile.webdav ?? .empty)
     }
 
     private var canSave: Bool {
         !profile.name.trimmingCharacters(in: .whitespaces).isEmpty
             && !profile.destinations.isEmpty
             && (!profile.usesNAS || nasConfig.isComplete)
+            && (!profile.usesWebDAV || webdavConfig.isComplete)
     }
 
     var body: some View {
@@ -41,6 +45,9 @@ struct ProfileDetailView: View {
 
             if profile.usesNAS {
                 ProfileNASEditor(config: $nasConfig, password: $nasPassword)
+            }
+            if profile.usesWebDAV {
+                ProfileWebDAVEditor(config: $webdavConfig, password: $webdavPassword)
             }
 
             ProfileOptionsForm(settings: $settings)
@@ -55,6 +62,9 @@ struct ProfileDetailView: View {
             if profile.usesNAS {
                 let account = original.nasPasswordAccount ?? DestinationManager.shared.legacyNASPasswordAccount
                 nasPassword = KeychainStore.get(account: account) ?? ""
+            }
+            if profile.usesWebDAV {
+                webdavPassword = KeychainStore.get(account: original.webdavPasswordAccount ?? "") ?? ""
             }
         }
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.folder],
@@ -86,6 +96,10 @@ struct ProfileDetailView: View {
                     Label {
                         Text(verbatim: nasConfig.isComplete ? nasConfig.label : String(localized: "NAS"))
                     } icon: { Image(systemName: "server.rack") }
+                case .webdav:
+                    Label {
+                        Text(verbatim: webdavConfig.isComplete ? webdavConfig.label : String(localized: "WebDAV server"))
+                    } icon: { Image(systemName: "network") }
                 }
             }
             .onDelete { offsets in remove(at: offsets) }
@@ -94,6 +108,7 @@ struct ProfileDetailView: View {
             Menu {
                 Button("Another folder…") { addFolder() }
                 if !profile.usesNAS { Button("A NAS") { addNAS() } }
+                if !profile.usesWebDAV { Button("A WebDAV server") { addWebDAV() } }
             } label: {
                 Label("Add a destination", systemImage: "plus.circle")
             }
@@ -130,6 +145,13 @@ struct ProfileDetailView: View {
         nasConfig = .empty
         nasPassword = ""
         profile.destinations.append(.nas)
+    }
+
+    private func addWebDAV() {
+        guard requirePro() else { return }
+        webdavConfig = .empty
+        webdavPassword = ""
+        profile.destinations.append(.webdav)
     }
 
     private func pick(replacing index: Int) {
@@ -217,6 +239,23 @@ struct ProfileDetailView: View {
             }
             edited.nas = nil
             edited.nasPasswordAccount = nil
+        }
+        if edited.usesWebDAV {
+            var cleaned = webdavConfig
+            cleaned.serverURL = webdavConfig.normalizedURLString
+            cleaned.basePath = webdavConfig.basePath.trimmingCharacters(in: .whitespaces)
+            cleaned.username = webdavConfig.username.trimmingCharacters(in: .whitespaces)
+            cleaned.displayName = webdavConfig.displayName.trimmingCharacters(in: .whitespaces)
+            let account = BackupProfile.webdavPasswordAccount(profileID: edited.id)
+            KeychainStore.set(webdavPassword, account: account)
+            edited.webdav = cleaned
+            edited.webdavPasswordAccount = account
+        } else {
+            if let account = original.webdavPasswordAccount, account.hasPrefix("profile.") {
+                KeychainStore.delete(account: account)
+            }
+            edited.webdav = nil
+            edited.webdavPasswordAccount = nil
         }
         ProfileStore.shared.update(edited)
         dismiss()

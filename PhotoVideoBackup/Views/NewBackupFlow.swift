@@ -73,6 +73,8 @@ private struct NewBackupSetup: View {
     /// for the common case); change it freely — it is this backup's copy.
     @State private var nasConfig: NASConfig = DestinationManager.shared.loadNASConfig() ?? .empty
     @State private var nasPassword: String = KeychainStore.get(account: DestinationManager.shared.legacyNASPasswordAccount) ?? ""
+    @State private var webdavConfig: WebDAVConfig = .empty
+    @State private var webdavPassword = ""
 
     private enum PickTarget { case destination, source }
 
@@ -91,6 +93,7 @@ private struct NewBackupSetup: View {
             && (template.folderCount == 0 || folderLabel != nil)
             && (!template.usesExternalSource || sourceID != nil)
             && (!template.includesNAS || nasConfig.isComplete)
+            && (!template.includesWebDAV || webdavConfig.isComplete)
     }
 
     var body: some View {
@@ -98,6 +101,7 @@ private struct NewBackupSetup: View {
             if template.usesExternalSource { sourceSection }
             if template.folderCount > 0 { destinationSection }
             if template.includesNAS { ProfileNASEditor(config: $nasConfig, password: $nasPassword) }
+            if template.includesWebDAV { ProfileWebDAVEditor(config: $webdavConfig, password: $webdavPassword) }
             if !template.usesExternalSource { deviceNameSection }
             Section("Name") {
                 TextField("Name", text: $name)
@@ -212,6 +216,7 @@ private struct NewBackupSetup: View {
         var destinations: [ProfileDestination] = []
         if template.folderCount > 0 { destinations.append(.folder(bookmarkKey: folderKey)) }
         if template.includesNAS { destinations.append(.nas) }
+        if template.includesWebDAV { destinations.append(.webdav) }
         let source: ProfileSource = template.usesExternalSource ? .external(sourceID ?? UUID()) : .photos
         // The backup owns its NAS and its password; its options start as a copy of today's settings.
         var ownNAS: NASConfig? = nil
@@ -227,11 +232,24 @@ private struct NewBackupSetup: View {
             account = BackupProfile.nasPasswordAccount(profileID: profileID)
             KeychainStore.set(nasPassword, account: account!)
         }
+        var ownWebDAV: WebDAVConfig? = nil
+        var davAccount: String? = nil
+        if template.includesWebDAV {
+            var cleaned = webdavConfig
+            cleaned.serverURL = webdavConfig.normalizedURLString
+            cleaned.basePath = webdavConfig.basePath.trimmingCharacters(in: .whitespaces)
+            cleaned.username = webdavConfig.username.trimmingCharacters(in: .whitespaces)
+            cleaned.displayName = webdavConfig.displayName.trimmingCharacters(in: .whitespaces)
+            ownWebDAV = cleaned
+            davAccount = BackupProfile.webdavPasswordAccount(profileID: profileID)
+            KeychainStore.set(webdavPassword, account: davAccount!)
+        }
         let profile = BackupProfile(id: profileID,
                                     name: name.trimmingCharacters(in: .whitespaces),
                                     template: template, source: source, destinations: destinations,
                                     settings: ProfileSettings.fromGlobal(),
-                                    nas: ownNAS, nasPasswordAccount: account)
+                                    nas: ownNAS, nasPasswordAccount: account,
+                                    webdav: ownWebDAV, webdavPasswordAccount: davAccount)
         ProfileStore.shared.add(profile)
         created = true
         onDone()

@@ -14,6 +14,7 @@
 		5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */; };
 		5C1C10D0000000000000FB02 /* ReportTargetSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
+		5B0BF11E000000000000B102 /* WebDAVTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B101 /* WebDAVTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
 		5B0BF11E000000000000B002 /* NASBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B001 /* NASBrowserView.swift */; };
@@ -57,6 +58,8 @@
 		CC0000000000000000201400 /* ICloudEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000100F00 /* ICloudEvictionTests.swift */; };
 		CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101000 /* FakeRemoteTarget.swift */; };
 		CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101100 /* RemoteDedupTests.swift */; };
+		CC0000000000000000201D00 /* FakeWebDAVServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101D00 /* FakeWebDAVServer.swift */; };
+		CC0000000000000000201E00 /* WebDAVTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101E00 /* WebDAVTargetTests.swift */; };
 		CC0000000000000000201B00 /* FileLimitFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101600 /* FileLimitFieldTests.swift */; };
 		CC0000000000000000201C00 /* PartialReasonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101700 /* PartialReasonTests.swift */; };
 		CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0000000000000000101200 /* LiveNASIntegrationTests.swift */; };
@@ -95,6 +98,7 @@
 		5C27012308894C594FF3A756 /* ProfileSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27A8CD368CB8BE4DDE8CCF /* ProfileSettings.swift */; };
 		5C27DC075C473960452E9C09 /* ProfileSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C272D7BFADFE88348879A32 /* ProfileSettingsTests.swift */; };
 		5C2782BFF2A05F114305AFA2 /* ProfileNASEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */; };
+		5B0BF11E000000000000B202 /* ProfileWebDAVEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B201 /* ProfileWebDAVEditor.swift */; };
 		5C27E5FFDF65980047559C0D /* ProfileOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */; };
 		5C27270B1687AD974D448B0D /* ProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */; };
 /* End PBXBuildFile section */
@@ -136,6 +140,7 @@
 		5C1C10D0000000000000FC01 /* ICloudEvictionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionManager.swift; sourceTree = "<group>"; };
 		5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportTargetSummary.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000B101 /* WebDAVTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebDAVTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000B001 /* NASBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASBrowserView.swift; sourceTree = "<group>"; };
@@ -175,6 +180,8 @@
 		CC0000000000000000100E00 /* DiskSpacePreflightTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpacePreflightTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000100F00 /* ICloudEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudEvictionTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101100 /* RemoteDedupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteDedupTests.swift; sourceTree = "<group>"; };
+		CC0000000000000000101D00 /* FakeWebDAVServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeWebDAVServer.swift; sourceTree = "<group>"; };
+		CC0000000000000000101E00 /* WebDAVTargetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebDAVTargetTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101600 /* FileLimitFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLimitFieldTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101700 /* PartialReasonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PartialReasonTests.swift; sourceTree = "<group>"; };
 		CC0000000000000000101200 /* LiveNASIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveNASIntegrationTests.swift; sourceTree = "<group>"; };
@@ -215,6 +222,7 @@
 		5C27A8CD368CB8BE4DDE8CCF /* ProfileSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettings.swift; sourceTree = "<group>"; };
 		5C272D7BFADFE88348879A32 /* ProfileSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsTests.swift; sourceTree = "<group>"; };
 		5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNASEditor.swift; sourceTree = "<group>"; };
+		5B0BF11E000000000000B201 /* ProfileWebDAVEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileWebDAVEditor.swift; sourceTree = "<group>"; };
 		5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileOptionsForm.swift; sourceTree = "<group>"; };
 		5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -281,6 +289,7 @@
 				A1592A497AAB2FDBD5216223 /* PHBackupEngine.swift */,
 				5B0BF11E000000000000AB01 /* BackupTarget.swift */,
 				5B0BF11E000000000000AC01 /* SMBTarget.swift */,
+				5B0BF11E000000000000B101 /* WebDAVTarget.swift */,
 			);
 			path = CopyEngine;
 			sourceTree = "<group>";
@@ -398,6 +407,7 @@
 				5C273008B3F6AF1B4B2E8677 /* ProfileDetailView.swift */,
 				5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */,
 				5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */,
+				5B0BF11E000000000000B201 /* ProfileWebDAVEditor.swift */,
 				5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */,
 				5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */,
 				5C270F33EBA437E84E8B98C0 /* BackupsView.swift */,
@@ -432,6 +442,7 @@
 				CC0000000000000000100200 /* SimulatedSDCard.swift */,
 				CC0000000000000000100300 /* SimulatedSSD.swift */,
 				CC0000000000000000101000 /* FakeRemoteTarget.swift */,
+				CC0000000000000000101D00 /* FakeWebDAVServer.swift */,
 				CC0000000000000000100400 /* TestFile.swift */,
 				CC0000000000000000100500 /* BackupResult.swift */,
 				CC0000000000000000100600 /* ScenarioAssertion.swift */,
@@ -452,6 +463,7 @@
 				CC0000000000000000101300 /* DestinationIndependenceTests.swift */,
 				CC0000000000000000101200 /* LiveNASIntegrationTests.swift */,
 				CC0000000000000000101100 /* RemoteDedupTests.swift */,
+				CC0000000000000000101E00 /* WebDAVTargetTests.swift */,
 				CC0000000000000000101600 /* FileLimitFieldTests.swift */,
 				CC0000000000000000101700 /* PartialReasonTests.swift */,
 				CC0000000000000000100F00 /* ICloudEvictionTests.swift */,
@@ -658,6 +670,7 @@
 				5C27270B1687AD974D448B0D /* ProfileDetailView.swift in Sources */,
 				5C27E5FFDF65980047559C0D /* ProfileOptionsForm.swift in Sources */,
 				5C2782BFF2A05F114305AFA2 /* ProfileNASEditor.swift in Sources */,
+				5B0BF11E000000000000B202 /* ProfileWebDAVEditor.swift in Sources */,
 				5C27012308894C594FF3A756 /* ProfileSettings.swift in Sources */,
 				5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */,
 				5C2726051E1C5E4A473C99B8 /* BackupAlerts.swift in Sources */,
@@ -677,6 +690,7 @@
 				DDE423B86FB730C94AD6E994 /* FileCopyEngine.swift in Sources */,
 				5B0BF11E000000000000AB02 /* BackupTarget.swift in Sources */,
 				5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */,
+				5B0BF11E000000000000B102 /* WebDAVTarget.swift in Sources */,
 				5C1C10D0000000000000FB02 /* ReportTargetSummary.swift in Sources */,
 				5C1C10D0000000000000FC02 /* ICloudEvictionManager.swift in Sources */,
 				5C1C10D0000000000000FD02 /* DiskSpacePreflight.swift in Sources */,
@@ -733,6 +747,8 @@
 				CC0000000000000000201800 /* DestinationIndependenceTests.swift in Sources */,
 				CC0000000000000000201700 /* LiveNASIntegrationTests.swift in Sources */,
 				CC0000000000000000201600 /* RemoteDedupTests.swift in Sources */,
+				CC0000000000000000201E00 /* WebDAVTargetTests.swift in Sources */,
+				CC0000000000000000201D00 /* FakeWebDAVServer.swift in Sources */,
 				CC0000000000000000201B00 /* FileLimitFieldTests.swift in Sources */,
 				CC0000000000000000201C00 /* PartialReasonTests.swift in Sources */,
 				CC0000000000000000201500 /* FakeRemoteTarget.swift in Sources */,

@@ -31,7 +31,7 @@ struct BackupsView: View {
                                     onUnlock: { showPaywall = true },
                                     sourceName: sourceName(for: profile),
                                     connection: connections[profile.id],
-                                    transfer: .of(isRemote: profile.usesNAS || (connections[profile.id]?.hasCloudFolder ?? false),
+                                    transfer: .of(isRemote: profile.usesNAS || profile.usesWebDAV || (connections[profile.id]?.hasCloudFolder ?? false),
                                                   isCellular: viewModel.isLikelyCellular),
                                     sourceAvailable: sourceAvailable(for: profile),
                                     isRunning: viewModel.isRunning,

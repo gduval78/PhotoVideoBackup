@@ -128,6 +128,10 @@ final class DashboardViewModel {
         } else if let smb = await DestinationManager.shared.makeSMBTarget() {
             targets.append(smb)
         }
+        if let dav = run?.webdav, let target = dav.config.makeTarget(password: dav.password) {
+            if await target.isReachable() { targets.append(target) }
+            else { DiagnosticLog.write("[WEBDAV_ERROR] server unreachable: \(dav.config.label)") }
+        }
         return targets
     }
 
@@ -476,6 +480,8 @@ final class DashboardViewModel {
         let localURLs: [URL]
         /// The profile's own NAS and its password, or nil when the profile has no NAS.
         let nas: (config: NASConfig, password: String)?
+        /// The profile's WebDAV server and its password, or nil.
+        var webdav: (config: WebDAVConfig, password: String)? = nil
         /// The profile's own folder structure, naming, limits and extensions.
         let settings: RunSettings
         var includeNAS: Bool { nas != nil }
@@ -529,6 +535,10 @@ final class DashboardViewModel {
             if let cfg = profile.nas ?? dm.loadNASConfig(), cfg.isComplete { names.append(cfg.label) }
             else { connected = false; names.append(String(localized: "NAS")) }
         }
+        if profile.usesWebDAV {
+            if let cfg = profile.webdav, cfg.isComplete { names.append(cfg.label) }
+            else { connected = false; names.append(String(localized: "WebDAV server")) }
+        }
         return ProfileConnection(isConnected: connected, destinationNames: names,
                                  freeBytes: free, usedFraction: used, disconnectedFolderKey: missingKey,
                                  hasCloudFolder: cloud)
@@ -546,7 +556,7 @@ final class DashboardViewModel {
         }
         // A NAS or a second destination is Pro. Refuse with a message rather than silently
         // dropping the extra destination and running a backup the user thinks is doubled.
-        if !StoreManager.shared.isPremium && (profile.usesNAS || profile.destinations.count > 1) {
+        if !StoreManager.shared.isPremium && (profile.usesNAS || profile.usesWebDAV || profile.destinations.count > 1) {
             backupError = String(localized: "This backup needs the Pro upgrade.")
             return
         }
@@ -572,7 +582,15 @@ final class DashboardViewModel {
             }
             nas = (config, KeychainStore.get(account: account) ?? "")
         }
-        let run = ProfileRun(name: profile.name, localURLs: urls, nas: nas, settings: profile.runSettings)
+        var webdav: (config: WebDAVConfig, password: String)? = nil
+        if profile.usesWebDAV {
+            guard let config = profile.webdav, config.isComplete else {
+                backupError = String(localized: "The WebDAV server of this backup is not set up.")
+                return
+            }
+            webdav = (config, KeychainStore.get(account: profile.webdavPasswordAccount ?? "") ?? "")
+        }
+        let run = ProfileRun(name: profile.name, localURLs: urls, nas: nas, webdav: webdav, settings: profile.runSettings)
         switch profile.source {
         case .photos:
             await requestPhotosBackup(run: run)
