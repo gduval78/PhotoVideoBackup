@@ -12,6 +12,10 @@ enum WebDAVError: LocalizedError, Equatable {
     case tooLarge
     /// 429 / 503 — the server asks us to slow down.
     case rateLimited
+    /// The server's TLS certificate is not trusted by iOS (self-signed, unknown authority, expired…).
+    case untrustedCertificate
+    /// A certificate was trusted for this server earlier and the server now presents another one.
+    case certificateChanged
     case http(Int)
     case invalidResponse
 
@@ -25,6 +29,10 @@ enum WebDAVError: LocalizedError, Equatable {
             return String(localized: "The server refused this file size — check its upload limit.")
         case .rateLimited:
             return String(localized: "The server is asking to slow down. Try again later.")
+        case .untrustedCertificate:
+            return String(localized: "The server's certificate is not trusted.")
+        case .certificateChanged:
+            return String(localized: "The server's certificate has changed. Forget the trusted certificate and test the connection again.")
         case .http(let code):
             return String(localized: "The server answered with an error (\(code)).")
         case .invalidResponse:
@@ -130,6 +138,94 @@ enum WebDAVMultiStatus {
     }
 }
 
+// MARK: - Certificate trust
+
+/// Trust decisions for a server's TLS certificate. A user can trust one certificate of a server they
+/// run themselves (self-signed Nextcloud, Synology…): its SHA-256 is stored with the backup, and from
+/// then on **only that exact certificate** is accepted — never "trust everything".
+enum WebDAVTrust {
+    /// SHA-256 of a certificate's DER bytes, lowercase hex.
+    static func fingerprint(ofDER der: Data) -> String {
+        SHA256.hash(data: der).map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// "AB:CD:EF…" for display.
+    static func displayFingerprint(_ hex: String) -> String {
+        let chars = Array(hex.uppercased())
+        return stride(from: 0, to: chars.count, by: 2).map { String(chars[$0..<min($0 + 2, chars.count)]) }.joined(separator: ":")
+    }
+
+    /// With a pin, the presented certificate must be exactly that one; without, the system decides.
+    static func accepts(pin: String?, presented: String?) -> Bool? {
+        guard let pin, !pin.isEmpty else { return nil }          // nil = let the system decide
+        return presented?.lowercased() == pin.lowercased()
+    }
+
+    static func leafFingerprint(of trust: SecTrust) -> String? {
+        guard let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate], let leaf = chain.first else { return nil }
+        return fingerprint(ofDER: SecCertificateCopyData(leaf) as Data)
+    }
+
+    /// True for the URL errors that mean "the certificate is not acceptable".
+    static func isCertificateError(_ error: Error) -> Bool {
+        guard let e = error as? URLError else { return false }
+        switch e.code {
+        case .serverCertificateUntrusted, .serverCertificateHasBadDate, .serverCertificateNotYetValid,
+             .serverCertificateHasUnknownRoot, .secureConnectionFailed:
+            return true
+        default: return false
+        }
+    }
+
+    /// Session delegate applying the pin (when there is one).
+    final class Delegate: NSObject, URLSessionDelegate, @unchecked Sendable {
+        let pin: String?
+        private let lock = NSLock()
+        private var _mismatch = false
+        init(pin: String?) { self.pin = pin }
+        /// True once a certificate other than the pinned one was presented.
+        var pinMismatch: Bool { lock.withLock { _mismatch } }
+
+        func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge,
+                        completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+                  let trust = challenge.protectionSpace.serverTrust,
+                  let verdict = WebDAVTrust.accepts(pin: pin, presented: WebDAVTrust.leafFingerprint(of: trust)) else {
+                completionHandler(.performDefaultHandling, nil); return
+            }
+            if verdict { completionHandler(.useCredential, URLCredential(trust: trust)) }
+            else {
+                lock.withLock { _mismatch = true }
+                completionHandler(.cancelAuthenticationChallenge, nil)
+            }
+        }
+    }
+
+    /// Reads the certificate a server presents, without sending anything: the challenge is cancelled
+    /// right after the fingerprint is recorded. Used by *Test connection* after an untrusted-certificate error.
+    static func presentedFingerprint(of url: URL) async -> String? {
+        final class Probe: NSObject, URLSessionDelegate, @unchecked Sendable {
+            let lock = NSLock(); var value: String?
+            func urlSession(_ s: URLSession, didReceive challenge: URLAuthenticationChallenge,
+                            completionHandler: @escaping @Sendable (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+                if let trust = challenge.protectionSpace.serverTrust {
+                    lock.withLock { value = WebDAVTrust.leafFingerprint(of: trust) }
+                }
+                completionHandler(.cancelAuthenticationChallenge, nil)
+            }
+        }
+        let probe = Probe()
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = 15
+        let session = URLSession(configuration: config, delegate: probe, delegateQueue: nil)
+        defer { session.invalidateAndCancel() }
+        var req = URLRequest(url: url)
+        req.httpMethod = "HEAD"
+        _ = try? await session.data(for: req)
+        return probe.lock.withLock { probe.value }
+    }
+}
+
 // MARK: - WebDAVTarget
 
 /// Backup target on a WebDAV server (Nextcloud, ownCloud, Synology/QNAP WebDAV, Hetzner Storage Box,
@@ -156,6 +252,7 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     /// Nextcloud / ownCloud chunked upload: `nil` = not known yet (detected on the first large file),
     /// true/false = known (stored in `WebDAVConfig.chunking` after *Test connection*).
     private var chunking: Bool?
+    private var trustDelegate: WebDAVTrust.Delegate?
     /// Files above this size use the chunked upload when the server supports it.
     private let chunkThreshold: Int64
     /// Size of one chunk — well below Cloudflare's 100 MB request limit.
@@ -165,7 +262,7 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     static let defaultChunkSize = 10 * 1024 * 1024
 
     init(serverURL: URL, basePath: String, user: String, password: String,
-         displayName: String, session: URLSession? = nil, chunking: Bool? = nil,
+         displayName: String, session: URLSession? = nil, chunking: Bool? = nil, pinnedCertificate: String? = nil,
          chunkThreshold: Int64 = WebDAVTarget.defaultChunkThreshold,
          chunkSize: Int = WebDAVTarget.defaultChunkSize) {
         self.chunking = chunking
@@ -182,7 +279,9 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
             let config = URLSessionConfiguration.ephemeral
             config.timeoutIntervalForRequest = 60
             config.waitsForConnectivity = false
-            self.session = URLSession(configuration: config)
+            let delegate = WebDAVTrust.Delegate(pin: pinnedCertificate)
+            self.trustDelegate = delegate
+            self.session = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
         }
     }
 
@@ -465,8 +564,19 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     }
 
     /// Throws the reason a backup would fail: credentials, missing base folder, size/proxy problems.
+    /// Reads a failure as the reason the user can act on (untrusted / changed certificate).
+    func mapped(_ error: Error) -> Error {
+        if trustDelegate?.pinMismatch == true { return WebDAVError.certificateChanged }
+        if WebDAVTrust.isCertificateError(error) { return WebDAVError.untrustedCertificate }
+        return error
+    }
+
     @discardableResult
     func testConnection() async throws -> Bool {
+        do { return try await runConnectionTest() } catch { throw mapped(error) }
+    }
+
+    private func runConnectionTest() async throws -> Bool {
         let result = try await propfind(serverURL, depth: 0, timeout: 15)
         if let err = WebDAVError.forWrite(status: result.status == 207 ? 200 : result.status) { throw err }
         // Write + read back + delete a small object under the base folder.
@@ -528,6 +638,8 @@ struct WebDAVConfig: Codable, Equatable, Hashable, Sendable {
     /// Whether the server accepts Nextcloud chunked uploads, as found by *Test connection*.
     /// nil = not tested: the target then asks the server itself before its first large file.
     var chunking: Bool? = nil
+    /// SHA-256 (hex) of the one server certificate the user chose to trust (self-signed server), or nil.
+    var pinnedCertificate: String? = nil
 
     static let empty = WebDAVConfig(serverURL: "", basePath: "", username: "", displayName: "")
 
@@ -560,6 +672,6 @@ struct WebDAVConfig: Codable, Equatable, Hashable, Sendable {
     func makeTarget(password: String, session: URLSession? = nil) -> WebDAVTarget? {
         guard let url else { return nil }
         return WebDAVTarget(serverURL: url, basePath: basePath, user: username, password: password,
-                            displayName: label, session: session, chunking: chunking)
+                            displayName: label, session: session, chunking: chunking, pinnedCertificate: pinnedCertificate)
     }
 }

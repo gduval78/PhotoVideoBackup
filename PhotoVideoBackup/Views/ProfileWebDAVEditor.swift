@@ -9,8 +9,20 @@ struct ProfileWebDAVEditor: View {
     @State private var isTesting = false
     @State private var testMessage: String?
     @State private var testSucceeded = false
+    /// Fingerprint of an untrusted certificate the server presented, waiting for the user's decision.
+    @State private var pendingFingerprint: String?
 
     var body: some View {
+        Group { content }
+            .onChange(of: config.serverURL) { _, _ in
+                // A certificate trusted for another address means nothing here.
+                config.pinnedCertificate = nil
+                pendingFingerprint = nil
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
         Section {
             field("Name", "e.g. Nextcloud", $config.displayName)
             field("Server", "https://cloud.example.com/remote.php/dav/files/me/", $config.serverURL, keyboard: .URL)
@@ -45,11 +57,40 @@ struct ProfileWebDAVEditor: View {
                 Text(verbatim: testMessage).font(.caption).foregroundStyle(testSucceeded ? .green : .red)
             }
         }
+        if let pending = pendingFingerprint {
+            Section {
+                Text(verbatim: WebDAVTrust.displayFingerprint(pending))
+                    .font(.system(.footnote, design: .monospaced))
+                    .textSelection(.enabled)
+                Button("Trust this certificate") {
+                    config.pinnedCertificate = pending
+                    pendingFingerprint = nil
+                    Task { await test() }
+                }
+            } header: {
+                Text("Untrusted certificate")
+            } footer: {
+                Text("This server uses a certificate iOS does not trust, which is normal for a server you run yourself. Check that this fingerprint is the one your server shows, then trust it. Only this exact certificate will be accepted.")
+            }
+        } else if let pinned = config.pinnedCertificate {
+            Section {
+                Text(verbatim: WebDAVTrust.displayFingerprint(pinned))
+                    .font(.system(.footnote, design: .monospaced))
+                    .textSelection(.enabled)
+                Button("Forget this certificate", role: .destructive) {
+                    config.pinnedCertificate = nil
+                    testMessage = nil
+                }
+            } header: {
+                Text("Trusted certificate")
+            }
+        }
     }
 
     private func test() async {
         isTesting = true
         testMessage = nil
+        pendingFingerprint = nil
         defer { isTesting = false }
         guard let target = config.makeTarget(password: password) else {
             testSucceeded = false
@@ -65,6 +106,9 @@ struct ProfileWebDAVEditor: View {
         } catch {
             testSucceeded = false
             testMessage = error.localizedDescription
+            if let dav = error as? WebDAVError, dav == .untrustedCertificate, let url = config.url {
+                pendingFingerprint = await WebDAVTrust.presentedFingerprint(of: url)
+            }
             DiagnosticLog.write("[WEBDAV_ERROR] test \(config.url?.host ?? "?"): \(error.localizedDescription)")
         }
     }

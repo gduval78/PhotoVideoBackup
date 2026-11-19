@@ -38319,6 +38319,580 @@
           }
         }
       }
+    },
+    "The server's certificate is not trusted." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server's certificate is not trusted."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le certificat du serveur n'est pas approuvé."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zertifikat des Servers wird nicht als vertrauenswürdig eingestuft."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El certificado del servidor no es de confianza."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il certificato del server non è attendibile."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O certificado do servidor não é de confiança."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器的证书不受信任。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат сервера не является доверенным."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーの証明書が信頼されていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버의 인증서를 신뢰할 수 없습니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर का प्रमाणपत्र विश्वसनीय नहीं है।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهادة الخادم غير موثوقة."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器的證書不受信任。"
+          }
+        }
+      }
+    },
+    "The server's certificate has changed. Forget the trusted certificate and test the connection again." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server's certificate has changed. Forget the trusted certificate and test the connection again."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le certificat du serveur a changé. Oubliez le certificat approuvé et testez de nouveau la connexion."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Zertifikat des Servers hat sich geändert. Entfernen Sie das vertrauenswürdige Zertifikat und testen Sie die Verbindung erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El certificado del servidor ha cambiado. Olvida el certificado de confianza y prueba de nuevo la conexión."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il certificato del server è cambiato. Dimentica il certificato attendibile e prova di nuovo la connessione."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O certificado do servidor mudou. Esqueça o certificado de confiança e teste novamente a ligação."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器的证书已更改。请忽略已信任的证书，然后重新测试连接。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сертификат сервера изменился. Удалите доверенный сертификат и проверьте подключение ещё раз."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーの証明書が変更されました。信頼済みの証明書を削除して、もう一度接続をテストしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버의 인증서가 변경되었습니다. 신뢰한 인증서를 삭제하고 연결을 다시 테스트하세요."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर का प्रमाणपत्र बदल गया है। विश्वसनीय प्रमाणपत्र हटाएँ और कनेक्शन फिर से जाँचें।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تغيّرت شهادة الخادم. انسَ الشهادة الموثوقة واختبر الاتصال مرة أخرى."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器的證書已更改。請忽略已信任的證書，然後重新測試連線。"
+          }
+        }
+      }
+    },
+    "Untrusted certificate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untrusted certificate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificat non approuvé"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht vertrauenswürdiges Zertifikat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificado no de confianza"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificato non attendibile"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificado não confiável"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不受信任的证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недоверенный сертификат"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信頼されていない証明書"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신뢰할 수 없는 인증서"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अविश्वसनीय प्रमाणपत्र"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهادة غير موثوقة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不受信任的證書"
+          }
+        }
+      }
+    },
+    "This server uses a certificate iOS does not trust, which is normal for a server you run yourself. Check that this fingerprint is the one your server shows, then trust it. Only this exact certificate will be accepted." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This server uses a certificate iOS does not trust, which is normal for a server you run yourself. Check that this fingerprint is the one your server shows, then trust it. Only this exact certificate will be accepted."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce serveur utilise un certificat qu'iOS n'approuve pas, ce qui est normal pour un serveur que vous hébergez vous-même. Vérifiez que cette empreinte est bien celle de votre serveur, puis approuvez-la. Seul ce certificat précis sera accepté."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Server verwendet ein Zertifikat, dem iOS nicht vertraut – bei einem selbst betriebenen Server ist das normal. Prüfen Sie, ob dieser Fingerabdruck dem Ihres Servers entspricht, und vertrauen Sie ihm dann. Nur genau dieses Zertifikat wird akzeptiert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este servidor usa un certificado en el que iOS no confía, lo normal en un servidor que administras tú. Comprueba que esta huella es la de tu servidor y confía en ella. Solo se aceptará este certificado exacto."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo server usa un certificato di cui iOS non si fida, cosa normale per un server gestito da te. Verifica che questa impronta sia quella del tuo server, poi considerala attendibile. Sarà accettato solo questo certificato esatto."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este servidor utiliza um certificado em que o iOS não confia, o que é normal num servidor que gere por si. Verifique se esta impressão digital é a do seu servidor e confie nela. Só este certificado exato será aceite."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此服务器使用的证书不被 iOS 信任，对于自己搭建的服务器这很正常。请确认该指纹与你的服务器显示的一致，然后选择信任。只有这个确切的证书会被接受。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот сервер использует сертификат, которому iOS не доверяет, — для собственного сервера это нормально. Убедитесь, что этот отпечаток совпадает с отпечатком вашего сервера, и доверьтесь ему. Будет принят только этот сертификат."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このサーバーはiOSが信頼していない証明書を使用しています。自分で運用しているサーバーでは普通のことです。このフィンガープリントがサーバーに表示されるものと一致することを確認してから、信頼してください。この証明書だけが受け入れられます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 서버는 iOS가 신뢰하지 않는 인증서를 사용합니다. 직접 운영하는 서버라면 정상입니다. 이 지문이 서버에 표시된 것과 같은지 확인한 후 신뢰하세요. 이 인증서만 허용됩니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह सर्वर ऐसे प्रमाणपत्र का उपयोग करता है जिस पर iOS भरोसा नहीं करता — अपने खुद के सर्वर के लिए यह सामान्य है। जाँचें कि यह फ़िंगरप्रिंट आपके सर्वर पर दिखने वाले फ़िंगरप्रिंट से मेल खाता है, फिर इस पर भरोसा करें। केवल यही प्रमाणपत्र स्वीकार किया जाएगा।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يستخدم هذا الخادم شهادة لا يثق بها iOS، وهذا طبيعي لخادم تديره بنفسك. تأكد من أن هذه البصمة هي التي يعرضها خادمك، ثم ثق بها. ستُقبل هذه الشهادة بالذات فقط."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此伺服器使用的證書不被 iOS 信任，對於自己搭建的伺服器這很正常。請確認該指紋與你的伺服器顯示的一致，然後選擇信任。只有這個確切的證書會被接受。"
+          }
+        }
+      }
+    },
+    "Trust this certificate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trust this certificate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approuver ce certificat"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diesem Zertifikat vertrauen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confiar en este certificado"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Considera attendibile questo certificato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confiar neste certificado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信任此证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доверять этому сертификату"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この証明書を信頼"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 인증서 신뢰"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस प्रमाणपत्र पर भरोसा करें"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الوثوق بهذه الشهادة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信任此證書"
+          }
+        }
+      }
+    },
+    "Trusted certificate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trusted certificate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificat approuvé"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertrauenswürdiges Zertifikat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificado de confianza"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificato attendibile"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certificado de confiança"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受信任的证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доверенный сертификат"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "信頼済みの証明書"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신뢰한 인증서"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "विश्वसनीय प्रमाणपत्र"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الشهادة الموثوقة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受信任的證書"
+          }
+        }
+      }
+    },
+    "Forget this certificate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forget this certificate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oublier ce certificat"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Zertifikat entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olvidar este certificado"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimentica questo certificato"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquecer este certificado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忽略此证书"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Забыть этот сертификат"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この証明書を削除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 인증서 삭제"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस प्रमाणपत्र को भूलें"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نسيان هذه الشهادة"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忽略此證書"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

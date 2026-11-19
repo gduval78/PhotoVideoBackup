@@ -352,6 +352,51 @@ final class WebDAVTargetTests: XCTestCase {
         XCTAssertTrue(yes)
         XCTAssertFalse(no)
     }
+
+    // SCENARIO: a pinned certificate is accepted only when it is exactly that one
+    // No pin: the system decides. With a pin: the presented certificate must match (case-insensitive),
+    // anything else — including no certificate at all — is refused.
+    func test_trust_pinDecision() {
+        XCTAssertNil(WebDAVTrust.accepts(pin: nil, presented: "aa"))
+        XCTAssertNil(WebDAVTrust.accepts(pin: "", presented: "aa"))
+        XCTAssertEqual(WebDAVTrust.accepts(pin: "ABCDEF", presented: "abcdef"), true)
+        XCTAssertEqual(WebDAVTrust.accepts(pin: "abcdef", presented: "abcdee"), false)
+        XCTAssertEqual(WebDAVTrust.accepts(pin: "abcdef", presented: nil), false)
+    }
+
+    // SCENARIO: the fingerprint is the SHA-256 of the certificate and is shown in readable groups
+    func test_trust_fingerprintFormat() {
+        XCTAssertEqual(WebDAVTrust.fingerprint(ofDER: Data("abc".utf8)),
+                       "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+        XCTAssertEqual(WebDAVTrust.displayFingerprint("ba7816bf8f01"), "BA:78:16:BF:8F:01")
+    }
+
+    // SCENARIO: an untrusted certificate is reported as such by the connection test
+    // The raw URL error (-1202…) becomes `untrustedCertificate`, which the editor turns into the
+    // "trust this certificate?" step; other network errors stay what they are.
+    func test_connectionTest_untrustedCertificate_isMapped() async {
+        FakeWebDAVServer.failure = .serverCertificateUntrusted
+        do { try await target().testConnection(); XCTFail("expected an error") }
+        catch let e as WebDAVError { XCTAssertEqual(e, .untrustedCertificate) }
+        catch { XCTFail("\(error)") }
+
+        FakeWebDAVServer.failure = .timedOut
+        do { try await target().testConnection(); XCTFail("expected an error") }
+        catch let e as URLError { XCTAssertEqual(e.code, .timedOut) }
+        catch { XCTFail("\(error)") }
+    }
+
+    // SCENARIO: the config carries the pin; changing nothing else keeps it
+    func test_config_pinRoundTrip() throws {
+        var cfg = WebDAVConfig(serverURL: "https://nas.local:5006/", basePath: "", username: "u", displayName: "")
+        XCTAssertNil(cfg.pinnedCertificate)
+        cfg.pinnedCertificate = "abcd"
+        let back = try JSONDecoder().decode(WebDAVConfig.self, from: JSONEncoder().encode(cfg))
+        XCTAssertEqual(back.pinnedCertificate, "abcd")
+        // A config saved before pinning existed has no such key and still reads.
+        let old = Data(#"{"serverURL":"https://x.example.com","basePath":"","username":"u","displayName":""}"#.utf8)
+        XCTAssertNil(try JSONDecoder().decode(WebDAVConfig.self, from: old).pinnedCertificate)
+    }
 }
 
 private final class ProgressBox: @unchecked Sendable {

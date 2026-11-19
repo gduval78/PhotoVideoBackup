@@ -13,6 +13,8 @@ final class FakeWebDAVServer: URLProtocol {
     nonisolated(unsafe) static var putStatusOverride: Int?
     nonisolated(unsafe) static var ignoreIfNoneMatch = false
     nonisolated(unsafe) static var offline = false
+    /// Every request fails with this URL error (e.g. an untrusted certificate).
+    nonisolated(unsafe) static var failure: URLError.Code?
     /// Whether /ocs capabilities advertise `dav.chunking`.
     nonisolated(unsafe) static var chunkingCapability = true
     /// A PUT of this chunk name (e.g. "000002") fails with a network error (once), to test resume.
@@ -28,7 +30,7 @@ final class FakeWebDAVServer: URLProtocol {
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         requests = []; expectedAuthorization = nil; putStatusOverride = nil
         ignoreIfNoneMatch = false; offline = false
-        chunkingCapability = true; failChunkOnce = nil; moveStatusOverride = nil
+        failure = nil; chunkingCapability = true; failChunkOnce = nil; moveStatusOverride = nil
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [FakeWebDAVServer.self]
         return URLSession(configuration: config)
@@ -52,6 +54,9 @@ final class FakeWebDAVServer: URLProtocol {
         guard let url = request.url else { return }
         if Self.offline {
             client?.urlProtocol(self, didFailWithError: URLError(.notConnectedToInternet)); return
+        }
+        if let failure = Self.failure {
+            client?.urlProtocol(self, didFailWithError: URLError(failure)); return
         }
         let method = request.httpMethod ?? "GET"
         let path = url.path
