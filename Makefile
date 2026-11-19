@@ -17,6 +17,7 @@ test-all:
 	  -scheme $(SCHEME) \
 	  -destination "$(DESTINATION)" \
 	  -skip-testing:PhotoVideoBackupTests/LiveNASIntegrationTests \
+	  -skip-testing:PhotoVideoBackupTests/LiveWebDAVIntegrationTests \
 	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
 	  | sed 's/^/  /'
 
@@ -33,6 +34,16 @@ test-nas:
 	  -only-testing:PhotoVideoBackupTests/LiveNASIntegrationTests \
 	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
 	  | sed 's/^/  /'
+# Live WebDAV / Nextcloud round-trip (self-signed TLS, chunked upload). Needs webdav-test-config.json at the
+# repo root (gitignored) — e.g. a throwaway Docker Nextcloud behind a self-signed proxy. Simulator, like test-nas.
+test-webdav:
+	xcodebuild test \
+	  -scheme $(SCHEME) \
+	  -destination "platform=iOS Simulator,name=iPhone 17 Pro" \
+	  -only-testing:PhotoVideoBackupTests/LiveWebDAVIntegrationTests \
+	  | grep -E "(Test Suite|Test Case|passed|failed|error|\*\* TEST)" \
+	  | sed 's/^/  /'
+
 # Run all tests on iPhone 17 Pro simulator
 testiphone:
 	xcodebuild test \
@@ -47,4 +58,4 @@ build-test:
 	  -scheme $(SCHEME) \
 	  -destination "$(DESTINATION)"
 
-.PHONY: test-scenario test-all test-nas testiphone build-test
+.PHONY: test-scenario test-all test-nas test-webdav testiphone build-test

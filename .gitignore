@@ -25,3 +25,4 @@ android/keystore/
 android/keystore.properties
 android/dist/
 *.jks
+webdav-test-config.json
