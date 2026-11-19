@@ -160,6 +160,29 @@ REUSED = {
     "feature_several_backups": "Create as many backups as you need, each with its own drives, NAS and settings",
     "feature_lut": "Grade your videos with .cube LUTs and export them in HEVC",
     "connect_ssd_hint": "Create a backup in the Backups tab and connect its drive.",
+    # 2.8.0: servers, WebDAV, the one backup editor
+    "server": "Server", "credentials": "Credentials", "a_folder": "A folder…", "a_server": "A server",
+    "server_kind_nas": "NAS (Synology, QNAP…)", "server_kind_nas_d": "On your home network or through a VPN.",
+    "server_kind_webdav": "Nextcloud, pCloud or WebDAV server", "server_kind_webdav_d": "Over the Internet, from anywhere.",
+    "camera_or_sd": "Camera or SD card", "camera_or_sd_d": "A camera memory card or a USB drive.",
+    "choose_what_to_back_up": "Choose what to back up. You add its destinations next: folders, and servers such as a NAS or Nextcloud.",
+    "default_name_photos": "Photos backup", "default_name_camera": "Camera backup",
+    "server_needs_newer": "This kind of server needs a newer version of the app.",
+    "trust_certificate": "Trust this certificate", "forget_certificate": "Forget this certificate",
+    "untrusted_certificate": "Untrusted certificate", "trusted_certificate": "Trusted certificate",
+    "connected_dot": "Connected.", "dav_connected_chunks": "Connected. Large files are sent in chunks.",
+    "dav_invalid_address": "Invalid server address.", "dav_name_placeholder": "e.g. Nextcloud", "dav_folder_placeholder": "optional, e.g. Backups",
+    "dav_server_footer": "The address of your WebDAV server. For Nextcloud it looks like https://your-server/remote.php/dav/files/your-name/. Only secure (https) addresses are accepted.",
+    "dav_credentials_footer": "With two-factor authentication, create an app password in your server's security settings and use it here.",
+    "untrusted_cert_note": "This server uses a certificate iOS does not trust, which is normal for a server you run yourself. Check that this fingerprint is the one your server shows, then trust it. Only this exact certificate will be accepted.",
+    "dav_err_unauthorized": "The server refused the credentials. With two-factor authentication, use an app password.",
+    "dav_err_exists": "A different file already exists at this name on the server.",
+    "dav_err_too_large": "The server refused this file size — check its upload limit.",
+    "dav_err_rate": "The server is asking to slow down. Try again later.",
+    "dav_err_untrusted": "The server's certificate is not trusted.",
+    "dav_err_cert_changed": "The server's certificate has changed. Forget the trusted certificate and test the connection again.",
+    "dav_err_redirect": "The address redirects somewhere else. Check the server address.",
+    "dav_err_http_fmt": "The server answered with an error (%lld).", "dav_err_invalid": "The server's answer could not be read.",
 }
 
 # Android-only strings: name -> {lang: text}. Format args use %s / %d (positional when several).
@@ -206,11 +229,17 @@ EXTRA = {
     "browse_not_connected": {"en": "This destination is not connected.", "fr": "Cette destination n'est pas connectée.", "de": "Dieses Ziel ist nicht verbunden.", "es": "Este destino no está conectado.", "it": "Questa destinazione non è connessa.", "pt": "Este destino não está ligado.", "zh-Hans": "此目标未连接。", "ru": "Это место назначения не подключено."},
 }
 
+# A reused iOS text that names the platform: the Android build says Android.
+SUBST = {"untrusted_cert_note": ("iOS", "Android")}
+
 PLACEHOLDER = re.compile(r"%(\d+\$)?(@|lld|ld|d)")
 
 def _t(en, fr, de, es, it, pt, zh, ru): return {"en": en, "fr": fr, "de": de, "es": es, "it": it, "pt": pt, "zh-Hans": zh, "ru": ru}
 
 EXTRA.update({
+    "next": _t("Next", "Suivant", "Weiter", "Siguiente", "Avanti", "Seguinte", "下一步", "Далее"),
+    "edit": _t("Edit", "Modifier", "Bearbeiten", "Editar", "Modifica", "Editar", "编辑", "Изменить"),
+    "gallery_source_d": _t("The photos and videos of this phone.", "Les photos et vidéos de ce téléphone.", "Die Fotos und Videos dieses Telefons.", "Las fotos y vídeos de este teléfono.", "Le foto e i video di questo telefono.", "As fotos e os vídeos deste telemóvel.", "这部手机上的照片和视频。", "Фото и видео на этом телефоне."),
     "tpl_photos_folder": {"en": "Gallery → folder", "fr": "Galerie → dossier", "de": "Galerie → Ordner", "es": "Galería → carpeta", "it": "Galleria → cartella", "pt": "Galeria → pasta", "zh-Hans": "相册 → 文件夹", "ru": "Галерея → папка", "ja": "ギャラリー → フォルダ", "ko": "갤러리 → 폴더", "hi": "गैलरी → फ़ोल्डर", "ar": "المعرض ← مجلد"},
     "tpl_photos_folder_nas": {"en": "Gallery → folder + NAS", "fr": "Galerie → dossier + NAS", "de": "Galerie → Ordner + NAS", "es": "Galería → carpeta + NAS", "it": "Galleria → cartella + NAS", "pt": "Galeria → pasta + NAS", "zh-Hans": "相册 → 文件夹 + NAS", "ru": "Галерея → папка + NAS", "ja": "ギャラリー → フォルダ + NAS", "ko": "갤러리 → 폴더 + NAS", "hi": "गैलरी → फ़ोल्डर + NAS", "ar": "المعرض ← مجلد + NAS"},
     "tpl_photos_drive": _t("Gallery → external drive", "Galerie → disque externe", "Galerie → externes Laufwerk", "Galería → disco externo", "Galleria → disco esterno", "Galeria → disco externo", "相册 → 外置硬盘", "Галерея → внешний диск"),
@@ -275,6 +304,7 @@ def main():
                 if unit is None:
                     problems.append(f"{name} [{lang}] has no translation in the iOS catalog"); continue
                 text = unit["value"]
+            if name in SUBST: text = text.replace(*SUBST[name])
             values[lang][name] = to_android(text)
 
     for name, tr in EXTRA.items():

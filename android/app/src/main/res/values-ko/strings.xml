@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">폴더…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">서버</string>
     <string name="about">정보</string>
     <string name="active">활성</string>
     <string name="add">추가</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">이 파일은 여기에서 미리 볼 수 없습니다.</string>
     <string name="browse_share_failed">공유할 파일을 준비할 수 없습니다.</string>
     <string name="browse_title">백업 탐색</string>
+    <string name="camera_or_sd">카메라 또는 SD 카드</string>
+    <string name="camera_or_sd_d">카메라 메모리 카드 또는 USB 드라이브.</string>
     <string name="cancel">취소</string>
     <string name="choose_another_folder">다른 폴더 선택…</string>
     <string name="choose_ellipsis">선택…</string>
     <string name="choose_starting_point">시작점을 선택하세요. 드라이브나 폴더는 다음 단계에서 선택합니다.</string>
+    <string name="choose_what_to_back_up">백업할 대상을 선택하세요. 다음 단계에서 폴더와 NAS, Nextcloud 같은 서버 등 대상을 추가합니다.</string>
     <string name="clear">지우기</string>
     <string name="clear_history">기록 지우기</string>
     <string name="clear_history_message">세션 기록이 삭제됩니다. SSD의 파일에는 영향이 없습니다.</string>
@@ -46,6 +51,7 @@
     <string name="completed">완료됨</string>
     <string name="connect_ssd_hint">백업 탭에서 백업을 만들고 드라이브를 연결하세요.</string>
     <string name="connected">연결됨</string>
+    <string name="connected_dot">연결되었습니다.</string>
     <string name="connecting">NAS에 연결 중…</string>
     <string name="contact_support">지원 문의</string>
     <string name="copied">복사됨</string>
@@ -55,7 +61,25 @@
     <string name="create">만들기</string>
     <string name="create_first_backup">첫 백업 만들기</string>
     <string name="create_first_backup_hint">백업할 항목과 위치를 선택하세요. 그다음에는 한 번만 탭하면 됩니다.</string>
+    <string name="credentials">자격 증명</string>
     <string name="date">날짜</string>
+    <string name="dav_connected_chunks">연결되었습니다. 큰 파일은 나누어 전송됩니다.</string>
+    <string name="dav_credentials_footer">2단계 인증을 사용 중이면 서버의 보안 설정에서 앱 비밀번호를 만들어 여기에 입력하세요.</string>
+    <string name="dav_err_cert_changed">서버의 인증서가 변경되었습니다. 신뢰한 인증서를 삭제하고 연결을 다시 테스트하세요.</string>
+    <string name="dav_err_exists">서버에 같은 이름의 다른 파일이 이미 있습니다.</string>
+    <string name="dav_err_http_fmt">서버가 오류로 응답했습니다(%1$d).</string>
+    <string name="dav_err_invalid">서버의 응답을 읽을 수 없습니다.</string>
+    <string name="dav_err_rate">서버가 속도를 줄이라고 요청합니다. 나중에 다시 시도하세요.</string>
+    <string name="dav_err_redirect">주소가 다른 곳으로 리디렉션됩니다. 서버 주소를 확인하세요.</string>
+    <string name="dav_err_too_large">서버가 이 파일 크기를 거부했습니다. 업로드 한도를 확인하세요.</string>
+    <string name="dav_err_unauthorized">서버가 자격 증명을 거부했습니다. 2단계 인증을 사용 중이면 앱 비밀번호를 사용하세요.</string>
+    <string name="dav_err_untrusted">서버의 인증서를 신뢰할 수 없습니다.</string>
+    <string name="dav_folder_placeholder">선택 사항, 예: Backups</string>
+    <string name="dav_invalid_address">서버 주소가 올바르지 않습니다.</string>
+    <string name="dav_name_placeholder">예: Nextcloud</string>
+    <string name="dav_server_footer">WebDAV 서버 주소입니다. Nextcloud의 경우 https://서버주소/remote.php/dav/files/사용자이름/ 형태입니다. 보안 주소(https)만 허용됩니다.</string>
+    <string name="default_name_camera">카메라 백업</string>
+    <string name="default_name_photos">사진 백업</string>
     <string name="delete">삭제</string>
     <string name="delete_backup_message">백업 설정이 삭제됩니다. 이미 복사된 파일에는 영향이 없습니다.</string>
     <string name="delete_backup_title">이 백업을 삭제할까요?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">연결 끊김</string>
     <string name="documentation">문서</string>
     <string name="duration">소요 시간</string>
+    <string name="edit">편집</string>
     <string name="empty_folder">빈 폴더</string>
     <string name="enter_code">삭제를 확인하려면 이 코드를 입력하세요:</string>
     <string name="err_destination_not_connected">이 백업의 대상이 연결되어 있지 않습니다.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">월별</string>
     <string name="folders_by_year_month">연 / 월별</string>
     <string name="folders_flat">단일 구조(하위 폴더 없음)</string>
+    <string name="forget_certificate">이 인증서 삭제</string>
     <string name="free">무료</string>
     <string name="free_fmt">%1$s 남음</string>
     <string name="gallery">갤러리</string>
+    <string name="gallery_source_d">이 휴대폰의 사진과 비디오입니다.</string>
     <string name="get_started">시작하기</string>
     <string name="grade">색보정</string>
     <string name="grade_failed_fmt">비디오 %1$d개를 색보정할 수 없었습니다.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS(SMB)</string>
     <string name="nas_unreachable">NAS에 연결할 수 없습니다 — Wi-Fi/VPN과 설정을 확인하세요.</string>
     <string name="new_backup">새 백업</string>
+    <string name="next">다음</string>
     <string name="no_backup_history">백업 기록 없음</string>
     <string name="no_backups_yet">이 SSD에는 아직 백업이 없습니다.</string>
     <string name="no_destination_hint">설정된 대상이 없습니다 — 설정으로 이동하세요.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">LUT 선택</string>
     <string name="select_videos_hint">그리드에서 비디오를 선택한 다음 색보정을 탭하세요.</string>
     <string name="send">보내기</string>
+    <string name="server">서버</string>
+    <string name="server_kind_nas">NAS(Synology, QNAP 등)</string>
+    <string name="server_kind_nas_d">집 네트워크 또는 VPN을 통해.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud 또는 WebDAV 서버</string>
+    <string name="server_kind_webdav_d">인터넷을 통해 어디서든.</string>
+    <string name="server_needs_newer">이 종류의 서버에는 더 최신 버전의 앱이 필요합니다.</string>
     <string name="set_device_name_hint">설정에서 기기 이름을 지정하세요.</string>
     <string name="settings">설정</string>
     <string name="settings_defaults_footer">새 백업의 기본값입니다. 이후 각 백업에는 고유한 설정이 있습니다: 백업 탭, 백업의 ⋮ 메뉴, 설정.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">갤러리 → 폴더 + NAS</string>
     <string name="tpl_photos_nas">갤러리 → NAS</string>
     <string name="tpl_photos_nas_d">Wi-Fi로 NAS에 백업합니다.</string>
+    <string name="trust_certificate">이 인증서 신뢰</string>
+    <string name="trusted_certificate">신뢰한 인증서</string>
     <string name="unlimited">무제한</string>
     <string name="unlock">잠금 해제</string>
+    <string name="untrusted_cert_note">이 서버는 Android가 신뢰하지 않는 인증서를 사용합니다. 직접 운영하는 서버라면 정상입니다. 이 지문이 서버에 표시된 것과 같은지 확인한 후 신뢰하세요. 이 인증서만 허용됩니다.</string>
+    <string name="untrusted_certificate">신뢰할 수 없는 인증서</string>
     <string name="upgrade_for_fmt">%1$s에 업그레이드</string>
     <string name="upgrade_to_pro">Pro로 업그레이드</string>
     <string name="use_this_nas">백업에 이 NAS 사용</string>

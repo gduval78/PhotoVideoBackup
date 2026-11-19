@@ -87,7 +87,7 @@ fun BackupSummaryDialog(profile: BackupProfile, conn: ProfileConnection?, onDism
             else -> SummaryNode(Icons.Default.Storage, R.string.external_drive, name)
         }
     }
-    if (profile.usesNas) dests += SummaryNode(Icons.Default.Storage, R.string.nas, names.lastOrNull() ?: stringResource(R.string.nas))
+    for (server in profile.servers) dests += SummaryNode(Icons.Default.Cloud, R.string.server, server.connection.label)
     val power = if (profile.settings.requirePower) {
         val ok = PowerRequirement.isSatisfied(true, BackupController.isCharging(context))
         SummaryNode(Icons.Default.BatteryChargingFull, R.string.power, stringResource(R.string.power_bank_or_charger), warning = !ok)

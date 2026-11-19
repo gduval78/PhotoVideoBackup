@@ -20,3 +20,13 @@
 -keepclasseswithmembers class gduvalsc.** { kotlinx.serialization.KSerializer serializer(...); }
 -keep,includedescriptorclasses class gduvalsc.**$$serializer { *; }
 -keepclassmembers class gduvalsc.** { *** Companion; }
+
+# OkHttp (WebDAV): optional TLS providers and annotations it probes by reflection are not on the classpath.
+-dontwarn okhttp3.internal.platform.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+-dontwarn javax.annotation.**
+-keep class gduvalsc.pvb.core.ServerConnection { *; }
+-keep class gduvalsc.pvb.core.ServerConnection$* { *; }
+-keepclassmembers class gduvalsc.pvb.core.** { *** Companion; }

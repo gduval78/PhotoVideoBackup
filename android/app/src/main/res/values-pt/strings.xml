@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">Uma pasta…</string>
     <string name="a_nas">Um NAS</string>
+    <string name="a_server">Um servidor</string>
     <string name="about">Sobre</string>
     <string name="active">Ativos</string>
     <string name="add">Adicionar</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">Este ficheiro não pode ser pré-visualizado aqui.</string>
     <string name="browse_share_failed">Não foi possível preparar os ficheiros para partilhar.</string>
     <string name="browse_title">Explorar backup</string>
+    <string name="camera_or_sd">Câmara ou cartão SD</string>
+    <string name="camera_or_sd_d">Um cartão de memória de câmara ou uma unidade USB.</string>
     <string name="cancel">Cancelar</string>
     <string name="choose_another_folder">Escolher outra pasta…</string>
     <string name="choose_ellipsis">Escolher…</string>
     <string name="choose_starting_point">Escolha um ponto de partida. Escolherá o disco ou a pasta no passo seguinte.</string>
+    <string name="choose_what_to_back_up">Escolha o que copiar. Depois adiciona os destinos: pastas e servidores como um NAS ou o Nextcloud.</string>
     <string name="clear">Limpar</string>
     <string name="clear_history">Limpar histórico</string>
     <string name="clear_history_message">Os registos de sessão são removidos. Os ficheiros no seu SSD não são afetados.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Concluído</string>
     <string name="connect_ssd_hint">Crie uma cópia no separador Cópias e ligue o respetivo disco.</string>
     <string name="connected">Conectado</string>
+    <string name="connected_dot">Ligado.</string>
     <string name="connecting">A ligar ao NAS…</string>
     <string name="contact_support">Contactar suporte</string>
     <string name="copied">Copiados</string>
@@ -55,7 +61,25 @@
     <string name="create">Criar</string>
     <string name="create_first_backup">Crie a sua primeira cópia</string>
     <string name="create_first_backup_hint">Escolha o que copiar e para onde. Depois, basta um toque.</string>
+    <string name="credentials">Credenciais</string>
     <string name="date">Data</string>
+    <string name="dav_connected_chunks">Ligado. Os ficheiros grandes são enviados por partes.</string>
+    <string name="dav_credentials_footer">Com a autenticação de dois fatores, crie uma palavra-passe de aplicação nas definições de segurança do seu servidor e utilize-a aqui.</string>
+    <string name="dav_err_cert_changed">O certificado do servidor mudou. Esqueça o certificado de confiança e teste novamente a ligação.</string>
+    <string name="dav_err_exists">Já existe no servidor um ficheiro diferente com este nome.</string>
+    <string name="dav_err_http_fmt">O servidor respondeu com um erro (%1$d).</string>
+    <string name="dav_err_invalid">Não foi possível ler a resposta do servidor.</string>
+    <string name="dav_err_rate">O servidor pede para abrandar. Tente novamente mais tarde.</string>
+    <string name="dav_err_redirect">O endereço redireciona para outro sítio. Verifique o endereço do servidor.</string>
+    <string name="dav_err_too_large">O servidor recusou o tamanho deste ficheiro — verifique o seu limite de envio.</string>
+    <string name="dav_err_unauthorized">O servidor recusou as credenciais. Com a autenticação de dois fatores, utilize uma palavra-passe de aplicação.</string>
+    <string name="dav_err_untrusted">O certificado do servidor não é de confiança.</string>
+    <string name="dav_folder_placeholder">opcional, ex. Backups</string>
+    <string name="dav_invalid_address">Endereço de servidor inválido.</string>
+    <string name="dav_name_placeholder">p. ex. Nextcloud</string>
+    <string name="dav_server_footer">O endereço do seu servidor WebDAV. No Nextcloud, é semelhante a https://o-seu-servidor/remote.php/dav/files/o-seu-nome/. Só são aceites endereços seguros (https).</string>
+    <string name="default_name_camera">Cópia da câmara</string>
+    <string name="default_name_photos">Cópia das fotos</string>
     <string name="delete">Eliminar</string>
     <string name="delete_backup_message">As definições da cópia são removidas. Os ficheiros já copiados não são afetados.</string>
     <string name="delete_backup_title">Eliminar esta cópia?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Desconectado</string>
     <string name="documentation">Documentação</string>
     <string name="duration">Duração</string>
+    <string name="edit">Editar</string>
     <string name="empty_folder">Pasta vazia</string>
     <string name="enter_code">Introduza este código para confirmar a eliminação:</string>
     <string name="err_destination_not_connected">Um destino desta cópia não está ligado.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">Por mês</string>
     <string name="folders_by_year_month">Por ano / mês</string>
     <string name="folders_flat">Simples (sem subpastas)</string>
+    <string name="forget_certificate">Esquecer este certificado</string>
     <string name="free">Gratuito</string>
     <string name="free_fmt">%1$s disponível</string>
     <string name="gallery">Galeria</string>
+    <string name="gallery_source_d">As fotos e os vídeos deste telemóvel.</string>
     <string name="get_started">Começar</string>
     <string name="grade">Gradação</string>
     <string name="grade_failed_fmt">Não foi possível processar %1$d vídeo(s).</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">O NAS está inacessível — verifique o Wi-Fi/VPN e as definições.</string>
     <string name="new_backup">Nova cópia</string>
+    <string name="next">Seguinte</string>
     <string name="no_backup_history">Sem histórico de backup</string>
     <string name="no_backups_yet">Ainda sem backups neste SSD.</string>
     <string name="no_destination_hint">Nenhum destino configurado — vá às definições.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">Selecionar LUT</string>
     <string name="select_videos_hint">Selecione os vídeos na grelha, depois toque em Gradação.</string>
     <string name="send">Enviar</string>
+    <string name="server">Servidor</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">Na sua rede doméstica ou através de uma VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud ou servidor WebDAV</string>
+    <string name="server_kind_webdav_d">Pela Internet, a partir de qualquer lugar.</string>
+    <string name="server_needs_newer">Este tipo de servidor requer uma versão mais recente da app.</string>
     <string name="set_device_name_hint">Defina um nome de dispositivo nas definições.</string>
     <string name="settings">Definições</string>
     <string name="settings_defaults_footer">Estes são os valores predefinidos das novas cópias. Cada cópia tem depois as suas próprias definições: separador Cópias, menu ⋮ de uma cópia, Definições.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Galeria → pasta + NAS</string>
     <string name="tpl_photos_nas">Galeria → NAS</string>
     <string name="tpl_photos_nas_d">Copie por Wi-Fi para o seu NAS.</string>
+    <string name="trust_certificate">Confiar neste certificado</string>
+    <string name="trusted_certificate">Certificado de confiança</string>
     <string name="unlimited">Ilimitado</string>
     <string name="unlock">Desbloquear</string>
+    <string name="untrusted_cert_note">Este servidor utiliza um certificado em que o Android não confia, o que é normal num servidor que gere por si. Verifique se esta impressão digital é a do seu servidor e confie nela. Só este certificado exato será aceite.</string>
+    <string name="untrusted_certificate">Certificado não confiável</string>
     <string name="upgrade_for_fmt">Atualizar por %1$s</string>
     <string name="upgrade_to_pro">Atualizar para Pro</string>
     <string name="use_this_nas">Usar este NAS para as cópias</string>

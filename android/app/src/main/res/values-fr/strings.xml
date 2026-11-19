@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">Un dossier…</string>
     <string name="a_nas">Un NAS</string>
+    <string name="a_server">Un serveur</string>
     <string name="about">À propos</string>
     <string name="active">Actives</string>
     <string name="add">Ajouter</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">Ce fichier ne peut pas être prévisualisé ici.</string>
     <string name="browse_share_failed">Impossible de préparer les fichiers à partager.</string>
     <string name="browse_title">Parcourir les sauvegardes</string>
+    <string name="camera_or_sd">Caméra ou carte SD</string>
+    <string name="camera_or_sd_d">Une carte mémoire de caméra ou un disque USB.</string>
     <string name="cancel">Annuler</string>
     <string name="choose_another_folder">Choisir un autre dossier…</string>
     <string name="choose_ellipsis">Choisir…</string>
     <string name="choose_starting_point">Choisissez un point de départ. Vous désignerez le disque ou le dossier à l\'étape suivante.</string>
+    <string name="choose_what_to_back_up">Choisissez ce qu\'il faut sauvegarder. Vous ajoutez ensuite ses destinations : des dossiers, et des serveurs comme un NAS ou Nextcloud.</string>
     <string name="clear">Effacer</string>
     <string name="clear_history">Effacer l\'historique</string>
     <string name="clear_history_message">Les enregistrements de session sont supprimés. Les fichiers sur votre SSD ne sont pas affectés.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Terminée</string>
     <string name="connect_ssd_hint">Créez une sauvegarde dans l\'onglet Sauvegardes et branchez son disque.</string>
     <string name="connected">Connecté</string>
+    <string name="connected_dot">Connecté.</string>
     <string name="connecting">Connexion au NAS…</string>
     <string name="contact_support">Contacter le support</string>
     <string name="copied">Copiés</string>
@@ -55,7 +61,25 @@
     <string name="create">Créer</string>
     <string name="create_first_backup">Créez votre première sauvegarde</string>
     <string name="create_first_backup_hint">Choisissez quoi sauvegarder et où. Ensuite, un seul geste suffit.</string>
+    <string name="credentials">Identifiants</string>
     <string name="date">Date</string>
+    <string name="dav_connected_chunks">Connecté. Les gros fichiers sont envoyés par morceaux.</string>
+    <string name="dav_credentials_footer">Avec l\'authentification à deux facteurs, créez un mot de passe d\'application dans les réglages de sécurité de votre serveur et utilisez-le ici.</string>
+    <string name="dav_err_cert_changed">Le certificat du serveur a changé. Oubliez le certificat approuvé et testez de nouveau la connexion.</string>
+    <string name="dav_err_exists">Un fichier différent existe déjà sous ce nom sur le serveur.</string>
+    <string name="dav_err_http_fmt">Le serveur a répondu par une erreur (%1$d).</string>
+    <string name="dav_err_invalid">La réponse du serveur n\'a pas pu être lue.</string>
+    <string name="dav_err_rate">Le serveur demande de ralentir. Réessayez plus tard.</string>
+    <string name="dav_err_redirect">L\'adresse renvoie ailleurs. Vérifiez l\'adresse du serveur.</string>
+    <string name="dav_err_too_large">Le serveur a refusé la taille de ce fichier — vérifiez sa limite d\'envoi.</string>
+    <string name="dav_err_unauthorized">Le serveur a refusé les identifiants. Avec l\'authentification à deux facteurs, utilisez un mot de passe d\'application.</string>
+    <string name="dav_err_untrusted">Le certificat du serveur n\'est pas approuvé.</string>
+    <string name="dav_folder_placeholder">facultatif, ex. Backups</string>
+    <string name="dav_invalid_address">Adresse de serveur non valide.</string>
+    <string name="dav_name_placeholder">p. ex. Nextcloud</string>
+    <string name="dav_server_footer">L\'adresse de votre serveur WebDAV. Pour Nextcloud, elle ressemble à https://votre-serveur/remote.php/dav/files/votre-nom/. Seules les adresses sécurisées (https) sont acceptées.</string>
+    <string name="default_name_camera">Sauvegarde caméra</string>
+    <string name="default_name_photos">Sauvegarde des photos</string>
     <string name="delete">Supprimer</string>
     <string name="delete_backup_message">Les réglages de la sauvegarde sont supprimés. Les fichiers déjà copiés ne sont pas touchés.</string>
     <string name="delete_backup_title">Supprimer cette sauvegarde ?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Déconnecté</string>
     <string name="documentation">Documentation</string>
     <string name="duration">Durée</string>
+    <string name="edit">Modifier</string>
     <string name="empty_folder">Dossier vide</string>
     <string name="enter_code">Saisissez ce code pour confirmer la suppression :</string>
     <string name="err_destination_not_connected">Une destination de cette sauvegarde n\'est pas connectée.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">Par mois</string>
     <string name="folders_by_year_month">Par année / mois</string>
     <string name="folders_flat">Plat (sans sous-dossiers)</string>
+    <string name="forget_certificate">Oublier ce certificat</string>
     <string name="free">Gratuit</string>
     <string name="free_fmt">%1$s libres</string>
     <string name="gallery">Galerie</string>
+    <string name="gallery_source_d">Les photos et vidéos de ce téléphone.</string>
     <string name="get_started">Commencer</string>
     <string name="grade">Étalonner</string>
     <string name="grade_failed_fmt">%1$d vidéo(s) n\'ont pas pu être étalonnée(s).</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">Le NAS est injoignable — vérifiez le Wi-Fi/VPN et les réglages.</string>
     <string name="new_backup">Nouvelle sauvegarde</string>
+    <string name="next">Suivant</string>
     <string name="no_backup_history">Aucun historique de sauvegarde</string>
     <string name="no_backups_yet">Aucune sauvegarde sur ce SSD.</string>
     <string name="no_destination_hint">Aucune destination configurée — allez dans Réglages.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">Sélectionner un LUT</string>
     <string name="select_videos_hint">Sélectionnez des vidéos dans la grille, puis appuyez sur Étalonner.</string>
     <string name="send">Envoyer</string>
+    <string name="server">Serveur</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">Sur votre réseau local ou via un VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud ou serveur WebDAV</string>
+    <string name="server_kind_webdav_d">Par Internet, de n\'importe où.</string>
+    <string name="server_needs_newer">Ce type de serveur nécessite une version plus récente de l\'app.</string>
     <string name="set_device_name_hint">Définissez un nom d\'appareil dans Réglages.</string>
     <string name="settings">Réglages</string>
     <string name="settings_defaults_footer">Ce sont les valeurs par défaut des nouvelles sauvegardes. Chaque sauvegarde a ensuite ses propres réglages : onglet Sauvegardes, menu ⋮ d\'une sauvegarde, Réglages.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Galerie → dossier + NAS</string>
     <string name="tpl_photos_nas">Galerie → NAS</string>
     <string name="tpl_photos_nas_d">Sauvegardez par Wi-Fi vers votre NAS.</string>
+    <string name="trust_certificate">Approuver ce certificat</string>
+    <string name="trusted_certificate">Certificat approuvé</string>
     <string name="unlimited">Illimité</string>
     <string name="unlock">Débloquer</string>
+    <string name="untrusted_cert_note">Ce serveur utilise un certificat qu\'Android n\'approuve pas, ce qui est normal pour un serveur que vous hébergez vous-même. Vérifiez que cette empreinte est bien celle de votre serveur, puis approuvez-la. Seul ce certificat précis sera accepté.</string>
+    <string name="untrusted_certificate">Certificat non approuvé</string>
     <string name="upgrade_for_fmt">Passer à Pro pour %1$s</string>
     <string name="upgrade_to_pro">Passer à Pro</string>
     <string name="use_this_nas">Utiliser ce NAS pour les sauvegardes</string>

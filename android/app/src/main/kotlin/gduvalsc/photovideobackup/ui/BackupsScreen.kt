@@ -87,6 +87,7 @@ import gduvalsc.pvb.core.CloudDestinations
 import gduvalsc.pvb.core.CloudProvider
 import gduvalsc.pvb.core.CopyPhase
 import gduvalsc.pvb.core.PartialReason
+import gduvalsc.pvb.core.ProfileDestination
 import gduvalsc.pvb.core.ProfileRules
 import gduvalsc.pvb.core.SessionStatus
 import gduvalsc.pvb.core.StoredDestination
@@ -128,7 +129,7 @@ fun BackupsScreen(onPaywall: () -> Unit, onNewBackup: () -> Unit, onProfileSetti
         if (ProfileRules.overlapsAny(uri.toString(), others)) { overlapAlert = true; return@rememberLauncherForActivityResult }
         val fresh = StoredDestination(uri.toString(), Saf.label(context, uri), Saf.folderPath(uri))
         ProfileStore.update(profile.copy(destinations = profile.destinations.map { d ->
-            if (d.folder?.uri == target.second) d.copy(folder = fresh) else d
+            if (d.folderOrNull?.uri == target.second) ProfileDestination.folder(fresh) else d
         }))
         AppState.refreshAsync(context, scope)
     }
@@ -294,7 +295,7 @@ private fun ProfileCard(
                     else if (profile.source.isGallery) Icons.Default.PhotoLibrary else Icons.Default.SdCard, null,
                     tint = tint, modifier = Modifier.size(28.dp).align(Alignment.TopStart),
                 )
-                val remote = profile.usesNas || cloud
+                val remote = profile.usesServer || cloud
                 val cellular = remote && onMobileData(context)
                 Icon(
                     if (!remote) Icons.Default.Usb else if (cellular) Icons.Default.SignalCellularAlt else Icons.Default.Wifi, null,

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">Папку…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">Сервер</string>
     <string name="about">О приложении</string>
     <string name="active">Активно</string>
     <string name="add">Добавить</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">Этот файл нельзя просмотреть здесь.</string>
     <string name="browse_share_failed">Не удалось подготовить файлы для отправки.</string>
     <string name="browse_title">Просмотр резервной копии</string>
+    <string name="camera_or_sd">Камера или SD-карта</string>
+    <string name="camera_or_sd_d">Карта памяти камеры или USB-накопитель.</string>
     <string name="cancel">Отмена</string>
     <string name="choose_another_folder">Выбрать другую папку…</string>
     <string name="choose_ellipsis">Выбрать…</string>
     <string name="choose_starting_point">Выберите отправную точку. Диск или папку вы выберете на следующем шаге.</string>
+    <string name="choose_what_to_back_up">Выберите, что копировать. Затем добавьте места назначения: папки и серверы, например NAS или Nextcloud.</string>
     <string name="clear">Очистить</string>
     <string name="clear_history">Очистить историю</string>
     <string name="clear_history_message">Записи сеанса удалены. Файлы на SSD не затронуты.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Завершено</string>
     <string name="connect_ssd_hint">Создайте копию на вкладке «Копии» и подключите её диск.</string>
     <string name="connected">Подключено</string>
+    <string name="connected_dot">Подключено.</string>
     <string name="connecting">Подключение к NAS…</string>
     <string name="contact_support">Связаться с поддержкой</string>
     <string name="copied">Скопировано</string>
@@ -55,7 +61,25 @@
     <string name="create">Создать</string>
     <string name="create_first_backup">Создайте первую копию</string>
     <string name="create_first_backup_hint">Выберите, что копировать и куда. Дальше достаточно одного касания.</string>
+    <string name="credentials">Учётные данные</string>
     <string name="date">Дата</string>
+    <string name="dav_connected_chunks">Подключено. Большие файлы отправляются частями.</string>
+    <string name="dav_credentials_footer">При двухфакторной аутентификации создайте пароль приложения в настройках безопасности сервера и используйте его здесь.</string>
+    <string name="dav_err_cert_changed">Сертификат сервера изменился. Удалите доверенный сертификат и проверьте подключение ещё раз.</string>
+    <string name="dav_err_exists">На сервере уже есть другой файл с таким именем.</string>
+    <string name="dav_err_http_fmt">Сервер ответил ошибкой (%1$d).</string>
+    <string name="dav_err_invalid">Не удалось прочитать ответ сервера.</string>
+    <string name="dav_err_rate">Сервер просит снизить скорость. Повторите попытку позже.</string>
+    <string name="dav_err_redirect">Адрес перенаправляет в другое место. Проверьте адрес сервера.</string>
+    <string name="dav_err_too_large">Сервер отклонил размер этого файла — проверьте ограничение на загрузку.</string>
+    <string name="dav_err_unauthorized">Сервер отклонил учётные данные. При двухфакторной аутентификации используйте пароль приложения.</string>
+    <string name="dav_err_untrusted">Сертификат сервера не является доверенным.</string>
+    <string name="dav_folder_placeholder">необязательно, напр. Backups</string>
+    <string name="dav_invalid_address">Недопустимый адрес сервера.</string>
+    <string name="dav_name_placeholder">напр. Nextcloud</string>
+    <string name="dav_server_footer">Адрес вашего сервера WebDAV. Для Nextcloud он выглядит так: https://ваш-сервер/remote.php/dav/files/ваше-имя/. Принимаются только защищённые адреса (https).</string>
+    <string name="default_name_camera">Копия с камеры</string>
+    <string name="default_name_photos">Копия фото</string>
     <string name="delete">Удалить</string>
     <string name="delete_backup_message">Настройки копии будут удалены. Уже скопированные файлы не затрагиваются.</string>
     <string name="delete_backup_title">Удалить эту копию?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Отключено</string>
     <string name="documentation">Документация</string>
     <string name="duration">Длительность</string>
+    <string name="edit">Изменить</string>
     <string name="empty_folder">Пустая папка</string>
     <string name="enter_code">Введите этот код для подтверждения удаления:</string>
     <string name="err_destination_not_connected">Одно из мест назначения этой копии не подключено.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">По месяцу</string>
     <string name="folders_by_year_month">По году / месяцу</string>
     <string name="folders_flat">Без папок</string>
+    <string name="forget_certificate">Забыть этот сертификат</string>
     <string name="free">Бесплатно</string>
     <string name="free_fmt">%1$s свободно</string>
     <string name="gallery">Галерея</string>
+    <string name="gallery_source_d">Фото и видео на этом телефоне.</string>
     <string name="get_started">Начать</string>
     <string name="grade">Обработать</string>
     <string name="grade_failed_fmt">Не удалось обработать видео: %1$d.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">NAS недоступен — проверьте Wi-Fi/VPN и настройки.</string>
     <string name="new_backup">Новая копия</string>
+    <string name="next">Далее</string>
     <string name="no_backup_history">Нет истории резервного копирования</string>
     <string name="no_backups_yet">На этом SSD ещё нет резервных копий.</string>
     <string name="no_destination_hint">Назначение не настроено — перейдите в Настройки.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">Выбрать LUT</string>
     <string name="select_videos_hint">Выберите видео в сетке, затем нажмите «Обработать».</string>
     <string name="send">Отправить</string>
+    <string name="server">Сервер</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">В домашней сети или через VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud или сервер WebDAV</string>
+    <string name="server_kind_webdav_d">Через Интернет, откуда угодно.</string>
+    <string name="server_needs_newer">Для этого типа сервера нужна более новая версия приложения.</string>
     <string name="set_device_name_hint">Задайте имя устройства в Настройках.</string>
     <string name="settings">Настройки</string>
     <string name="settings_defaults_footer">Это значения по умолчанию для новых копий. У каждой копии затем свои настройки: вкладка «Копии», меню ⋮ копии, «Настройки».</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Галерея → папка + NAS</string>
     <string name="tpl_photos_nas">Галерея → NAS</string>
     <string name="tpl_photos_nas_d">Копирование по Wi-Fi на ваш NAS.</string>
+    <string name="trust_certificate">Доверять этому сертификату</string>
+    <string name="trusted_certificate">Доверенный сертификат</string>
     <string name="unlimited">Без ограничений</string>
     <string name="unlock">Разблокировать</string>
+    <string name="untrusted_cert_note">Этот сервер использует сертификат, которому Android не доверяет, — для собственного сервера это нормально. Убедитесь, что этот отпечаток совпадает с отпечатком вашего сервера, и доверьтесь ему. Будет принят только этот сертификат.</string>
+    <string name="untrusted_certificate">Недоверенный сертификат</string>
     <string name="upgrade_for_fmt">Обновить за %1$s</string>
     <string name="upgrade_to_pro">Обновить до Pro</string>
     <string name="use_this_nas">Использовать этот NAS для копий</string>

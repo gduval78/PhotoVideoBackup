@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">A folder…</string>
     <string name="a_nas">A NAS</string>
+    <string name="a_server">A server</string>
     <string name="about">About</string>
     <string name="active">Active</string>
     <string name="add">Add</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">This file can\'t be previewed here.</string>
     <string name="browse_share_failed">Could not prepare the files to share.</string>
     <string name="browse_title">Browse Backup</string>
+    <string name="camera_or_sd">Camera or SD card</string>
+    <string name="camera_or_sd_d">A camera memory card or a USB drive.</string>
     <string name="cancel">Cancel</string>
     <string name="choose_another_folder">Choose another folder…</string>
     <string name="choose_ellipsis">Choose…</string>
     <string name="choose_starting_point">Choose a starting point. You pick the drive or folder in the next step.</string>
+    <string name="choose_what_to_back_up">Choose what to back up. You add its destinations next: folders, and servers such as a NAS or Nextcloud.</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear History</string>
     <string name="clear_history_message">Session records are removed. Files on your SSD are not affected.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Completed</string>
     <string name="connect_ssd_hint">Create a backup in the Backups tab and connect its drive.</string>
     <string name="connected">Connected</string>
+    <string name="connected_dot">Connected.</string>
     <string name="connecting">Connecting to NAS…</string>
     <string name="contact_support">Contact Support</string>
     <string name="copied">Copied</string>
@@ -55,7 +61,25 @@
     <string name="create">Create</string>
     <string name="create_first_backup">Create your first backup</string>
     <string name="create_first_backup_hint">Choose what to back up and where. Then one tap is all it takes.</string>
+    <string name="credentials">Credentials</string>
     <string name="date">Date</string>
+    <string name="dav_connected_chunks">Connected. Large files are sent in chunks.</string>
+    <string name="dav_credentials_footer">With two-factor authentication, create an app password in your server\'s security settings and use it here.</string>
+    <string name="dav_err_cert_changed">The server\'s certificate has changed. Forget the trusted certificate and test the connection again.</string>
+    <string name="dav_err_exists">A different file already exists at this name on the server.</string>
+    <string name="dav_err_http_fmt">The server answered with an error (%1$d).</string>
+    <string name="dav_err_invalid">The server\'s answer could not be read.</string>
+    <string name="dav_err_rate">The server is asking to slow down. Try again later.</string>
+    <string name="dav_err_redirect">The address redirects somewhere else. Check the server address.</string>
+    <string name="dav_err_too_large">The server refused this file size — check its upload limit.</string>
+    <string name="dav_err_unauthorized">The server refused the credentials. With two-factor authentication, use an app password.</string>
+    <string name="dav_err_untrusted">The server\'s certificate is not trusted.</string>
+    <string name="dav_folder_placeholder">optional, e.g. Backups</string>
+    <string name="dav_invalid_address">Invalid server address.</string>
+    <string name="dav_name_placeholder">e.g. Nextcloud</string>
+    <string name="dav_server_footer">The address of your WebDAV server. For Nextcloud it looks like https://your-server/remote.php/dav/files/your-name/. Only secure (https) addresses are accepted.</string>
+    <string name="default_name_camera">Camera backup</string>
+    <string name="default_name_photos">Photos backup</string>
     <string name="delete">Delete</string>
     <string name="delete_backup_message">The backup settings are removed. Files already copied are not affected.</string>
     <string name="delete_backup_title">Delete this backup?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="documentation">Documentation</string>
     <string name="duration">Duration</string>
+    <string name="edit">Edit</string>
     <string name="empty_folder">Empty folder</string>
     <string name="enter_code">Enter this code to confirm deletion:</string>
     <string name="err_destination_not_connected">A destination of this backup is not connected.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">By Month</string>
     <string name="folders_by_year_month">By Year / Month</string>
     <string name="folders_flat">Flat (no subfolders)</string>
+    <string name="forget_certificate">Forget this certificate</string>
     <string name="free">Free</string>
     <string name="free_fmt">%1$s free</string>
     <string name="gallery">Gallery</string>
+    <string name="gallery_source_d">The photos and videos of this phone.</string>
     <string name="get_started">Get Started</string>
     <string name="grade">Grade</string>
     <string name="grade_failed_fmt">%1$d video(s) could not be graded.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">The NAS is unreachable — check Wi-Fi/VPN and settings.</string>
     <string name="new_backup">New backup</string>
+    <string name="next">Next</string>
     <string name="no_backup_history">No Backup History</string>
     <string name="no_backups_yet">No backups yet on this SSD.</string>
     <string name="no_destination_hint">No destination configured — go to Settings.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">Select LUT</string>
     <string name="select_videos_hint">Select videos in the grid, then tap Grade.</string>
     <string name="send">Send</string>
+    <string name="server">Server</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">On your home network or through a VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud or WebDAV server</string>
+    <string name="server_kind_webdav_d">Over the Internet, from anywhere.</string>
+    <string name="server_needs_newer">This kind of server needs a newer version of the app.</string>
     <string name="set_device_name_hint">Set a device name in Settings.</string>
     <string name="settings">Settings</string>
     <string name="settings_defaults_footer">These are the defaults for new backups. Each backup then has its own settings: Backups tab, ⋮ menu of a backup, Settings.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Gallery → folder + NAS</string>
     <string name="tpl_photos_nas">Gallery → NAS</string>
     <string name="tpl_photos_nas_d">Back up over Wi-Fi to your NAS.</string>
+    <string name="trust_certificate">Trust this certificate</string>
+    <string name="trusted_certificate">Trusted certificate</string>
     <string name="unlimited">Unlimited</string>
     <string name="unlock">Unlock</string>
+    <string name="untrusted_cert_note">This server uses a certificate Android does not trust, which is normal for a server you run yourself. Check that this fingerprint is the one your server shows, then trust it. Only this exact certificate will be accepted.</string>
+    <string name="untrusted_certificate">Untrusted certificate</string>
     <string name="upgrade_for_fmt">Upgrade for %1$s</string>
     <string name="upgrade_to_pro">Upgrade to Pro</string>
     <string name="use_this_nas">Use this NAS for backups</string>

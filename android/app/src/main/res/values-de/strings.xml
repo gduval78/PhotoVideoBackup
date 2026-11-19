@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">Ein Ordner …</string>
     <string name="a_nas">Ein NAS</string>
+    <string name="a_server">Ein Server</string>
     <string name="about">Über</string>
     <string name="active">Aktiv</string>
     <string name="add">Hinzufügen</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">Diese Datei kann hier nicht angezeigt werden.</string>
     <string name="browse_share_failed">Die Dateien konnten nicht zum Teilen vorbereitet werden.</string>
     <string name="browse_title">Backup durchsuchen</string>
+    <string name="camera_or_sd">Kamera oder SD-Karte</string>
+    <string name="camera_or_sd_d">Eine Kamera-Speicherkarte oder ein USB-Laufwerk.</string>
     <string name="cancel">Abbrechen</string>
     <string name="choose_another_folder">Anderen Ordner wählen …</string>
     <string name="choose_ellipsis">Auswählen…</string>
     <string name="choose_starting_point">Wählen Sie einen Ausgangspunkt. Laufwerk oder Ordner wählen Sie im nächsten Schritt.</string>
+    <string name="choose_what_to_back_up">Wählen Sie, was gesichert werden soll. Danach fügen Sie die Ziele hinzu: Ordner und Server wie ein NAS oder Nextcloud.</string>
     <string name="clear">Löschen</string>
     <string name="clear_history">Verlauf löschen</string>
     <string name="clear_history_message">Sitzungsaufzeichnungen werden entfernt. Dateien auf Ihrer SSD sind nicht betroffen.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Abgeschlossen</string>
     <string name="connect_ssd_hint">Erstellen Sie im Tab „Backups“ ein Backup und schließen Sie das Laufwerk an.</string>
     <string name="connected">Verbunden</string>
+    <string name="connected_dot">Verbunden.</string>
     <string name="connecting">Verbindung zum NAS…</string>
     <string name="contact_support">Support kontaktieren</string>
     <string name="copied">Kopiert</string>
@@ -55,7 +61,25 @@
     <string name="create">Erstellen</string>
     <string name="create_first_backup">Erstellen Sie Ihr erstes Backup</string>
     <string name="create_first_backup_hint">Wählen Sie, was und wohin gesichert wird. Danach genügt ein Fingertipp.</string>
+    <string name="credentials">Anmeldedaten</string>
     <string name="date">Datum</string>
+    <string name="dav_connected_chunks">Verbunden. Große Dateien werden in Teilen gesendet.</string>
+    <string name="dav_credentials_footer">Erstellen Sie bei Zwei-Faktor-Authentifizierung in den Sicherheitseinstellungen Ihres Servers ein App-Passwort und verwenden Sie es hier.</string>
+    <string name="dav_err_cert_changed">Das Zertifikat des Servers hat sich geändert. Entfernen Sie das vertrauenswürdige Zertifikat und testen Sie die Verbindung erneut.</string>
+    <string name="dav_err_exists">Auf dem Server existiert unter diesem Namen bereits eine andere Datei.</string>
+    <string name="dav_err_http_fmt">Der Server hat mit einem Fehler geantwortet (%1$d).</string>
+    <string name="dav_err_invalid">Die Antwort des Servers konnte nicht gelesen werden.</string>
+    <string name="dav_err_rate">Der Server bittet darum, langsamer zu senden. Versuchen Sie es später erneut.</string>
+    <string name="dav_err_redirect">Die Adresse leitet an eine andere Stelle weiter. Prüfen Sie die Serveradresse.</string>
+    <string name="dav_err_too_large">Der Server hat diese Dateigröße abgelehnt – prüfen Sie sein Upload-Limit.</string>
+    <string name="dav_err_unauthorized">Der Server hat die Zugangsdaten abgelehnt. Verwenden Sie bei Zwei-Faktor-Authentifizierung ein App-Passwort.</string>
+    <string name="dav_err_untrusted">Das Zertifikat des Servers wird nicht als vertrauenswürdig eingestuft.</string>
+    <string name="dav_folder_placeholder">optional, z. B. Backups</string>
+    <string name="dav_invalid_address">Ungültige Serveradresse.</string>
+    <string name="dav_name_placeholder">z. B. Nextcloud</string>
+    <string name="dav_server_footer">Die Adresse Ihres WebDAV-Servers. Bei Nextcloud sieht sie so aus: https://ihr-server/remote.php/dav/files/ihr-name/. Nur sichere Adressen (https) werden akzeptiert.</string>
+    <string name="default_name_camera">Kamera-Backup</string>
+    <string name="default_name_photos">Fotos-Backup</string>
     <string name="delete">Löschen</string>
     <string name="delete_backup_message">Die Backup-Einstellungen werden entfernt. Bereits kopierte Dateien bleiben unberührt.</string>
     <string name="delete_backup_title">Dieses Backup löschen?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Getrennt</string>
     <string name="documentation">Dokumentation</string>
     <string name="duration">Dauer</string>
+    <string name="edit">Bearbeiten</string>
     <string name="empty_folder">Leerer Ordner</string>
     <string name="enter_code">Geben Sie diesen Code ein, um das Löschen zu bestätigen:</string>
     <string name="err_destination_not_connected">Ein Ziel dieses Backups ist nicht verbunden.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">Nach Monat</string>
     <string name="folders_by_year_month">Nach Jahr / Monat</string>
     <string name="folders_flat">Flach (keine Unterordner)</string>
+    <string name="forget_certificate">Dieses Zertifikat entfernen</string>
     <string name="free">Kostenlos</string>
     <string name="free_fmt">%1$s frei</string>
     <string name="gallery">Galerie</string>
+    <string name="gallery_source_d">Die Fotos und Videos dieses Telefons.</string>
     <string name="get_started">Loslegen</string>
     <string name="grade">Graden</string>
     <string name="grade_failed_fmt">%1$d Video(s) konnten nicht bearbeitet werden.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">Das NAS ist nicht erreichbar — prüfen Sie WLAN/VPN und Einstellungen.</string>
     <string name="new_backup">Neues Backup</string>
+    <string name="next">Weiter</string>
     <string name="no_backup_history">Kein Backup-Verlauf</string>
     <string name="no_backups_yet">Noch keine Backups auf dieser SSD.</string>
     <string name="no_destination_hint">Kein Ziel konfiguriert — zu Einstellungen gehen.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">LUT auswählen</string>
     <string name="select_videos_hint">Videos im Raster auswählen, dann Graden tippen.</string>
     <string name="send">Senden</string>
+    <string name="server">Server</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP …)</string>
+    <string name="server_kind_nas_d">In Ihrem Heimnetz oder über ein VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud oder WebDAV-Server</string>
+    <string name="server_kind_webdav_d">Über das Internet, von überall.</string>
+    <string name="server_needs_newer">Diese Art von Server erfordert eine neuere Version der App.</string>
     <string name="set_device_name_hint">Gerätename in Einstellungen festlegen.</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_defaults_footer">Dies sind die Standardwerte für neue Sicherungen. Jede Sicherung hat danach eigene Einstellungen: Tab „Sicherungen“, Menü ⋮ einer Sicherung, Einstellungen.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Galerie → Ordner + NAS</string>
     <string name="tpl_photos_nas">Galerie → NAS</string>
     <string name="tpl_photos_nas_d">Per WLAN auf Ihr NAS sichern.</string>
+    <string name="trust_certificate">Diesem Zertifikat vertrauen</string>
+    <string name="trusted_certificate">Vertrauenswürdiges Zertifikat</string>
     <string name="unlimited">Unbegrenzt</string>
     <string name="unlock">Freischalten</string>
+    <string name="untrusted_cert_note">Dieser Server verwendet ein Zertifikat, dem Android nicht vertraut – bei einem selbst betriebenen Server ist das normal. Prüfen Sie, ob dieser Fingerabdruck dem Ihres Servers entspricht, und vertrauen Sie ihm dann. Nur genau dieses Zertifikat wird akzeptiert.</string>
+    <string name="untrusted_certificate">Nicht vertrauenswürdiges Zertifikat</string>
     <string name="upgrade_for_fmt">Upgrade für %1$s</string>
     <string name="upgrade_to_pro">Auf Pro upgraden</string>
     <string name="use_this_nas">Dieses NAS für Backups verwenden</string>

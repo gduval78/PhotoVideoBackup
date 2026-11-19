@@ -94,7 +94,7 @@ object MediaLoader {
 
     /** Downloads a NAS file into the cache (reusing a complete earlier download) and returns its file. */
     suspend fun download(context: Context, target: BrowsableTarget, rel: String, size: Long): File = withContext(Dispatchers.IO) {
-        val digest = MessageDigest.getInstance("SHA-256").digest(rel.toByteArray()).take(8).joinToString("") { "%02x".format(it) }
+        val digest = MessageDigest.getInstance("SHA-256").digest((target.rootIdentifier + "|" + rel).toByteArray()).take(8).joinToString("") { "%02x".format(it) }
         val ext = pathExtension(rel).let { if (it.isEmpty()) "" else ".$it" }
         val file = File(cacheDir(context), "$digest$ext")
         if (file.isFile && (size <= 0 || file.length() == size)) return@withContext file

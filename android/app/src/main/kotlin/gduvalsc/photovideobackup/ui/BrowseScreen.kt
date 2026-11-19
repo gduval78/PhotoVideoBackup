@@ -74,8 +74,7 @@ import gduvalsc.photovideobackup.GradingController
 import gduvalsc.photovideobackup.GradingJob
 import gduvalsc.photovideobackup.LutStore
 import gduvalsc.photovideobackup.ProfileStore
-import gduvalsc.photovideobackup.isNasKey
-import gduvalsc.photovideobackup.nasKey
+import gduvalsc.photovideobackup.Servers
 import gduvalsc.photovideobackup.openBrowseSource
 import gduvalsc.pvb.core.CubeLut
 import gduvalsc.pvb.core.Grading
@@ -112,7 +111,7 @@ fun BrowseScreen(onPaywall: () -> Unit) {
 
     val key = rootKey
     // A local destination is entered at a device folder (its root is the destination list), the NAS at its root.
-    val minDepth = if (key != null && isNasKey(key)) 0 else 1
+    val minDepth = if (key != null && Servers.isBrowseKey(key)) 0 else 1
     BackHandler(enabled = key != null) {
         if (path.size > minDepth) path = path.dropLast(1) else { rootKey = null; path = emptyList() }
     }
@@ -137,11 +136,11 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
     // Browse lists only the destinations of the existing backups, each folder and each NAS once.
     val backups = Prefs.profiles
     val dests = backups.flatMap { it.folders }.distinctBy { it.uri }.filter { it.uri in AppState.reachableFolders }
-    val nasBackups = if (Pro.isPro) backups.filter { it.usesNas && it.nas?.isComplete == true }.distinctBy { it.nas!!.identity } else emptyList()
+    val servers = if (Pro.isPro) Servers.distinct(backups) else emptyList()
 
     Column(Modifier.fillMaxSize()) {
         Text(stringResource(R.string.browse_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
-        if (dests.isEmpty() && nasBackups.isEmpty()) {
+        if (dests.isEmpty() && servers.isEmpty()) {
             Column(Modifier.fillMaxSize().padding(32.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Default.Storage, null, Modifier.size(56.dp), tint = MaterialTheme.colorScheme.outline)
                 Spacer(Modifier.size(12.dp))
@@ -168,10 +167,10 @@ private fun RootList(onOpen: (root: String, folder: String?) -> Unit) {
                     }
                 }
             }
-            items(nasBackups.size) { i ->
-                val nas = nasBackups[i].nas!!
-                if (i == 0) SectionHeader(stringResource(R.string.nas))
-                Row2(nas.displayName.ifBlank { nas.host }, onClick = { onOpen(nasKey(nasBackups[i].id), null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) })
+            items(servers.size) { i ->
+                val server = servers[i]
+                if (i == 0) SectionHeader(stringResource(R.string.server))
+                Row2(server.connection.title, onClick = { onOpen(Servers.browseKey(server), null) }, trailing = { Icon(Icons.Default.Cloud, null, tint = MaterialTheme.colorScheme.primary) })
             }
         }
     }
@@ -217,9 +216,9 @@ private fun FolderBrowser(rootKey: String, path: List<String>, onPath: (List<Str
 
             // LUT Grade: a LUT is assigned per device folder (local) or per NAS folder; the section shows at the device
             // folder level (any non-root NAS level), and grading is offered wherever the folder's LUT applies.
-            val isNas = isNasKey(rootKey)
+            val isNas = Servers.isBrowseKey(rootKey)
             val lutKey: String? = when {
-                isNas -> if (path.isNotEmpty() && !Grading.isGradedFolder(path.last())) Grading.nasKey(rel) else null
+                isNas -> if (path.isNotEmpty() && !Grading.isGradedFolder(path.last())) src.lutKey?.invoke(rel) else null
                 else -> path.firstOrNull()?.takeIf { !Grading.isGradedFolder(it) }
             }
             val showLutSection = lutKey != null && (isNas || path.size == 1)

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">Una cartella…</string>
     <string name="a_nas">Un NAS</string>
+    <string name="a_server">Un server</string>
     <string name="about">Informazioni</string>
     <string name="active">Attivi</string>
     <string name="add">Aggiungi</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">Questo file non può essere visualizzato qui.</string>
     <string name="browse_share_failed">Impossibile preparare i file da condividere.</string>
     <string name="browse_title">Sfoglia backup</string>
+    <string name="camera_or_sd">Fotocamera o scheda SD</string>
+    <string name="camera_or_sd_d">Una scheda di memoria della fotocamera o un\'unità USB.</string>
     <string name="cancel">Annulla</string>
     <string name="choose_another_folder">Scegli un\'altra cartella…</string>
     <string name="choose_ellipsis">Scegli…</string>
     <string name="choose_starting_point">Scegli un punto di partenza. Il disco o la cartella si scelgono nel passaggio successivo.</string>
+    <string name="choose_what_to_back_up">Scegli cosa copiare. Poi aggiungi le destinazioni: cartelle e server come un NAS o Nextcloud.</string>
     <string name="clear">Cancella</string>
     <string name="clear_history">Cancella cronologia</string>
     <string name="clear_history_message">I record di sessione vengono rimossi. I file sul tuo SSD non vengono modificati.</string>
@@ -46,6 +51,7 @@
     <string name="completed">Completato</string>
     <string name="connect_ssd_hint">Crea un backup nella scheda Backup e collega il suo disco.</string>
     <string name="connected">Connesso</string>
+    <string name="connected_dot">Connesso.</string>
     <string name="connecting">Connessione al NAS…</string>
     <string name="contact_support">Contatta il supporto</string>
     <string name="copied">Copiati</string>
@@ -55,7 +61,25 @@
     <string name="create">Crea</string>
     <string name="create_first_backup">Crea il tuo primo backup</string>
     <string name="create_first_backup_hint">Scegli cosa salvare e dove. Poi basta un tocco.</string>
+    <string name="credentials">Credenziali</string>
     <string name="date">Data</string>
+    <string name="dav_connected_chunks">Connesso. I file di grandi dimensioni vengono inviati a blocchi.</string>
+    <string name="dav_credentials_footer">Con l\'autenticazione a due fattori, crea una password per le app nelle impostazioni di sicurezza del tuo server e usala qui.</string>
+    <string name="dav_err_cert_changed">Il certificato del server è cambiato. Dimentica il certificato attendibile e prova di nuovo la connessione.</string>
+    <string name="dav_err_exists">Sul server esiste già un file diverso con questo nome.</string>
+    <string name="dav_err_http_fmt">Il server ha risposto con un errore (%1$d).</string>
+    <string name="dav_err_invalid">Non è stato possibile leggere la risposta del server.</string>
+    <string name="dav_err_rate">Il server chiede di rallentare. Riprova più tardi.</string>
+    <string name="dav_err_redirect">L\'indirizzo reindirizza altrove. Controlla l\'indirizzo del server.</string>
+    <string name="dav_err_too_large">Il server ha rifiutato le dimensioni di questo file: controlla il suo limite di caricamento.</string>
+    <string name="dav_err_unauthorized">Il server ha rifiutato le credenziali. Con l\'autenticazione a due fattori, usa una password per le app.</string>
+    <string name="dav_err_untrusted">Il certificato del server non è attendibile.</string>
+    <string name="dav_folder_placeholder">facoltativo, es. Backups</string>
+    <string name="dav_invalid_address">Indirizzo del server non valido.</string>
+    <string name="dav_name_placeholder">es. Nextcloud</string>
+    <string name="dav_server_footer">L\'indirizzo del tuo server WebDAV. Per Nextcloud è simile a https://tuo-server/remote.php/dav/files/tuo-nome/. Sono accettati solo indirizzi sicuri (https).</string>
+    <string name="default_name_camera">Backup fotocamera</string>
+    <string name="default_name_photos">Backup delle foto</string>
     <string name="delete">Elimina</string>
     <string name="delete_backup_message">Le impostazioni del backup vengono rimosse. I file già copiati non vengono toccati.</string>
     <string name="delete_backup_title">Eliminare questo backup?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">Disconnesso</string>
     <string name="documentation">Documentazione</string>
     <string name="duration">Durata</string>
+    <string name="edit">Modifica</string>
     <string name="empty_folder">Cartella vuota</string>
     <string name="enter_code">Inserisci questo codice per confermare l\'eliminazione:</string>
     <string name="err_destination_not_connected">Una destinazione di questo backup non è collegata.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">Per mese</string>
     <string name="folders_by_year_month">Per anno / mese</string>
     <string name="folders_flat">Piatto (nessuna sottocartella)</string>
+    <string name="forget_certificate">Dimentica questo certificato</string>
     <string name="free">Gratuito</string>
     <string name="free_fmt">%1$s disponibili</string>
     <string name="gallery">Galleria</string>
+    <string name="gallery_source_d">Le foto e i video di questo telefono.</string>
     <string name="get_started">Inizia</string>
     <string name="grade">Gradazione</string>
     <string name="grade_failed_fmt">Impossibile elaborare %1$d video.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">Il NAS non è raggiungibile — controlla Wi-Fi/VPN e impostazioni.</string>
     <string name="new_backup">Nuovo backup</string>
+    <string name="next">Avanti</string>
     <string name="no_backup_history">Nessuna cronologia di backup</string>
     <string name="no_backups_yet">Nessun backup su questo SSD.</string>
     <string name="no_destination_hint">Nessuna destinazione configurata — vai nelle impostazioni.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">Seleziona LUT</string>
     <string name="select_videos_hint">Seleziona i video nella griglia, poi tocca Gradazione.</string>
     <string name="send">Invia</string>
+    <string name="server">Server</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">Nella tua rete domestica o tramite VPN.</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud o server WebDAV</string>
+    <string name="server_kind_webdav_d">Via Internet, da qualsiasi luogo.</string>
+    <string name="server_needs_newer">Questo tipo di server richiede una versione più recente dell\'app.</string>
     <string name="set_device_name_hint">Imposta un nome dispositivo nelle impostazioni.</string>
     <string name="settings">Impostazioni</string>
     <string name="settings_defaults_footer">Questi sono i valori predefiniti per i nuovi backup. Ogni backup ha poi le proprie impostazioni: scheda Backup, menu ⋮ di un backup, Impostazioni.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">Galleria → cartella + NAS</string>
     <string name="tpl_photos_nas">Galleria → NAS</string>
     <string name="tpl_photos_nas_d">Esegui il backup via Wi-Fi sul tuo NAS.</string>
+    <string name="trust_certificate">Considera attendibile questo certificato</string>
+    <string name="trusted_certificate">Certificato attendibile</string>
     <string name="unlimited">Illimitato</string>
     <string name="unlock">Sblocca</string>
+    <string name="untrusted_cert_note">Questo server usa un certificato di cui Android non si fida, cosa normale per un server gestito da te. Verifica che questa impronta sia quella del tuo server, poi considerala attendibile. Sarà accettato solo questo certificato esatto.</string>
+    <string name="untrusted_certificate">Certificato non attendibile</string>
     <string name="upgrade_for_fmt">Aggiorna a %1$s</string>
     <string name="upgrade_to_pro">Aggiorna a Pro</string>
     <string name="use_this_nas">Usa questo NAS per i backup</string>

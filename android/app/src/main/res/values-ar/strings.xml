@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">مجلد…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">خادم</string>
     <string name="about">حول</string>
     <string name="active">نشط</string>
     <string name="add">إضافة</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">لا يمكن معاينة هذا الملف هنا.</string>
     <string name="browse_share_failed">تعذّر تجهيز الملفات للمشاركة.</string>
     <string name="browse_title">استعراض النسخ الاحتياطية</string>
+    <string name="camera_or_sd">الكاميرا أو بطاقة SD</string>
+    <string name="camera_or_sd_d">بطاقة ذاكرة كاميرا أو محرك USB.</string>
     <string name="cancel">إلغاء</string>
     <string name="choose_another_folder">اختيار مجلد آخر…</string>
     <string name="choose_ellipsis">اختيار…</string>
     <string name="choose_starting_point">اختر نقطة بداية. ستختار القرص أو المجلد في الخطوة التالية.</string>
+    <string name="choose_what_to_back_up">اختر ما تريد نسخه احتياطيًا. ثم أضف وجهاته: مجلدات وخوادم مثل NAS أو Nextcloud.</string>
     <string name="clear">مسح</string>
     <string name="clear_history">مسح السجل</string>
     <string name="clear_history_message">تتم إزالة سجلات الجلسات. لا تتأثر الملفات الموجودة على SSD.</string>
@@ -46,6 +51,7 @@
     <string name="completed">اكتمل</string>
     <string name="connect_ssd_hint">أنشئ نسخة احتياطية في تبويب النسخ الاحتياطية ووصّل قرصها.</string>
     <string name="connected">متصل</string>
+    <string name="connected_dot">تم الاتصال.</string>
     <string name="connecting">جارٍ الاتصال بـ NAS…</string>
     <string name="contact_support">الاتصال بالدعم</string>
     <string name="copied">تم النسخ</string>
@@ -55,7 +61,25 @@
     <string name="create">إنشاء</string>
     <string name="create_first_backup">أنشئ أول نسخة احتياطية</string>
     <string name="create_first_backup_hint">اختر ما تريد نسخه وأين. بعدها تكفي نقرة واحدة.</string>
+    <string name="credentials">بيانات الاعتماد</string>
     <string name="date">التاريخ</string>
+    <string name="dav_connected_chunks">تم الاتصال. تُرسل الملفات الكبيرة على أجزاء.</string>
+    <string name="dav_credentials_footer">عند استخدام المصادقة الثنائية، أنشئ كلمة مرور للتطبيق من إعدادات الأمان في خادمك واستخدمها هنا.</string>
+    <string name="dav_err_cert_changed">تغيّرت شهادة الخادم. انسَ الشهادة الموثوقة واختبر الاتصال مرة أخرى.</string>
+    <string name="dav_err_exists">يوجد على الخادم ملف مختلف بالاسم نفسه.</string>
+    <string name="dav_err_http_fmt">ردّ الخادم بخطأ (%1$d).</string>
+    <string name="dav_err_invalid">تعذّرت قراءة ردّ الخادم.</string>
+    <string name="dav_err_rate">يطلب الخادم تخفيف السرعة. حاول مرة أخرى لاحقًا.</string>
+    <string name="dav_err_redirect">يعيد العنوان التوجيه إلى مكان آخر. تحقق من عنوان الخادم.</string>
+    <string name="dav_err_too_large">رفض الخادم حجم هذا الملف — تحقق من حد الرفع لديه.</string>
+    <string name="dav_err_unauthorized">رفض الخادم بيانات الاعتماد. عند استخدام المصادقة الثنائية، استخدم كلمة مرور للتطبيق.</string>
+    <string name="dav_err_untrusted">شهادة الخادم غير موثوقة.</string>
+    <string name="dav_folder_placeholder">اختياري، مثال: Backups</string>
+    <string name="dav_invalid_address">عنوان الخادم غير صالح.</string>
+    <string name="dav_name_placeholder">مثل Nextcloud</string>
+    <string name="dav_server_footer">عنوان خادم WebDAV الخاص بك. في Nextcloud يبدو هكذا: https://your-server/remote.php/dav/files/your-name/. تُقبل العناوين الآمنة (https) فقط.</string>
+    <string name="default_name_camera">نسخة الكاميرا</string>
+    <string name="default_name_photos">نسخة الصور</string>
     <string name="delete">حذف</string>
     <string name="delete_backup_message">تتم إزالة إعدادات النسخة الاحتياطية. لا تتأثر الملفات المنسوخة مسبقًا.</string>
     <string name="delete_backup_title">حذف هذه النسخة الاحتياطية؟</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">غير متصل</string>
     <string name="documentation">الوثائق</string>
     <string name="duration">المدة</string>
+    <string name="edit">تعديل</string>
     <string name="empty_folder">مجلد فارغ</string>
     <string name="enter_code">أدخل هذا الرمز لتأكيد الحذف:</string>
     <string name="err_destination_not_connected">إحدى وجهات هذه النسخة الاحتياطية غير متصلة.</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">حسب الشهر</string>
     <string name="folders_by_year_month">حسب السنة / الشهر</string>
     <string name="folders_flat">مسطّح (بدون مجلدات فرعية)</string>
+    <string name="forget_certificate">نسيان هذه الشهادة</string>
     <string name="free">مجاني</string>
     <string name="free_fmt">%1$s متاح</string>
     <string name="gallery">المعرض</string>
+    <string name="gallery_source_d">الصور ومقاطع الفيديو الموجودة على هذا الهاتف.</string>
     <string name="get_started">ابدأ</string>
     <string name="grade">تصحيح الألوان</string>
     <string name="grade_failed_fmt">تعذّر تصحيح ألوان %1$d فيديو.</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">تعذّر الوصول إلى NAS — تحقق من Wi-Fi/VPN والإعدادات.</string>
     <string name="new_backup">نسخة احتياطية جديدة</string>
+    <string name="next">التالي</string>
     <string name="no_backup_history">لا يوجد سجل نسخ احتياطي</string>
     <string name="no_backups_yet">لا توجد نسخ احتياطية على هذا SSD بعد.</string>
     <string name="no_destination_hint">لم يتم ضبط أي وجهة — انتقل إلى الإعدادات.</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">اختيار LUT</string>
     <string name="select_videos_hint">اختر الفيديوهات في الشبكة ثم اضغط «تصحيح الألوان».</string>
     <string name="send">إرسال</string>
+    <string name="server">الخادم</string>
+    <string name="server_kind_nas">NAS (Synology وQNAP…)</string>
+    <string name="server_kind_nas_d">على شبكتك المنزلية أو عبر VPN.</string>
+    <string name="server_kind_webdav">Nextcloud أو pCloud أو خادم WebDAV</string>
+    <string name="server_kind_webdav_d">عبر الإنترنت، من أي مكان.</string>
+    <string name="server_needs_newer">يتطلب هذا النوع من الخوادم إصدارًا أحدث من التطبيق.</string>
     <string name="set_device_name_hint">اضبط اسم الجهاز في الإعدادات.</string>
     <string name="settings">الإعدادات</string>
     <string name="settings_defaults_footer">هذه هي القيم الافتراضية للنسخ الاحتياطية الجديدة. ثم تكون لكل نسخة إعداداتها الخاصة: تبويب النسخ الاحتياطية، قائمة ⋮ لنسخة احتياطية، الإعدادات.</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">المعرض ← مجلد + NAS</string>
     <string name="tpl_photos_nas">المعرض ← NAS</string>
     <string name="tpl_photos_nas_d">انسخ احتياطيًا عبر Wi-Fi إلى جهاز NAS الخاص بك.</string>
+    <string name="trust_certificate">الوثوق بهذه الشهادة</string>
+    <string name="trusted_certificate">الشهادة الموثوقة</string>
     <string name="unlimited">غير محدود</string>
     <string name="unlock">فتح القفل</string>
+    <string name="untrusted_cert_note">يستخدم هذا الخادم شهادة لا يثق بها Android، وهذا طبيعي لخادم تديره بنفسك. تأكد من أن هذه البصمة هي التي يعرضها خادمك، ثم ثق بها. ستُقبل هذه الشهادة بالذات فقط.</string>
+    <string name="untrusted_certificate">شهادة غير موثوقة</string>
     <string name="upgrade_for_fmt">الترقية مقابل %1$s</string>
     <string name="upgrade_to_pro">الترقية إلى Pro</string>
     <string name="use_this_nas">استخدام هذا NAS للنسخ الاحتياطي</string>

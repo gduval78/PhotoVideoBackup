@@ -65,108 +65,60 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private fun ProfileTemplate.icon(): ImageVector = when (this) {
-    ProfileTemplate.PHOTOS_TO_DRIVE -> Icons.Default.Storage
-    ProfileTemplate.PHOTOS_TO_NAS -> Icons.Default.Cloud
-    ProfileTemplate.PHOTOS_TO_CLOUD -> Icons.Default.Cloud
-    ProfileTemplate.CAMERA_TO_DRIVE -> Icons.Default.SdCard
-    ProfileTemplate.CAMERA_TO_NAS -> Icons.Default.SdCard
-    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> Icons.Default.SdCard
-    ProfileTemplate.DRIVE_TO_CLOUD -> Icons.Default.CloudUpload
-    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> Icons.Default.PhotoLibrary
-    ProfileTemplate.CUSTOM -> Icons.Default.Storage
-}
+/** What the new backup copies from. */
+private enum class NewSource { GALLERY, CAMERA }
 
-fun ProfileTemplate.titleRes(): Int = when (this) {
-    ProfileTemplate.PHOTOS_TO_DRIVE -> R.string.tpl_photos_folder
-    ProfileTemplate.PHOTOS_TO_NAS -> R.string.tpl_photos_nas
-    ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.tpl_photos_cloud
-    ProfileTemplate.CAMERA_TO_DRIVE -> R.string.tpl_camera_drive
-    ProfileTemplate.CAMERA_TO_NAS -> R.string.tpl_camera_nas
-    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.tpl_camera_folder_nas
-    ProfileTemplate.DRIVE_TO_CLOUD -> R.string.tpl_drive_cloud
-    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.tpl_photos_folder_nas
-    ProfileTemplate.CUSTOM -> R.string.backup
-}
-
-private fun ProfileTemplate.detailRes(): Int = when (this) {
-    ProfileTemplate.PHOTOS_TO_DRIVE -> R.string.tpl_photos_drive_d
-    ProfileTemplate.PHOTOS_TO_NAS -> R.string.tpl_photos_nas_d
-    ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.tpl_photos_cloud_d
-    ProfileTemplate.CAMERA_TO_DRIVE -> R.string.tpl_camera_drive_d
-    ProfileTemplate.CAMERA_TO_NAS -> R.string.tpl_camera_nas_d
-    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.tpl_photos_drive_nas_d
-    ProfileTemplate.DRIVE_TO_CLOUD -> R.string.tpl_drive_cloud_d
-    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.tpl_photos_drive_nas_d
-    ProfileTemplate.CUSTOM -> R.string.backup
-}
-
-private fun ProfileTemplate.defaultNameRes(): Int = when (this) {
-    ProfileTemplate.PHOTOS_TO_DRIVE -> R.string.name_photos_drive
-    ProfileTemplate.PHOTOS_TO_NAS -> R.string.name_photos_nas
-    ProfileTemplate.PHOTOS_TO_CLOUD -> R.string.name_photos_cloud
-    ProfileTemplate.CAMERA_TO_DRIVE -> R.string.name_camera_drive
-    ProfileTemplate.CAMERA_TO_NAS -> R.string.name_camera_nas
-    ProfileTemplate.CAMERA_TO_DRIVE_AND_NAS -> R.string.name_camera_drive_nas
-    ProfileTemplate.DRIVE_TO_CLOUD -> R.string.name_drive_cloud
-    ProfileTemplate.PHOTOS_TO_DRIVE_AND_NAS -> R.string.name_photos_drive_nas
-    ProfileTemplate.CUSTOM -> R.string.backup
-}
-
-/** "New backup": pick a template, choose the drive / folder once, name it. No technical vocabulary. */
+/**
+ * "New backup": choose **what to back up** (the gallery, or a camera card / USB drive), then add its
+ * destinations — folders and servers — in the same editor used to change a backup later. No templates.
+ */
 @Composable
 fun NewBackupScreen(onClose: () -> Unit, onPaywall: () -> Unit) {
-    var template by remember { mutableStateOf<ProfileTemplate?>(null) }
-    val t = template
+    var choice by remember { mutableStateOf<NewSource?>(null) }
+    var draft by remember { mutableStateOf<BackupProfile?>(null) }
+    val d = draft
+    if (d != null) { ProfileEditor(d, isNew = true, onClose = onClose, onPaywall = onPaywall); return }
+    val c = choice
     Column(Modifier.fillMaxSize()) {
-        SubScreenBar(stringResource(if (t == null) R.string.new_backup else t.titleRes()), onBack = { if (t == null) onClose() else template = null })
-        if (t == null) {
+        SubScreenBar(stringResource(R.string.new_backup), onBack = { if (c == null) onClose() else choice = null })
+        if (c == null) {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                for (tpl in ProfileTemplate.selectable) {
-                    val locked = tpl.requiresPro && !Pro.isPro
-                    Row(
-                        Modifier.fillMaxWidth().clickable { if (locked) onPaywall() else template = tpl }.padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(tpl.icon(), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-                        Spacer(Modifier.width(16.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text(stringResource(tpl.titleRes()), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                            Text(stringResource(tpl.detailRes()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                        if (locked) Text(stringResource(R.string.pro), style = MaterialTheme.typography.labelMedium, color = Tone.warn, fontWeight = FontWeight.SemiBold)
-                    }
+                SourceRow(Icons.Default.PhotoLibrary, R.string.gallery, R.string.gallery_source_d, locked = false) {
+                    draft = BackupProfile(name = "", source = ProfileSource.gallery)
                 }
-                Text(stringResource(R.string.choose_starting_point), Modifier.padding(16.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                SourceRow(Icons.Default.SdCard, R.string.camera_or_sd, R.string.camera_or_sd_d, locked = !Pro.isPro) {
+                    if (Pro.isPro) choice = NewSource.CAMERA else onPaywall()
+                }
+                Text(stringResource(R.string.choose_what_to_back_up), Modifier.padding(16.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
-            NewBackupSetup(t, onDone = onClose)
+            CameraSourceStep { sourceId -> draft = BackupProfile(name = "", source = ProfileSource.external(sourceId)) }
         }
     }
 }
 
 @Composable
-private fun NewBackupSetup(template: ProfileTemplate, onDone: () -> Unit) {
+private fun SourceRow(icon: ImageVector, title: Int, detail: Int, locked: Boolean, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(title), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (locked) Text(stringResource(R.string.pro), style = MaterialTheme.typography.labelMedium, color = Tone.warn, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+/** Picks (or adds) the camera card / USB drive a new backup copies from. */
+@Composable
+private fun CameraSourceStep(onChosen: (String) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val defaultName = stringResource(template.defaultNameRes())
-    var name by remember { mutableStateOf(defaultName) }
-    var folder by remember { mutableStateOf<StoredDestination?>(null) }
     var sourceId by remember { mutableStateOf<String?>(null) }
-    var overlap by remember { mutableStateOf(false) }
-    val nas = remember { NasDraft(Prefs.nas, "") }   // starts empty: each backup owns its NAS
     val sources = AppState.sources.filter { it.available }
-    // A gallery backup is filed under the device name; without one the engine refuses to start.
-    val needsDeviceName = !template.usesExternalSource && Prefs.deviceName.isBlank()
-
     LaunchedEffect(Unit) { AppState.refresh(context); if (sourceId == null) sourceId = AppState.sources.firstOrNull { it.available }?.source?.id }
 
-    val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-        if (uri != null) {
-            Saf.persist(context, uri, write = true)
-            folder = StoredDestination(uri.toString(), Saf.label(context, uri), Saf.folderPath(uri))
-        }
-    }
     var pendingSource by remember { mutableStateOf<Pair<Uri, DeviceType>?>(null) }
     var pendingName by remember { mutableStateOf("") }
     val sourcePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
@@ -181,73 +133,19 @@ private fun NewBackupSetup(template: ProfileTemplate, onDone: () -> Unit) {
             }
         }
     }
-
-    val canCreate = name.isNotBlank() && !needsDeviceName &&
-        (template.folderCount == 0 || folder != null) &&
-        (!template.usesExternalSource || sourceId != null) &&
-        (!template.includesNas || nas.config() != null)
-
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (template.usesExternalSource) {
-            SectionHeader(stringResource(R.string.source_header))
-            if (sources.isEmpty()) Text(stringResource(R.string.no_source_added), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            for (s in sources) {
-                Row(Modifier.fillMaxWidth().clickable { sourceId = s.source.id }, verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = sourceId == s.source.id, onClick = { sourceId = s.source.id })
-                    Text(s.source.name)
-                }
+        SectionHeader(stringResource(R.string.source_header))
+        if (sources.isEmpty()) Text(stringResource(R.string.no_source_added), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        for (s in sources) {
+            Row(Modifier.fillMaxWidth().clickable { sourceId = s.source.id }, verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(selected = sourceId == s.source.id, onClick = { sourceId = s.source.id })
+                Text(s.source.name)
             }
-            OutlinedButton(onClick = { sourcePicker.launch(null) }) { Text(stringResource(R.string.add_a_source)) }
-            Text(stringResource(R.string.source_footer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        if (template.folderCount > 0) {
-            SectionHeader(stringResource(R.string.destination))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.destination), Modifier.weight(1f))
-                Text(folder?.name ?: stringResource(R.string.not_chosen), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            OutlinedButton(onClick = { folderPicker.launch(null) }) { Text(stringResource(R.string.choose_ellipsis)) }
-            Text(
-                stringResource(if (folder?.let { CloudDestinations.providerOf(it.uri) } != null || template == ProfileTemplate.PHOTOS_TO_CLOUD || template == ProfileTemplate.DRIVE_TO_CLOUD) R.string.dest_footer_cloud else R.string.dest_footer),
-                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        if (template.includesNas) {
-            SectionHeader(stringResource(R.string.nas_smb))
-            NasForm(nas)
-        }
-        if (!template.usesExternalSource) {
-            SectionHeader(stringResource(R.string.folder_name))
-            OutlinedTextField(
-                value = Prefs.deviceName, onValueChange = { Prefs.deviceName = it }, singleLine = true,
-                placeholder = { Text(stringResource(R.string.device_name_placeholder)) }, modifier = Modifier.fillMaxWidth(),
-            )
-            Text(stringResource(R.string.device_name_footer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        SectionHeader(stringResource(R.string.name))
-        OutlinedTextField(value = name, onValueChange = { name = it }, singleLine = true, modifier = Modifier.fillMaxWidth())
-
-        Button(enabled = canCreate, modifier = Modifier.fillMaxWidth(), onClick = {
-            val destinations = ArrayList<ProfileDestination>()
-            folder?.let { destinations += ProfileDestination.folder(it) }
-            if (template.includesNas) destinations += ProfileDestination.nas
-            val source = if (template.usesExternalSource) ProfileSource.external(sourceId.orEmpty()) else ProfileSource.gallery
-            // The backup owns its NAS and its password; its options start as a copy of today's defaults.
-            val ownNas = if (template.includesNas) nas.config() else null
-            val settings = ProfileSettings(
-                Prefs.folderOrganization.raw, Prefs.namingEnabled, Prefs.namingPattern, Prefs.backupFileLimit, Prefs.customExtensions,
-            )
-            val profile = BackupProfile(
-                name = name.trim(), templateRaw = template.raw, source = source, destinations = destinations,
-                settings = settings, nas = ownNas,
-            )
-            if (ownNas != null) SecretStore.put(context, profile.nasSecretName, nas.password)
-            ProfileStore.add(profile)
-            AppState.refreshAsync(context, scope)
-            onDone()
-        }) { Text(stringResource(R.string.create)) }
+        OutlinedButton(onClick = { sourcePicker.launch(null) }) { Text(stringResource(R.string.add_a_source)) }
+        Text(stringResource(R.string.source_footer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Button(enabled = sourceId != null, modifier = Modifier.fillMaxWidth(), onClick = { sourceId?.let(onChosen) }) { Text(stringResource(R.string.next)) }
     }
-
     pendingSource?.let { (uri, type) ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { pendingSource = null },

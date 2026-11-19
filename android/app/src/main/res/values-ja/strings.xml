@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">フォルダ…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">サーバー</string>
     <string name="about">情報</string>
     <string name="active">有効</string>
     <string name="add">追加</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">このファイルはここではプレビューできません。</string>
     <string name="browse_share_failed">共有するファイルを準備できませんでした。</string>
     <string name="browse_title">バックアップを参照</string>
+    <string name="camera_or_sd">カメラまたはSDカード</string>
+    <string name="camera_or_sd_d">カメラのメモリーカードまたはUSBドライブ。</string>
     <string name="cancel">キャンセル</string>
     <string name="choose_another_folder">別のフォルダを選択…</string>
     <string name="choose_ellipsis">選択…</string>
     <string name="choose_starting_point">開始点を選んでください。ドライブまたはフォルダは次の手順で選びます。</string>
+    <string name="choose_what_to_back_up">バックアップする対象を選びます。次に保存先（フォルダや、NAS・Nextcloudなどのサーバー）を追加します。</string>
     <string name="clear">消去</string>
     <string name="clear_history">履歴を消去</string>
     <string name="clear_history_message">セッション記録が削除されます。SSD 上のファイルには影響しません。</string>
@@ -46,6 +51,7 @@
     <string name="completed">完了</string>
     <string name="connect_ssd_hint">「バックアップ」タブでバックアップを作成し、ドライブを接続してください。</string>
     <string name="connected">接続済み</string>
+    <string name="connected_dot">接続しました。</string>
     <string name="connecting">NAS に接続中…</string>
     <string name="contact_support">サポートに連絡</string>
     <string name="copied">コピー済み</string>
@@ -55,7 +61,25 @@
     <string name="create">作成</string>
     <string name="create_first_backup">最初のバックアップを作成</string>
     <string name="create_first_backup_hint">バックアップする内容と保存先を選びます。あとはワンタップで実行できます。</string>
+    <string name="credentials">認証情報</string>
     <string name="date">日付</string>
+    <string name="dav_connected_chunks">接続しました。大きなファイルは分割して送信されます。</string>
+    <string name="dav_credentials_footer">2要素認証を使用している場合は、サーバーのセキュリティ設定でアプリパスワードを作成し、ここで使用してください。</string>
+    <string name="dav_err_cert_changed">サーバーの証明書が変更されました。信頼済みの証明書を削除して、もう一度接続をテストしてください。</string>
+    <string name="dav_err_exists">サーバー上にこの名前の別のファイルが既にあります。</string>
+    <string name="dav_err_http_fmt">サーバーがエラーを返しました（%1$d）。</string>
+    <string name="dav_err_invalid">サーバーの応答を読み取れませんでした。</string>
+    <string name="dav_err_rate">サーバーから速度を落とすよう求められています。後でもう一度お試しください。</string>
+    <string name="dav_err_redirect">このアドレスは別の場所にリダイレクトされます。サーバーのアドレスを確認してください。</string>
+    <string name="dav_err_too_large">サーバーがこのファイルサイズを拒否しました。アップロード上限を確認してください。</string>
+    <string name="dav_err_unauthorized">サーバーが認証情報を拒否しました。2要素認証を使用している場合は、アプリパスワードを使ってください。</string>
+    <string name="dav_err_untrusted">サーバーの証明書が信頼されていません。</string>
+    <string name="dav_folder_placeholder">任意、例: Backups</string>
+    <string name="dav_invalid_address">サーバーのアドレスが無効です。</string>
+    <string name="dav_name_placeholder">例: Nextcloud</string>
+    <string name="dav_server_footer">WebDAVサーバーのアドレスです。Nextcloudの場合は https://サーバー名/remote.php/dav/files/ユーザー名/ のようになります。安全なアドレス（https）のみ使用できます。</string>
+    <string name="default_name_camera">カメラのバックアップ</string>
+    <string name="default_name_photos">写真のバックアップ</string>
     <string name="delete">削除</string>
     <string name="delete_backup_message">バックアップの設定が削除されます。コピー済みのファイルには影響しません。</string>
     <string name="delete_backup_title">このバックアップを削除しますか？</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">切断</string>
     <string name="documentation">ドキュメント</string>
     <string name="duration">所要時間</string>
+    <string name="edit">編集</string>
     <string name="empty_folder">空のフォルダ</string>
     <string name="enter_code">削除を確定するには、このコードを入力してください:</string>
     <string name="err_destination_not_connected">このバックアップの保存先が接続されていません。</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">月別</string>
     <string name="folders_by_year_month">年 / 月別</string>
     <string name="folders_flat">フラット（サブフォルダなし）</string>
+    <string name="forget_certificate">この証明書を削除</string>
     <string name="free">無料</string>
     <string name="free_fmt">空き %1$s</string>
     <string name="gallery">ギャラリー</string>
+    <string name="gallery_source_d">このスマートフォンの写真とビデオ。</string>
     <string name="get_started">はじめる</string>
     <string name="grade">グレーディング</string>
     <string name="grade_failed_fmt">%1$d 本のビデオをグレーディングできませんでした。</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">NAS に到達できません — Wi-Fi/VPN と設定を確認してください。</string>
     <string name="new_backup">新規バックアップ</string>
+    <string name="next">次へ</string>
     <string name="no_backup_history">バックアップ履歴なし</string>
     <string name="no_backups_yet">この SSD にはまだバックアップがありません。</string>
     <string name="no_destination_hint">保存先が設定されていません — 設定を開いてください。</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">LUT を選択</string>
     <string name="select_videos_hint">グリッドでビデオを選び、「グレーディング」をタップしてください。</string>
     <string name="send">送信</string>
+    <string name="server">サーバ</string>
+    <string name="server_kind_nas">NAS（Synology、QNAPなど）</string>
+    <string name="server_kind_nas_d">自宅のネットワーク内、またはVPN経由。</string>
+    <string name="server_kind_webdav">Nextcloud、pCloud、WebDAVサーバー</string>
+    <string name="server_kind_webdav_d">インターネット経由で、どこからでも。</string>
+    <string name="server_needs_newer">この種類のサーバーには、より新しいバージョンのアプリが必要です。</string>
     <string name="set_device_name_hint">設定でデバイス名を設定してください。</string>
     <string name="settings">設定</string>
     <string name="settings_defaults_footer">これは新規バックアップの既定値です。各バックアップには専用の設定があります: バックアップタブ、バックアップの ⋮ メニュー、設定。</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">ギャラリー → フォルダ + NAS</string>
     <string name="tpl_photos_nas">ギャラリー → NAS</string>
     <string name="tpl_photos_nas_d">Wi-Fi 経由で NAS にバックアップします。</string>
+    <string name="trust_certificate">この証明書を信頼</string>
+    <string name="trusted_certificate">信頼済みの証明書</string>
     <string name="unlimited">無制限</string>
     <string name="unlock">ロック解除</string>
+    <string name="untrusted_cert_note">このサーバーはAndroidが信頼していない証明書を使用しています。自分で運用しているサーバーでは普通のことです。このフィンガープリントがサーバーに表示されるものと一致することを確認してから、信頼してください。この証明書だけが受け入れられます。</string>
+    <string name="untrusted_certificate">信頼されていない証明書</string>
     <string name="upgrade_for_fmt">%1$s でアップグレード</string>
     <string name="upgrade_to_pro">Pro にアップグレード</string>
     <string name="use_this_nas">バックアップにこの NAS を使う</string>

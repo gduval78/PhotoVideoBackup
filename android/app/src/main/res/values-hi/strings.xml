@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">एक फ़ोल्डर…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">एक सर्वर</string>
     <string name="about">जानकारी</string>
     <string name="active">सक्रिय</string>
     <string name="add">जोड़ें</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">इस फ़ाइल का पूर्वावलोकन यहाँ नहीं हो सकता।</string>
     <string name="browse_share_failed">साझा करने के लिए फ़ाइलें तैयार नहीं हो सकीं।</string>
     <string name="browse_title">बैकअप ब्राउज़ करें</string>
+    <string name="camera_or_sd">कैमरा या SD कार्ड</string>
+    <string name="camera_or_sd_d">कैमरा मेमोरी कार्ड या USB ड्राइव।</string>
     <string name="cancel">रद्द करें</string>
     <string name="choose_another_folder">दूसरा फ़ोल्डर चुनें…</string>
     <string name="choose_ellipsis">चुनें…</string>
     <string name="choose_starting_point">एक शुरुआती बिंदु चुनें। ड्राइव या फ़ोल्डर आप अगले चरण में चुनेंगे।</string>
+    <string name="choose_what_to_back_up">चुनें कि क्या बैकअप लेना है। फिर उसके गंतव्य जोड़ें: फ़ोल्डर, और NAS या Nextcloud जैसे सर्वर।</string>
     <string name="clear">साफ़ करें</string>
     <string name="clear_history">इतिहास साफ़ करें</string>
     <string name="clear_history_message">सत्र रिकॉर्ड हटा दिए जाते हैं। आपके SSD की फ़ाइलों पर कोई असर नहीं पड़ता।</string>
@@ -46,6 +51,7 @@
     <string name="completed">पूरा हुआ</string>
     <string name="connect_ssd_hint">बैकअप टैब में एक बैकअप बनाएँ और उसकी ड्राइव कनेक्ट करें।</string>
     <string name="connected">कनेक्टेड</string>
+    <string name="connected_dot">कनेक्ट हो गया।</string>
     <string name="connecting">NAS से कनेक्ट हो रहा है…</string>
     <string name="contact_support">सहायता से संपर्क करें</string>
     <string name="copied">कॉपी हुईं</string>
@@ -55,7 +61,25 @@
     <string name="create">बनाएँ</string>
     <string name="create_first_backup">अपना पहला बैकअप बनाएँ</string>
     <string name="create_first_backup_hint">चुनें कि क्या और कहाँ बैकअप करना है। फिर बस एक टैप काफ़ी है।</string>
+    <string name="credentials">क्रेडेंशियल</string>
     <string name="date">तारीख</string>
+    <string name="dav_connected_chunks">कनेक्ट हो गया। बड़ी फ़ाइलें हिस्सों में भेजी जाती हैं।</string>
+    <string name="dav_credentials_footer">दो-चरणीय प्रमाणीकरण होने पर, अपने सर्वर की सुरक्षा सेटिंग में एक ऐप पासवर्ड बनाएँ और यहाँ उसका उपयोग करें।</string>
+    <string name="dav_err_cert_changed">सर्वर का प्रमाणपत्र बदल गया है। विश्वसनीय प्रमाणपत्र हटाएँ और कनेक्शन फिर से जाँचें।</string>
+    <string name="dav_err_exists">सर्वर पर इसी नाम की एक अलग फ़ाइल पहले से मौजूद है।</string>
+    <string name="dav_err_http_fmt">सर्वर ने त्रुटि के साथ उत्तर दिया (%1$d)।</string>
+    <string name="dav_err_invalid">सर्वर का उत्तर पढ़ा नहीं जा सका।</string>
+    <string name="dav_err_rate">सर्वर गति धीमी करने के लिए कह रहा है। बाद में पुनः प्रयास करें।</string>
+    <string name="dav_err_redirect">यह पता कहीं और भेज देता है। सर्वर का पता जाँचें।</string>
+    <string name="dav_err_too_large">सर्वर ने इस फ़ाइल का आकार अस्वीकार कर दिया — उसकी अपलोड सीमा जाँचें।</string>
+    <string name="dav_err_unauthorized">सर्वर ने क्रेडेंशियल अस्वीकार कर दिए। दो-चरणीय प्रमाणीकरण होने पर ऐप पासवर्ड का उपयोग करें।</string>
+    <string name="dav_err_untrusted">सर्वर का प्रमाणपत्र विश्वसनीय नहीं है।</string>
+    <string name="dav_folder_placeholder">वैकल्पिक, उदा. Backups</string>
+    <string name="dav_invalid_address">सर्वर का पता अमान्य है।</string>
+    <string name="dav_name_placeholder">जैसे Nextcloud</string>
+    <string name="dav_server_footer">आपके WebDAV सर्वर का पता। Nextcloud के लिए यह https://आपका-सर्वर/remote.php/dav/files/आपका-नाम/ जैसा दिखता है। केवल सुरक्षित (https) पते स्वीकार किए जाते हैं।</string>
+    <string name="default_name_camera">कैमरा बैकअप</string>
+    <string name="default_name_photos">फ़ोटो बैकअप</string>
     <string name="delete">हटाएँ</string>
     <string name="delete_backup_message">बैकअप की सेटिंग्स हटा दी जाती हैं। पहले से कॉपी की गई फ़ाइलों पर कोई असर नहीं पड़ता।</string>
     <string name="delete_backup_title">यह बैकअप हटाएँ?</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">डिस्कनेक्टेड</string>
     <string name="documentation">दस्तावेज़ीकरण</string>
     <string name="duration">अवधि</string>
+    <string name="edit">संपादित करें</string>
     <string name="empty_folder">खाली फ़ोल्डर</string>
     <string name="enter_code">हटाने की पुष्टि के लिए यह कोड दर्ज करें:</string>
     <string name="err_destination_not_connected">इस बैकअप का एक गंतव्य कनेक्ट नहीं है।</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">महीने के अनुसार</string>
     <string name="folders_by_year_month">वर्ष / महीने के अनुसार</string>
     <string name="folders_flat">सपाट (कोई सबफ़ोल्डर नहीं)</string>
+    <string name="forget_certificate">इस प्रमाणपत्र को भूलें</string>
     <string name="free">मुफ़्त</string>
     <string name="free_fmt">%1$s खाली</string>
     <string name="gallery">गैलरी</string>
+    <string name="gallery_source_d">इस फ़ोन की फ़ोटो और वीडियो।</string>
     <string name="get_started">शुरू करें</string>
     <string name="grade">ग्रेड करें</string>
     <string name="grade_failed_fmt">%1$d वीडियो ग्रेड नहीं हो सके।</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">NAS तक पहुँच नहीं हो पा रही — Wi-Fi/VPN और सेटिंग्स जाँचें।</string>
     <string name="new_backup">नया बैकअप</string>
+    <string name="next">आगे</string>
     <string name="no_backup_history">कोई बैकअप इतिहास नहीं</string>
     <string name="no_backups_yet">इस SSD पर अभी कोई बैकअप नहीं है।</string>
     <string name="no_destination_hint">कोई गंतव्य सेट नहीं है — सेटिंग्स में जाएँ।</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">LUT चुनें</string>
     <string name="select_videos_hint">ग्रिड में वीडियो चुनें, फिर ग्रेड पर टैप करें।</string>
     <string name="send">भेजें</string>
+    <string name="server">सर्वर</string>
+    <string name="server_kind_nas">NAS (Synology, QNAP…)</string>
+    <string name="server_kind_nas_d">आपके घर के नेटवर्क पर या VPN के ज़रिए।</string>
+    <string name="server_kind_webdav">Nextcloud, pCloud या WebDAV सर्वर</string>
+    <string name="server_kind_webdav_d">इंटरनेट के ज़रिए, कहीं से भी।</string>
+    <string name="server_needs_newer">इस प्रकार के सर्वर के लिए ऐप का नया संस्करण चाहिए।</string>
     <string name="set_device_name_hint">सेटिंग्स में डिवाइस का नाम सेट करें।</string>
     <string name="settings">सेटिंग्स</string>
     <string name="settings_defaults_footer">ये नए बैकअप के डिफ़ॉल्ट हैं। फिर हर बैकअप की अपनी सेटिंग्स होती हैं: बैकअप टैब, किसी बैकअप का ⋮ मेनू, सेटिंग्स।</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">गैलरी → फ़ोल्डर + NAS</string>
     <string name="tpl_photos_nas">गैलरी → NAS</string>
     <string name="tpl_photos_nas_d">Wi-Fi से अपने NAS पर बैकअप करें।</string>
+    <string name="trust_certificate">इस प्रमाणपत्र पर भरोसा करें</string>
+    <string name="trusted_certificate">विश्वसनीय प्रमाणपत्र</string>
     <string name="unlimited">असीमित</string>
     <string name="unlock">अनलॉक करें</string>
+    <string name="untrusted_cert_note">यह सर्वर ऐसे प्रमाणपत्र का उपयोग करता है जिस पर Android भरोसा नहीं करता — अपने खुद के सर्वर के लिए यह सामान्य है। जाँचें कि यह फ़िंगरप्रिंट आपके सर्वर पर दिखने वाले फ़िंगरप्रिंट से मेल खाता है, फिर इस पर भरोसा करें। केवल यही प्रमाणपत्र स्वीकार किया जाएगा।</string>
+    <string name="untrusted_certificate">अविश्वसनीय प्रमाणपत्र</string>
     <string name="upgrade_for_fmt">%1$s में अपग्रेड करें</string>
     <string name="upgrade_to_pro">Pro में अपग्रेड करें</string>
     <string name="use_this_nas">बैकअप के लिए इस NAS का उपयोग करें</string>

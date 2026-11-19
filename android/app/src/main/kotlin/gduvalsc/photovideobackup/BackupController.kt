@@ -126,12 +126,11 @@ object BackupController {
                 if (t.existingSize(".nomedia") == null) t.writeSmallFile(ByteArray(0), ".nomedia")
             }
         }
-        val nas = profile.nas
-        if (Pro.isPro && profile.usesNas && nas != null && nas.isComplete) {
-            val pw = SecretStore.get(context, profile.nasSecretName).orEmpty()
-            runCatching { SmbTarget.connect(nas, pw) }
+        if (Pro.isPro) for (server in profile.servers) {
+            if (!server.connection.isComplete) continue
+            runCatching { Servers.connect(context, server) }
                 .onSuccess { targets += it }
-                .onFailure { Diag.write("[NAS_ERROR] ${it.message}") }
+                .onFailure { Diag.write("[NAS_ERROR] ${server.connection.label}: ${it.javaClass.simpleName}: ${it.message}") }
         }
         return targets
     }
@@ -169,7 +168,7 @@ object BackupController {
             // "Only run on power": the phone must be charging (power bank on the hub, or a charger).
             if (!gduvalsc.pvb.core.PowerRequirement.isSatisfied(profile.settings.requirePower, isCharging(ctx)))
                 return@withContext abort(Msg(R.string.err_requires_power))
-            if (profile.usesNas && (profile.nas == null || !profile.nas!!.isComplete)) return@withContext abort(Msg(R.string.err_nas_not_set_up))
+            if (profile.servers.any { !it.connection.isComplete }) return@withContext abort(Msg(R.string.err_nas_not_set_up))
 
             // The source first: cheap preconditions fail before any network connection.
             val source: StoredSource? = profile.source.sourceId?.let { id -> Prefs.sources.firstOrNull { it.id == id } }
@@ -248,7 +247,7 @@ object BackupController {
             Diag.write("[BACKUP_ERROR] ${e.javaClass.simpleName}: ${e.message}")
             abort(Msg(R.string.err_unexpected, listOf(e.message ?: e.javaClass.simpleName)))
         } finally {
-            targets.forEach { (it as? SmbTarget)?.close() }
+            targets.forEach { Servers.close(it) }
         }
     }
 
@@ -266,8 +265,4 @@ object BackupController {
     /** Sessions left `running` by a killed process can never finish: close them as partial. */
     fun closeStaleSessions() = runCatching { index.closeStaleSessions(System.currentTimeMillis()) }
 
-    /** Quick TCP probe so the NAS row can say connected / disconnected without a full SMB login. */
-    fun probeNas(host: String, port: Int): Boolean = runCatching {
-        Socket().use { it.connect(InetSocketAddress(host, port), 1500); true }
-    }.getOrDefault(false)
 }

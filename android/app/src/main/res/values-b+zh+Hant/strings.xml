@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="a_folder">一個資料夾…</string>
     <string name="a_nas">NAS</string>
+    <string name="a_server">一個伺服器</string>
     <string name="about">關於</string>
     <string name="active">活躍</string>
     <string name="add">添加</string>
@@ -31,10 +33,13 @@
     <string name="browse_preview_unavailable">無法在此預覽該檔案。</string>
     <string name="browse_share_failed">無法準備要分享的檔案。</string>
     <string name="browse_title">瀏覽備份</string>
+    <string name="camera_or_sd">相機或 SD 卡</string>
+    <string name="camera_or_sd_d">相機記憶卡或 USB 驅動器。</string>
     <string name="cancel">取消</string>
     <string name="choose_another_folder">選擇其他資料夾…</string>
     <string name="choose_ellipsis">選擇…</string>
     <string name="choose_starting_point">請選擇一個起點。下一步再選擇驅動器或資料夾。</string>
+    <string name="choose_what_to_back_up">選擇要備份的內容。接下來添加它的目的地：資料夾，以及 NAS 或 Nextcloud 等伺服器。</string>
     <string name="clear">清除</string>
     <string name="clear_history">清除歷史記錄</string>
     <string name="clear_history_message">會話記錄已刪除。SSD 上的檔案不受影響。</string>
@@ -46,6 +51,7 @@
     <string name="completed">已完成</string>
     <string name="connect_ssd_hint">請在「備份」標籤頁中建立備份，並連線其驅動器。</string>
     <string name="connected">已連線</string>
+    <string name="connected_dot">已連線。</string>
     <string name="connecting">正在連線 NAS…</string>
     <string name="contact_support">聯繫支援</string>
     <string name="copied">已複製</string>
@@ -55,7 +61,25 @@
     <string name="create">建立</string>
     <string name="create_first_backup">建立您的第一個備份</string>
     <string name="create_first_backup_hint">選擇要備份的內容和位置，之後只需輕點一下。</string>
+    <string name="credentials">憑證</string>
     <string name="date">日期</string>
+    <string name="dav_connected_chunks">已連線。大檔案將分塊傳送。</string>
+    <string name="dav_credentials_footer">啓用雙重驗證時，請在伺服器的安全設定中建立App專用密碼，並在此處使用。</string>
+    <string name="dav_err_cert_changed">伺服器的證書已更改。請忽略已信任的證書，然後重新測試連線。</string>
+    <string name="dav_err_exists">伺服器上已存在同名的不同檔案。</string>
+    <string name="dav_err_http_fmt">伺服器返回了錯誤（%1$d）。</string>
+    <string name="dav_err_invalid">無法讀取伺服器的響應。</string>
+    <string name="dav_err_rate">伺服器要求降低速度。請稍後重試。</string>
+    <string name="dav_err_redirect">該地址被重定向到別處。請檢查伺服器地址。</string>
+    <string name="dav_err_too_large">伺服器拒絕了此檔案的大小——請檢查其上傳限制。</string>
+    <string name="dav_err_unauthorized">伺服器拒絕了憑據。啓用雙重驗證時，請使用App專用密碼。</string>
+    <string name="dav_err_untrusted">伺服器的證書不受信任。</string>
+    <string name="dav_folder_placeholder">可選，例如 Backups</string>
+    <string name="dav_invalid_address">伺服器地址無效。</string>
+    <string name="dav_name_placeholder">例如 Nextcloud</string>
+    <string name="dav_server_footer">WebDAV 伺服器的地址。Nextcloud 的地址形如 https://你的伺服器/remote.php/dav/files/你的使用者名/。僅接受安全地址（https）。</string>
+    <string name="default_name_camera">相機備份</string>
+    <string name="default_name_photos">照片備份</string>
     <string name="delete">刪除</string>
     <string name="delete_backup_message">備份設定將被移除，已複製的檔案不受影響。</string>
     <string name="delete_backup_title">刪除此備份？</string>
@@ -88,6 +112,7 @@
     <string name="disconnected">已斷開連線</string>
     <string name="documentation">文檔</string>
     <string name="duration">時長</string>
+    <string name="edit">編輯</string>
     <string name="empty_folder">空資料夾</string>
     <string name="enter_code">輸入此代碼以確認刪除：</string>
     <string name="err_destination_not_connected">此備份的某個目的地未連線。</string>
@@ -128,9 +153,11 @@
     <string name="folders_by_month">按月份</string>
     <string name="folders_by_year_month">按年 / 月</string>
     <string name="folders_flat">扁平（無子資料夾）</string>
+    <string name="forget_certificate">忽略此證書</string>
     <string name="free">免費版</string>
     <string name="free_fmt">%1$s 可用</string>
     <string name="gallery">相簿</string>
+    <string name="gallery_source_d">這部手機上的照片和影片。</string>
     <string name="get_started">開始使用</string>
     <string name="grade">調色</string>
     <string name="grade_failed_fmt">有 %1$d 個影片無法調色。</string>
@@ -176,6 +203,7 @@
     <string name="nas_smb">NAS (SMB)</string>
     <string name="nas_unreachable">無法存取 NAS — 請檢查 Wi-Fi/VPN 和設定。</string>
     <string name="new_backup">新建備份</string>
+    <string name="next">下一步</string>
     <string name="no_backup_history">無備份歷史記錄</string>
     <string name="no_backups_yet">此 SSD 上尚無備份。</string>
     <string name="no_destination_hint">未設定目的地 — 請前往設定。</string>
@@ -250,6 +278,12 @@
     <string name="select_lut">選擇 LUT</string>
     <string name="select_videos_hint">在網格中選擇影片，然後點一下「調色」。</string>
     <string name="send">傳送</string>
+    <string name="server">伺服器</string>
+    <string name="server_kind_nas">NAS（Synology、QNAP 等）</string>
+    <string name="server_kind_nas_d">在家庭網路中，或透過 VPN。</string>
+    <string name="server_kind_webdav">Nextcloud、pCloud 或 WebDAV 伺服器</string>
+    <string name="server_kind_webdav_d">透過互聯網，隨時隨地。</string>
+    <string name="server_needs_newer">此類伺服器需要更新版本的 App。</string>
     <string name="set_device_name_hint">請在設定中設定裝置名稱。</string>
     <string name="settings">設定</string>
     <string name="settings_defaults_footer">這些是新備份的預設設定。之後每個備份都有自己的設定：「備份」標籤頁 → 備份的 ⋮ 選單 → 設定。</string>
@@ -293,8 +327,12 @@
     <string name="tpl_photos_folder_nas">相簿 → 資料夾 + NAS</string>
     <string name="tpl_photos_nas">相簿 → NAS</string>
     <string name="tpl_photos_nas_d">透過 Wi-Fi 備份到您的 NAS。</string>
+    <string name="trust_certificate">信任此證書</string>
+    <string name="trusted_certificate">受信任的證書</string>
     <string name="unlimited">無限制</string>
     <string name="unlock">解鎖</string>
+    <string name="untrusted_cert_note">此伺服器使用的證書不被 Android 信任，對於自己搭建的伺服器這很正常。請確認該指紋與你的伺服器顯示的一致，然後選擇信任。只有這個確切的證書會被接受。</string>
+    <string name="untrusted_certificate">不受信任的證書</string>
     <string name="upgrade_for_fmt">以 %1$s 升級</string>
     <string name="upgrade_to_pro">升級至 Pro</string>
     <string name="use_this_nas">將此 NAS 用於備份</string>

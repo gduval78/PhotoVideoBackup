@@ -11,23 +11,17 @@ class BrowseSource(
     val title: String,
     val target: BrowsableTarget,
     val remote: Boolean,
+    /** The LUT assignment key of a folder of a server (`nas:<subPath>` for SMB, `server:<identity>:<subPath>` otherwise); null for a local folder. */
+    val lutKey: ((String) -> String)? = null,
     val close: () -> Unit = {},
 )
 
-const val NAS_ROOT_KEY = "nas"
-
-/** The Browse key of the NAS of a backup (each distinct NAS is listed once, under the first backup that carries it). */
-fun nasKey(profileId: String) = "$NAS_ROOT_KEY:$profileId"
-
-fun isNasKey(key: String) = key == NAS_ROOT_KEY || key.startsWith("$NAS_ROOT_KEY:")
-
-/** Opens the destination identified by [key]: a destination folder's tree URI, or a NAS key ([nasKey]). */
+/** Opens the destination identified by [key]: a destination folder's tree URI, or a server key ([Servers.browseKey]). */
 suspend fun openBrowseSource(context: Context, key: String): BrowseSource = withContext(Dispatchers.IO) {
-    if (isNasKey(key)) {
-        val profile = ProfileStore.find(key.removePrefix("$NAS_ROOT_KEY:")) ?: ProfileStore.profiles.firstOrNull { it.usesNas }
-        val nas = profile?.nas ?: error("NAS not configured")
-        val target = SmbTarget.connect(nas, SecretStore.get(context, profile.nasSecretName).orEmpty())
-        BrowseSource(nas.label, target, remote = true) { target.close() }
+    if (Servers.isBrowseKey(key)) {
+        val server = Servers.find(key.removePrefix(Servers.BROWSE_PREFIX)) ?: error("Server not configured")
+        val target = Servers.connect(context, server)
+        BrowseSource(server.connection.label, target, remote = true, lutKey = { server.connection.lutKey(it) }) { Servers.close(target) }
     } else {
         val d = ProfileStore.profiles.flatMap { it.folders }.first { it.uri == key }
         BrowseSource(d.name, SafTarget(context, Uri.parse(key), d.name), remote = false)

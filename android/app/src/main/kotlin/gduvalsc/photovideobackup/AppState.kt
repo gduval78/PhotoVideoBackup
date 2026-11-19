@@ -52,10 +52,9 @@ object AppState {
             var missingFolder: String? = null
             var total = 0L; var free = 0L; var worst = -1f
             for (d in p.destinations) {
-                val f = d.folder
+                val f = d.folderOrNull
                 if (f == null) {
-                    val nas = p.nas
-                    names += nas?.label ?: "NAS"
+                    names += d.serverDestination?.connection?.label ?: "Server"
                     continue
                 }
                 names += f.name
@@ -69,8 +68,7 @@ object AppState {
                 }
             }
             var nasOk = true
-            val nas = p.nas
-            if (p.usesNas && nas != null && Pro.isPro) nasOk = BackupController.probeNas(nas.host.trim(), nas.port)
+            if (Pro.isPro) for (s in p.servers) if (s.connection.isComplete && !Servers.probe(s)) nasOk = false
             val sourceMissing = p.source.sourceId?.let { id -> srcStatus.firstOrNull { it.source.id == id }?.available != true } ?: false
             result[p.id] = ProfileConnection(missingFolder == null && nasOk && !sourceMissing, names, total, free, missingFolder, sourceMissing)
         }

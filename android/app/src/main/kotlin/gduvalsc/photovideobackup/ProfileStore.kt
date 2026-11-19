@@ -35,7 +35,7 @@ object ProfileStore {
     fun delete(context: Context, id: String) {
         val gone = find(id) ?: return
         val rest = profiles.filter { it.id != id }
-        SecretStore.remove(context, gone.nasSecretName)
+        for (s in gone.servers) s.passwordAccount?.let { SecretStore.remove(context, it) }
         val stillUsed = rest.flatMap { it.folders.map { f -> f.uri } }.toSet()
         for (f in gone.folders) if (f.uri !in stillUsed) runCatching { Saf.release(context, Uri.parse(f.uri)) }
         Prefs.profiles = rest
@@ -67,7 +67,8 @@ object ProfileStore {
                 photosName = context.getString(R.string.gallery), settings = settings,
             )
             val password = SecretStore.get(context, SecretStore.NAS_PASSWORD)
-            for (p in migrated) if (p.nas != null && password != null) SecretStore.put(context, p.nasSecretName, password)
+            // The migrated NAS keeps the account name of the pre-2.8 backups (`profile.<id>.nas`): copy the old global password there.
+            if (password != null) for (p in migrated) for (s in p.servers) s.passwordAccount?.let { SecretStore.put(context, it, password) }
             Prefs.profiles = migrated
             Diag.write("[PROFILES] migrated ${migrated.size} backup(s) from the previous setup")
         }
