@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>PhotoVideoBackup — pCloud</title>
+<style>body{font:16px -apple-system,system-ui,sans-serif;margin:0;display:grid;place-items:center;min-height:100vh;background:#f5f5f7;color:#1d1d1f}
+@media(prefers-color-scheme:dark){body{background:#1c1c1e;color:#f5f5f7}}main{padding:24px;max-width:420px;text-align:center}a{color:#0a84ff}</style></head>
+<body><main><h1>PhotoVideoBackup</h1>
+<p id="m">Returning to the app…</p>
+<p><a id="l" href="photovideobackup://pcloud" hidden>Open PhotoVideoBackup</a></p></main>
+<script>
+// pCloud returns the token in the URI fragment (never sent to a server). Hand it to the app unchanged;
+// nothing is stored or transmitted from this page.
+var h = location.hash || "", q = location.search || "";
+var target = "photovideobackup://pcloud" + q + h;
+document.getElementById("l").href = target;
+document.getElementById("l").hidden = false;
+if (h || q) { location.replace(target); }
+else { document.getElementById("m").textContent = "Nothing to return. You can close this page."; }
+</script></body></html>
