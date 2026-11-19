@@ -422,6 +422,16 @@ final class WebDAVTargetTests: XCTestCase {
         XCTAssertNil(gone)
         XCTAssertGreaterThan(FakeWebDAVServer.requests.filter { $0.path.hasSuffix("/") == false }.count, 0)
     }
+
+    // SCENARIO: a mistyped server address reads "the address redirects somewhere else"
+    // Field case: `ewebdav.pcloyd.com` (a typo) answered 301 to everything, and the app said "error (301)".
+    // A redirect that is not followed (another host) now has its own message; ordinary errors keep theirs.
+    func test_redirectStatus_isExplained() {
+        for status in [301, 302, 307, 308] { XCTAssertEqual(WebDAVError.forWrite(status: status), .redirected) }
+        XCTAssertEqual(WebDAVError.forWrite(status: 500), .http(500))
+        XCTAssertEqual(WebDAVError.forWrite(status: 201), nil)
+        XCTAssertFalse((WebDAVError.redirected.errorDescription ?? "").isEmpty)
+    }
 }
 
 private final class ProgressBox: @unchecked Sendable {

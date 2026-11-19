@@ -16,6 +16,9 @@ enum WebDAVError: LocalizedError, Equatable {
     case untrustedCertificate
     /// A certificate was trusted for this server earlier and the server now presents another one.
     case certificateChanged
+    /// 301 / 302 / 307 / 308 that was not followed: the address answers from somewhere else (a wrong
+    /// host, or a site that is not a WebDAV server).
+    case redirected
     case http(Int)
     case invalidResponse
 
@@ -33,6 +36,8 @@ enum WebDAVError: LocalizedError, Equatable {
             return String(localized: "The server's certificate is not trusted.")
         case .certificateChanged:
             return String(localized: "The server's certificate has changed. Forget the trusted certificate and test the connection again.")
+        case .redirected:
+            return String(localized: "The address redirects somewhere else. Check the server address.")
         case .http(let code):
             return String(localized: "The server answered with an error (\(code)).")
         case .invalidResponse:
@@ -48,6 +53,7 @@ enum WebDAVError: LocalizedError, Equatable {
         case 412: return .alreadyExists
         case 413: return .tooLarge
         case 429, 503: return .rateLimited
+        case 301, 302, 307, 308: return .redirected
         default: return .http(status)
         }
     }
