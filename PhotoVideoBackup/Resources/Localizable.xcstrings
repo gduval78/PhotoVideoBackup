@@ -41763,6 +41763,88 @@
           }
         }
       }
+    },
+    "The app's folder in your pCloud no longer exists. Sign in with pCloud again to recreate it." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app's folder in your pCloud no longer exists. Sign in with pCloud again to recreate it."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le dossier de l'app dans votre pCloud n'existe plus. Connectez-vous à nouveau avec pCloud pour le recréer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Ordner der App in Ihrem pCloud existiert nicht mehr. Melden Sie sich erneut bei pCloud an, um ihn neu anzulegen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La carpeta de la app en tu pCloud ya no existe. Vuelve a iniciar sesión con pCloud para recrearla."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cartella dell'app nel tuo pCloud non esiste più. Accedi di nuovo con pCloud per ricrearla."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A pasta da app no seu pCloud já não existe. Inicie sessão novamente com o pCloud para a recriar."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App 在你 pCloud 中的文件夹已不存在。请重新使用 pCloud 登录以重新创建。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка приложения в вашем pCloud больше не существует. Войдите через pCloud снова, чтобы создать её заново."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pCloud 内のアプリのフォルダが存在しません。pCloud で再度サインインして作り直してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pCloud의 앱 폴더가 더 이상 없습니다. pCloud로 다시 로그인하면 다시 만들어집니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपके pCloud में ऐप का फ़ोल्डर अब मौजूद नहीं है। इसे दोबारा बनाने के लिए pCloud से फिर साइन इन करें।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مجلد التطبيق في pCloud لم يعد موجودًا. سجّل الدخول باستخدام pCloud مرة أخرى لإعادة إنشائه."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App 在你 pCloud 中的資料夾已不存在。請重新使用 pCloud 登入以重新建立。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

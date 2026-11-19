@@ -11,6 +11,8 @@ enum PCloudError: Error, Equatable {
     case unauthorized
     /// The account is full (code 2008).
     case quotaExceeded
+    /// The app's own folder in the account no longer exists (deleted in pCloud). Signing in again recreates it.
+    case appFolderMissing
     /// A name is already taken (never overwritten).
     case alreadyExists
     /// Any other `result` code of the API.
@@ -208,7 +210,7 @@ final class PCloudTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendab
         req.timeoutInterval = 600
         let progress = ProgressDelegate(onProgress)
         let (data, response) = try await session.upload(for: req, fromFile: localFile, delegate: progress)
-        _ = try Self.decode(data, response)
+        do { _ = try Self.decode(data, response) } catch { throw try await rootGone(error) }
     }
 
     private final class ProgressDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
@@ -230,9 +232,22 @@ final class PCloudTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendab
         for f in folders {
             path += "/" + f
             if folderKnown(path) { continue }
-            try await call("createfolderifnotexists", ["path": path])
+            do { try await call("createfolderifnotexists", ["path": path]) }
+            catch { throw try await rootGone(error) }
             rememberFolder(path)
         }
+    }
+
+    /// A "parent does not exist" answer (2002/2005) on a level directly under the root means the app's own
+    /// folder is gone: say so, instead of a bare API code. Any other error is returned unchanged.
+    private func rootGone(_ error: Error) async throws -> Error {
+        guard isMissing(error), await rootIsMissing() else { return error }
+        return PCloudError.appFolderMissing
+    }
+
+    private func rootIsMissing() async -> Bool {
+        do { try await call("listfolder", ["path": "/", "nofiles": "1"]); return false }
+        catch { return isMissing(error) }
     }
 
     private func folderKnown(_ path: String) -> Bool {
@@ -261,12 +276,14 @@ final class PCloudTarget: RemoteBackupTarget, BrowsableTarget, @unchecked Sendab
 
     /// False for an unreachable server **and** a revoked token — the caller never prunes the ledger on either.
     func isReachable() async -> Bool {
-        (try? await call("userinfo", [:], timeout: 15)) != nil
+        guard (try? await call("userinfo", [:], timeout: 15)) != nil else { return false }
+        return !(await rootIsMissing())
     }
 
     /// Writes, reads back and deletes a small object under the base folder.
     func testConnection() async throws {
         try await call("userinfo", [:], timeout: 15)
+        if await rootIsMissing() { throw PCloudError.appFolderMissing }
         let probe = ".pvb-test-" + UUID().uuidString
         try await writeSmallFile(Data("ok".utf8), atRelative: probe)
         let back = await readSmallFile(atRelative: probe)
@@ -358,6 +375,8 @@ extension PCloudError: LocalizedError {
             return String(localized: "Your pCloud sign-in is no longer valid. Sign in again.")
         case .quotaExceeded:
             return String(localized: "Your pCloud storage is full.")
+        case .appFolderMissing:
+            return String(localized: "The app's folder in your pCloud no longer exists. Sign in with pCloud again to recreate it.")
         case .alreadyExists:
             return String(localized: "A different file already exists at this name on the server.")
         case .api(let code, _):

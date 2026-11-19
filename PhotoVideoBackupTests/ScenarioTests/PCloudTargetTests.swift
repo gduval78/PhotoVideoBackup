@@ -216,6 +216,21 @@ final class PCloudTargetTests: XCTestCase {
         XCTAssertEqual(conn.kind, .pcloud)
     }
 
+    // SCENARIO: the app's folder was deleted in pCloud
+    // Every call then answers "parent does not exist": the user must be told to sign in again, and the
+    // destination reads as not reachable (nothing is pruned, nothing is tried 97 times).
+    func test_deletedAppFolder() async throws {
+        FakePCloudServer.rootMissing = true
+        let t = target()
+        let reachable = await t.isReachable()
+        XCTAssertFalse(reachable)
+        do { try await t.testConnection(); XCTFail() }
+        catch { XCTAssertEqual(error as? PCloudError, .appFolderMissing) }
+        let (a, _) = source()
+        do { try await t.upload(localFile: a, toRelative: "D/a.bin", onProgress: { _ in }); XCTFail() }
+        catch { XCTAssertEqual(error as? PCloudError, .appFolderMissing) }
+    }
+
     // SCENARIO: error code mapping
     func test_errorMapping() {
         XCTAssertEqual(PCloudError.from(code: 2094, message: ""), .unauthorized)
@@ -234,10 +249,11 @@ final class FakePCloudServer: URLProtocol, @unchecked Sendable {
     static var createCalls = 0
     static var offersSHA256 = true
     static var quotaFull = false
+    static var rootMissing = false
     static let goodToken = "tok"
 
     static func reset() {
-        files = [:]; folders = ["/"]; downloads = 0; createCalls = 0; offersSHA256 = true; quotaFull = false
+        files = [:]; folders = ["/"]; downloads = 0; createCalls = 0; offersSHA256 = true; quotaFull = false; rootMissing = false
     }
 
     override class func canInit(with request: URLRequest) -> Bool { true }
@@ -285,6 +301,9 @@ final class FakePCloudServer: URLProtocol, @unchecked Sendable {
         }
         guard q["access_token"] == Self.goodToken else { reply(["result": 2094, "error": "Invalid 'access_token' provided."]); return }
         let path = q["path"] ?? ""
+        if Self.rootMissing && url.path != "/userinfo" {
+            reply(["result": path == "/" ? 2005 : 2002, "error": "Directory does not exist."]); return
+        }
         let parent = (path as NSString).deletingLastPathComponent
         switch url.path {
         case "/userinfo": reply(["result": 0, "userid": 42])
