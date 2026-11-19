@@ -90,3 +90,7 @@ Crypto Folder, sharing links, pCloud Photos/Backup features, public folder links
 ## Update 2026-11-19 — what the API token really sees
 
 The registered app is an **application-folder app**: its token is confined to `/Applications/PhotoVideoBackup` in the user's pCloud, and *that folder is the root* (`/` for the token; `/Applications` does not exist for it). Consequences: the API destination writes there, **not** next to the user's WebDAV backups at the account root; the first API run re-copies what WebDAV already holds (separate sidecar index). Safer (no access to the rest of the account), but a different place. The earlier note "no app-folder scope" was wrong for this app. Changing the access type of the app at pCloud (My Apps) would be needed to share the WebDAV location.
+
+## Decision 2026-11-19 — API destination hidden in 2.8.0
+
+Built and validated (sign-in, upload, verification, browse; live test `make test-pcloud`), but **not offered**: the app-folder token breaks every call (error 2002) once `/Applications/PhotoVideoBackup` is deleted in pCloud, files land in a different place than the WebDAV route, a switch from WebDAV re-copies everything, and Android does not have it (version parity). pCloud stays a WebDAV preset in the guide. Hidden through `ServerKind.selectable`; to reopen: remove the filter, restore the guide section / FAQ / privacy bullet (commit 0b7b03a), add Android, and ask pCloud for a full-access app type if a shared location is wanted.

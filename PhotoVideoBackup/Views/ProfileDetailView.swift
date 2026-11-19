@@ -169,7 +169,7 @@ struct ProfileDetailView: View {
             Menu {
                 Button("A folder…") { addFolder() }
                 Menu("A server") {
-                    ForEach(ServerKind.allCases) { kind in
+                    ForEach(ServerKind.selectable) { kind in
                         Button { addServer(kind) } label: { Text(kind.titleKey) }
                     }
                 }

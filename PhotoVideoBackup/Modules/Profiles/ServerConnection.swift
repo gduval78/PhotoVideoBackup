@@ -168,10 +168,16 @@ enum ServerKind: String, CaseIterable, Identifiable, Sendable {
     case smb, webdav, pcloud
     var id: String { rawValue }
 
+    /// The types offered in the "Add a destination" menu. **pCloud (API) is hidden in 2.8.0**: its token is
+    /// confined to an app folder (`/Applications/PhotoVideoBackup`) that breaks every call once it is deleted
+    /// in pCloud, and it is not on Android; WebDAV is the supported route for pCloud. The code, tests and
+    /// strings stay, and a profile that already holds a pCloud destination still opens and runs.
+    static var selectable: [ServerKind] { allCases.filter { $0 != .pcloud } }
+
     var titleKey: LocalizedStringKey {
         switch self {
         case .smb:    return "NAS (Synology, QNAP…)"
-        case .webdav: return "Nextcloud or WebDAV server"
+        case .webdav: return "Nextcloud, pCloud or WebDAV server"
         case .pcloud: return "pCloud"
         }
     }
