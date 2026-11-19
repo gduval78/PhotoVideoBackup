@@ -91,22 +91,77 @@ object DestinationIndex {
     /** Roots whose sidecar was written by a newer app version: read-only, so it is never overwritten. */
     private val readOnlyRoots: MutableSet<String> = Collections.synchronizedSet(mutableSetOf())
 
+    /**
+     * How many times a sidecar is read before it is judged missing or unreadable, and the pauses between
+     * attempts (milliseconds; tests set them to zero). A network read (SMB, WebDAV) of a large file can
+     * come back short or fail for a moment; one such hiccup must not be taken for a damaged index.
+     */
+    const val READ_ATTEMPTS = 3
+    @Volatile var retryPausesMs: List<Long> = listOf(400L, 1000L)
+
+    /** Name of the copy kept of a sidecar that stays undecodable after every attempt, before it is rewritten. */
+    const val CORRUPT_COPY_NAME = ".pvb-index.corrupt.json"
+
+    private sealed class SidecarRead {
+        /** Nothing at the sidecar's name: a destination that never had one. */
+        object Absent : SidecarRead()
+        /** The file is there but could not be read at all: never overwrite what was not read. */
+        object Unreadable : SidecarRead()
+        /** Bytes arrived but do not decode: a damaged or short read. */
+        class Damaged(val data: ByteArray) : SidecarRead()
+        class Ok(val file: SidecarFile) : SidecarRead()
+    }
+
+    /** Reads and decodes the sidecar, trying again when a read fails or returns something that does not decode. */
+    private suspend fun readSidecar(target: BackupTarget): SidecarRead {
+        var last: SidecarRead = SidecarRead.Absent
+        for (attempt in 0 until READ_ATTEMPTS) {
+            if (attempt > 0) {
+                val pause = retryPausesMs.let { it[minOf(attempt - 1, it.size - 1)] }
+                if (pause > 0) kotlinx.coroutines.delay(pause)
+                Diag.write("[INDEX] retrying the sidecar of ${target.displayName} (attempt ${attempt + 1} of $READ_ATTEMPTS)")
+            }
+            val data = runCatching { target.readSmallFile(RELATIVE_NAME) }.getOrNull()
+            if (data != null) {
+                val file = runCatching { json.decodeFromString<SidecarFile>(data.decodeToString()) }.getOrNull()
+                if (file != null) return SidecarRead.Ok(file)
+                last = SidecarRead.Damaged(data)
+            } else if (runCatching { target.existingSize(RELATIVE_NAME) }.getOrNull() != null) {
+                last = SidecarRead.Unreadable   // it exists, yet the read failed
+            } else {
+                return SidecarRead.Absent       // really not there: no point trying again
+            }
+        }
+        return last
+    }
+
     /** Merges every target's sidecar into the local index. Call before looking anything up. */
     suspend fun load(targets: List<BackupTarget>, store: IndexStore) {
         for (target in targets) {
-            val data = target.readSmallFile(RELATIVE_NAME) ?: continue
-            val file = runCatching { json.decodeFromString<SidecarFile>(data.decodeToString()) }.getOrNull()
-            if (file == null) {
-                Diag.write("[INDEX] unreadable sidecar on ${target.displayName} — ignored, will be rewritten")
-                continue
+            when (val r = readSidecar(target)) {
+                SidecarRead.Absent -> continue
+                SidecarRead.Unreadable -> {
+                    // Exists but could not be read: leave it exactly as it is for this run (writing our own
+                    // smaller copy over it could drop entries other devices recorded).
+                    Diag.write("[INDEX] sidecar on ${target.displayName} could not be read after $READ_ATTEMPTS attempts — left untouched")
+                    readOnlyRoots += target.rootIdentifier
+                }
+                is SidecarRead.Damaged -> {
+                    // Still undecodable after every attempt: keep what was there, then let the run rewrite it.
+                    runCatching { target.writeSmallFile(r.data, CORRUPT_COPY_NAME) }
+                    Diag.write("[INDEX] unreadable sidecar on ${target.displayName} after $READ_ATTEMPTS attempts — copy kept as $CORRUPT_COPY_NAME, will be rewritten")
+                }
+                is SidecarRead.Ok -> {
+                    val file = r.file
+                    if (file.version > CURRENT_VERSION) {
+                        Diag.write("[INDEX] sidecar on ${target.displayName} is version ${file.version} — left untouched")
+                        readOnlyRoots += target.rootIdentifier
+                        continue
+                    }
+                    val added = store.mergeSidecar(file.entries, target)
+                    Diag.write("[INDEX] ${target.displayName}: ${file.entries.size} entries, $added new to this device")
+                }
             }
-            if (file.version > CURRENT_VERSION) {
-                Diag.write("[INDEX] sidecar on ${target.displayName} is version ${file.version} — left untouched")
-                readOnlyRoots += target.rootIdentifier
-                continue
-            }
-            val added = store.mergeSidecar(file.entries, target)
-            Diag.write("[INDEX] ${target.displayName}: ${file.entries.size} entries, $added new to this device")
         }
     }
 
