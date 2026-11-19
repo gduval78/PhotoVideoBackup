@@ -18,6 +18,8 @@ final class WebDAVTargetTests: XCTestCase {
         // The fake serves paths from its root, so the WebDAV root folders must exist.
         try? FileManager.default.createDirectory(
             at: FakeWebDAVServer.fileURL("remote.php/dav/files/me"), withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(
+            at: FakeWebDAVServer.fileURL("remote.php/dav/uploads/me"), withIntermediateDirectories: true)
     }
 
     override func tearDown() {
@@ -29,6 +31,16 @@ final class WebDAVTargetTests: XCTestCase {
     private func target(base: String = "Backup", password: String = "pw") -> WebDAVTarget {
         WebDAVTarget(serverURL: serverURL, basePath: base, user: "me", password: password,
                      displayName: "Cloud", session: session)
+    }
+
+    /// Small thresholds so a few KB exercise the chunked path: files above 2500 B go in 1000 B chunks.
+    private func chunkedTarget() -> WebDAVTarget {
+        WebDAVTarget(serverURL: serverURL, basePath: "Backup", user: "me", password: "pw",
+                     displayName: "Cloud", session: session, chunking: nil, chunkThreshold: 2500, chunkSize: 1000)
+    }
+
+    private func uploadFolders() -> [String] {
+        (try? FileManager.default.contentsOfDirectory(atPath: FakeWebDAVServer.fileURL("remote.php/dav/uploads/me").path)) ?? []
     }
 
     private func sourceFile(_ name: String = "src.bin", bytes: Int = 1000, byte: UInt8 = 0xAB) -> (URL, String) {
@@ -227,4 +239,123 @@ final class WebDAVTargetTests: XCTestCase {
         let size = await t.existingSize(forRelative: "iPhone/x.bin")
         XCTAssertEqual(size, 100)
     }
+
+    // SCENARIO: a large file goes up in chunks and is assembled at its final name
+    // Above the threshold, on a server that advertises Nextcloud chunking: numbered chunks, then one MOVE.
+    // The assembled file is byte-identical, progress reaches the full size, the upload folder is gone.
+    func test_chunked_uploadAssemblesFile() async throws {
+        let t = chunkedTarget()
+        let (src, sha) = sourceFile(bytes: 3500)
+        let progress = ProgressBox()
+        try await t.upload(localFile: src, toRelative: "iPhone/2024-01-14/big.mp4") { progress.value = $0 }
+        let digest = try await t.sha256(forRelative: "iPhone/2024-01-14/big.mp4")
+        XCTAssertEqual(digest, sha)
+        XCTAssertEqual(FakeWebDAVServer.count(of: "MOVE"), 1)
+        XCTAssertEqual(FakeWebDAVServer.requests.filter { $0.method == "PUT" && $0.path.contains("/uploads/") }.count, 4)
+        XCTAssertEqual(progress.value, 3500)
+        XCTAssertTrue(uploadFolders().isEmpty)
+    }
+
+    // SCENARIO: a small file is a plain PUT even on a chunking server
+    func test_belowThreshold_plainPut() async throws {
+        let t = chunkedTarget()
+        let (src, _) = sourceFile(bytes: 2000)
+        try await t.upload(localFile: src, toRelative: "iPhone/small.bin") { _ in }
+        XCTAssertEqual(FakeWebDAVServer.count(of: "MOVE"), 0)
+    }
+
+    // SCENARIO: a server without chunking gets a plain PUT, whatever the size
+    // Generic WebDAV (Synology, Hetzner…) has no chunk protocol; the large file is sent in one request.
+    func test_noChunkingCapability_plainPut() async throws {
+        FakeWebDAVServer.chunkingCapability = false
+        let t = chunkedTarget()
+        let (src, sha) = sourceFile(bytes: 3500)
+        try await t.upload(localFile: src, toRelative: "iPhone/big.mp4") { _ in }
+        XCTAssertEqual(FakeWebDAVServer.count(of: "MOVE"), 0)
+        let digest = try await t.sha256(forRelative: "iPhone/big.mp4")
+        XCTAssertEqual(digest, sha)
+    }
+
+    // SCENARIO: an interrupted upload resumes — chunks already on the server are not sent again
+    // The upload folder name is deterministic (destination + size + date), so a second attempt finds the
+    // chunks of the first and sends only the missing ones.
+    func test_chunked_resumeSkipsPresentChunks() async throws {
+        let t = chunkedTarget()
+        let (src, sha) = sourceFile(bytes: 3500)
+        let modified = try src.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+        let id = WebDAVTarget.uploadID(rel: "iPhone/big.mp4", size: 3500, modified: modified)
+        let dir = FakeWebDAVServer.fileURL("remote.php/dav/uploads/me/\(id)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let data = try Data(contentsOf: src)
+        try data[0..<1000].write(to: dir.appendingPathComponent("000001"))
+        try data[1000..<2000].write(to: dir.appendingPathComponent("000002"))
+
+        try await t.upload(localFile: src, toRelative: "iPhone/big.mp4") { _ in }
+        let chunkPuts = FakeWebDAVServer.requests.filter { $0.method == "PUT" && $0.path.contains("/uploads/") }
+        XCTAssertEqual(chunkPuts.map { String($0.path.suffix(6)) }, ["000003", "000004"])
+        let digest = try await t.sha256(forRelative: "iPhone/big.mp4")
+        XCTAssertEqual(digest, sha)
+    }
+
+    // SCENARIO: a failed chunk removes the upload folder (no orphan chunks using quota)
+    func test_chunked_failureCleansUp() async throws {
+        FakeWebDAVServer.failChunkOnce = "000002"
+        let t = chunkedTarget()
+        let (src, _) = sourceFile(bytes: 3500)
+        do {
+            try await t.upload(localFile: src, toRelative: "iPhone/big.mp4") { _ in }
+            XCTFail("expected a failure")
+        } catch {}
+        XCTAssertTrue(uploadFolders().isEmpty)
+        let present = await t.existingSize(forRelative: "iPhone/big.mp4")
+        XCTAssertNil(present)
+    }
+
+    // SCENARIO: a taken final name is never overwritten by the MOVE
+    // The name is checked just before the MOVE (servers differ on If-None-Match for MOVE): the original
+    // stays intact and the upload folder is cleaned.
+    func test_chunked_existingFinalName_isNotOverwritten() async throws {
+        let t = chunkedTarget()
+        let (small, shaSmall) = sourceFile("a.bin", bytes: 100, byte: 0x01)
+        try await t.upload(localFile: small, toRelative: "iPhone/big.mp4") { _ in }
+        let (big, _) = sourceFile("b.bin", bytes: 3500, byte: 0x02)
+        do {
+            try await t.upload(localFile: big, toRelative: "iPhone/big.mp4") { _ in }
+            XCTFail("expected alreadyExists")
+        } catch let e as WebDAVError {
+            XCTAssertEqual(e, .alreadyExists)
+        }
+        let digest = try await t.sha256(forRelative: "iPhone/big.mp4")
+        XCTAssertEqual(digest, shaSmall)
+        XCTAssertTrue(uploadFolders().isEmpty)
+    }
+
+    // SCENARIO: a failing MOVE is reported and cleaned up
+    func test_chunked_moveFailure_isReportedAndCleaned() async throws {
+        FakeWebDAVServer.moveStatusOverride = 500
+        let t = chunkedTarget()
+        let (src, _) = sourceFile(bytes: 3500)
+        do {
+            try await t.upload(localFile: src, toRelative: "iPhone/big.mp4") { _ in }
+            XCTFail("expected an error")
+        } catch let e as WebDAVError {
+            XCTAssertEqual(e, .http(500))
+        }
+        XCTAssertTrue(uploadFolders().isEmpty)
+    }
+
+    // SCENARIO: the connection test reports whether the server supports chunking
+    func test_connectionTest_reportsChunking() async throws {
+        let yes = try await target().testConnection()
+        FakeWebDAVServer.chunkingCapability = false
+        let no = try await target().testConnection()
+        XCTAssertTrue(yes)
+        XCTAssertFalse(no)
+    }
+}
+
+private final class ProgressBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value: Int64 = 0
+    var value: Int64 { get { lock.withLock { _value } } set { lock.withLock { _value = newValue } } }
 }

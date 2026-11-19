@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 // MARK: - Errors
 
@@ -152,8 +153,24 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     private let lock = NSLock()
     private var createdFolders = Set<String>()
 
+    /// Nextcloud / ownCloud chunked upload: `nil` = not known yet (detected on the first large file),
+    /// true/false = known (stored in `WebDAVConfig.chunking` after *Test connection*).
+    private var chunking: Bool?
+    /// Files above this size use the chunked upload when the server supports it.
+    private let chunkThreshold: Int64
+    /// Size of one chunk — well below Cloudflare's 100 MB request limit.
+    private let chunkSize: Int
+
+    static let defaultChunkThreshold: Int64 = 100 * 1024 * 1024
+    static let defaultChunkSize = 10 * 1024 * 1024
+
     init(serverURL: URL, basePath: String, user: String, password: String,
-         displayName: String, session: URLSession? = nil) {
+         displayName: String, session: URLSession? = nil, chunking: Bool? = nil,
+         chunkThreshold: Int64 = WebDAVTarget.defaultChunkThreshold,
+         chunkSize: Int = WebDAVTarget.defaultChunkSize) {
+        self.chunking = chunking
+        self.chunkThreshold = chunkThreshold
+        self.chunkSize = chunkSize
         self.serverURL = serverURL
         self.basePath = basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         self.user = user
@@ -284,10 +301,114 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
 
     func upload(localFile: URL, toRelative rel: String, onProgress: @escaping @Sendable (Int64) -> Void) async throws {
         try await ensureParentFolders(ofRelative: rel)
+        let size = ((try? localFile.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0)
+        if Int64(size) > chunkThreshold, await supportsChunking(), let uploads = uploadsRoot {
+            try await chunkedUpload(localFile: localFile, size: Int64(size), rel: rel, uploads: uploads, onProgress: onProgress)
+            return
+        }
         let req = request("PUT", url(forRelative: rel), headers: ["If-None-Match": "*"])
         let progress = ProgressDelegate(onProgress)
         let (_, response) = try await session.upload(for: req, fromFile: localFile, delegate: progress)
         if let err = WebDAVError.forWrite(status: try status(of: response)) { throw err }
+    }
+
+    // MARK: Chunked upload (Nextcloud / ownCloud)
+
+    /// `…/remote.php/dav/uploads/<user>` for a server URL of the form `…/remote.php/dav/files/<user>/…`.
+    private var uploadsRoot: URL? {
+        let s = serverURL.absoluteString
+        guard let r = s.range(of: "/remote.php/dav/files/") else { return nil }
+        let user = s[r.upperBound...].split(separator: "/").first.map(String.init) ?? ""
+        guard !user.isEmpty else { return nil }
+        return URL(string: String(s[..<r.lowerBound]) + "/remote.php/dav/uploads/" + user)
+    }
+
+    /// Whether the server advertises Nextcloud chunking (`dav.chunking` in its capabilities); remembered.
+    func supportsChunking() async -> Bool {
+        if let known = lock.withLock({ chunking }) { return known }
+        let found = await detectChunking()
+        lock.withLock { chunking = found }
+        return found
+    }
+
+    private func detectChunking() async -> Bool {
+        let s = serverURL.absoluteString
+        guard let r = s.range(of: "/remote.php/"),
+              let url = URL(string: String(s[..<r.lowerBound]) + "/ocs/v1.php/cloud/capabilities?format=json") else { return false }
+        let req = request("GET", url, headers: ["OCS-APIRequest": "true", "Accept": "application/json"], timeout: 15)
+        guard let (data, response) = try? await session.data(for: req),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let dav = (((json["ocs"] as? [String: Any])?["data"] as? [String: Any])?["capabilities"] as? [String: Any])?["dav"] as? [String: Any]
+        else { return false }
+        return (dav["chunking"] as? String) == "1.0"
+    }
+
+    /// Deterministic per destination + file, so an interrupted upload is found again.
+    static func uploadID(rel: String, size: Int64, modified: Date?) -> String {
+        let key = "\(rel)|\(size)|\(Int(modified?.timeIntervalSince1970 ?? 0))"
+        return "pvb-" + SHA256.hash(data: Data(key.utf8)).prefix(12).map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// Upload folder → numbered chunks → `MOVE .file` to the final path. A chunk already present with the
+    /// right size is not sent again; on any failure the upload folder is removed (best effort — an
+    /// unreachable server leaves it, and the next run resumes from it).
+    private func chunkedUpload(localFile: URL, size: Int64, rel: String, uploads: URL,
+                               onProgress: @escaping @Sendable (Int64) -> Void) async throws {
+        let modified = (try? localFile.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+        let id = Self.uploadID(rel: rel, size: size, modified: modified)
+        let folder = uploads.appendingPathComponent(id)
+        do {
+            let (_, mk) = try await session.data(for: request("MKCOL", folder))
+            let mkCode = try status(of: mk)
+            guard (200...299).contains(mkCode) || mkCode == 405 else { throw WebDAVError.forWrite(status: mkCode) ?? .http(mkCode) }
+
+            // Chunks already on the server (resume).
+            var present: [String: Int64] = [:]
+            if let listing = try? await propfind(folder, depth: 1), listing.status == 207 {
+                for e in listing.entries where !e.isCollection { present[e.name] = e.size ?? 0 }
+            }
+
+            guard let handle = try? FileHandle(forReadingFrom: localFile) else { throw CopyError.cannotCreateDestinationFile(localFile) }
+            defer { try? handle.close() }
+            var offset: Int64 = 0
+            var number = 1
+            while offset < size {
+                try Task.checkCancellation()
+                let length = Int(min(Int64(chunkSize), size - offset))
+                let name = String(format: "%06d", number)
+                if present[name] == Int64(length) {
+                    offset += Int64(length); number += 1
+                    onProgress(offset)
+                    continue
+                }
+                try handle.seek(toOffset: UInt64(offset))
+                guard let data = try handle.read(upToCount: length), data.count == length else {
+                    throw CopyError.cannotCreateDestinationFile(localFile)
+                }
+                let base = offset
+                let progress = ProgressDelegate { sent in onProgress(base + sent) }
+                let req = request("PUT", folder.appendingPathComponent(name), headers: ["OC-Total-Length": "\(size)"])
+                let (_, response) = try await session.upload(for: req, from: data, delegate: progress)
+                if let err = WebDAVError.forWrite(status: try status(of: response)) { throw err }
+                offset += Int64(length); number += 1
+                onProgress(offset)
+            }
+
+            // The name is checked right before the MOVE: MOVE does not honour If-None-Match everywhere.
+            if await existingSize(forRelative: rel) != nil { throw WebDAVError.alreadyExists }
+            let dest = url(forRelative: rel)
+            let move = request("MOVE", folder.appendingPathComponent(".file"),
+                               headers: ["Destination": dest.absoluteString, "OC-Total-Length": "\(size)", "Overwrite": "F"])
+            let (_, response) = try await session.data(for: move)
+            if let err = WebDAVError.forWrite(status: try status(of: response)) { throw err }
+        } catch {
+            // Detached: a cancelled task must still clean up.
+            let cleanup = request("DELETE", folder)
+            let session = self.session
+            await Task.detached { _ = try? await session.data(for: cleanup) }.value
+            throw error
+        }
     }
 
     private final class ProgressDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
@@ -344,7 +465,8 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
     }
 
     /// Throws the reason a backup would fail: credentials, missing base folder, size/proxy problems.
-    func testConnection() async throws {
+    @discardableResult
+    func testConnection() async throws -> Bool {
         let result = try await propfind(serverURL, depth: 0, timeout: 15)
         if let err = WebDAVError.forWrite(status: result.status == 207 ? 200 : result.status) { throw err }
         // Write + read back + delete a small object under the base folder.
@@ -353,6 +475,7 @@ final class WebDAVTarget: RemoteBackupTarget, @unchecked Sendable {
         let back = await readSmallFile(atRelative: probe)
         try? await delete(forRelative: probe)
         guard back == Data("ok".utf8) else { throw WebDAVError.invalidResponse }
+        return await supportsChunking()
     }
 
     // MARK: Browsing
@@ -402,6 +525,9 @@ struct WebDAVConfig: Codable, Equatable, Hashable, Sendable {
     var username: String
     /// Label shown in the card, History and Report (e.g. "Nextcloud").
     var displayName: String
+    /// Whether the server accepts Nextcloud chunked uploads, as found by *Test connection*.
+    /// nil = not tested: the target then asks the server itself before its first large file.
+    var chunking: Bool? = nil
 
     static let empty = WebDAVConfig(serverURL: "", basePath: "", username: "", displayName: "")
 
@@ -434,6 +560,6 @@ struct WebDAVConfig: Codable, Equatable, Hashable, Sendable {
     func makeTarget(password: String, session: URLSession? = nil) -> WebDAVTarget? {
         guard let url else { return nil }
         return WebDAVTarget(serverURL: url, basePath: basePath, user: username, password: password,
-                            displayName: label, session: session)
+                            displayName: label, session: session, chunking: chunking)
     }
 }

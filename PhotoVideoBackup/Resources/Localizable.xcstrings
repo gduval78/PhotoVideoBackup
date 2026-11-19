@@ -38237,6 +38237,88 @@
           }
         }
       }
+    },
+    "Connected. Large files are sent in chunks." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected. Large files are sent in chunks."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecté. Les gros fichiers sont envoyés par morceaux."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbunden. Große Dateien werden in Teilen gesendet."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectado. Los archivos grandes se envían por partes."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connesso. I file di grandi dimensioni vengono inviati a blocchi."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligado. Os ficheiros grandes são enviados por partes."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已连接。大文件将分块发送。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключено. Большие файлы отправляются частями."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "接続しました。大きなファイルは分割して送信されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연결되었습니다. 큰 파일은 나누어 전송됩니다."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कनेक्ट हो गया। बड़ी फ़ाइलें हिस्सों में भेजी जाती हैं।"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم الاتصال. تُرسل الملفات الكبيرة على أجزاء."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已連線。大檔案將分塊傳送。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

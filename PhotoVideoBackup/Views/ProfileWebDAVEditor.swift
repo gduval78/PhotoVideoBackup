@@ -57,9 +57,11 @@ struct ProfileWebDAVEditor: View {
             return
         }
         do {
-            try await target.testConnection()
+            config.chunking = try await target.testConnection()
             testSucceeded = true
-            testMessage = String(localized: "Connected.")
+            testMessage = config.chunking == true
+                ? String(localized: "Connected. Large files are sent in chunks.")
+                : String(localized: "Connected.")
         } catch {
             testSucceeded = false
             testMessage = error.localizedDescription

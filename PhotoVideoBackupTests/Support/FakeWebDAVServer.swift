@@ -13,6 +13,12 @@ final class FakeWebDAVServer: URLProtocol {
     nonisolated(unsafe) static var putStatusOverride: Int?
     nonisolated(unsafe) static var ignoreIfNoneMatch = false
     nonisolated(unsafe) static var offline = false
+    /// Whether /ocs capabilities advertise `dav.chunking`.
+    nonisolated(unsafe) static var chunkingCapability = true
+    /// A PUT of this chunk name (e.g. "000002") fails with a network error (once), to test resume.
+    nonisolated(unsafe) static var failChunkOnce: String?
+    /// The MOVE answers with this status instead of assembling (e.g. 500).
+    nonisolated(unsafe) static var moveStatusOverride: Int?
     private static let lock = NSLock()
 
     /// Fresh empty tree; returns a session that routes every request to this server.
@@ -22,6 +28,7 @@ final class FakeWebDAVServer: URLProtocol {
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         requests = []; expectedAuthorization = nil; putStatusOverride = nil
         ignoreIfNoneMatch = false; offline = false
+        chunkingCapability = true; failChunkOnce = nil; moveStatusOverride = nil
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [FakeWebDAVServer.self]
         return URLSession(configuration: config)
@@ -53,6 +60,12 @@ final class FakeWebDAVServer: URLProtocol {
         if let expected = Self.expectedAuthorization, request.value(forHTTPHeaderField: "Authorization") != expected {
             return respond(401)
         }
+        if path == "/ocs/v1.php/cloud/capabilities" {
+            let body = Self.chunkingCapability
+                ? #"{"ocs":{"data":{"capabilities":{"dav":{"chunking":"1.0"}}}}}"#
+                : #"{"ocs":{"data":{"capabilities":{"dav":{}}}}}"#
+            return respond(200, body: Data(body.utf8))
+        }
         let target = Self.fileURL(path)
         let fm = FileManager.default
         var isDir: ObjCBool = false
@@ -67,6 +80,10 @@ final class FakeWebDAVServer: URLProtocol {
             else if !parentExists { respond(409) }
             else { try? fm.createDirectory(at: target, withIntermediateDirectories: false); respond(201) }
         case "PUT":
+            if let fail = Self.failChunkOnce, path.hasSuffix("/" + fail) {
+                Self.failChunkOnce = nil
+                client?.urlProtocol(self, didFailWithError: URLError(.networkConnectionLost)); return
+            }
             if let forced = Self.putStatusOverride { return respond(forced) }
             if request.value(forHTTPHeaderField: "If-None-Match") == "*", exists, !Self.ignoreIfNoneMatch { return respond(412) }
             guard parentExists else { return respond(409) }
@@ -75,6 +92,21 @@ final class FakeWebDAVServer: URLProtocol {
         case "GET":
             guard exists, !isDir.boolValue, let data = try? Data(contentsOf: target) else { return respond(404) }
             respond(200, body: data)
+        case "MOVE":
+            guard path.hasSuffix("/.file") else { return respond(405) }
+            if let forced = Self.moveStatusOverride { return respond(forced) }
+            let dir = target.deletingLastPathComponent()
+            guard let dest = request.value(forHTTPHeaderField: "Destination").flatMap(URL.init(string:)) else { return respond(400) }
+            let destFile = Self.fileURL(dest.path)
+            if request.value(forHTTPHeaderField: "Overwrite") == "F", fm.fileExists(atPath: destFile.path) { return respond(412) }
+            let names = ((try? fm.contentsOfDirectory(atPath: dir.path)) ?? []).sorted()
+            var assembled = Data()
+            for n in names { assembled.append((try? Data(contentsOf: dir.appendingPathComponent(n))) ?? Data()) }
+            guard String(assembled.count) == request.value(forHTTPHeaderField: "OC-Total-Length") else { return respond(400) }
+            guard fm.fileExists(atPath: destFile.deletingLastPathComponent().path) else { return respond(409) }
+            try? assembled.write(to: destFile)
+            try? fm.removeItem(at: dir)
+            respond(201)
         case "DELETE":
             guard exists else { return respond(404) }
             try? fm.removeItem(at: target); respond(204)
