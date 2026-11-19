@@ -95,6 +95,33 @@ final class BackupBrowserViewModel {
                                profiles: ProfileStore.shared.profiles)
     }
 
+    /// A WebDAV server the Browse tab can open: a backup's own.
+    struct WebDAVEntry: Equatable {
+        let config: WebDAVConfig
+        /// Keychain account of its password.
+        let passwordAccount: String
+        var title: String { config.displayName.trimmingCharacters(in: .whitespaces).isEmpty ? (config.url?.host ?? "WebDAV") : config.displayName }
+    }
+
+    /// Every distinct WebDAV server of the existing backups. Two backups describing the same server,
+    /// folder and user are one entry (the first one's password account is used).
+    nonisolated static func webdavEntries(profiles: [BackupProfile]) -> [WebDAVEntry] {
+        func identity(_ c: WebDAVConfig) -> String {
+            [c.normalizedURLString.lowercased(), c.basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased(),
+             c.username.lowercased()].joined(separator: "|")
+        }
+        var seen = Set<String>()
+        var result: [WebDAVEntry] = []
+        for profile in profiles where profile.usesWebDAV {
+            guard let cfg = profile.webdav, cfg.isComplete, let account = profile.webdavPasswordAccount,
+                  seen.insert(identity(cfg)).inserted else { continue }
+            result.append(WebDAVEntry(config: cfg, passwordAccount: account))
+        }
+        return result
+    }
+
+    var webdavEntries: [WebDAVEntry] { Self.webdavEntries(profiles: ProfileStore.shared.profiles) }
+
     /// Several profiles (or a profile and a legacy slot) can point at the same folder — a migrated
     /// profile reuses the legacy key. Browse lists a folder once. Compared on the standardized path.
     nonisolated static func uniqueByFolder(_ entries: [(key: String, url: URL)]) -> [(key: String, url: URL)] {

@@ -277,4 +277,26 @@ final class ProfileTests: XCTestCase {
         XCTAssertFalse(cfg("").isComplete)
         XCTAssertFalse(WebDAVConfig(serverURL: "https://dav.example.com", basePath: "", username: " ", displayName: "").isComplete)
     }
+
+    // SCENARIO: Browse lists each WebDAV server of the backups once
+    // Two backups pointing at the same server, folder and user are one section; a backup with an
+    // incomplete server, or without a password account, adds nothing; NAS-only backups are not listed.
+    func test_browse_webdavEntries_distinctAndComplete() {
+        let a = WebDAVConfig(serverURL: "https://cloud.example.com/remote.php/dav/files/me/", basePath: "Backups", username: "me", displayName: "Nextcloud")
+        let same = WebDAVConfig(serverURL: "HTTPS://cloud.example.com/remote.php/dav/files/me/", basePath: "/backups/", username: "ME", displayName: "Other label")
+        let other = WebDAVConfig(serverURL: "https://dav.example.org/", basePath: "", username: "u", displayName: "")
+        let incomplete = WebDAVConfig(serverURL: "", basePath: "", username: "u", displayName: "")
+        func profile(_ cfg: WebDAVConfig?, account: String?) -> BackupProfile {
+            BackupProfile(name: "p", template: .photosToWebDAV, source: .photos, destinations: [.webdav],
+                          webdav: cfg, webdavPasswordAccount: account)
+        }
+        let profiles = [profile(a, account: "acc1"), profile(same, account: "acc2"),
+                        profile(other, account: "acc3"), profile(incomplete, account: "acc4"),
+                        profile(a, account: nil),
+                        BackupProfile(name: "nas", template: .photosToNAS, source: .photos, destinations: [.nas])]
+        let entries = BackupBrowserViewModel.webdavEntries(profiles: profiles)
+        XCTAssertEqual(entries.map(\.passwordAccount), ["acc1", "acc3"])
+        XCTAssertEqual(entries.first?.title, "Nextcloud")
+        XCTAssertEqual(entries.last?.title, "dav.example.org")   // no label: the host
+    }
 }

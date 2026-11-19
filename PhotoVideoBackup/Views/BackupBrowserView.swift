@@ -10,8 +10,9 @@ struct BackupBrowserView: View {
     var body: some View {
         let _ = browser.folderListVersion
         let nasEntries = browser.nasEntries
+        let webdavEntries = browser.webdavEntries
         Group {
-            if browser.destinations.isEmpty && nasEntries.isEmpty {
+            if browser.destinations.isEmpty && nasEntries.isEmpty && webdavEntries.isEmpty {
                 emptyState(
                     icon: "externaldrive.badge.xmark",
                     title: "No destination available",
@@ -46,6 +47,18 @@ struct BackupBrowserView: View {
                                                    passwordAccount: entry.passwordAccount)
                             } label: {
                                 Label(entry.config.label, systemImage: "externaldrive.connected.to.line.below")
+                            }
+                        }
+                    }
+
+                    // One section per distinct WebDAV server of the backups.
+                    ForEach(webdavEntries, id: \.config) { entry in
+                        Section(entry.title) {
+                            NavigationLink {
+                                WebDAVBrowserRootView(title: entry.title, config: entry.config,
+                                                      passwordAccount: entry.passwordAccount)
+                            } label: {
+                                Label(entry.config.label, systemImage: "network")
                             }
                         }
                     }
