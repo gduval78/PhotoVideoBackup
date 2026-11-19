@@ -1,4 +1,6 @@
 import Foundation
+import AuthenticationServices
+import UIKit
 
 // MARK: - Errors
 
@@ -331,6 +333,11 @@ struct PCloudConfig: Codable, Equatable, Hashable, Sendable {
     var basePath: String
     var displayName: String
 
+    static let empty = PCloudConfig(region: .eu, userID: 0, basePath: "", displayName: "")
+
+    /// Signed in (an account id is known).
+    var isComplete: Bool { userID != 0 }
+
     var label: String {
         let name = displayName.trimmingCharacters(in: .whitespaces)
         let folder = basePath.trimmingCharacters(in: CharacterSet(charactersIn: "/ "))
@@ -341,5 +348,113 @@ struct PCloudConfig: Codable, Equatable, Hashable, Sendable {
     func makeTarget(token: String, session: URLSession? = nil) -> PCloudTarget {
         PCloudTarget(region: region, userID: userID, token: token, basePath: basePath,
                      displayName: label, session: session)
+    }
+}
+
+extension PCloudError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .unauthorized:
+            return String(localized: "Your pCloud sign-in is no longer valid. Sign in again.")
+        case .quotaExceeded:
+            return String(localized: "Your pCloud storage is full.")
+        case .alreadyExists:
+            return String(localized: "A different file already exists at this name on the server.")
+        case .api(let code, _):
+            return String(localized: "pCloud answered with an error (\(code)).")
+        case .http(let code):
+            return String(localized: "The server answered with an error (\(code)).")
+        case .invalidResponse:
+            return String(localized: "The server's answer could not be read.")
+        }
+    }
+}
+
+// MARK: - Sign-in (OAuth 2.0, token flow)
+
+/// What pCloud hands back after the user signs in.
+struct PCloudAuthResult: Equatable, Sendable {
+    let token: String
+    let userID: Int
+    let region: PCloudRegion
+}
+
+enum PCloudAuthError: Error, Equatable {
+    case cancelled
+    case denied
+    case failed
+}
+
+extension PCloudAuthError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .cancelled: return String(localized: "Sign-in was cancelled.")
+        case .denied:    return String(localized: "pCloud access was not granted.")
+        case .failed:    return String(localized: "pCloud sign-in failed.")
+        }
+    }
+}
+
+/// The browser sign-in on pCloud's own page: the app never sees the user's password. pCloud sends the user
+/// to the registered redirect page (on this project's site), which hands the result to
+/// `photovideobackup://pcloud`. There is no client secret anywhere in the app.
+enum PCloudAuth {
+    /// Public identifier of the app at pCloud (not a secret).
+    static let clientID = "zNcawhe8KaY"
+    /// Registered at pCloud (My Apps → Redirect URIs); a custom scheme is refused there, hence this relay page.
+    static let redirectURI = "https://gduval78.github.io/PhotoVideoBackup/pcloud-callback.html"
+    static let callbackScheme = "photovideobackup"
+
+    static func authorizeURL(state: String) -> URL {
+        var c = URLComponents(string: "https://my.pcloud.com/oauth2/authorize")!
+        c.queryItems = [
+            URLQueryItem(name: "response_type", value: "token"),
+            URLQueryItem(name: "client_id", value: clientID),
+            URLQueryItem(name: "redirect_uri", value: redirectURI),
+            URLQueryItem(name: "state", value: state),
+        ]
+        return c.url!
+    }
+
+    /// Reads the callback (`photovideobackup://pcloud#access_token=…&userid=…&locationid=…&state=…`).
+    /// A state that does not match is refused (the answer was not to our request).
+    static func parseCallback(_ url: URL, expectedState: String) throws -> PCloudAuthResult {
+        var c = URLComponents()
+        c.query = url.fragment ?? url.query
+        let q = Dictionary(c.queryItems?.map { ($0.name, $0.value ?? "") } ?? [], uniquingKeysWith: { a, _ in a })
+        if q["error"] != nil { throw PCloudAuthError.denied }
+        guard q["state"] == expectedState, let token = q["access_token"], !token.isEmpty,
+              let uid = Int(q["userid"] ?? q["uid"] ?? "") else { throw PCloudAuthError.failed }
+        return PCloudAuthResult(token: token, userID: uid, region: PCloudRegion(locationID: Int(q["locationid"] ?? "") ?? 2))
+    }
+
+    /// Opens the sign-in sheet and returns the token. Main actor: it presents UI.
+    @MainActor
+    static func signIn() async throws -> PCloudAuthResult {
+        let state = UUID().uuidString
+        let provider = PresentationProvider()
+        let callback: URL = try await withCheckedThrowingContinuation { continuation in
+            let session = ASWebAuthenticationSession(url: authorizeURL(state: state),
+                                                     callbackURLScheme: callbackScheme) { url, error in
+                if let url { continuation.resume(returning: url) }
+                else if let e = error as? ASWebAuthenticationSessionError, e.code == .canceledLogin {
+                    continuation.resume(throwing: PCloudAuthError.cancelled)
+                } else { continuation.resume(throwing: PCloudAuthError.failed) }
+            }
+            session.presentationContextProvider = provider
+            session.prefersEphemeralWebBrowserSession = true
+            Self.active = (session, provider)
+            if !session.start() { continuation.resume(throwing: PCloudAuthError.failed) }
+        }
+        Self.active = nil
+        return try parseCallback(callback, expectedState: state)
+    }
+
+    @MainActor private static var active: (ASWebAuthenticationSession, PresentationProvider)?
+
+    private final class PresentationProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
+        func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+            UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.keyWindow }.first ?? ASPresentationAnchor()
+        }
     }
 }

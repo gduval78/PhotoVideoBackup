@@ -178,6 +178,44 @@ final class PCloudTargetTests: XCTestCase {
         XCTAssertNil(gone)
     }
 
+    // SCENARIO: the sign-in callback is read, and refused when it is not for our request
+    // The token comes back in the URI fragment; a different state, an error or a missing token fail.
+    func test_authCallback() throws {
+        let ok = URL(string: "photovideobackup://pcloud#access_token=T0K&token_type=bearer&userid=7&locationid=2&hostname=eapi.pcloud.com&state=S")!
+        let r = try PCloudAuth.parseCallback(ok, expectedState: "S")
+        XCTAssertEqual(r, PCloudAuthResult(token: "T0K", userID: 7, region: .eu))
+        let us = URL(string: "photovideobackup://pcloud#access_token=T&userid=7&locationid=1&state=S")!
+        XCTAssertEqual(try PCloudAuth.parseCallback(us, expectedState: "S").region, .us)
+        XCTAssertThrowsError(try PCloudAuth.parseCallback(ok, expectedState: "other")) { XCTAssertEqual($0 as? PCloudAuthError, .failed) }
+        let denied = URL(string: "photovideobackup://pcloud?error=access_denied&state=S")!
+        XCTAssertThrowsError(try PCloudAuth.parseCallback(denied, expectedState: "S")) { XCTAssertEqual($0 as? PCloudAuthError, .denied) }
+        let noToken = URL(string: "photovideobackup://pcloud#state=S")!
+        XCTAssertThrowsError(try PCloudAuth.parseCallback(noToken, expectedState: "S"))
+    }
+
+    // SCENARIO: the authorize URL asks for the token flow with the registered redirect and no secret
+    func test_authorizeURL() {
+        let c = URLComponents(url: PCloudAuth.authorizeURL(state: "S"), resolvingAgainstBaseURL: false)!
+        let q = Dictionary(uniqueKeysWithValues: c.queryItems!.map { ($0.name, $0.value ?? "") })
+        XCTAssertEqual(c.host, "my.pcloud.com")
+        XCTAssertEqual(q["response_type"], "token")
+        XCTAssertEqual(q["redirect_uri"], PCloudAuth.redirectURI)
+        XCTAssertEqual(q["state"], "S")
+        XCTAssertNil(q["client_secret"])
+    }
+
+    // SCENARIO: a pCloud server destination round-trips through the profile JSON and is typed
+    func test_serverConnection_roundTrip() throws {
+        let conn = ServerConnection.pcloud(PCloudConfig(region: .eu, userID: 7, basePath: "Backups", displayName: "Mine"))
+        let data = try JSONEncoder().encode(conn)
+        XCTAssertTrue(String(data: data, encoding: .utf8)!.contains("\"type\":\"pcloud\""))
+        XCTAssertEqual(try JSONDecoder().decode(ServerConnection.self, from: data), conn)
+        XCTAssertTrue(conn.isComplete)
+        XCTAssertFalse(ServerConnection.pcloud(.empty).isComplete)
+        XCTAssertEqual(conn.label, "Mine / Backups")
+        XCTAssertEqual(conn.kind, .pcloud)
+    }
+
     // SCENARIO: error code mapping
     func test_errorMapping() {
         XCTAssertEqual(PCloudError.from(code: 2094, message: ""), .unauthorized)

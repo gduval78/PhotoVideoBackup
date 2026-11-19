@@ -15,6 +15,7 @@
 		5C1C10D0000000000000FB02 /* ReportTargetSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */; };
 		5B0BF11E000000000000AC02 /* SMBTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AC01 /* SMBTarget.swift */; };
 		5B0BF11F000000000000B102 /* PCloudTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11F000000000000B101 /* PCloudTarget.swift */; };
+		5B0BF120000000000000B102 /* ProfilePCloudEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF120000000000000B101 /* ProfilePCloudEditor.swift */; };
 		5B0BF11E000000000000B102 /* WebDAVTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000B101 /* WebDAVTarget.swift */; };
 		5B0BF11E000000000000AD02 /* NASConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AD01 /* NASConfig.swift */; };
 		5B0BF11E000000000000AE02 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0BF11E000000000000AE01 /* KeychainStore.swift */; };
@@ -147,6 +148,7 @@
 		5C1C10D0000000000000FB01 /* ReportTargetSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportTargetSummary.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AC01 /* SMBTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBTarget.swift; sourceTree = "<group>"; };
 		5B0BF11F000000000000B101 /* PCloudTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCloudTarget.swift; sourceTree = "<group>"; };
+		5B0BF120000000000000B101 /* ProfilePCloudEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePCloudEditor.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000B101 /* WebDAVTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebDAVTarget.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AD01 /* NASConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NASConfig.swift; sourceTree = "<group>"; };
 		5B0BF11E000000000000AE01 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				5C27313CCB053C4B4269A25C /* ProfileOptionsForm.swift */,
 				5C27690B53EE542842FD8B84 /* ProfileNASEditor.swift */,
 				5B0BF11E000000000000B201 /* ProfileWebDAVEditor.swift */,
+				5B0BF120000000000000B101 /* ProfilePCloudEditor.swift */,
 				5B0BF11E000000000000B601 /* ServerEditor.swift */,
 				5C27C948018F7ACA48FEA05B /* BackupAlerts.swift */,
 				5C27A26FACF46FC54BB78C52 /* NewBackupFlow.swift */,
@@ -689,6 +692,7 @@
 				5C27E5FFDF65980047559C0D /* ProfileOptionsForm.swift in Sources */,
 				5C2782BFF2A05F114305AFA2 /* ProfileNASEditor.swift in Sources */,
 				5B0BF11E000000000000B202 /* ProfileWebDAVEditor.swift in Sources */,
+				5B0BF120000000000000B102 /* ProfilePCloudEditor.swift in Sources */,
 				5B0BF11E000000000000B602 /* ServerEditor.swift in Sources */,
 				5C27012308894C594FF3A756 /* ProfileSettings.swift in Sources */,
 				5C27EE1B0BE1D33A42319739 /* ICloudRunGuard.swift in Sources */,

@@ -11,6 +11,7 @@ import SwiftUI
 enum ServerConnection: Codable, Equatable, Hashable, Sendable {
     case smb(NASConfig)
     case webdav(WebDAVConfig)
+    case pcloud(PCloudConfig)
     case unknown(type: String, fields: [String: JSONValue])
 
     private struct Key: CodingKey {
@@ -27,6 +28,7 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         switch type {
         case "smb":    self = .smb(try NASConfig(from: decoder))
         case "webdav": self = .webdav(try WebDAVConfig(from: decoder))
+        case "pcloud": self = .pcloud(try PCloudConfig(from: decoder))
         default:
             var fields: [String: JSONValue] = [:]
             for key in c.allKeys where key.stringValue != "type" {
@@ -45,6 +47,9 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         case .webdav(let config):
             try c.encode("webdav", forKey: Key("type"))
             try config.encode(to: encoder)
+        case .pcloud(let config):
+            try c.encode("pcloud", forKey: Key("type"))
+            try config.encode(to: encoder)
         case .unknown(let type, let fields):
             try c.encode(type, forKey: Key("type"))
             for (name, value) in fields { try c.encode(value, forKey: Key(name)) }
@@ -56,6 +61,7 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         switch self {
         case .smb:     return .smb
         case .webdav:  return .webdav
+        case .pcloud:  return .pcloud
         case .unknown: return nil
         }
     }
@@ -65,6 +71,7 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         switch self {
         case .smb(let c):     return c.isComplete
         case .webdav(let c):  return c.isComplete
+        case .pcloud(let c):  return c.isComplete
         case .unknown:        return false
         }
     }
@@ -74,6 +81,7 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         switch self {
         case .smb(let c):     return c.label
         case .webdav(let c):  return c.label
+        case .pcloud(let c):  return c.label
         case .unknown:        return String(localized: "Server")
         }
     }
@@ -87,6 +95,9 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         case .webdav(let c):
             let name = c.displayName.trimmingCharacters(in: .whitespaces)
             return name.isEmpty ? (c.url?.host ?? "WebDAV") : name
+        case .pcloud(let c):
+            let name = c.displayName.trimmingCharacters(in: .whitespaces)
+            return name.isEmpty ? "pCloud" : name
         case .unknown(let type, _): return type
         }
     }
@@ -107,6 +118,10 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
             c.username = c.username.trimmingCharacters(in: .whitespaces)
             c.displayName = c.displayName.trimmingCharacters(in: .whitespaces)
             return .webdav(c)
+        case .pcloud(var c):
+            c.basePath = c.basePath.trimmingCharacters(in: .whitespaces)
+            c.displayName = c.displayName.trimmingCharacters(in: .whitespaces)
+            return .pcloud(c)
         case .unknown:
             return self
         }
@@ -122,6 +137,8 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
             return ["smb", c.host.lowercased(), String(c.port), c.share.lowercased(), folder(c.basePath), c.username.lowercased()].joined(separator: "|")
         case .webdav(let c):
             return ["webdav", c.normalizedURLString.lowercased(), folder(c.basePath), c.username.lowercased()].joined(separator: "|")
+        case .pcloud(let c):
+            return ["pcloud", c.region.rawValue, String(c.userID), folder(c.basePath)].joined(separator: "|")
         case .unknown(let type, let fields):
             return "\(type)|\(fields.keys.sorted().joined(separator: ","))"
         }
@@ -136,6 +153,10 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
         case .webdav(let config):
             guard let target = config.makeTarget(password: password), await target.isReachable() else { return nil }
             return target
+        case .pcloud(let config):
+            // The "password" of a pCloud destination is its OAuth token.
+            let target = config.makeTarget(token: password)
+            return await target.isReachable() ? target : nil
         case .unknown:
             return nil
         }
@@ -144,13 +165,14 @@ enum ServerConnection: Codable, Equatable, Hashable, Sendable {
 
 /// The server types a user can add. A **preset** (pCloud, Hetzner…) would only pre-fill one of these.
 enum ServerKind: String, CaseIterable, Identifiable, Sendable {
-    case smb, webdav
+    case smb, webdav, pcloud
     var id: String { rawValue }
 
     var titleKey: LocalizedStringKey {
         switch self {
         case .smb:    return "NAS (Synology, QNAP…)"
-        case .webdav: return "Nextcloud, pCloud or WebDAV server"
+        case .webdav: return "Nextcloud or WebDAV server"
+        case .pcloud: return "pCloud"
         }
     }
 
@@ -158,6 +180,7 @@ enum ServerKind: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .smb:    return "On your home network or through a VPN."
         case .webdav: return "Over the Internet, from anywhere."
+        case .pcloud: return "Your pCloud account. No password is stored."
         }
     }
 
@@ -165,6 +188,7 @@ enum ServerKind: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .smb:    return "server.rack"
         case .webdav: return "network"
+        case .pcloud: return "cloud"
         }
     }
 
@@ -173,6 +197,7 @@ enum ServerKind: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .smb:    return .smb(.empty)
         case .webdav: return .webdav(.empty)
+        case .pcloud: return .pcloud(.empty)
         }
     }
 }

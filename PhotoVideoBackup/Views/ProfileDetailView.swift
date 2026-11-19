@@ -187,6 +187,7 @@ struct ProfileDetailView: View {
         switch kind {
         case .smb:    return String(localized: "NAS")
         case .webdav: return String(localized: "WebDAV server")
+        case .pcloud: return "pCloud"
         }
     }
 

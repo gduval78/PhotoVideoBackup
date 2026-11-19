@@ -12,6 +12,8 @@ struct ServerEditor: View {
             ProfileNASEditor(config: smbBinding, password: $password)
         case .webdav:
             ProfileWebDAVEditor(config: webdavBinding, password: $password)
+        case .pcloud:
+            ProfilePCloudEditor(config: pcloudBinding, token: $password)
         case .unknown:
             Section {
                 Label("This kind of server needs a newer version of the app.", systemImage: "exclamationmark.triangle")
@@ -23,6 +25,11 @@ struct ServerEditor: View {
     private var smbBinding: Binding<NASConfig> {
         Binding(get: { if case .smb(let c) = connection { return c } else { return .empty } },
                 set: { connection = .smb($0) })
+    }
+
+    private var pcloudBinding: Binding<PCloudConfig> {
+        Binding(get: { if case .pcloud(let c) = connection { return c } else { return .empty } },
+                set: { connection = .pcloud($0) })
     }
 
     private var webdavBinding: Binding<WebDAVConfig> {
