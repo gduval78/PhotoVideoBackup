@@ -9,6 +9,10 @@ Status: **study only, nothing implemented.** Born from the 2.8.0 WebDAV work: af
 - The kind leaks everywhere: `usesNAS` / `usesWebDAV` (25 hits, 6 files), `NASConfig` (39 hits, 10 files), `includesNAS` / `includesWebDAV`, `SMBTarget` (25 hits, 7 files), two editors (`ProfileNASEditor`, `ProfileWebDAVEditor`), two Browse views (`NASBrowserView` with LUT Grade, `WebDAVBrowserView` without), two Browse entry lists, two branches in `runProfile`, `resolvedTargets`, `connection(of:)`, the run summary, the card badge.
 - What is **already common**: the engines only see `BackupTarget` / `RemoteBackupTarget`; dedup, ledger, sidecar, naming and verification do not know the protocol. Android has the same shape (`ProfileTemplate` with `*_TO_NAS`, `BackupProfile.nas: NasConfig?`, `usesNas`).
 
+## Scope clarified (user, 2026-11-19)
+
+What changes for the user is **editing and creating a profile**. Once a destination is a typed connection, the app already has everything it needs to open the link: the type says which target to build, the fields give the address and options, the Keychain account gives the secret. So **nothing downstream asks the user anything kind-specific**: run, reachability, run summary, card, Browse and Pro gate all work from the typed connection (the engines already see only `BackupTarget`). The visible work is therefore one thing — **one profile editor** that adds a destination as *Folder* or *Server*, shows the fields of the chosen type, and tests the link — plus the plumbing that lets everything else read the typed connection instead of branching on `.nas` / `.webdav`.
+
 ## Proposal
 
 ### What the user sees: two kinds, one word each
