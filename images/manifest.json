@@ -21,7 +21,7 @@
   },
   "paywall": {
     "version": "2.8.0",
-    "note": "Upgrade screen with the 6 rows, retaken 2026-11-20 (the NAS row still says \"NAS (SMB)\" — WebDAV is not named)"
+    "note": "Upgrade screen with the 6 rows; the server row now reads \"NAS and WebDAV servers\" — retaken 2026-11-20"
   },
   "completion_banner": {
     "version": "2.8.0",
