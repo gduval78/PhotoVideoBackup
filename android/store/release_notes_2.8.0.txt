@@ -1,0 +1,36 @@
+<en-US>
+New: back up to a WebDAV server (Nextcloud, pCloud, any WebDAV server), in addition to a folder or an SMB NAS. One editor now sets up a backup: choose its source, then add destinations — a folder or a server.
+</en-US>
+<fr-FR>
+Nouveau : sauvegarde vers un serveur WebDAV (Nextcloud, pCloud, tout serveur WebDAV), en plus d’un dossier ou d’un NAS SMB. Un seul éditeur configure une sauvegarde : choisissez la source, puis ajoutez des destinations — un dossier ou un serveur.
+</fr-FR>
+<de-DE>
+Neu: Backup auf einen WebDAV-Server (Nextcloud, pCloud, jeder WebDAV-Server) – zusätzlich zu einem Ordner oder einem SMB-NAS. Ein einziger Editor richtet ein Backup ein: Quelle wählen, dann Ziele hinzufügen – ein Ordner oder ein Server.
+</de-DE>
+<es-ES>
+Novedad: copia a un servidor WebDAV (Nextcloud, pCloud, cualquier servidor WebDAV), además de una carpeta o un NAS SMB. Un único editor configura una copia: elige el origen y añade destinos: una carpeta o un servidor.
+</es-ES>
+<it-IT>
+Novità: backup su un server WebDAV (Nextcloud, pCloud, qualsiasi server WebDAV), oltre a una cartella o a un NAS SMB. Un unico editor configura un backup: scegli la sorgente, poi aggiungi destinazioni: una cartella o un server.
+</it-IT>
+<pt-PT>
+Novo: cópia para um servidor WebDAV (Nextcloud, pCloud, qualquer servidor WebDAV), além de uma pasta ou de um NAS SMB. Um único editor configura uma cópia: escolha a origem e depois adicione destinos — uma pasta ou um servidor.
+</pt-PT>
+<zh-CN>
+新增：支持备份到 WebDAV 服务器（Nextcloud、pCloud 或任何 WebDAV 服务器），此外仍可备份到文件夹或 SMB NAS。现在用同一个编辑器设置备份：先选来源，再添加目标——文件夹或服务器。
+</zh-CN>
+<ru-RU>
+Новое: резервное копирование на сервер WebDAV (Nextcloud, pCloud, любой сервер WebDAV) — в дополнение к папке и SMB NAS. Копия настраивается в одном редакторе: выберите источник, затем добавьте назначения — папку или сервер.
+</ru-RU>
+<ja-JP>
+新機能：WebDAV サーバー（Nextcloud、pCloud、任意の WebDAV サーバー）へのバックアップに対応しました。フォルダや SMB NAS も引き続き使えます。バックアップは 1 つのエディタで設定します。ソースを選び、保存先（フォルダまたはサーバー）を追加します。
+</ja-JP>
+<ko-KR>
+새 기능: WebDAV 서버(Nextcloud, pCloud 및 모든 WebDAV 서버)로 백업할 수 있습니다. 폴더와 SMB NAS도 계속 사용할 수 있습니다. 이제 하나의 편집기에서 백업을 설정합니다. 소스를 고른 뒤 폴더나 서버를 대상으로 추가하세요.
+</ko-KR>
+<hi-IN>
+नया: WebDAV सर्वर (Nextcloud, pCloud या कोई भी WebDAV सर्वर) पर बैकअप, फ़ोल्डर या SMB NAS के साथ। अब एक ही एडिटर में बैकअप सेट होता है: स्रोत चुनें, फिर गंतव्य जोड़ें — फ़ोल्डर या सर्वर।
+</hi-IN>
+<ar>
+جديد: نسخ احتياطي إلى خادم WebDAV (Nextcloud وpCloud وأي خادم WebDAV) إضافةً إلى مجلد أو NAS عبر SMB. يُعدّ محرر واحد النسخة الاحتياطية: اختر المصدر ثم أضف الوجهات — مجلدًا أو خادمًا.
+</ar>
