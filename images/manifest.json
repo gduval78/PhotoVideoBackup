@@ -1,63 +1,63 @@
 {
   "backups_tab": {
-    "version": "2.7.0",
-    "note": "Backups tab, one card per backup"
+    "version": "2.8.0",
+    "note": "Backups tab with one backup card (drive badge on the pictogram), retaken 2026-11-20"
   },
   "backups_new": {
-    "version": "2.7.0",
-    "note": "New backup: template list (2.7.0). From 2.8.0 dev: choose what to back up (Photo library / Camera or SD card) — RETAKE at the 2.8 bump"
+    "version": "2.8.0",
+    "note": "New backup: choose what to back up (Photo library / Camera or SD card) — 2.8.0, retaken 2026-11-20"
   },
   "backups_create": {
-    "version": "2.7.0",
-    "note": "New backup: drive, folder name, backup name (2.7.0). From 2.8.0 dev: the editor with Destinations (Add a destination → A folder… / A server ▸ NAS, Nextcloud…) — RETAKE at the 2.8 bump"
+    "version": "2.8.0",
+    "note": "New backup editor: Name, Destinations (Add a destination), folder name, options — 2.8.0, retaken 2026-11-20"
   },
   "profile_settings": {
-    "version": "2.7.0",
-    "note": "A backup's own settings sheet"
+    "version": "2.8.0",
+    "note": "A backup's own settings: Destinations with Choose another folder… / Add a destination, options — 2.8.0, retaken 2026-11-20"
   },
   "settings_top": {
-    "version": "2.7.0",
-    "note": "Settings tab with the Pro section"
+    "version": "2.8.0",
+    "note": "Settings tab with the Pro section — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "paywall": {
-    "version": "2.7.0",
-    "note": "Upgrade screen with the 6 rows"
+    "version": "2.8.0",
+    "note": "Upgrade screen with the 6 rows, retaken 2026-11-20 (the NAS row still says \"NAS (SMB)\" — WebDAV is not named)"
   },
   "completion_banner": {
-    "version": "2.7.0",
-    "note": "Completion banner in the Backups tab"
+    "version": "2.8.0",
+    "note": "Completion banner in the Backups tab — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "history_list": {
-    "version": "2.7.0",
-    "note": "History with one session"
+    "version": "2.8.0",
+    "note": "History with one session — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "report_summary": {
-    "version": "2.7.0",
-    "note": "Session report (no more 'Incomplete mirror' on a single destination)"
+    "version": "2.8.0",
+    "note": "Session report (no more 'Incomplete mirror' on a single destination) — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "browse_device_folders": {
-    "version": "2.7.0",
-    "note": "Browse: device folder with date folders"
+    "version": "2.8.0",
+    "note": "Browse: device folder with date folders — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "browse_media_grid": {
-    "version": "2.7.0",
-    "note": "Browse: media grid of a day"
+    "version": "2.8.0",
+    "note": "Browse: media grid of a day — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "report_delete_confirm": {
-    "version": "2.7.0",
-    "note": "Delete Source Files sheet — unchanged screen, reviewed 2026-11-15"
+    "version": "2.8.0",
+    "note": "Delete Source Files sheet — unchanged screen, reviewed 2026-11-15 — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "browse_lut_picker": {
-    "version": "2.7.0",
-    "note": "LUT picker sheet — unchanged screen, reviewed 2026-11-15"
+    "version": "2.8.0",
+    "note": "LUT picker sheet — unchanged screen, reviewed 2026-11-15 — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
   },
   "onboarding_simple": {
-    "version": "2.7.0",
-    "note": "Welcome screen — unchanged in 2.7, reviewed 2026-11-15"
+    "version": "2.8.0",
+    "note": "Welcome screen (English, simulator 2026-11-20) — unchanged content; the hub page of the carousel now shows a power bank"
   },
   "settings_file_naming": {
-    "version": "2.7.0",
-    "note": "File naming page — content unchanged; its tab bar still says 'Backup' (now 'Backups'), retake when convenient"
+    "version": "2.8.0",
+    "note": "File naming page with the pattern editor, tab bar says Backups — retaken 2026-11-20"
   },
   "progress_backup": {
     "version": "2.6.1",
@@ -88,7 +88,19 @@
     "note": "Android report"
   },
   "hub_power": {
-    "version": "2.7.0",
-    "note": "Diagram (not a screenshot): phone → USB-C hub → 2 SSDs + power bank on the hub's PD port. Source: images/hub_power.svg"
+    "version": "2.8.0",
+    "note": "Diagram (not a screenshot): phone → USB-C hub → 2 SSDs + power bank on the hub's PD port. Source: images/hub_power.svg — looked at again 2026-11-20: screen unchanged in 2.8.0 (code diff since 2.7.0 and visual check)"
+  },
+  "backups_server_types": {
+    "version": "2.8.0",
+    "note": "Add a destination ▸ A server: NAS (Synology, QNAP…) / Nextcloud, pCloud or WebDAV server (2.8.0)"
+  },
+  "backups_webdav_form": {
+    "version": "2.8.0",
+    "note": "WebDAV server form: name, address, folder, credentials (2.8.0)"
+  },
+  "backups_summary": {
+    "version": "2.8.0",
+    "note": "Run summary: \"Ready to back up?\" with the destination on the device itself in orange (2.7.1+)"
   }
 }
