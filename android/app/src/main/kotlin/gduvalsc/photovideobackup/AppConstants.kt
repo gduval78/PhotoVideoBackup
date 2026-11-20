@@ -21,8 +21,7 @@ object AppConstants {
      */
     fun supportMetaBlock(): String = buildString {
         appendLine()
-        appendLine("---")
-        appendLine("SUPPORT-META")
+        appendLine("--- SUPPORT-META ---")
         appendLine("app: $APP_TAG")
         appendLine("platform: android")
         appendLine("version: ${BuildConfig.VERSION_NAME}")
@@ -31,6 +30,9 @@ object AppConstants {
         appendLine("os: Android ${Build.VERSION.RELEASE} (sdk ${Build.VERSION.SDK_INT})")
         appendLine("phone-language: ${Locale.getDefault().toLanguageTag()}")
         appendLine("app-language: ${Prefs.language.ifEmpty { "auto" }}")
+        // Same keys as the iPhone block: the support agent reads `lang` / `applang` to pick the reply language.
+        appendLine("lang: ${Locale.getDefault().toLanguageTag()}   applang: ${Prefs.language.ifEmpty { "auto" }}")
+        appendLine("--- END META ---")
     }
 
     private fun mail(context: Context, subject: String, body: String) {
@@ -41,5 +43,5 @@ object AppConstants {
     fun composeSupportMail(context: Context) = mail(context, "[Support:$APP_TAG]", "\n\n" + supportMetaBlock())
 
     fun composeDiagnosticMail(context: Context, log: String) =
-        mail(context, "[Support:$APP_TAG] Diagnostic log", "\n\n" + supportMetaBlock() + "\n" + log.takeLast(60_000))
+        mail(context, "[Support:$APP_TAG] Diagnostic log", "\n\n--- DIAGNOSTIC LOG ---\n" + log.takeLast(60_000) + "\n--- END LOG ---\n" + supportMetaBlock())
 }
