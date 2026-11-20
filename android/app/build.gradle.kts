@@ -24,7 +24,7 @@ android {
         // 20704 reuses a folder that differs only by capitalisation (exFAT). Same versionName, a higher code each time.
         // 2.7.1 would be 20701, already used: +4 gave 20705 (first upload); +5 gives 20706 (tolerant profile read); +6 gives 20707 (run summary screen, as on iOS). Play never reuses a code.
         versionCode = appVersion.split(".").let { it[0].toInt() * 10000 + it[1].toInt() * 100 + it[2].toInt() } +
-            (if (appVersion == "2.7.0") 4 else if (appVersion == "2.7.1") 6 else 0)
+            (if (appVersion == "2.7.0") 4 else if (appVersion == "2.7.1") 6 else if (appVersion == "2.8.0") 1 else 0)
         // The 8 languages of the iOS app: only these are packaged (libraries bring dozens of others).
         resourceConfigurations += listOf("en", "fr", "de", "es", "it", "pt", "zh-rCN", "b+zh+Hant", "ru", "ja", "ko", "hi", "ar")
     }
