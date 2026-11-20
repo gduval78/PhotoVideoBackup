@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d falharam</string>
     <string name="feature_gallery">Copie as fotos e vídeos do telemóvel para uma pasta</string>
     <string name="feature_lut">Corrija a cor dos seus vídeos com LUTs .cube e exporte em HEVC</string>
-    <string name="feature_nas">Faça cópia para um NAS por Wi-Fi — mesmo à distância</string>
+    <string name="feature_nas">Faça cópias para um NAS ou para um servidor Nextcloud, pCloud ou WebDAV, por Wi-Fi ou remotamente</string>
     <string name="feature_second_destination">Backup redundante para um segundo SSD simultaneamente</string>
     <string name="feature_several_backups">Crie todas as cópias de que precisar, cada uma com os seus discos, NAS e definições</string>
     <string name="feature_sources">Cartões SD, USB, Insta360, DJI e mais</string>

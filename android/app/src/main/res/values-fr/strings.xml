@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d échoués</string>
     <string name="feature_gallery">Sauvegardez les photos et vidéos du téléphone dans un dossier</string>
     <string name="feature_lut">Étalonnez vos vidéos avec des LUT .cube et exportez-les en HEVC</string>
-    <string name="feature_nas">Sauvegardez sur un NAS via Wi-Fi — même à distance</string>
+    <string name="feature_nas">Sauvegardez vers un NAS ou un serveur Nextcloud, pCloud ou WebDAV, en Wi-Fi ou à distance</string>
     <string name="feature_second_destination">Sauvegarde redondante sur un second SSD simultanément</string>
     <string name="feature_several_backups">Créez autant de sauvegardes que nécessaire, chacune avec ses disques, son NAS et ses réglages</string>
     <string name="feature_sources">Cartes SD, clés USB, Insta360, DJI et plus</string>

@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d विफल</string>
     <string name="feature_gallery">अपने फ़ोन की फ़ोटो और वीडियो का एक फ़ोल्डर में बैकअप करें</string>
     <string name="feature_lut">.cube LUT से अपने वीडियो ग्रेड करें और HEVC में निर्यात करें</string>
-    <string name="feature_nas">Wi-Fi से NAS पर बैकअप — दूर से भी</string>
+    <string name="feature_nas">Wi-Fi से या दूर से NAS अथवा Nextcloud, pCloud या WebDAV सर्वर पर बैकअप करें</string>
     <string name="feature_second_destination">दूसरे SSD पर एक साथ अतिरिक्त बैकअप</string>
     <string name="feature_several_backups">जितने चाहें उतने बैकअप बनाएँ, हर एक की अपनी ड्राइव, NAS और सेटिंग्स के साथ</string>
     <string name="feature_sources">SD कार्ड, USB ड्राइव, Insta360, DJI और बहुत कुछ</string>

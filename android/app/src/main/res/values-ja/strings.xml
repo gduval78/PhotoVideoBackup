@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d 件失敗</string>
     <string name="feature_gallery">スマートフォンの写真とビデオをフォルダにバックアップ</string>
     <string name="feature_lut">.cube LUT で動画をグレーディングし、HEVC で書き出し</string>
-    <string name="feature_nas">Wi-Fi 経由で NAS にバックアップ — 遠隔でも</string>
+    <string name="feature_nas">Wi-Fi または遠隔で、NAS や Nextcloud、pCloud、WebDAV サーバーにバックアップ</string>
     <string name="feature_second_destination">2 台目の SSD に同時にバックアップして冗長化</string>
     <string name="feature_several_backups">必要な数だけバックアップを作成でき、それぞれに専用のドライブ、NAS、設定を持てます</string>
     <string name="feature_sources">SD カード、USB ドライブ、Insta360、DJI など</string>

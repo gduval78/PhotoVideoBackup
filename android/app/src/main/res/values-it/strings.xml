@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d falliti</string>
     <string name="feature_gallery">Esegui il backup di foto e video del telefono in una cartella</string>
     <string name="feature_lut">Applica LUT .cube ai tuoi video ed esportali in HEVC</string>
-    <string name="feature_nas">Backup su un NAS via Wi-Fi — anche da remoto</string>
+    <string name="feature_nas">Salva su un NAS o su un server Nextcloud, pCloud o WebDAV, via Wi-Fi o da remoto</string>
     <string name="feature_second_destination">Backup ridondante su un secondo SSD contemporaneamente</string>
     <string name="feature_several_backups">Crea tutti i backup che servono, ciascuno con i propri dischi, NAS e impostazioni</string>
     <string name="feature_sources">Schede SD, USB, Insta360, DJI e altro</string>

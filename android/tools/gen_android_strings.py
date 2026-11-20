@@ -53,7 +53,7 @@ REUSED = {
     "eta_less_than_minute": "< 1 min remaining", "eta_minutes_fmt": "~%lld min remaining", "example": "Example",
     "extensions_explainer": "Files with these extensions will be included in every backup, for all device types. Enter without the dot.",
     "extensions_placeholder": "e.g. srt, gpx, csv", "failed": "Failed", "failed_count_fmt": "%lld failed",
-    "feature_nas": "Back up over Wi-Fi to a NAS — even remotely",
+    "feature_nas": "Back up to a NAS or to a Nextcloud, pCloud or WebDAV server, over Wi-Fi or remotely",
     "feature_second_destination": "Redundant backup to a second SSD simultaneously",
     "feature_sources": "SD cards, USB drives, Insta360, DJI, and more", "file_naming": "File naming",
     "files_found_fmt": "%lld files found", "folder": "Folder", "folder_structure": "Folder structure",

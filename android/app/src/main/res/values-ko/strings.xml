@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d개 실패</string>
     <string name="feature_gallery">휴대폰의 사진과 비디오를 폴더에 백업</string>
     <string name="feature_lut">.cube LUT로 비디오를 색보정하고 HEVC로 내보내기</string>
-    <string name="feature_nas">Wi-Fi로 NAS에 백업 — 원격에서도</string>
+    <string name="feature_nas">Wi-Fi 또는 원격으로 NAS나 Nextcloud, pCloud, WebDAV 서버에 백업</string>
     <string name="feature_second_destination">두 번째 SSD에 동시에 중복 백업</string>
     <string name="feature_several_backups">필요한 만큼 백업을 만들 수 있으며, 각각 고유한 드라이브, NAS 및 설정을 가집니다</string>
     <string name="feature_sources">SD 카드, USB 드라이브, Insta360, DJI 등</string>

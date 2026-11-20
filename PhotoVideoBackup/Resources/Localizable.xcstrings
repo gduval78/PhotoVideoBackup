@@ -41845,6 +41845,170 @@
           }
         }
       }
+    },
+    "NAS and WebDAV servers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS and WebDAV servers"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS et serveurs WebDAV"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS und WebDAV-Server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS y servidores WebDAV"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS e server WebDAV"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS e servidores WebDAV"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS 和 WebDAV 服务器"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS и серверы WebDAV"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS と WebDAV サーバー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS 및 WebDAV 서버"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS और WebDAV सर्वर"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS وخوادم WebDAV"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAS 和 WebDAV 伺服器"
+          }
+        }
+      }
+    },
+    "Back up to a NAS or to a Nextcloud, pCloud or WebDAV server, over Wi-Fi or remotely" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back up to a NAS or to a Nextcloud, pCloud or WebDAV server, over Wi-Fi or remotely"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sauvegardez vers un NAS ou un serveur Nextcloud, pCloud ou WebDAV, en Wi-Fi ou à distance"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern Sie auf ein NAS oder einen Nextcloud-, pCloud- oder WebDAV-Server, per WLAN oder aus der Ferne"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia a un NAS o a un servidor Nextcloud, pCloud o WebDAV, por Wi-Fi o de forma remota"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salva su un NAS o su un server Nextcloud, pCloud o WebDAV, via Wi-Fi o da remoto"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faça cópias para um NAS ou para um servidor Nextcloud, pCloud ou WebDAV, por Wi-Fi ou remotamente"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过 Wi-Fi 或远程备份到 NAS，或 Nextcloud、pCloud、WebDAV 服务器"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резервное копирование на NAS или сервер Nextcloud, pCloud или WebDAV по Wi-Fi или удалённо"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi または遠隔で、NAS や Nextcloud、pCloud、WebDAV サーバーにバックアップ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi 또는 원격으로 NAS나 Nextcloud, pCloud, WebDAV 서버에 백업"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wi-Fi से या दूर से NAS अथवा Nextcloud, pCloud या WebDAV सर्वर पर बैकअप करें"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انسخ احتياطيًا إلى NAS أو إلى خادم Nextcloud أو pCloud أو WebDAV، عبر Wi-Fi أو عن بُعد"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過 Wi-Fi 或遠端備份到 NAS，或 Nextcloud、pCloud、WebDAV 伺服器"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d с ошибкой</string>
     <string name="feature_gallery">Резервное копирование фото и видео телефона в папку</string>
     <string name="feature_lut">Применяйте LUT .cube к видео и экспортируйте в HEVC</string>
-    <string name="feature_nas">Резервное копирование на NAS по Wi-Fi — даже удалённо</string>
+    <string name="feature_nas">Резервное копирование на NAS или сервер Nextcloud, pCloud или WebDAV по Wi-Fi или удалённо</string>
     <string name="feature_second_destination">Дублирующая резервная копия на второй SSD одновременно</string>
     <string name="feature_several_backups">Создавайте сколько угодно копий — у каждой свои диски, NAS и настройки</string>
     <string name="feature_sources">SD-карты, USB-накопители, Insta360, DJI и другие</string>

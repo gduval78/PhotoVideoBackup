@@ -92,8 +92,8 @@ struct PaywallView: View {
             featureRow(
                 icon: "server.rack",
                 color: .teal,
-                title: "NAS (SMB)",
-                subtitle: "Back up to your NAS over Wi-Fi, or remotely through a VPN",
+                title: "NAS and WebDAV servers",
+                subtitle: "Back up to a NAS or to a Nextcloud, pCloud or WebDAV server, over Wi-Fi or remotely",
                 isFree: false
             )
             Divider().padding(.leading, 50)

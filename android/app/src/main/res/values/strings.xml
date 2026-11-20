@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d failed</string>
     <string name="feature_gallery">Back up your phone\'s photos and videos to a folder</string>
     <string name="feature_lut">Grade your videos with .cube LUTs and export them in HEVC</string>
-    <string name="feature_nas">Back up over Wi-Fi to a NAS — even remotely</string>
+    <string name="feature_nas">Back up to a NAS or to a Nextcloud, pCloud or WebDAV server, over Wi-Fi or remotely</string>
     <string name="feature_second_destination">Redundant backup to a second SSD simultaneously</string>
     <string name="feature_several_backups">Create as many backups as you need, each with its own drives, NAS and settings</string>
     <string name="feature_sources">SD cards, USB drives, Insta360, DJI, and more</string>

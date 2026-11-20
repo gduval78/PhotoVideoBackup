@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d 個失敗</string>
     <string name="feature_gallery">將手機的照片和影片備份到資料夾</string>
     <string name="feature_lut">使用 .cube LUT 為影片調色並匯出為 HEVC</string>
-    <string name="feature_nas">透過 Wi-Fi 備份到 NAS — 甚至可遠端</string>
+    <string name="feature_nas">透過 Wi-Fi 或遠端備份到 NAS，或 Nextcloud、pCloud、WebDAV 伺服器</string>
     <string name="feature_second_destination">同時向第二個 SSD 進行冗余備份</string>
     <string name="feature_several_backups">按需建立任意數量的備份，每個備份都有自己的驅動器、NAS 和設定</string>
     <string name="feature_sources">SD 卡、USB、Insta360、DJI 等</string>

@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">%1$d fallidos</string>
     <string name="feature_gallery">Copia las fotos y vídeos del teléfono en una carpeta</string>
     <string name="feature_lut">Gradúa tus vídeos con LUT .cube y expórtalos en HEVC</string>
-    <string name="feature_nas">Copia en un NAS por Wi-Fi — incluso en remoto</string>
+    <string name="feature_nas">Copia a un NAS o a un servidor Nextcloud, pCloud o WebDAV, por Wi-Fi o de forma remota</string>
     <string name="feature_second_destination">Copia redundante en un segundo SSD simultáneamente</string>
     <string name="feature_several_backups">Cree todas las copias que necesite, cada una con sus unidades, NAS y ajustes</string>
     <string name="feature_sources">Tarjetas SD, USB, Insta360, DJI y más</string>

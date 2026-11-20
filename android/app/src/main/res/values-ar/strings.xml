@@ -139,7 +139,7 @@
     <string name="failed_count_fmt">فشل %1$d</string>
     <string name="feature_gallery">انسخ صور هاتفك ومقاطع الفيديو إلى مجلد</string>
     <string name="feature_lut">صحّح ألوان فيديوهاتك بملفات .cube LUT وصدّرها بصيغة HEVC</string>
-    <string name="feature_nas">نسخ احتياطي عبر Wi-Fi إلى NAS — حتى عن بُعد</string>
+    <string name="feature_nas">انسخ احتياطيًا إلى NAS أو إلى خادم Nextcloud أو pCloud أو WebDAV، عبر Wi-Fi أو عن بُعد</string>
     <string name="feature_second_destination">نسخ احتياطي مكرر إلى قرص SSD ثانٍ في الوقت نفسه</string>
     <string name="feature_several_backups">أنشئ ما تحتاجه من النسخ الاحتياطية، ولكلٍّ منها أقراصها وNAS وإعداداتها الخاصة</string>
     <string name="feature_sources">بطاقات SD وأقراص USB وInsta360 وDJI وغيرها</string>
